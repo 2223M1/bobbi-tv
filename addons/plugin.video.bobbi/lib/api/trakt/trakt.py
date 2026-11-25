@@ -125,7 +125,16 @@ class TraktBase:
         notification(translation(90383))
         return None
 
-    def _handle_unauthorized(self):
+    @staticmethod
+    def _auth_state():
+        return get_property("trakt_token"), get_property("trakt_refresh")
+
+    def _auth_current(self, expected):
+        return expected is None or self._auth_state() == expected
+
+    def _handle_unauthorized(self, expected_state=None):
+        if not self._auth_current(expected_state):
+            return False
         kodilog("Trakt unauthorized - Revoking authentication without wiping local snapshot")
         set_property("trakt_token", "")
         set_property("trakt_refresh", "")
@@ -235,10 +244,12 @@ class TraktBase:
         if headers["trakt-api-key"] in self.empty_setting_check:
             return self.no_client_key()
 
+        request_auth_state = None
         if with_auth:
             if self.ensure_token_valid() is False:
                 return None
-            token = get_property("trakt_token")
+            request_auth_state = self._auth_state()
+            token = request_auth_state[0]
 
             if token:
                 headers["Authorization"] = f"Bearer {token}"
@@ -248,6 +259,9 @@ class TraktBase:
 
         try:
             response = self._send_request(path, params, data, headers, is_delete, method)
+            if not self._auth_current(request_auth_state):
+                response.close()
+                return None
 
             if self._is_safe_retry_request(method, data, is_delete):
                 retry_delay = self._retry_delay(response)
@@ -260,10 +274,16 @@ class TraktBase:
                             f"Retrying in {retry_delay:g} seconds."
                         )
                     if self._wait_for_retry(retry_delay):
+                        if not self._auth_current(request_auth_state):
+                            response.close()
+                            return None
                         response = self._send_request(
                             path, params, data, headers, is_delete, method
                         )
 
+            if not self._auth_current(request_auth_state):
+                response.close()
+                return None
             kodilog(f"Trakt response status code: {response.status_code}")
             response.raise_for_status()
         except requests.HTTPError as error:
@@ -280,7 +300,7 @@ class TraktBase:
                 return None
             if status_code == 401:
                 if "Authorization" in headers:
-                    self._handle_unauthorized()
+                    self._handle_unauthorized(request_auth_state)
                 return None
 
             status_code = response.status_code
@@ -413,6 +433,9 @@ class TraktBase:
             raise
 
     def trakt_refresh_token(self):
+        auth_state = self._auth_state()
+        if self.trakt_refresh != auth_state[1]:
+            return False
         CLIENT_ID = trakt_client()
         if CLIENT_ID in self.empty_setting_check:
             self.no_client_key()
@@ -426,15 +449,17 @@ class TraktBase:
             "client_secret": CLIENT_SECRET,
             "redirect_uri": "urn:ietf:wg:oauth:2.0:oob",
             "grant_type": "refresh_token",
-            "refresh_token": self.trakt_refresh,
+            "refresh_token": auth_state[1],
         }
         response = self.call_trakt("oauth/token", data=data, with_auth=False)
+        if not self._auth_current(auth_state):
+            return False
         if response and isinstance(response, dict):
             set_property("trakt_token", response["access_token"])
             set_property("trakt_refresh", response["refresh_token"])
             set_property("trakt_expires", str(self._oauth_token_expiration(response)))
             return True
-        self._handle_unauthorized()
+        self._handle_unauthorized(auth_state)
         return False
 
     def get_trakt_id_by_tmdb(self, tmdb_id, media_type="movie"):
@@ -659,6 +684,7 @@ class TraktAuthentication(TraktBase):
                 progressDialog.close_dialog()
 
     def trakt_authenticate(self):
+        auth_state = self._auth_state()
         self._device_auth_failure_shown = False
         code = self.trakt_get_device_code()
         if not code:
@@ -669,11 +695,16 @@ class TraktAuthentication(TraktBase):
             if not self._device_auth_failure_shown:
                 notification(translation(90384), time=3000)
             return False
+        if not self._auth_current(auth_state):
+            return False
         set_property("trakt_token", str(token["access_token"]))
         set_property("trakt_refresh", str(token["refresh_token"]))
         set_property("trakt_expires", str(self._oauth_token_expiration(token)))
+        auth_state = self._auth_state()
         try:
             user = self.call_trakt("users/me")
+            if not self._auth_current(auth_state):
+                return False
             if user and isinstance(user, dict):
                 username = str(user["username"])
                 set_setting("trakt_user", username)
@@ -684,6 +715,8 @@ class TraktAuthentication(TraktBase):
                 notification(translation(90385), time=3000)
                 return True
         except Exception:
+            if not self._auth_current(auth_state):
+                return False
             kodilog("Trakt user not found, setting to empty user")
             set_setting("is_trakt_auth", "false")
             notification(translation(90384), time=3000)

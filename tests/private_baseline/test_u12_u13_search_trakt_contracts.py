@@ -798,3 +798,193 @@ def test_u13_f4_trakt_emby_and_local_bobbi_history_keep_separate_storage_owners(
 
     reporter.close()
     hub.close()
+
+
+@pytest.mark.parametrize('bucket', ['watched_movies', 'watched_shows', 'movie_progress', 'episode_progress'])
+@pytest.mark.parametrize('switch', ['other_account', 'same_account_new_session'])
+def test_round2_trakt_inflight_snapshot_cannot_replace_new_account_or_session(isolated_trakt_env, bucket, switch):
+    env = isolated_trakt_env
+    wc = env.watched_cache
+
+    def late_response():
+        env.settings['trakt_user'] = 'bob' if switch == 'other_account' else 'alice'
+        env.props['trakt_token'] = 'new-login-token'
+        wc.set_bulk_movie_watched([('movie', '202', None, None, '2026-11-25', 'New login')])
+        wc.set_bulk_tvshow_watched([('episode', '202', 1, 1, '2026-11-25', 'New login')])
+        wc.set_bulk_movie_progress([('movie', '202', None, None, '50', '0', '2026-11-25', 2, 'New login')])
+        wc.set_bulk_tvshow_progress([('episode', '202', 1, 1, '50', '0', '2026-11-25', 2, 'New login')])
+        return []  # A real empty A snapshot is still not a snapshot of this new login.
+
+    service = env.ts_mod.TraktSyncService(api=SimpleNamespace(
+        movies=SimpleNamespace(get_watched_movies=late_response),
+        tv=SimpleNamespace(get_watched_shows=late_response),
+        scrobble=SimpleNamespace(trakt_get_playback_progress=lambda _kind: late_response()),
+    ), monitor=SimpleNamespace())
+    assert getattr(service, 'sync_' + bucket)() is False
+    assert wc.get_watched_status('movie', '202') is True
+    assert wc.get_watched_status('episode', '202', 1, 1) is True
+    assert wc.get_progress('movie', '202') == 50.0
+    assert wc.get_progress('episode', '202', 1, 1) == 50.0
+
+
+def test_round2_trakt_late_activity_watermark_cannot_skip_new_account_sync(isolated_trakt_env):
+    env = isolated_trakt_env
+    prior = deepcopy(env.tc_mod.default_activities())
+    env.tc_mod.set_activity(prior)
+    calls = []
+
+    def late_activities():
+        env.settings['trakt_user'] = 'bob'
+        env.props['trakt_token'] = 'bob-login'
+        env.watched_cache.bind_account('bob')
+        changed = deepcopy(prior)
+        changed['all'] = '2026-11-25T20:00:00.000Z'
+        changed['movies']['watched_at'] = changed['all']
+        return changed
+
+    service = env.ts_mod.TraktSyncService(api=SimpleNamespace(
+        sync=SimpleNamespace(get_last_activities=late_activities),
+        movies=SimpleNamespace(get_watched_movies=lambda: calls.append('movies') or []),
+    ), monitor=SimpleNamespace())
+    assert service.sync_activities() == set()
+    assert calls == []
+    assert env.tc_mod.get_activity() == prior
+
+
+@pytest.mark.parametrize('status', [200, 401])
+def test_round2_trakt_late_auth_response_cannot_return_a_data_or_revoke_b(isolated_trakt_env, monkeypatch, status):
+    env = isolated_trakt_env
+
+    def send(_self, _path, *_args, **_kwargs):
+        env.settings['trakt_user'] = 'bob'
+        env.props.update(trakt_token='bob-token', trakt_refresh='bob-refresh')
+        response = requests.Response()
+        response.status_code = status
+        response._content = b'[{"alice":"private"}]'
+        response._content_consumed = True
+        return response
+
+    monkeypatch.setattr(env.trakt_mod.TraktBase, '_send_request', send)
+    assert env.trakt_mod.TraktBase().call_trakt('sync/watched/movies') is None
+    assert env.settings['trakt_user'] == 'bob'
+    assert env.props['trakt_token'] == 'bob-token'
+    assert env.props['trakt_refresh'] == 'bob-refresh'
+
+
+@pytest.mark.parametrize('status', [200, 401])
+def test_round2_trakt_late_refresh_cannot_overwrite_or_revoke_b(isolated_trakt_env, monkeypatch, status):
+    env = isolated_trakt_env
+
+    def send(_self, _path, *_args, **_kwargs):
+        env.settings['trakt_user'] = 'bob'
+        env.props.update(trakt_token='bob-token', trakt_refresh='bob-refresh')
+        response = requests.Response()
+        response.status_code = status
+        response._content = b'{"access_token":"alice-late","refresh_token":"alice-late-refresh","expires_in":3600}'
+        response._content_consumed = True
+        return response
+
+    monkeypatch.setattr(env.trakt_mod.TraktBase, '_send_request', send)
+    api = env.trakt_mod.TraktBase()
+    api.trakt_refresh = 'ref-alice'
+    assert api.trakt_refresh_token() is False
+    assert env.settings['trakt_user'] == 'bob'
+    assert env.props['trakt_token'] == 'bob-token'
+    assert env.props['trakt_refresh'] == 'bob-refresh'
+
+
+def test_round2_trakt_device_login_result_cannot_replace_login_changed_during_poll(isolated_trakt_env, monkeypatch):
+    env = isolated_trakt_env
+    auth = env.trakt_mod.TraktAuthentication()
+    monkeypatch.setattr(auth, 'trakt_get_device_code', lambda: {'device_code': 'synthetic'})
+
+    def finish_poll(_code):
+        env.settings['trakt_user'] = 'bob'
+        env.props.update(trakt_token='bob-token', trakt_refresh='bob-refresh')
+        return {'access_token': 'alice-late', 'refresh_token': 'alice-late-refresh', 'expires_in': 3600}
+
+    monkeypatch.setattr(auth, 'trakt_get_device_token', finish_poll)
+    monkeypatch.setattr(auth, 'call_trakt', lambda *_a, **_kw: {'username': 'alice'})
+    assert auth.trakt_authenticate() is False
+    assert env.settings['trakt_user'] == 'bob'
+    assert env.props['trakt_token'] == 'bob-token'
+
+
+@pytest.mark.parametrize('cycle', [False, True])
+def test_round2_trakt_normal_token_refresh_still_syncs_in_same_cycle(isolated_trakt_env, monkeypatch, cycle):
+    env = isolated_trakt_env
+    env.props['trakt_expires'] = str(time.time() - 1)
+    calls = []
+
+    def send(_self, path, *_args, **_kwargs):
+        calls.append(path)
+        if path == 'oauth/token':
+            body = {'access_token': 'new-alice', 'refresh_token': 'new-refresh', 'expires_in': 7200}
+        elif path == 'sync/last_activities':
+            body = deepcopy(env.tc_mod.default_activities())
+            body['movies']['watched_at'] = '2026-11-25T20:00:00.000Z'
+            body['all'] = body['movies']['watched_at']
+        elif path == 'sync/watched/movies':
+            body = [{'last_watched_at': '2026-11-25', 'movie': {'title': 'Alice', 'ids': {'tmdb': 101}}}]
+        else:
+            raise AssertionError(path)
+        response = requests.Response()
+        response.status_code = 200
+        response._content = json.dumps(body).encode()
+        response._content_consumed = True
+        return response
+
+    monkeypatch.setattr(env.trakt_mod.TraktBase, '_send_request', send)
+    service = env.ts_mod.TraktSyncService(api=env.trakt_mod.TraktAPI(), monitor=SimpleNamespace())
+    result = service.sync_activities() if cycle else service.sync_watched_movies()
+    assert result == {'watched_movies'} if cycle else result is True
+    assert calls[0] == 'oauth/token'
+    assert calls.count('oauth/token') == 1
+    assert env.watched_cache.get_watched_status('movie', '101') is True
+
+
+def test_round2_trakt_current_401_still_revokes_only_current_login(isolated_trakt_env, monkeypatch):
+    env = isolated_trakt_env
+    response = requests.Response()
+    response.status_code = 401
+    response._content = b'{}'
+    response._content_consumed = True
+    monkeypatch.setattr(env.trakt_mod.TraktBase, '_send_request', lambda *_a, **_kw: response)
+    assert env.trakt_mod.TraktBase().call_trakt('sync/watched/movies') is None
+    assert env.props['trakt_token'] == ''
+    assert env.props['trakt_refresh'] == ''
+    assert env.settings['is_trakt_auth'] == 'false'
+
+
+def test_round2_trakt_account_change_at_sql_commit_rolls_back_snapshot(isolated_trakt_env):
+    env = isolated_trakt_env
+    wc = env.watched_cache
+    wc.set_bulk_movie_watched([('movie', '101', None, None, '2026-11-25', 'Original')])
+    scope = env.tc_mod.trakt_account_scope()
+
+    def rows():
+        yield ('movie', '202', None, None, '2026-11-25', 'Discarded')
+        env.settings['trakt_user'] = 'bob'
+        env.props['trakt_token'] = 'bob-login'
+
+    assert wc.set_bulk_movie_watched(rows(), expected_scope=scope) is False
+    assert env.conn.execute('SELECT media_id FROM watched').fetchall() == [('101',)]
+
+
+def test_round2_trakt_device_login_positive_binds_new_owner(isolated_trakt_env, monkeypatch):
+    env = isolated_trakt_env
+    auth = env.trakt_mod.TraktAuthentication()
+    monkeypatch.setattr(auth, 'trakt_get_device_code', lambda: {'device_code': 'synthetic'})
+    monkeypatch.setattr(auth, 'trakt_get_device_token', lambda _: {
+        'access_token': 'bob-token', 'refresh_token': 'bob-refresh', 'expires_in': 7200,
+    })
+    response = requests.Response()
+    response.status_code = 200
+    response._content = b'{"username":"bob"}'
+    response._content_consumed = True
+    monkeypatch.setattr(auth, '_send_request', lambda *_a, **_kw: response)
+    assert auth.trakt_authenticate() is True
+    assert env.settings['trakt_user'] == 'bob'
+    assert env.props['trakt_token'] == 'bob-token'
+    assert env.props['trakt_refresh'] == 'bob-refresh'
+    assert env.tc_mod._stored_cache_owner(env.conn) == 'bob'

@@ -1,10 +1,11 @@
 import ast
 import json
+from hashlib import sha256
 from threading import RLock
 
 from lib.api.trakt.base_cache import connect_database
 from lib.utils.kodi.settings import EMPTY_USER
-from lib.utils.kodi.utils import get_setting, kodilog
+from lib.utils.kodi.utils import get_property, get_setting, kodilog
 
 SELECT = "SELECT id FROM trakt_data"
 DELETE = "DELETE FROM trakt_data WHERE id=?"
@@ -37,6 +38,17 @@ def _active_trakt_user():
     if not normalized or normalized == EMPTY_USER:
         return None
     return normalized
+
+
+def trakt_account_scope():
+    """Capture the login before IO; never persist or log its credential."""
+    token = get_property('trakt_token')
+    fingerprint = sha256(token.encode()).digest() if isinstance(token, str) else None
+    return _active_trakt_user(), fingerprint
+
+
+def trakt_account_current(scope):
+    return scope is None or scope == trakt_account_scope()
 
 
 def _has_table(dbcon, table_name):
@@ -174,18 +186,24 @@ class TraktWatched:
                     pass
                 raise
 
-    def _replace_bucket(self, delete_command, delete_args, insert_command, insert_list):
+    def _replace_bucket(self, delete_command, delete_args, insert_command, insert_list, *, expected_scope=None):
         if insert_list is None:
             raise ValueError("Cannot replace Trakt bucket with unknown (None) snapshot")
         with _TRAKT_DB_LOCK:
+            if not trakt_account_current(expected_scope):
+                return False
             dbcon = connect_database("trakt_db")
             _ensure_rollback_journal(dbcon)
             dbcon.execute("BEGIN IMMEDIATE")
             try:
-                _sync_owner_in_tx(dbcon)
+                _sync_owner_in_tx(dbcon, explicit_user=expected_scope[0] if expected_scope else None)
                 dbcon.execute(delete_command, delete_args)
                 dbcon.executemany(insert_command, insert_list)
+                if not trakt_account_current(expected_scope):
+                    dbcon.execute("ROLLBACK")
+                    return False
                 dbcon.execute("COMMIT")
+                return True
             except BaseException:
                 try:
                     dbcon.execute("ROLLBACK")
@@ -221,17 +239,17 @@ class TraktWatched:
                     pass
                 raise
 
-    def set_bulk_movie_watched(self, insert_list):
-        self._replace_bucket(WATCHED_DELETE, ("movie",), WATCHED_INSERT, insert_list)
+    def set_bulk_movie_watched(self, insert_list, *, expected_scope=None):
+        return self._replace_bucket(WATCHED_DELETE, ("movie",), WATCHED_INSERT, insert_list, expected_scope=expected_scope)
 
-    def set_bulk_tvshow_watched(self, insert_list):
-        self._replace_bucket(WATCHED_DELETE, ("episode",), WATCHED_INSERT, insert_list)
+    def set_bulk_tvshow_watched(self, insert_list, *, expected_scope=None):
+        return self._replace_bucket(WATCHED_DELETE, ("episode",), WATCHED_INSERT, insert_list, expected_scope=expected_scope)
 
-    def set_bulk_movie_progress(self, insert_list):
-        self._replace_bucket(PROGRESS_DELETE, ("movie",), PROGRESS_INSERT, insert_list)
+    def set_bulk_movie_progress(self, insert_list, *, expected_scope=None):
+        return self._replace_bucket(PROGRESS_DELETE, ("movie",), PROGRESS_INSERT, insert_list, expected_scope=expected_scope)
 
-    def set_bulk_tvshow_progress(self, insert_list):
-        self._replace_bucket(PROGRESS_DELETE, ("episode",), PROGRESS_INSERT, insert_list)
+    def set_bulk_tvshow_progress(self, insert_list, *, expected_scope=None):
+        return self._replace_bucket(PROGRESS_DELETE, ("episode",), PROGRESS_INSERT, insert_list, expected_scope=expected_scope)
 
     def clear_all(self):
         try:
@@ -336,18 +354,24 @@ def get_activity():
     return default_activities()
 
 
-def set_activity(latest_activities):
+def set_activity(latest_activities, *, expected_scope=None):
     encoded = _encode_cache_value(latest_activities, "trakt_get_activity")
     if encoded is None:
         return
     with _TRAKT_DB_LOCK:
+        if not trakt_account_current(expected_scope):
+            return False
         dbcon = connect_database("trakt_db")
         _ensure_rollback_journal(dbcon)
         dbcon.execute("BEGIN IMMEDIATE")
         try:
-            _sync_owner_in_tx(dbcon)
+            _sync_owner_in_tx(dbcon, explicit_user=expected_scope[0] if expected_scope else None)
             dbcon.execute(TC_BASE_SET, ("trakt_get_activity", encoded))
+            if not trakt_account_current(expected_scope):
+                dbcon.execute("ROLLBACK")
+                return False
             dbcon.execute("COMMIT")
+            return True
         except BaseException:
             try:
                 dbcon.execute("ROLLBACK")

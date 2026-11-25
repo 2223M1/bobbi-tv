@@ -4,7 +4,7 @@ from time import monotonic
 import xbmc
 
 from lib.api.trakt.lists_cache import lists_cache
-from lib.api.trakt.trakt import TraktAPI
+from lib.api.trakt.trakt import TraktAPI, TraktBase
 from lib.api.trakt.trakt_cache import (
     clear_trakt_calendar,
     clear_trakt_favorites,
@@ -15,6 +15,8 @@ from lib.api.trakt.trakt_cache import (
     default_activities,
     get_activity,
     set_activity,
+    trakt_account_current,
+    trakt_account_scope,
     trakt_watched_cache,
 )
 from lib.utils.kodi.utils import get_property_no_fallback, get_setting, kodilog
@@ -47,6 +49,14 @@ class TraktSyncService:
         self.api = api or TraktAPI()
         self.monitor = monitor or xbmc.Monitor()
         self._cycle_context = None
+
+    @staticmethod
+    def _request_scope(client):
+        # Normal OAuth rotation belongs to this account. Complete it before
+        # binding a response so a startup sync need not wait another 15 minutes.
+        if isinstance(client, TraktBase) and client.ensure_token_valid() is False:
+            return None
+        return trakt_account_scope()
 
     def _format_buckets(self, buckets):
         if not buckets:
@@ -161,9 +171,14 @@ class TraktSyncService:
         forced_defaults = False
         detected_buckets = set()
         applied_buckets = set()
+        account_scope = self._request_scope(self.api.sync)
+        if account_scope is None:
+            return set()
 
         try:
             latest_activities = self.api.sync.get_last_activities()
+            if not trakt_account_current(account_scope):
+                return set()
             if not isinstance(latest_activities, dict) or not latest_activities:
                 self._log_sync_summary(
                     cycle_context,
@@ -189,7 +204,7 @@ class TraktSyncService:
                 forced_defaults = True
 
             if not planned_buckets:
-                set_activity(latest_activities)
+                set_activity(latest_activities, expected_scope=account_scope)
                 self._log_sync_summary(
                     cycle_context,
                     force,
@@ -202,18 +217,20 @@ class TraktSyncService:
                 return applied_buckets
 
             kodilog("Trakt sync: changed buckets = {}".format(", ".join(sorted(planned_buckets))))
-            succeeded_buckets, failed_buckets, first_error = self._apply_activity_changes(planned_buckets)
+            succeeded_buckets, failed_buckets, first_error = self._apply_activity_changes(planned_buckets, account_scope)
             applied_buckets = set(succeeded_buckets)
+            if not trakt_account_current(account_scope):
+                return set()
 
             if succeeded_buckets and not failed_buckets:
-                set_activity(latest_activities)
+                set_activity(latest_activities, expected_scope=account_scope)
             elif succeeded_buckets:
                 set_activity(
                     self._merge_committed_activities(
                         previous_activities,
                         latest_activities,
                         failed_buckets,
-                    )
+                    ), expected_scope=account_scope,
                 )
 
             if first_error is not None:
@@ -282,7 +299,7 @@ class TraktSyncService:
 
         return changes
 
-    def _apply_activity_changes(self, changes):
+    def _apply_activity_changes(self, changes, expected_scope=None):
         succeeded = set()
         failed = set()
         first_error = None
@@ -295,8 +312,11 @@ class TraktSyncService:
         for bucket, fn in sync_dispatch:
             if bucket not in changes:
                 continue
+            if not trakt_account_current(expected_scope):
+                failed.add(bucket)
+                continue
             try:
-                ok = fn()
+                ok = fn(expected_scope=expected_scope)
             except Exception as exc:
                 failed.add(bucket)
                 if first_error is None:
@@ -309,6 +329,8 @@ class TraktSyncService:
 
         invalidation_buckets = set(changes) - {b for b, _ in sync_dispatch}
         if invalidation_buckets:
+            if not trakt_account_current(expected_scope):
+                return succeeded, failed | invalidation_buckets, first_error
             try:
                 self.invalidate_cached_buckets(invalidation_buckets)
             except Exception as exc:
@@ -320,8 +342,13 @@ class TraktSyncService:
 
         return succeeded, failed, first_error
 
-    def sync_watched_movies(self):
+    def sync_watched_movies(self, *, expected_scope=None):
+        scope = self._request_scope(self.api.movies)
+        if scope is None or (expected_scope is not None and scope != expected_scope):
+            return False
         movies = self.api.movies.get_watched_movies()
+        if not trakt_account_current(scope):
+            return False
         if not isinstance(movies, list):
             kodilog("Trakt watched movies response unknown; preserving existing snapshot", level=xbmc.LOGWARNING)
             return False
@@ -347,12 +374,18 @@ class TraktSyncService:
                 )
             )
 
-        trakt_watched_cache.set_bulk_movie_watched(insert_list)
+        if trakt_watched_cache.set_bulk_movie_watched(insert_list, expected_scope=scope) is False:
+            return False
         kodilog(f"Synced {len(insert_list)} watched movies from Trakt")
         return True
 
-    def sync_watched_shows(self):
+    def sync_watched_shows(self, *, expected_scope=None):
+        scope = self._request_scope(self.api.tv)
+        if scope is None or (expected_scope is not None and scope != expected_scope):
+            return False
         shows = self.api.tv.get_watched_shows()
+        if not trakt_account_current(scope):
+            return False
         if not isinstance(shows, list):
             kodilog("Trakt watched shows response unknown; preserving existing snapshot", level=xbmc.LOGWARNING)
             return False
@@ -392,12 +425,18 @@ class TraktSyncService:
                         )
                     )
 
-        trakt_watched_cache.set_bulk_tvshow_watched(insert_list)
+        if trakt_watched_cache.set_bulk_tvshow_watched(insert_list, expected_scope=scope) is False:
+            return False
         kodilog(f"Synced {len(insert_list)} watched episodes from Trakt")
         return True
 
-    def sync_movie_progress(self):
+    def sync_movie_progress(self, *, expected_scope=None):
+        scope = self._request_scope(self.api.scrobble)
+        if scope is None or (expected_scope is not None and scope != expected_scope):
+            return False
         paused_movies = self.api.scrobble.trakt_get_playback_progress("movies")
+        if not trakt_account_current(scope):
+            return False
         if not isinstance(paused_movies, list):
             kodilog("Trakt movie progress response unknown; preserving existing snapshot", level=xbmc.LOGWARNING)
             return False
@@ -426,12 +465,18 @@ class TraktSyncService:
                 )
             )
 
-        trakt_watched_cache.set_bulk_movie_progress(insert_list)
+        if trakt_watched_cache.set_bulk_movie_progress(insert_list, expected_scope=scope) is False:
+            return False
         kodilog(f"Synced {len(insert_list)} movie progress items from Trakt")
         return True
 
-    def sync_episode_progress(self):
+    def sync_episode_progress(self, *, expected_scope=None):
+        scope = self._request_scope(self.api.scrobble)
+        if scope is None or (expected_scope is not None and scope != expected_scope):
+            return False
         paused_episodes = self.api.scrobble.trakt_get_playback_progress("episodes")
+        if not trakt_account_current(scope):
+            return False
         if not isinstance(paused_episodes, list):
             kodilog("Trakt episode progress response unknown; preserving existing snapshot", level=xbmc.LOGWARNING)
             return False
@@ -464,7 +509,8 @@ class TraktSyncService:
                 )
             )
 
-        trakt_watched_cache.set_bulk_tvshow_progress(insert_list)
+        if trakt_watched_cache.set_bulk_tvshow_progress(insert_list, expected_scope=scope) is False:
+            return False
         kodilog(f"Synced {len(insert_list)} episode progress items from Trakt")
         return True
 
