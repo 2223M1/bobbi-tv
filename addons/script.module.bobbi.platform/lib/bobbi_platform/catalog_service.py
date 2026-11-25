@@ -2,7 +2,14 @@
 from collections import deque, OrderedDict
 from threading import Event, Lock, Thread
 
-from bobbi_core.media_library_index import MediaIndex, TERMINAL, REPLY_BYTES, encode, identifier
+from bobbi_core.media_library_index import (
+    FRONTIER_PROOF_VERSION,
+    MediaIndex,
+    TERMINAL,
+    REPLY_BYTES,
+    encode,
+    identifier,
+)
 from bobbi_core.typed_ref import KINDS as PATH_KINDS
 from .libraries import Registry
 from .scan_sources import NativePort
@@ -464,7 +471,41 @@ class CatalogService:
                         if self.cancel_event.wait(.05 if self.playing() else .001):
                             operation.cancelled.set()
                         safe(local=True)
-                        result = port.page(operation, expected, parent, page, cursor)
+                        dir_proof = peek.get('dir_proof')
+                        def _verify_frontier_page(_v_parent, raw_items, *, page, size, total=None, has_more=False, from_adapter=False):
+                            from .pan_accounts import PanError
+                            _verify_frontier_page.verified = True
+                            if dir_proof is None:
+                                return
+                            offset = (page - 1) * size
+                            sigs = [encode((r.get('file_id'), r.get('directory'))) for r in raw_items]
+                            if len(set(sigs)) != len(sigs):
+                                raise PanError('PAN_REPLY_INVALID')
+                            cross_task = dir_proof['seen_count'] > 0 and dir_proof['proof_task'] not in ('', task)
+                            if page == 1:
+                                if dir_proof['seen_count'] != 0 or dir_proof['next_offset'] != 0:
+                                    raise PanError('PAN_PAGE_EXPIRED')
+                                new_seen = len(raw_items)
+                            else:
+                                if dir_proof['proof_version'] < FRONTIER_PROOF_VERSION or dir_proof['seen_count'] <= 0:
+                                    raise PanError('PAN_PAGE_EXPIRED')
+                                if dir_proof['expected_total'] is not None and total != dir_proof['expected_total']:
+                                    if cross_task:
+                                        raise ValueError('SCAN_TOTAL_CHANGED')
+                                    raise PanError('PAN_PAGE_EXPIRED')
+                                if dir_proof['expected_total'] is None and total is not None:
+                                    raise PanError('PAN_PAGE_EXPIRED')
+                                if total is not None and offset != dir_proof['next_offset']:
+                                    raise PanError('PAN_PAGE_EXPIRED')
+                                if self.index.frontier_has_entry_overlap(task, parent, sigs):
+                                    if from_adapter:
+                                        raise PanError('PAN_PAGE_EXPIRED')
+                                    raise ValueError('SCAN_PAGE_CYCLE')
+                                new_seen = dir_proof['seen_count'] + len(raw_items)
+                            if total is not None and not has_more and new_seen != total:
+                                raise PanError('PAN_INCOMPLETE_PAGE')
+                        _verify_frontier_page.verified = False
+                        result = port.page(operation, expected, parent, page, cursor, frontier_check=_verify_frontier_page)
                         excluded_versions |= result.get('excluded_versions') is True
                         safe()
                         rows = result['items']
@@ -482,7 +523,7 @@ class CatalogService:
                         entry_sigs = []
                         if signature is not None:
                             entry_sigs = [encode(item) for item in signature]
-                            if peek['seen_entries'].intersection(entry_sigs):
+                            if self.index.frontier_has_entry_overlap(task, parent, entry_sigs):
                                 raise ValueError('SCAN_PAGE_CYCLE')
                         refs, descriptions = [], {}
                         new_leaves, new_dirs = [], []
@@ -515,7 +556,7 @@ class CatalogService:
                                 raise ValueError('SCAN_INCOMPLETE_PAGE')
                             raw_cursor = result.get('next_cursor')
                             if raw_cursor is not None:
-                                if not raw_cursor or raw_cursor in peek['seen_cursors']:
+                                if not raw_cursor or self.index.frontier_has_cursor(task, parent, raw_cursor):
                                     raise ValueError('SCAN_CURSOR_CYCLE')
                                 next_cursor = raw_cursor
                         est_queued = max(0, peek['queued'] - 1 + len(new_leaves) + len(new_dirs) + (1 if has_more else 0))
@@ -532,6 +573,8 @@ class CatalogService:
                             dir_key=parent,
                             is_leaf=is_leaf,
                             declared_total=declared_total,
+                            page_item_count=len(rows),
+                            next_offset=(page - 1) * SCAN_WINDOW + len(rows),
                             entry_sigs=entry_sigs,
                             new_leaves=new_leaves,
                             new_dirs=new_dirs,

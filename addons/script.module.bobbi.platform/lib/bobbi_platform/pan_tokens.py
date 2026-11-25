@@ -109,32 +109,50 @@ def parse_download_expiry(explicit_value=None, url='', *, now=None):
 
 
 def scan_page_proof(session, parent, items, *, page, size, total=None, has_more=False):
+    offset = (page - 1) * size
+    ids = {item['file_id'] for item in items}
+    if len(ids) != len(items):
+        raise PanError('PAN_REPLY_INVALID')
+    if total is not None:
+        if offset > total:
+            raise PanError('PAN_REPLY_INVALID')
+        if not has_more and page == 1 and len(items) != total:
+            raise PanError('PAN_INCOMPLETE_PAGE')
     operation = getattr(session, 'operation', None) if session is not None else None
     if operation is None or getattr(operation, 'kind', None) != 'scan' or parent is None:
         return
-    progress = getattr(operation, '_directory_pages', None)
-    if progress is None:
-        progress = operation._directory_pages = {}
-    offset = (page - 1) * size
-    ids = {item['file_id'] for item in items}
-    previous = progress.get(parent)
+    operation._last_scan_page_meta = dict(
+        parent=parent,
+        page=page,
+        size=size,
+        declared_total=total,
+        has_more=bool(has_more),
+        count=len(items),
+    )
+    verifier = getattr(operation, 'frontier_verifier', None)
+    if callable(verifier):
+        verifier(parent, items, page=page, size=size, total=total, has_more=has_more, from_adapter=True)
+        return
+    # Adapter-only scan invocations without MediaIndex frontier keep only a single-directory
+    # within-call check, never a cross-directory or cross-run authority.
+    window = getattr(operation, '_single_dir_window', None)
     if page == 1:
-        if previous is not None:
+        if window is not None and window[0] == parent:
             raise PanError('PAN_PAGE_EXPIRED')
         count = len(items)
     else:
-        if previous is None:
+        if window is None or window[0] != parent:
             raise PanError('PAN_PAGE_EXPIRED')
-        prev_total, following, seen = previous
+        _, prev_total, following, seen = window
         if total != prev_total or (total is not None and offset != following) or seen.intersection(ids):
             raise PanError('PAN_PAGE_EXPIRED')
         ids = seen | ids
         count = following + len(items)
-    if (len(progress) >= 1024 and parent not in progress) or len(ids) > 12000:
+    if len(ids) > 12000:
         raise PanError('PAN_BUDGET_EXHAUSTED')
     if total is not None and not has_more and (count != total or len(ids) != total):
         raise PanError('PAN_INCOMPLETE_PAGE')
-    progress[parent] = (total, count, ids)
+    operation._single_dir_window = (parent, total, count, ids) if has_more else None
 
 
 def listing(rows, total, page, size, convert, *, has_total=True, session=None, parent=None):
@@ -154,7 +172,10 @@ def listing(rows, total, page, size, convert, *, has_total=True, session=None, p
         raise PanError('PAN_INCOMPLETE_PAGE')
     scan_page_proof(session, parent, items, page=page, size=size,
                     total=total if has_total else None, has_more=more)
-    return dict(items=items, page=page, has_more=more)
+    result = dict(items=items, page=page, has_more=more)
+    if has_total and getattr(getattr(session, 'operation', None), 'kind', None) == 'scan':
+        result['declared_total'] = total
+    return result
 
 
 def original_url(value, domains):

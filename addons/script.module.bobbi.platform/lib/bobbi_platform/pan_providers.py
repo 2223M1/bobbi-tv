@@ -30,6 +30,7 @@ class Provider:
     cookie_rotation: bool = False
     capabilities: tuple = ('qr_login', 'list_files', 'personal_play')
     verification: str = 'not_device_verified'
+    proof_contract: str = 'page_total'
 
     def public(self):
         return dict(root=self.root, pagination=self.pagination, parent_field=self.parent_field,
@@ -38,23 +39,35 @@ class Provider:
 
 DESCRIPTORS = MappingProxyType({
     'plex': Provider(PlexClient, None, None, root='root',
-        capabilities=('list_files', 'personal_play'), verification='media_server_experimental'),
+        capabilities=('list_files', 'personal_play'), verification='media_server_experimental',
+        proof_contract='page_optional_total'),
     'jellyfin': Provider(partial(EmbyClient, 'jellyfin'), None, None, root='root',
-        capabilities=('list_files', 'personal_play'), verification='media_server_experimental'),
+        capabilities=('list_files', 'personal_play'), verification='media_server_experimental',
+        proof_contract='page_total'),
     'emby': Provider(partial(EmbyClient, 'emby'), None, None, root='root',
-        capabilities=('list_files', 'personal_play'), verification='media_server_experimental'),
+        capabilities=('list_files', 'personal_play'), verification='media_server_experimental',
+        proof_contract='page_total'),
     '115': Provider(Cloud115Client, None, None,
         capabilities=('qr_login', 'share_play', 'list_files', 'personal_play'),
-        verification='native_index_experimental'),
-    'quark': Provider(partial(Client, 'quark'), QuarkLogin, partial(credentials, 'quark'), cookie_rotation=True),
-    'uc': Provider(partial(Client, 'uc'), UCLogin, partial(credentials, 'uc'), cookie_rotation=True),
-    'baidu': Provider(BaiduClient, BaiduLogin, partial(credentials, 'baidu'), root='/', parent_field='path', cookie_rotation=True),
-    'aliyun': Provider(AliyunClient, AliyunLogin, aliyun_credentials, pagination='cursor'),
-    '123': Provider(Cloud123Client, Cloud123Login, cloud123_credentials),
-    '189': Provider(TianyiClient, TianyiLogin, partial(credentials, '189'), cookie_rotation=True),
-    '139': Provider(MobileClient, MobileLogin, mobile_credentials, pagination='cursor'),
-    'guangya': Provider(GuangyaClient, partial(DeviceLogin, 'guangya'), partial(device_credentials, 'guangya')),
-    'xunlei': Provider(XunleiClient, partial(DeviceLogin, 'xunlei'), partial(device_credentials, 'xunlei'), pagination='cursor'),
+        verification='native_index_experimental', proof_contract='page_total'),
+    'quark': Provider(partial(Client, 'quark'), QuarkLogin, partial(credentials, 'quark'),
+        cookie_rotation=True, proof_contract='page_total'),
+    'uc': Provider(partial(Client, 'uc'), UCLogin, partial(credentials, 'uc'),
+        cookie_rotation=True, proof_contract='page_total'),
+    'baidu': Provider(BaiduClient, BaiduLogin, partial(credentials, 'baidu'),
+        root='/', parent_field='path', cookie_rotation=True, proof_contract='page_probe'),
+    'aliyun': Provider(AliyunClient, AliyunLogin, aliyun_credentials,
+        pagination='cursor', proof_contract='cursor'),
+    '123': Provider(Cloud123Client, Cloud123Login, cloud123_credentials,
+        proof_contract='page_optional_total'),
+    '189': Provider(TianyiClient, TianyiLogin, partial(credentials, '189'),
+        cookie_rotation=True, proof_contract='page_optional_total'),
+    '139': Provider(MobileClient, MobileLogin, mobile_credentials,
+        pagination='cursor', proof_contract='cursor'),
+    'guangya': Provider(GuangyaClient, partial(DeviceLogin, 'guangya'), partial(device_credentials, 'guangya'),
+        proof_contract='page_optional_total'),
+    'xunlei': Provider(XunleiClient, partial(DeviceLogin, 'xunlei'), partial(device_credentials, 'xunlei'),
+        pagination='cursor', proof_contract='cursor'),
 })
 
 

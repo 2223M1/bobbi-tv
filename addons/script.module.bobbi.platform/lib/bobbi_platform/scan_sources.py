@@ -67,11 +67,47 @@ class NativePort:
     def revoked(self, expected):
         return not self.pans.accounts.is_current(expected)
 
-    def page(self, operation, expected, parent, page, cursor):
-        result = self.pans.list_for_scan(expected, parent, page, cursor, operation=operation, size=20)
+    def page(self, operation, expected, parent, page, cursor, *, frontier_check=None):
+        operation.frontier_managed = True
+        operation._last_scan_page_meta = None
+        operation.frontier_verifier = frontier_check
+        inferred_115_total = None
+        try:
+            result = self.pans.list_for_scan(expected, parent, page, cursor, operation=operation, size=20)
+        finally:
+            operation.frontier_verifier = None
+            dirs_115 = getattr(operation, '_115_directories', None)
+            if isinstance(dirs_115, dict):
+                if parent in dirs_115 and isinstance(dirs_115[parent], tuple) and dirs_115[parent]:
+                    inferred_115_total = dirs_115[parent][0]
+                dirs_115.clear()
+            for attr in ('_server_pages', '_single_dir_window'):
+                transient = getattr(operation, attr, None)
+                if isinstance(transient, dict):
+                    transient.clear()
+                elif transient is not None:
+                    setattr(operation, attr, None)
         rows = result['items']
         if type(rows) is not list or len(rows) > 20:
             raise ValueError('SCAN_INVALID_PAGE')
+        meta = getattr(operation, '_last_scan_page_meta', None)
+        operation._last_scan_page_meta = None
+        declared_total = result.get('declared_total')
+        if declared_total is None and isinstance(meta, dict):
+            declared_total = meta.get('declared_total')
+        if declared_total is None and inferred_115_total is not None:
+            declared_total = inferred_115_total
+        has_more = result.get('has_more') is True
+        if callable(frontier_check) and not getattr(frontier_check, 'verified', False):
+            frontier_check(
+                parent,
+                rows,
+                page=page,
+                size=20,
+                total=declared_total,
+                has_more=has_more,
+                from_adapter=(inferred_115_total is not None),
+            )
         entries = []
         descriptions = result.get('catalog_descriptions', {})
         if type(descriptions) is not dict or set(descriptions) - {row.get('file_id') for row in rows}:
@@ -91,9 +127,9 @@ class NativePort:
                     entry['description'] = descriptions[row['file_id']]
                 entries.append(entry)
         return dict(items=entries, signature=tuple((r.get('file_id'), r.get('directory')) for r in rows),
-                    has_more=result.get('has_more') is True, next_cursor=result.get('next_cursor'),
+                    has_more=has_more, next_cursor=result.get('next_cursor'),
                     excluded_versions=bool(result.get('excluded_versions')),
-                    declared_total=result.get('declared_total'))
+                    declared_total=declared_total)
 
 
 class MountedPort:
@@ -155,7 +191,7 @@ class MountedPort:
     def check(self, operation, local=False):
         operation.check(validate_authority=not local)
 
-    def page(self, operation, expected, parent, page, cursor):
+    def page(self, operation, expected, parent, page, cursor, *, frontier_check=None):
         result = operation.list_page(parent)
         return dict(items=[dict(directory=row['relative'] if row['directory'] else None,
                     reference=row.get('reference')) for row in result['items']],

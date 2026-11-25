@@ -200,12 +200,19 @@ class Client:
         if offset > total or len({row['file_id'] for row in items}) != len(items):
             raise PanError('PAN_REPLY_INVALID')
         if is_scan:
-            progress = getattr(operation, '_server_pages', {})
-            previous, ids = progress.get(parent), {row['file_id'] for row in items}
-            if previous and (previous[0] != total or previous[1] != offset or ids & previous[2]):
-                raise PanError('PAN_PAGE_EXPIRED')
-            progress[parent] = (total, offset + len(items), ids | (previous[2] if previous else set()))
-            operation._server_pages = progress
+            verifier = getattr(operation, 'frontier_verifier', None)
+            if callable(verifier):
+                verifier(parent, items, page=page, size=size, total=total, has_more=offset + len(items) < total, from_adapter=True)
+            elif not getattr(operation, 'frontier_managed', False):
+                progress = getattr(operation, '_server_pages', {})
+                previous, ids = progress.get(parent), {row['file_id'] for row in items}
+                if previous and (previous[0] != total or previous[1] != offset or ids & previous[2]):
+                    raise PanError('PAN_PAGE_EXPIRED')
+                if offset + len(items) < total:
+                    progress[parent] = (total, offset + len(items), ids | (previous[2] if previous else set()))
+                else:
+                    progress.pop(parent, None)
+                operation._server_pages = progress
         result = dict(items=items, has_more=offset + len(items) < total)
         if is_scan:
             result['declared_total'] = total
