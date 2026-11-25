@@ -1,4 +1,5 @@
 """Shared login presentation; protocols and account authority stay separate."""
+from contextlib import contextmanager
 
 
 def safe_close(window):
@@ -8,6 +9,37 @@ def safe_close(window):
             window.close()
         except RuntimeError:
             pass  # Kodi may already have disposed this window's controls.
+
+
+def refresh_account_view():
+    """Refresh the current directory after a committed login/logout without reloading skin or stopping playback."""
+    import xbmc
+    try:
+        xbmc.executebuiltin('Container.Refresh')
+    except RuntimeError:
+        pass  # A UI refresh failure must not misreport a committed login.
+
+
+@contextmanager
+def login_dialog(root, prefix, title='登录 115 分享播放', instruction='用「115 生活」App 扫码', monitor=None):
+    """Single QR window and temporary image lifecycle; protocols and commits stay with callers."""
+    from pathlib import Path
+    import tempfile
+    import xbmc
+    from .login_flow import LoginRunner
+    Path(root).mkdir(parents=True, exist_ok=True)
+    monitor = monitor or xbmc.Monitor()
+    with tempfile.TemporaryDirectory(prefix=prefix, dir=str(root)) as directory:
+        image = Path(directory) / 'login.png'
+        window = None
+        try:
+            window = create('', title, instruction)
+            window.message = '正在准备二维码，可按返回取消。'
+            window.show()
+            runner = LoginRunner(window, monitor)
+            yield window, runner, image
+        finally:
+            safe_close(window)
 
 
 def render_qr(window, image, state):

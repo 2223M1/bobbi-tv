@@ -104,8 +104,8 @@ class NextSourceSearch:
     def _prepare(self):
         phase = 'ACCOUNT'
         try:
+            from bobbi_core.account_scope import validate_snapshot
             from bobbi_core.metadata_transport import request_budget
-            from bobbi_platform.account_manager import validate_snapshot
             from bobbi_platform.runtime import call
             # Bind before even metadata IO. A BT parent may be independent of
             # 115, but a prefetched personal-library card is not accountless.
@@ -168,9 +168,9 @@ def queue(player, entries):
     """Consume EOF immediately, before any metadata, source search or history IO."""
     if player.data.get('selection_policy') != 'exact' or not _position(player.data):
         return False
+    from bobbi_core.account_scope import validate_snapshot
     from bobbi_core.playback_request import context
     call = player.playback_client.call
-    from bobbi_platform.account_manager import validate_snapshot
     child = uuid4().hex
     account = deepcopy(player.data.get('_account'))
     job = getattr(player, '_cinema_picker_search', None)

@@ -1,10 +1,9 @@
 """QR rendered locally; no login material sent to third-party QR services."""
-import tempfile
-from pathlib import Path
 from threading import Event, Lock
+from bobbi_core.account_scope import validate_snapshot
+from .account_dialog import failure_details, login_dialog, refresh_account_view, render_qr
 from .cloud115 import Login, CloudError
 from .environment import private_path
-from .account_manager import validate_snapshot
 from .runtime import call
 
 
@@ -58,18 +57,10 @@ class _LoginAdapter:
         self.flow.cancel()
 
 
-def _refresh_account_view():
-    # The account route refreshes the current directory after committing a
-    # login/logout. This is not a skin reload or a playback stop/restart.
-    import xbmc
-    try:
-        xbmc.executebuiltin('Container.Refresh')
-    except RuntimeError:
-        pass  # A UI refresh failure must not misreport a committed login.
+_refresh_account_view = refresh_account_view
 
 
 def login():
-    import xbmc
     import xbmcgui
     import xbmcvfs
     dialog = xbmcgui.Dialog()
@@ -92,28 +83,22 @@ def login():
             except (ValueError, OSError, RuntimeError):
                 dialog.ok('未确认退出结果', '请重新打开账号管理查看当前状态。')
                 return False
-            _refresh_account_view()
+            refresh_account_view()
             dialog.ok('已退出 115', '本机登录已移除，网盘文件保留。')
             return True
 
-    from .account_dialog import create, render_qr, failure_details, safe_close
-    from .login_flow import LoginRunner, LoginFlowError
-    adapter, window, runner = _LoginAdapter(Login(), expected), None, None
-    monitor = xbmc.Monitor()
-    with tempfile.TemporaryDirectory(prefix='bobbi-qr-', dir=str(path.parent)) as directory:
-        image = Path(directory) / 'login.png'
+    from .login_flow import LoginFlowError
+    adapter, runner_ref = _LoginAdapter(Login(), expected), [None]
+    try:
         try:
-            window = create('')
-            window.message = '正在准备二维码，可按返回取消。'
-            window.show()
-            runner = LoginRunner(window, monitor)
-            if runner.run(adapter, lambda state: render_qr(window, image, state)):
-                safe_close(window)
-                _refresh_account_view()
+            with login_dialog(path.parent, 'bobbi-qr-') as (window, runner, image):
+                runner_ref[0] = runner
+                committed = bool(runner.run(adapter, lambda state: render_qr(window, image, state)))
+            if committed:
+                refresh_account_view()
                 dialog.ok('115 登录成功', '已保存到这台设备，可以返回选片。')
                 return True
         except Exception as error:
-            safe_close(window)
             # An IPC timeout can follow a successful atomic save. Never claim
             # unchanged state or repeat the account exchange in that case.
             code = error.code if isinstance(error, (CloudError, LoginFlowError)) else ''
@@ -121,9 +106,8 @@ def login():
                 dialog.ok('已取消登录' if code == 'QR_CANCELLED' else '二维码已过期',
                           '请重新扫码，当前账号保留。')
             else:
-                detail = failure_details(runner, error, '115') if runner is not None else '登录界面暂不可用。'
+                detail = failure_details(runner_ref[0], error, '115') if runner_ref[0] is not None else '登录界面暂不可用。'
                 dialog.ok('未确认登录结果', detail + '\n请重新打开账号管理查看状态。')
-        finally:
-            adapter.cancel()
-            safe_close(window)
+    finally:
+        adapter.cancel()
     return False

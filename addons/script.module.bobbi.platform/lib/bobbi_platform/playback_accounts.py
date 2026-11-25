@@ -29,12 +29,16 @@ class _RegistrySourceAccounts:
             return False
         store = Registry(self.path, read_only=True, timeout=0)
         try:
-            source, rev = store.source_snapshot(source_id)
+            if kind == 'emby_source':
+                source, matched_gen = store.source_session_snapshot(source_id, generation)
+            else:
+                source, rev = store.source_snapshot(source_id)
+                matched_gen = rev == generation
         except (LibraryError, OSError, ValueError):
             return False
         finally:
             store.close()
-        if rev != generation:
+        if not matched_gen:
             return False
         if kind == 'library_source':
             return set(expected) == {'kind', 'source_id', 'generation'}

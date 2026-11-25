@@ -195,7 +195,7 @@ def load(path):
     try:
         value = json.loads(path.read_text(encoding='utf-8'))
         if isinstance(value, dict) and set(value) == {'_account'}:
-            from .account_manager import validate_snapshot
+            from bobbi_core.account_scope import validate_snapshot
             scope = validate_snapshot(value['_account'])
             if not scope['authenticated']:
                 return None

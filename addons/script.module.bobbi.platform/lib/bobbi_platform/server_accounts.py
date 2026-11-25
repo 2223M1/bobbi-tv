@@ -286,6 +286,7 @@ class Accounts:
             def remove():
                 store.db.execute('DELETE FROM sources WHERE id=?', (source.id,))
                 store.db.execute('DELETE FROM metadata WHERE key=?', ('source_revision:' + source.id,))
+                store.db.execute('DELETE FROM metadata WHERE key=?', ('emby_retained_revisions:' + source.id,))
             store.run_if_current(source, expected['generation'], remove)
         finally:
             store.close()

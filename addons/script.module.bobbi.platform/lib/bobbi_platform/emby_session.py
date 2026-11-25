@@ -72,7 +72,7 @@ def _load_emby_client(root: Path, source_id: str, generation: str, *, session_fa
     store = None
     try:
         store = Registry(reg_path, read_only=True, timeout=0.1)
-        src, rev = store.source_snapshot(source_id)
+        src, matched_gen = store.source_session_snapshot(source_id, generation)
     except LibraryError as exc:
         if str(exc) == 'STORAGE_UNAVAILABLE':
             raise PanError('PAN_STORAGE_UNAVAILABLE') from exc
@@ -88,7 +88,7 @@ def _load_emby_client(root: Path, source_id: str, generation: str, *, session_fa
             except OSError as exc:
                 raise PanError('PAN_STORAGE_UNAVAILABLE') from exc
     if (
-        rev != generation
+        not matched_gen
         or src.kind != 'media_server'
         or src.metadata.get('provider') != 'emby'
         or not src.password

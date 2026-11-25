@@ -56,7 +56,7 @@ def show(dialog):
     from bobbi_core.cd2 import CD2
     from .android_engine import request, configuration
     from .runtime import call
-    from .account_manager import validate_snapshot
+    from bobbi_core.account_scope import validate_snapshot
     from .environment import private_path
     from .pairing import Pairing, save
     provider = None

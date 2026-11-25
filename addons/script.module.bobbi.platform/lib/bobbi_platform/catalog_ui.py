@@ -621,7 +621,7 @@ def _jobs(dialog, expected, context=None):
 def watch_preparation(expected=None, dialog=None):
     """Existing 115 authority, separate from native-pan phone/catalog sessions."""
     import xbmcgui
-    from .account_manager import validate_snapshot
+    from bobbi_core.account_scope import validate_snapshot
     dialog = dialog or xbmcgui.Dialog()
     try:
         current = validate_snapshot(call('account_status', {}, timeout=2), authenticated=True)
@@ -645,7 +645,7 @@ def _watch_jobs(expected, offset=0, kind='scan', context=None):
                 if kind == 'preparation':
                     # Read current authority every observation. No pan scope is
                     # substituted for the 115 account's independent generation.
-                    from .account_manager import validate_snapshot
+                    from bobbi_core.account_scope import validate_snapshot
                     current = validate_snapshot(call('account_status', {}, timeout=2), authenticated=True)
                     if current != expected:
                         raise ValueError('CATALOG_ACCOUNT_MISMATCH')

@@ -84,10 +84,67 @@ def browse(dialog, source):
     return open_directory(rows[0], dialog)
 
 
+def activate_emby_account(dialog, store, source):
+    """Switch the default browsing Emby account via existing CAS Host authority."""
+    from .pan_ui import _failure, _status
+    active, _ = store.emby_binding()
+    if active is not None and active.id == source.id:
+        dialog.ok('当前浏览账号', '“' + source.name + '”已是首页与默认片库的当前浏览账号。')
+        return False
+    try:
+        target, generation = store.source_snapshot(source.id)
+    except Exception as error:
+        from .library_ui import message
+        dialog.ok('未能切换账号', message(error))
+        return False
+    if target.kind != 'media_server' or target.metadata.get('provider') != 'emby':
+        dialog.ok('未能切换账号', '此连接已变更，请返回刷新后再试。')
+        return False
+    try:
+        rows = [row for row in _status(servers=True) if row['provider'] == 'emby']
+        if len(rows) != 1:
+            raise PanError('PAN_STATUS_INVALID')
+        expected = rows[0]['account']
+        if (expected.get('authenticated') and expected.get('source_id') == target.id
+                and expected.get('generation') == generation):
+            dialog.ok('当前浏览账号', '“' + target.name + '”已是当前浏览账号。')
+            return False
+        call('pan_server_activate_emby', {
+            'source_id': target.id,
+            'generation': generation,
+            'expected': expected,
+        }, timeout=8)
+    except (ValueError, OSError, RuntimeError, KeyError, TypeError) as error:
+        try:
+            current_active, _ = store.emby_binding()
+        except Exception:
+            current_active = None
+        if current_active is not None and current_active.id == target.id:
+            dialog.ok('已切换当前浏览账号', '核对确认当前浏览账号已切换为“' + target.name + '”。')
+            return True
+        current_label = ('当前仍为“' + current_active.name + '”。' if current_active is not None
+                         else '当前没有启用的默认 Emby 浏览账号。')
+        dialog.ok('未确认切换结果', _failure(error) + '\n' + current_label)
+        return False
+    dialog.ok('已切换当前浏览账号', '首页与默认片库已切换到“' + target.name + '”，正在播放的影片不受影响。')
+    return True
+
+
 def manage(dialog, store, source):
-    choice = dialog.select(source.name + ' · 媒体服务器',
-        ['浏览在线片库' if source.metadata['provider'] == 'emby' else '浏览与选择扫描目录',
-         '重新核验 / 更新连接', '移除服务器连接'])
+    is_emby = source.metadata.get('provider') == 'emby'
+    active_emby = store.emby_binding()[0] if is_emby else None
+    is_active_emby = is_emby and active_emby is not None and active_emby.id == source.id
+    options = [
+        '浏览在线片库' if is_emby else '浏览与选择扫描目录',
+        '重新核验 / 更新连接',
+        '移除服务器连接',
+    ]
+    if is_emby:
+        uid = source.metadata.get('user_id', '')
+        suffix = (' · 用户 ' + uid[:16]) if isinstance(uid, str) and uid else ''
+        options.append(('当前浏览账号 · 已启用' if is_active_emby else '设为当前浏览账号') + suffix)
+    heading = source.name + (' · 当前浏览账号' if is_active_emby else '') + ' · 媒体服务器'
+    choice = dialog.select(heading, options)
     if choice == 0:
         return browse(dialog, source)
     if choice == 1:
@@ -95,4 +152,6 @@ def manage(dialog, store, source):
     if choice == 2 and dialog.yesno('移除服务器连接？', '移除本机连接并撤销相关播放权限；索引整理与历史保留，服务器媒体不变。'):
         store.remove(source.id)
         return True
+    if is_emby and choice == 3:
+        return activate_emby_account(dialog, store, source)
     return False

@@ -174,6 +174,10 @@ class Registry:
                     actual = (self._read(previous[0]) if previous else None, revision[0] if revision else None)
                     if actual != expected_snapshot:
                         raise LibraryError('CATALOG_AUTHORITY_CHANGED')
+                content_changed = previous is None or self._read(previous[0]) != source
+                if content_changed:
+                    self.db.execute('DELETE FROM metadata WHERE key=?',
+                                    ('emby_retained_revisions:' + source.id,))
                 switched = False
                 if source.kind == 'media_server':
                     provider = source.metadata['provider']
@@ -189,15 +193,63 @@ class Registry:
                         raise LibraryError('CATALOG_AUTHORITY_CHANGED')
                     switched = active is None or active.id != source.id
                     if active and switched:
+                        self._retain_emby_revision(active.id)
                         self.db.execute('INSERT OR REPLACE INTO metadata VALUES (?,?)',
                                         ('source_revision:' + active.id, secrets.token_hex(32)))
+                    if switched and not content_changed and previous is not None:
+                        self._retain_emby_revision(source.id)
                     self.db.execute("INSERT OR REPLACE INTO metadata VALUES ('emby_active_source',?)", (source.id,))
-                if previous is None or self._read(previous[0]) != source or switched:
+                if content_changed or switched:
                     self.db.execute('INSERT OR REPLACE INTO metadata VALUES (?,?)',
                         ('source_revision:' + source.id, secrets.token_hex(32)))
                 self.db.execute('INSERT OR REPLACE INTO sources(id, record) VALUES (?,?)', (source.id, raw))
         except sqlite3.Error:
             raise LibraryError('STORAGE_UNAVAILABLE') from None
+
+    def _retain_emby_revision(self, source_id):
+        cur = self.db.execute('SELECT value FROM metadata WHERE key=?',
+                              ('source_revision:' + source_id,)).fetchone()
+        if cur is None or type(cur[0]) is not str or not re.fullmatch('[0-9a-f]{64}', cur[0]):
+            return
+        key = 'emby_retained_revisions:' + source_id
+        existing = self.db.execute('SELECT value FROM metadata WHERE key=?', (key,)).fetchone()
+        history = []
+        if existing is not None and isinstance(existing[0], str):
+            try:
+                parsed = json.loads(existing[0])
+                if isinstance(parsed, list):
+                    history = [x for x in parsed if type(x) is str and re.fullmatch('[0-9a-f]{64}', x)]
+            except ValueError:
+                history = []
+        if cur[0] not in history:
+            history.append(cur[0])
+        history = history[-16:]
+        self.db.execute('INSERT OR REPLACE INTO metadata VALUES (?,?)',
+                        (key, json.dumps(history, separators=(',', ':'))))
+
+    def source_session_snapshot(self, source_id, generation):
+        """Verify source snapshot, accepting retained Emby revisions across browse-only switches."""
+        source, rev = self.source_snapshot(source_id)
+        if rev == generation:
+            return source, True
+        if source.kind != 'media_server' or source.metadata.get('provider') != 'emby':
+            return source, False
+        try:
+            row = self.db.execute('SELECT value FROM metadata WHERE key=?',
+                                  ('emby_retained_revisions:' + source.id,)).fetchone()
+        except sqlite3.Error:
+            raise LibraryError('STORAGE_UNAVAILABLE') from None
+        if row is None or not isinstance(row[0], str):
+            return source, False
+        try:
+            parsed = json.loads(row[0])
+        except ValueError:
+            return source, False
+        valid = isinstance(parsed, list) and any(
+            type(x) is str and re.fullmatch('[0-9a-f]{64}', x) and x == generation
+            for x in parsed
+        )
+        return source, valid
 
     def source_snapshot(self, source_id):
         """Private configuration plus an opaque, non-secret configuration epoch.
@@ -276,6 +328,7 @@ class Registry:
             with self.db:
                 self.db.execute('DELETE FROM sources WHERE id=?', (source_id,))
                 self.db.execute('DELETE FROM metadata WHERE key=?', ('source_revision:' + source_id,))
+                self.db.execute('DELETE FROM metadata WHERE key=?', ('emby_retained_revisions:' + source_id,))
         except sqlite3.Error:
             raise LibraryError('STORAGE_UNAVAILABLE') from None
 

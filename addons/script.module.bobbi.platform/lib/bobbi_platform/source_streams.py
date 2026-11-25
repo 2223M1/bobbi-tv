@@ -81,10 +81,10 @@ class SourceStreams:
             raise LibraryError('SOURCE_STREAM_CHANGED')
         store = Registry(self.path, read_only=True)
         try:
-            source, version = store.source_snapshot(body['source_id'])
+            source, matched = store.source_session_snapshot(body['source_id'], body['generation'])
         finally:
             store.close()
-        if version != body['generation']:
+        if not matched:
             raise LibraryError('SOURCE_STREAM_CHANGED')
         return source
 

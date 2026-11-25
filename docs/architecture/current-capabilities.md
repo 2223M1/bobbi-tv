@@ -1,6 +1,6 @@
 # 当前候选能力矩阵、历史边界与收敛责任索引
 
-本文件对应 `codex/ultimate-047c0f18` 候选分支的当前代码与离线/辅助设备证据。仓库中保留的 `2026102134`（`2acdba8`）、`2026102135`（`35b9d61`）、`2026102136`（`42a3729`）、`2026102155`（`r18-device-acceptance.md`）与线上已签发 `CE2184`（`2026102184`）均为**明确历史版本记录**，保留其原始通过、失败、负控与回执摘要，不冒充本候选的真机全量结果。
+本文件对应 `codex/update-closure-fb438744`（`CE2185` / `2026102185`）候选分支的当前代码、离线门禁与真机验收状态。仓库中保留的 `2026102134`（`2acdba8`）、`2026102135`（`35b9d61`）、`2026102136`（`42a3729`）、`2026102155`（`r18-device-acceptance.md`）与线上前序版本 `CE2184`（`2026102184`）均为**明确历史版本记录**，保留其原始通过、失败、负控与回执摘要，不冒充本候选的真机结果。
 
 本轮复审补充：上一轮本地验收报告记录了 AM6B+ 的 Python 3.11.9 / requests 2.34.2 / urllib3 2.8.0、5 冷 5 暖启动、私有输入分片与 CE2184 恢复。这些属于已提供的历史辅助验收；其原始本地收据尚未在当前复审环境逐份回读，不将其移植为本轮新补丁的设备 PASS。用户已确认输入来自真实 Yatse，后续不再要求手机 ADB、UI 自动化或来源自证；以实际操作及盒端结果完成尚未执行的场景。
 
@@ -59,3 +59,5 @@
 | `webserver.py` `stremio://`->`http://` 静默降级、`nuvio/addon_selection.py` 独立重定向循环、`realdebrid`/`premiumize` 重复 `_make_request` | Stremio、Nuvio、Debrid API | `bobbi_core.http_policy` + `DebridClient._make_request` | 保持 Stremio 与 Nuvio 各自命名空间与缓存隔离；`DebridClient` 统一验证 `params=None/{}` 与注入 `session`。 |
 | `:8082` 独立无鉴权 `SubtitleUploadServer` 与手写死循环 multipart 解析器 | `source_select`、`subtitle_server` | `PhoneManagement` 配对上传作用域 + 有界线性 `parse_bounded_multipart` | 无结束边界样本毫秒级拒绝不挂死；普通管理 API 维持 `8192B` 上限。 |
 | `tools/delivery_policy.py` 无生产消费者的 CE2021 历史重打包编排（`repackage_signed_delivery`、`stage_verified_repackage` 等 7 个函数） | 已退役 `package_ce2021_github.py` 及 `test_ce2023_delivery.py` | `SignedBundle`、`tools/ce_release_gate.py` 与 `delivery_policy` 现行构建/归档守卫 | 签名篡改、序号冲突、`EXCLUDE` 不误删运行资产及失败不发布目录负控已迁入 `test_ce2023_delivery.py`。 |
+| `cloud_hub.show()` / `details()` 重复动作分支与 `cloud_ui` / `pan_ui` 重复扫码窗口/临时目录脚手架 | `cloud_hub`、`cloud_ui`、`pan_ui` | `cloud_hub._dispatch_action` 单一导航分发 + `account_dialog.login_dialog` / `refresh_account_view` 共享 UI 脚手架（115 与原生网盘凭据存储仍分属 `AccountManager` / `PanAccounts`） | 保留渐进披露行序与单次状态 IPC 预算；解除 `pan_ui` 对 `cloud_ui` 私有函数依赖。 |
+| 多 Emby 账号缺少显式电视端默认浏览切换入口 | `server_ui`、`library_ui` | `server_ui.activate_emby_account` -> `Host` `pan_server_activate_emby` CAS（`Accounts` + `Registry.emby_binding()`） | 支持 `A -> B` 切换、超时重读确认、显式书签源绑定保持与在途 `EmbySessionReporter` 会话隔离；删除当前激活源时写入显式停用标记，不静默回退到其余账号。 |

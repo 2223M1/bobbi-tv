@@ -93,8 +93,43 @@ def _manage_library():
     return manage(config['library_root'])
 
 
+def _dispatch_action(action, dialog, value, mounts=()):
+    """Single account/connection navigation dispatcher across overview and details."""
+    if action == 'mounted':
+        from .library_ui import open_existing_cd2
+        return bool(open_existing_cd2(dialog))
+    if action == 'status':
+        dialog.textviewer('网盘状态与支持范围', connection_details(value, mounts))
+        return False
+    if action == 'account':
+        from .cloud_ui import login
+        login()  # Existing QR cancellation and account-generation CAS.
+        return False
+    if action == 'library':
+        return bool(_manage_library())
+    if action == 'cd2':
+        _configure_cd2(dialog, value)
+        return False
+    if action == 'transport':
+        transport(dialog)
+        return False
+    if action == 'native':
+        from .pan_ui import manage
+        return bool(manage(dialog))
+    if action == 'preparation_tasks':
+        from .catalog_ui import watch_preparation
+        watch_preparation(dialog=dialog)
+        return False
+    if action == 'files':
+        from .pan_ui import choose_files
+        return bool(choose_files(dialog))
+    if action == 'details':
+        return bool(details(dialog))
+    return False
+
+
 def details(dialog):
-    """Optional management layer; account and connection owners remain unchanged."""
+    """Optional management layer sharing the single hub action dispatcher."""
     import xbmc
     monitor = xbmc.Monitor()
     while not monitor.abortRequested():
@@ -111,26 +146,8 @@ def details(dialog):
         choice = dialog.select('网盘详细管理', [label for _, label in rows])
         if choice < 0 or choice >= len(rows):
             return
-        action = rows[choice][0]
-        if action == 'status':
-            dialog.textviewer('网盘状态与支持范围', connection_details(value, mounts))
-        elif action == 'account':
-            from .cloud_ui import login
-            login()  # Capture a fresh account generation in the existing owner.
-        elif action == 'library':
-            if _manage_library():
-                return True  # Propagate navigation through every enclosing menu.
-        elif action == 'cd2':
-            _configure_cd2(dialog, value)
-        elif action == 'transport':
-            transport(dialog)
-        elif action == 'native':
-            from .pan_ui import manage
-            if manage(dialog):
-                return True
-        elif action == 'preparation_tasks':
-            from .catalog_ui import watch_preparation
-            watch_preparation(dialog=dialog)
+        if _dispatch_action(rows[choice][0], dialog, value, mounts):
+            return True
 
 
 def show(dialog=None):
@@ -152,23 +169,5 @@ def show(dialog=None):
         choice = dialog.select('网盘账号与连接', [label for _, label in rows])
         if choice < 0 or choice >= len(rows):
             return
-        action = rows[choice][0]
-        if action == 'mounted':
-            from .library_ui import open_existing_cd2
-            if open_existing_cd2(dialog):
-                return True  # Do not cover the opened library with this menu.
-        elif action == 'account':
-            from .cloud_ui import login
-            login()  # Existing QR cancellation and account-generation CAS.
-        elif action == 'cd2':
-            _configure_cd2(dialog, value)
-        elif action == 'library':
-            if _manage_library():
-                return True
-        elif action == 'details':
-            if details(dialog):
-                return True
-        elif action == 'files':
-            from .pan_ui import choose_files
-            if choose_files(dialog):
-                return True
+        if _dispatch_action(rows[choice][0], dialog, value):
+            return True

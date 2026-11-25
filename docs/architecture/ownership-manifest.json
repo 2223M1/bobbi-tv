@@ -1757,6 +1757,30 @@
         "anchor": "class OwnedNextCoordinator:"
       },
       "note": "Host-owned coordinator tracks and cancels native next-episode summary prefetch and continuation probes, draining before runtime.lease release. Static responsibility declaration, not device proof."
+    },
+    {
+      "source": "file:addons/script.module.bobbi.platform/lib/bobbi_platform/server_ui.py",
+      "target": "state:server-account",
+      "kind": "consumes",
+      "status": "confirmed",
+      "evidence": {
+        "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/server_ui.py",
+        "line": 87,
+        "anchor": "def activate_emby_account(dialog, store, source):"
+      },
+      "note": "Explicit TV UI action delegates default-browse Emby switching to Host pan_server_activate_emby CAS and re-reads Registry.emby_binding() on uncertain transport errors; never mutates server tokens directly or auto-activates another user on active source removal."
+    },
+    {
+      "source": "state:server-account",
+      "target": "file:tests/test_n01_juku_account_convergence.py",
+      "kind": "covered_by",
+      "status": "candidate",
+      "evidence": {
+        "path": "tests/test_n01_juku_account_convergence.py",
+        "line": 1,
+        "anchor": "\"\"\"Juku 4-domain account convergence: single hub dispatch, Emby active switch, shared QR UI.\"\"\""
+      },
+      "note": "Static mapping for shared cloud_hub action dispatch, server_ui Emby A->B CAS switching, active-removal non-fallback, explicit source bookmark isolation, in-flight EmbySessionReporter isolation and shared account_dialog login lifecycle."
     }
   ],
   "boundaries": [

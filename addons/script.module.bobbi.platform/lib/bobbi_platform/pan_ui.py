@@ -203,35 +203,28 @@ def _cancel_async(action, body):
 
 
 def login(row, dialog):
-    import xbmc
     import xbmcvfs
-    from .account_dialog import create, render_qr, failure_details, safe_close
-    from .login_flow import LoginRunner, LoginFlowError
+    from .account_dialog import failure_details, login_dialog, refresh_account_view, render_qr
+    from .login_flow import LoginFlowError
     from .environment import private_path
-    from .cloud_ui import _refresh_account_view
     provider = row['provider']
     expected = scope(row['account'], provider)
     attempt = uuid4().hex
     body = dict(provider=provider, attempt=attempt)
-    monitor, window, committed, started, runner = xbmc.Monitor(), None, False, False, None
+    committed, started, runner_ref = False, False, [None]
     adapter = _NativeLogin(body, expected)
     root = private_path(xbmcvfs.translatePath, 'pan-accounts-v1.json').parent
-    root.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix='bobbi-pan-qr-', dir=str(root)) as directory:
+    instruction = ('用微信或「123 云盘」App 扫码' if provider == '123'
+                   else '用「' + NAMES[provider] + '」App 扫码')
+    try:
         try:
-            instruction = ('用微信或「123 云盘」App 扫码' if provider == '123'
-                           else '用「' + NAMES[provider] + '」App 扫码')
-            image = Path(directory) / 'login.png'
-            window = create('', '登录 ' + NAMES[provider], instruction)
-            window.message = '正在准备二维码，可按返回取消。'
-            window.show()
-            # Mark before IPC. A lost begin reply still has a known cancel ID.
-            started = True
-            runner = LoginRunner(window, monitor)
-            committed = runner.run(adapter, lambda state: render_qr(window, image, state))
+            with login_dialog(root, 'bobbi-pan-qr-', '登录 ' + NAMES[provider], instruction) as (window, runner, image):
+                # Mark before IPC. A lost begin reply still has a known cancel ID.
+                started = True
+                runner_ref[0] = runner
+                committed = bool(runner.run(adapter, lambda state: render_qr(window, image, state)))
             if committed:
-                safe_close(window)
-                _refresh_account_view()
+                refresh_account_view()
                 dialog.ok('已保存 ' + NAMES[provider] + ' 登录',
                           ('登录信息已保存，可打开“我的文件”。目录和播放会在使用时分别验证。'
                            if 'list_files' in row.get('capabilities', []) else
@@ -240,22 +233,18 @@ def login(row, dialog):
                            '原文件播放尚未接入当前选源流程，不能据此判断播放可用。'))
                 return True
         except Exception as error:
-            safe_close(window)
             # A UI boundary, not an error dump: unknown failures get only the
             # fixed fallback, never exception messages or upstream bodies.
             message = ('二维码已失效，请重新扫码。' if isinstance(error, LoginFlowError) and error.code == 'EXPIRED'
                        else _failure(error))
-            detail = '\n' + failure_details(runner, error, provider) if runner is not None else ''
+            detail = '\n' + failure_details(runner_ref[0], error, provider) if runner_ref[0] is not None else ''
             dialog.ok('未确认登录结果', message + detail + '\n请在网盘管理确认当前状态。')
-        finally:
-            try:
-                safe_close(window)
-            finally:
-                if started and not committed:
-                    reply = _cancel_async('pan_login_cancel', body)
-                    if reply is not None and reply.get('state') == 'committed':
-                        _refresh_account_view()
-                        dialog.ok('登录已保存', '取消前后台已经完成保存，请在网盘管理确认当前账号。')
+    finally:
+        if started and not committed:
+            reply = _cancel_async('pan_login_cancel', body)
+            if reply is not None and reply.get('state') == 'committed':
+                refresh_account_view()
+                dialog.ok('登录已保存', '取消前后台已经完成保存，请在网盘管理确认当前账号。')
     return False
 
 

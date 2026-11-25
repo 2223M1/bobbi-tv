@@ -365,7 +365,7 @@ def _local_episode_progress(ids):
     current = None
     if any('_account' in data for _, data, _ in candidates):
         try:
-            from bobbi_platform.account_manager import validate_snapshot
+            from bobbi_core.account_scope import validate_snapshot
             from bobbi_platform.runtime import call
             current = validate_snapshot(call('account_status', {}, timeout=.1), authenticated=True)
         except (ImportError, OSError, ValueError, TypeError, RuntimeError):

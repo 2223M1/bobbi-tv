@@ -17,8 +17,9 @@ from .home_rails_meta import (
 from .paths import ProfileBinding
 
 SETTING = 'BobbiLiquidGlassEnabled'
-GUARD_HASH = '810db4ef0e4ad787cc450e651d068c0926141050bc9fdb2055cfa99f0caedff6'
-PREVIOUS_HASH = '51cc4c15f7e7d4a99f63181e26ec3f5c79e31d63186d71a0ee8dabff10c4dbd7'
+GUARD_HASH = '58eb1babf11a506fde4fb7e6bfc7acfaa6c43b3e8bc607deefb0197cdb3af0b3'
+PREVIOUS_HASH = '810db4ef0e4ad787cc450e651d068c0926141050bc9fdb2055cfa99f0caedff6'
+CE2183_HASH = '51cc4c15f7e7d4a99f63181e26ec3f5c79e31d63186d71a0ee8dabff10c4dbd7'
 LEGACY_HASH = '08576e40aae95c1bc37fc7c5b43ce115a6bd34b42e74ff4e6bee9930a074ee38'
 EARLIER_HASH = 'b6ea905c6f5d96731f37bc474f08c423d89d7d35fa0821aaa456d71ee2f376d2'
 SNAPSHOT = Path('.local/share/bobbi-glass-optin') / GUARD_HASH / 'ce_glass_boot.py'
@@ -30,7 +31,8 @@ UNIT = ('# Bobbi TV: user-enabled stock CE optics\n[Service]\n'
 
 
 PREVIOUS_UNIT = UNIT.replace(GUARD_HASH.encode(), PREVIOUS_HASH.encode())
-OLD_UNITS = {digest: UNIT.replace(GUARD_HASH.encode(), digest.encode()) for digest in (PREVIOUS_HASH, LEGACY_HASH, EARLIER_HASH)}
+OLD_UNITS = {digest: UNIT.replace(GUARD_HASH.encode(), digest.encode())
+             for digest in (PREVIOUS_HASH, CE2183_HASH, LEGACY_HASH, EARLIER_HASH)}
 
 
 def _previous(path):

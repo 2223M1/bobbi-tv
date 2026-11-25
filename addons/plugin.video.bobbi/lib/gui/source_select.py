@@ -1364,7 +1364,7 @@ class SourceSelect(BaseWindow):
                 if retry_account is None:
                     accepted = select(self._control_snapshot, self.item_information['request_id'], source_identity(selected_source))
                 else:
-                    from bobbi_platform.account_manager import validate_snapshot
+                    from bobbi_core.account_scope import validate_snapshot
                     retry_account = validate_snapshot(retry_account, authenticated=True)
                     prior = self._control_snapshot['desired']
                     retry_from = dict(request_id=prior['request_id'], selection_identity=prior['selection_identity'],

@@ -256,9 +256,12 @@ def manage(legacy_root=''):
         while not xbmc.Monitor().abortRequested():
             online = source_store.current()
             sources = store.sources()
+            active_emby = store.emby_binding()[0]
             choice = dialog.select('我的片库', ['＋ 添加来源', '打开我的片库']
                 + [source.name + (' · NAS / 目录' if source.kind == 'vfs' else
-                    ' · 媒体服务器' if source.kind == 'media_server' else
+                    (' · 媒体服务器 · 当前浏览' if (source.metadata.get('provider') == 'emby'
+                        and active_emby is not None and active_emby.id == source.id)
+                        else ' · 媒体服务器') if source.kind == 'media_server' else
                     ' · T4 站点' if source.kind == 't4' else ' · 直链片库') for source in sources]
                 + (['源库 · ' + online.name] if online else []) + ['片库索引与任务'])
             if choice < 0:
