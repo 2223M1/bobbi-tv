@@ -1,6 +1,9 @@
-import concurrent.futures
+import time
 from typing import Any, Callable, Dict, List, Optional
 
+from requests.exceptions import Timeout as RequestsTimeout
+
+from bobbi_core.search_completion import SearchCompletion, SearchResults
 from lib.clients.base import BaseClient, TorrentStream
 from lib.jacktook.utils import kodilog
 from lib.utils.kodi.logging import summarize_locator_for_log
@@ -17,6 +20,58 @@ class Prowlarr(BaseClient):
         self._timeout = ((lambda: int(settings_getter('prowlarr_timeout', 20)))
                          if settings_getter is not None else lambda: get_prowlarr_timeout())
 
+    @staticmethod
+    def _parse_indexer_ids(indexers: Optional[str]) -> List[str]:
+        if not indexers:
+            return []
+        return [i.strip() for i in str(indexers).replace(",", " ").split() if i.strip()]
+
+    def _build_query_shards(
+        self,
+        query: str,
+        mode: str,
+        season: Optional[int],
+        episode: Optional[int],
+        indexers: Optional[str],
+        year: Optional[int],
+    ) -> List[Dict[str, Any]]:
+        indexer_ids = self._parse_indexer_ids(indexers)
+        shards: List[Dict[str, Any]] = []
+        if mode == "tv" and season:
+            if episode:
+                params_ep: Dict[str, Any] = {
+                    "query": f"{query} S{season:02d}E{episode:02d}",
+                    "type": "search",
+                    "categories": [5000, 8000],
+                }
+                if indexer_ids:
+                    params_ep["indexerIds"] = indexer_ids
+                shards.append(params_ep)
+            if self._setting("include_season_packs"):
+                params_season: Dict[str, Any] = {
+                    "query": f"{query} S{season:02d}",
+                    "type": "search",
+                    "categories": [5000, 8000],
+                }
+                if indexer_ids:
+                    params_season["indexerIds"] = indexer_ids
+                shards.append(params_season)
+            return shards
+
+        query_with_year = f"{query} {year}" if (mode == "movies" and year) else query
+        params: Dict[str, Any] = {
+            "query": query_with_year,
+            "type": "search",
+        }
+        if mode == "movies":
+            params["categories"] = [2000, 8000]
+        elif mode == "anime":
+            params["categories"] = [2000, 5070, 5000, 127720, 140679]
+        if indexer_ids:
+            params["indexerIds"] = indexer_ids
+        shards.append(params)
+        return shards
+
     def search(
         self,
         query: str,
@@ -26,105 +81,100 @@ class Prowlarr(BaseClient):
         indexers: Optional[str] = None,
         variant=None,
         year: Optional[int] = None,
-    ) -> Optional[List[TorrentStream]]:
+        *,
+        cancelled=None,
+        deadline: Optional[float] = None,
+    ) -> SearchResults:
         headers = {
             "Accept": "application/json",
             "Content-Type": "application/json",
             "X-Api-Key": self.apikey,
         }
+        season_num = self._coerce_int(season)
+        episode_num = self._coerce_int(episode)
         try:
-            season = self._coerce_int(season)
-            episode = self._coerce_int(episode)
-            results = []
-            futures = []
-
-            if mode == "movies" and year:
-                query_with_year = f"{query} {year}"
-            else:
-                query_with_year = query
-
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                if mode == "tv" and season:
-                    if episode:
-                        params_ep: Dict[str, Any] = {
-                            "query": f"{query} S{season:02d}E{episode:02d}",
-                            "type": "search",
-                            "categories": [5000, 8000],
-                        }
-                        if indexers:
-                            indexer_ids = [
-                                i.strip() for i in indexers.replace(",", " ").split() if i.strip()
-                            ]
-                            if indexer_ids:
-                                params_ep["indexerIds"] = indexer_ids
-                        futures.append(
-                            executor.submit(
-                                self.session.get,
-                                self.base_url,
-                                params=params_ep,
-                                timeout=self._timeout(),
-                                headers=headers,
-                            )
-                        )
-                    # Season pack query
-                    if self._setting("include_season_packs"):
-                        params_season: Dict[str, Any] = {
-                            "query": f"{query} S{season:02d}",
-                            "type": "search",
-                            "categories": [5000, 8000],
-                        }
-                        if indexers:
-                            indexer_ids = [
-                                i.strip() for i in indexers.replace(",", " ").split() if i.strip()
-                            ]
-                            if indexer_ids:
-                                params_season["indexerIds"] = indexer_ids
-                        futures.append(
-                            executor.submit(
-                                self.session.get,
-                                self.base_url,
-                                params=params_season,
-                                timeout=self._timeout(),
-                                headers=headers,
-                            )
-                        )
-                else:
-                    params: Dict[str, Any] = {
-                        "query": query_with_year,
-                        "type": "search",
-                    }
-                    if mode == "movies":
-                        params["categories"] = [2000, 8000]
-                    elif mode == "anime":
-                        params["categories"] = [2000, 5070, 5000, 127720, 140679]
-                    if indexers:
-                        indexer_ids = [
-                            i.strip() for i in indexers.replace(",", " ").split() if i.strip()
-                        ]
-                        if indexer_ids:
-                            params["indexerIds"] = indexer_ids
-                    futures.append(
-                        executor.submit(
-                            self.session.get,
-                            self.base_url,
-                            params=params,
-                            timeout=self._timeout(),
-                            headers=headers,
-                        )
-                    )
-
-                for future in concurrent.futures.as_completed(futures):
-                    response = future.result()
-                    if response.status_code != 200:
-                        notification(f"{translation(30230)} {response.status_code}")
-                    else:
-                        res = self.parse_response(response)
-                        if res:
-                            results.extend(res)
-            return results if results else None
+            shards = self._build_query_shards(query, mode, season_num, episode_num, indexers, year)
         except Exception as e:
             self.handle_exception(f"{translation(30230)}: {e!s}")
-            return None
+            return SearchResults([], SearchCompletion(1, failed=1))
+
+        if not shards:
+            return SearchResults([], SearchCompletion())
+
+        results: List[TorrentStream] = []
+        succeeded = 0
+        failed = 0
+        skipped = 0
+        timed_out = 0
+        is_cancelled = cancelled if callable(cancelled) else (lambda: False)
+
+        for params in shards:
+            if is_cancelled():
+                skipped += 1
+                continue
+            try:
+                configured_timeout = max(0.05, float(self._timeout()))
+            except (TypeError, ValueError):
+                configured_timeout = 20.0
+            if deadline is not None:
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    timed_out += 1
+                    continue
+                req_timeout: Any = max(0.05, min(configured_timeout, remaining))
+            else:
+                req_timeout = configured_timeout
+
+            try:
+                response = self.session.get(
+                    self.base_url,
+                    params=params,
+                    timeout=req_timeout,
+                    headers=headers,
+                )
+            except (RequestsTimeout, TimeoutError) as e:
+                timed_out += 1
+                self.handle_exception(f"{translation(30230)}: {e!s}")
+                continue
+            except Exception as e:
+                if "timeout" in type(e).__name__.casefold():
+                    timed_out += 1
+                else:
+                    failed += 1
+                self.handle_exception(f"{translation(30230)}: {e!s}")
+                continue
+
+            if is_cancelled():
+                skipped += 1
+                continue
+
+            status_code = getattr(response, "status_code", None)
+            if status_code != 200:
+                failed += 1
+                notification(f"{translation(30230)} {status_code}")
+                continue
+
+            try:
+                parsed = self.parse_response(response)
+            except Exception as e:
+                failed += 1
+                self.handle_exception(f"{translation(30230)}: {e!s}")
+                continue
+
+            succeeded += 1
+            if parsed:
+                results.extend(parsed)
+
+        return SearchResults(
+            results,
+            SearchCompletion(
+                planned=len(shards),
+                succeeded=succeeded,
+                failed=failed,
+                skipped=skipped,
+                timed_out=timed_out,
+            ),
+        )
 
     @staticmethod
     def _coerce_int(value: Any) -> Optional[int]:
@@ -135,15 +185,19 @@ class Prowlarr(BaseClient):
 
     def parse_response(self, res: Any) -> List[TorrentStream]:
         response = res.json()
+        if not isinstance(response, list):
+            raise ValueError("Prowlarr response payload must be a JSON list")
         results = []
-        for res in response:
-            title = res.get("title", "")
-            provider = res.get("indexer")
-            guid = res.get("guid", "")
-            download_url = res.get("downloadUrl", "")
-            magnet_url = res.get("magnetUrl", "")
-            info_url = res.get("infoUrl", "")
-            info_hash = res.get("infoHash", "")
+        for item in response:
+            if not isinstance(item, dict):
+                raise ValueError("Prowlarr result item must be a JSON object")
+            title = item.get("title", "")
+            provider = item.get("indexer")
+            guid = item.get("guid", "")
+            download_url = item.get("downloadUrl", "")
+            magnet_url = item.get("magnetUrl", "")
+            info_url = item.get("infoUrl", "")
+            info_hash = item.get("infoHash", "")
 
             kodilog(
                 "Prowlarr parsed result: title={!r}, provider={!r}, guid={!r}, download={!r}, magnet={!r}, info={!r}, infohash={!r}, has_magnet={}, has_http_url={}, has_infohash={}".format(
@@ -174,14 +228,14 @@ class Prowlarr(BaseClient):
                     type="Torrent",
                     indexer="Prowlarr",
                     provider=provider,
-                    peers=int(res.get("peers", 0)),
-                    seeders=int(res.get("seeders", 0)),
+                    peers=int(item.get("peers") or 0),
+                    seeders=int(item.get("seeders") or 0),
                     guid=guid,
                     infoHash=info_hash,
-                    size=int(res.get("size", 0)),
-                    languages=res.get("languages", []),
-                    fullLanguages=res.get("fullLanguages", ""),
-                    publishDate=res.get("publishDate", ""),
+                    size=int(item.get("size") or 0),
+                    languages=item.get("languages") if isinstance(item.get("languages"), list) else [],
+                    fullLanguages=item.get("fullLanguages", ""),
+                    publishDate=item.get("publishDate", ""),
                     url=download_url,
                 )
             )

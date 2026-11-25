@@ -21,7 +21,7 @@ def provider_failed(record):
 def provider_diagnostics(providers):
     """Shared allowlisted projection for picker logs and opt-in user reports."""
     names = {'setup', 'coordinator', 'preferred', 'local-entry', '115-local-index',
-             '漫迪 mdsub', 'qqdocs', 'sharelib', 'jackett', 'animegarden'}
+             '漫迪 mdsub', 'qqdocs', 'sharelib', 'jackett', 'prowlarr', 'animegarden'}
     states = {'COMPLETE', 'PARTIAL', 'FAILED', 'TIMEOUT', 'CANCELLED', 'PENDING', 'RUNNING'}
     errors = {'ValueError', 'TypeError', 'KeyError', 'AttributeError', 'RuntimeError',
               'ImportError', 'ModuleNotFoundError', 'ShareLibError', 'ShareError', 'TimeoutError',

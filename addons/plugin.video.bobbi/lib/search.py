@@ -702,8 +702,11 @@ def _perform_search_with_title_fallback(
             fallback_query=query, anime=bool(anime_titles), anime_range_context=range_context,
             **settings_options)
     completion = None
+    cancel_fn = kwargs.get('cancelled')
     for attempt, candidate in enumerate(queries, start=1):
         if attempt > 1:
+            if callable(cancel_fn) and cancel_fn():
+                break
             kodilog(
                 f"Retrying {indexer_key} search with fallback title {candidate!r}",
                 level=xbmc.LOGINFO,
@@ -1052,8 +1055,9 @@ def _process_search_results(
         )
 
     # Combine results, prioritizing bypassed streams exact native sorting
-    from bobbi_core.search_completion import replace_rows
-    return replace_rows(post_results, bypassed_streams + post_results)
+    from bobbi_core.search_completion import SearchResults, replace_rows
+    receipt_source = post_results if isinstance(post_results, SearchResults) else results
+    return replace_rows(receipt_source, bypassed_streams + post_results)
 
 
 def run_search_entry(params: dict, catalog_sources=None, *, playback_client=_CAPTURE_PLAYBACK):
@@ -1331,10 +1335,21 @@ def _perform_search(indexer_key, dialog, *args, **kwargs):
     if indexer_key == Indexer.BURST:
         kwargs["silent"] = True
 
+    if any(k in kwargs for k in ("cancelled", "deadline", "query_cache", "slot_factory", "publish")):
+        import inspect
+        try:
+            sig = inspect.signature(client.search)
+            if not any(p.kind == inspect.Parameter.VAR_KEYWORD for p in sig.parameters.values()):
+                for extra_kw in ("cancelled", "deadline", "query_cache", "slot_factory", "publish"):
+                    if extra_kw in kwargs and extra_kw not in sig.parameters:
+                        kwargs.pop(extra_kw, None)
+        except (TypeError, ValueError):
+            pass
+
     result = client.search(*args, **kwargs)
-    if result is None and indexer_key == Indexer.JACKETT and xbmc.getSkinDir() == 'skin.bobbi.cinema':
-        # Discovery/parser failures retain Jackett's legacy None public return,
-        # but cannot become a successful empty provider in this orchestration.
+    if result is None:
+        # Provider adapters that return None signal query/parser failure,
+        # never a confirmed empty result set across any skin or indexer.
         from bobbi_core.search_completion import SearchCompletion, SearchResults
         return SearchResults([], SearchCompletion(1, failed=1))
     return result
@@ -1530,6 +1545,9 @@ def _submit_search_tasks_managed(
                 variant=variant,
                 title_language_mode=title_language_mode,
                 year=year,
+                cancelled=getattr(manager, 'scope_cancelled',
+                                  getattr(getattr(manager, 'cancelled', None), 'is_set', None)),
+                deadline=getattr(manager, 'deadline', None),
             )
         if enabled(Indexer.JACKETT):
             add_managed(
