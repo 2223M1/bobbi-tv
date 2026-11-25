@@ -29,6 +29,7 @@ from urllib.parse import urlencode, urlsplit
 
 from bobbi_core.bounded_http import AttemptHandle, open_connection
 from bobbi_core.library_contract import LibraryError
+from bobbi_core.next_episode_summary import NextResolution
 from bobbi_core.server_ref import identifier
 from .libraries import Registry
 from .owned_playback import emby_source_scope, register_next_resolver
@@ -790,10 +791,16 @@ class EmbySessionReporter:
             self._worker.join(3.0)
 
 
-def resolve_next_episode_data(current: dict, spec: dict, cancelled) -> dict | None:
-    """Resolve the immediate next episode in the SAME season for Emby NATURAL_EOF continuation."""
+def resolve_next_episode_result(
+    current: dict,
+    spec: dict,
+    cancelled,
+    *,
+    open_session: bool = True,
+) -> NextResolution:
+    """Resolve the immediate next episode in the SAME season with explicit structured outcomes."""
     if cancelled():
-        return None
+        return NextResolution('cancelled')
     meta = current.get('_owned_source') or {}
     root_str = spec.get('profile_root')
     season_id = spec.get('season_id')
@@ -809,15 +816,23 @@ def resolve_next_episode_data(current: dict, spec: dict, cancelled) -> dict | No
         or type(season_num) is not int
         or type(episode_num) is not int
     ):
-        return None
+        return NextResolution('error', detail='invalid_spec')
+
+    season_ref = hashlib.sha256(f'{source_id}:{season_id}'.encode('utf-8')).hexdigest()[:16]
+    selection_ref = {
+        'mode': 'tv',
+        '_emby_season_ref': season_ref,
+        'tv_data': {'season': season_num, 'episode': episode_num + 1},
+    }
     try:
         client, saved = _load_emby_client(Path(root_str), source_id, generation)
         with client.session.budget(8):
             client._identity(user_scoped_read=True)
             candidate = None
+            exhausted_all = False
             for page_idx in range(1, 11):
                 if cancelled():
-                    return None
+                    return NextResolution('cancelled')
                 rows, total = client.page_rows('folder:' + identifier(season_id), page_idx, 20, display=True)
                 candidate = next(
                     (
@@ -829,33 +844,64 @@ def resolve_next_episode_data(current: dict, spec: dict, cancelled) -> dict | No
                     ),
                     None,
                 )
-                if candidate is not None or page_idx * 20 >= total:
+                if page_idx * 20 >= total:
+                    exhausted_all = True
+                if candidate is not None or exhausted_all:
                     break
-            if candidate is None or cancelled():
-                return None
+            if cancelled():
+                return NextResolution('cancelled')
+            if candidate is None:
+                if exhausted_all:
+                    return NextResolution('confirmed_end')
+                return NextResolution('error', detail='page_limit')
+
             next_id = identifier(candidate.get('Id'))
             detail = client._item(next_id)
             versions = detail.get('MediaSources')
-            if not isinstance(versions, list) or len(versions) != 1:
+            if not isinstance(versions, list) or len(versions) == 0:
+                return NextResolution('error', detail='no_media_sources')
+            if len(versions) > 1:
                 # Ambiguous multi-version episode requires explicit user pick; do not guess.
-                return None
+                return NextResolution('needs_selection', selection=selection_ref, detail='multi_version')
+
             mid = identifier(versions[0].get('Id'))
             options = '|redirect-limit=0'
-            try:
-                opened = client.open_playback_session(next_id, mid, authenticated=False)
-            except PanError as err:
-                if str(err) != 'PAN_EMBY_DIRECT_AUTH_REQUIRED' or versions[0].get('Protocol') != 'File':
-                    return None
-                opened = client.open_playback_session(next_id, mid, authenticated=True)
-                if opened['url'] != static_original_url(saved['location'], next_id, mid):
-                    return None
-                from urllib.parse import quote
-                options += '&!X-Emby-Token=' + quote(saved['token'], safe='')
-    except (PanError, ValueError, OSError):
-        return None
+            if open_session:
+                try:
+                    opened = client.open_playback_session(next_id, mid, authenticated=False)
+                except PanError as err:
+                    if str(err) != 'PAN_EMBY_DIRECT_AUTH_REQUIRED' or versions[0].get('Protocol') != 'File':
+                        return NextResolution('needs_selection', selection=selection_ref, detail=str(err))
+                    opened = client.open_playback_session(next_id, mid, authenticated=True)
+                    if opened['url'] != static_original_url(saved['location'], next_id, mid):
+                        return NextResolution('error', detail='origin_mismatch')
+                    from urllib.parse import quote
+                    options += '&!X-Emby-Token=' + quote(saved['token'], safe='')
+                final_url = opened['url'] + options
+                mime = opened.get('mime', '')
+                play_session_id = opened.get('play_session_id', '')
+                needs_recheck = False
+            else:
+                if versions[0].get('Protocol') not in (None, 'File'):
+                    return NextResolution('needs_selection', selection=selection_ref, detail='unsupported_protocol')
+                final_url = static_original_url(saved['location'], next_id, mid) + options
+                mime = ''
+                play_session_id = ''
+                needs_recheck = True
+    except PanError as exc:
+        code = str(exc)
+        if code in ('PAN_SERVER_UNAUTHORIZED', 'PAN_SERVER_FORBIDDEN'):
+            return NextResolution('auth', detail=code)
+        if code in ('PAN_NETWORK_ERROR', 'PAN_BUDGET_EXHAUSTED', 'PAN_RATE_LIMITED', 'PAN_STORAGE_UNAVAILABLE'):
+            return NextResolution('offline', detail=code)
+        if code in ('PAN_EMBY_DIRECT_AUTH_REQUIRED', 'PAN_MEDIA_UNSUPPORTED'):
+            return NextResolution('needs_selection', selection=selection_ref, detail=code)
+        return NextResolution('error', detail=code)
+    except (ValueError, OSError):
+        return NextResolution('error', detail='invalid_reply')
 
     if cancelled():
-        return None
+        return NextResolution('cancelled')
     title = str(detail.get('Name') or f'Episode {episode_num + 1}')[:512]
     series_name = str(detail.get('SeriesName') or '')[:512]
     ticks = detail.get('RunTimeTicks')
@@ -866,49 +912,58 @@ def resolve_next_episode_data(current: dict, spec: dict, cancelled) -> dict | No
         server_id=saved['server_id'],
         user_id=saved['user_id'],
     )
-    season_ref = hashlib.sha256(f'{source_id}:{season_id}'.encode('utf-8')).hexdigest()[:16]
-    family_ref = hashlib.sha256(f'emby:{source_id}:{generation}:{season_id}'.encode('utf-8')).hexdigest()
-    return {
-        '_account': scope,
-        'mode': 'tv',
-        '_emby_season_ref': season_ref,
-        'prepared_version_key': family_ref,
-        '_next_cloud_verified': True,
-        'url': opened['url'] + options,
-        'title': title,
-        'source_title': title,
-        'mime': opened['mime'],
-        'file_evidence': 'AUTO_VERIFIED_FILE',
-        '_bobbi_start_over': True,
-        '_resume_offset_seconds': 0,
-        'video_info': {
+    # Season grouping ref identifies SxxExx media ref only; never claim same-release version proof from season_id.
+    return NextResolution(
+        'candidate',
+        candidate={
+            '_account': scope,
+            'mode': 'tv',
+            '_emby_season_ref': season_ref,
+            'prepared_version_key': None,
+            '_next_cloud_verified': False,
+            '_next_recheck': needs_recheck,
+            'url': final_url,
             'title': title,
-            'mediatype': 'episode',
-            'tvshowtitle': series_name,
-            'season': season_num,
-            'episode': episode_num + 1,
-            'plot': str(detail.get('Overview') or '')[:4096],
-            **({'duration': duration} if duration > 0 else {}),
+            'source_title': title,
+            'mime': mime,
+            'file_evidence': 'AUTO_VERIFIED_FILE',
+            '_bobbi_start_over': True,
+            '_resume_offset_seconds': 0,
+            'video_info': {
+                'title': title,
+                'mediatype': 'episode',
+                'tvshowtitle': series_name,
+                'season': season_num,
+                'episode': episode_num + 1,
+                'plot': str(detail.get('Overview') or '')[:4096],
+                **({'duration': duration} if duration > 0 else {}),
+            },
+            'tv_data': {'season': season_num, 'episode': episode_num + 1},
+            '_owned_source': {
+                'provider': 'emby',
+                'server_id': saved['server_id'],
+                'user_id': saved['user_id'],
+                'source_id': source_id,
+                'source_generation': generation,
+                'item_id': next_id,
+                'media_source_id': mid,
+                'play_session_id': play_session_id,
+            },
+            '_owned_next': {
+                'resolver': 'emby_same_season',
+                'profile_root': root_str,
+                'season_id': season_id,
+                'season': season_num,
+                'episode': episode_num + 1,
+            },
         },
-        'tv_data': {'season': season_num, 'episode': episode_num + 1},
-        '_owned_source': {
-            'provider': 'emby',
-            'server_id': saved['server_id'],
-            'user_id': saved['user_id'],
-            'source_id': source_id,
-            'source_generation': generation,
-            'item_id': next_id,
-            'media_source_id': mid,
-            'play_session_id': opened.get('play_session_id', ''),
-        },
-        '_owned_next': {
-            'resolver': 'emby_same_season',
-            'profile_root': root_str,
-            'season_id': season_id,
-            'season': season_num,
-            'episode': episode_num + 1,
-        },
-    }
+    )
 
 
-register_next_resolver('emby_same_season', resolve_next_episode_data)
+def resolve_next_episode_data(current: dict, spec: dict, cancelled) -> dict | None:
+    """Resolve the immediate next episode in the SAME season for Emby NATURAL_EOF continuation."""
+    res = resolve_next_episode_result(current, spec, cancelled, open_session=True)
+    return res.candidate if res.outcome == 'candidate' else None
+
+
+register_next_resolver('emby_same_season', resolve_next_episode_result)

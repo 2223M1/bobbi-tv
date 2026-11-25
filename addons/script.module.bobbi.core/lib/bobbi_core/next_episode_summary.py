@@ -1,14 +1,56 @@
 """Read-only projection of existing continuation results, never a play permit."""
 from copy import deepcopy
+from dataclasses import dataclass
 from hashlib import sha256
 import json
 import re
 
-STATES = {'unavailable', 'preparing', 'ready', 'needs_selection', 'complete', 'error'}
-REASONS = {'IDENTITY_UNAVAILABLE', 'NOT_PREPARED', 'FINAL_CHECK_REQUIRED',
-           'SAME_RELEASE_PREPARED', 'MANUAL_SOURCE_REQUIRED', 'PREPARATION_FAILED',
-           'SEQUENCE_COMPLETE'}
+STATES = {
+    'unavailable',
+    'preparing',
+    'ready',
+    'needs_selection',
+    'complete',
+    'error',
+    'offline',
+    'auth_required',
+}
+REASONS = {
+    'IDENTITY_UNAVAILABLE',
+    'NOT_PREPARED',
+    'FINAL_CHECK_REQUIRED',
+    'SAME_RELEASE_PREPARED',
+    'MANUAL_SOURCE_REQUIRED',
+    'PREPARATION_FAILED',
+    'SEQUENCE_COMPLETE',
+    'SOURCE_OFFLINE',
+    'AUTH_REQUIRED',
+    'SCAN_LIMIT_REACHED',
+}
 FIELDS = {'schema', 'state', 'reason_code', 'current_media_ref', 'next_media_ref', 'release_family_ref'}
+OUTCOMES = frozenset({
+    'candidate',
+    'confirmed_end',
+    'needs_selection',
+    'auth',
+    'offline',
+    'error',
+    'cancelled',
+})
+
+
+@dataclass(frozen=True)
+class NextResolution:
+    """Structured next-episode resolver outcome shared by summary prefetch and EOF admission."""
+
+    outcome: str
+    candidate: dict | None = None
+    selection: dict | None = None
+    detail: str = ''
+
+    def __post_init__(self):
+        if self.outcome not in OUTCOMES:
+            raise ValueError('NEXT_RESOLUTION_INVALID')
 
 
 def media(data):
@@ -46,7 +88,7 @@ def media(data):
         return None
 
 
-def project(current, candidate=None, *, preparing=False, failed=False, selection=None):
+def project(current, candidate=None, *, preparing=False, failed=False, selection=None, resolution=None):
     """Only existing verified adapter results enter candidate/selection.
 
     No filename, title, adjacent array entry or user mapping is identity proof.
@@ -60,6 +102,36 @@ def project(current, candidate=None, *, preparing=False, failed=False, selection
         return result
     result['current_media_ref'] = current_ref
     result.update(state='preparing' if preparing else 'unavailable', reason_code='NOT_PREPARED')
+    if resolution is not None:
+        if not isinstance(resolution, NextResolution):
+            raise ValueError('NEXT_RESOLUTION_INVALID')
+        kind = resolution.outcome
+        if kind == 'cancelled':
+            return result
+        if kind == 'confirmed_end':
+            result.update(state='complete', reason_code='SEQUENCE_COMPLETE')
+            return result
+        if kind == 'auth':
+            result.update(state='auth_required', reason_code='AUTH_REQUIRED')
+            return result
+        if kind == 'offline':
+            result.update(state='offline', reason_code='SOURCE_OFFLINE')
+            return result
+        if kind == 'needs_selection':
+            sel_ref = media(resolution.selection) if resolution.selection else None
+            result.update(
+                state='needs_selection',
+                reason_code='MANUAL_SOURCE_REQUIRED',
+                next_media_ref=sel_ref if sel_ref and sel_ref != current_ref else None,
+            )
+            return result
+        if kind == 'error':
+            if resolution.detail == 'page_limit':
+                result.update(state='unavailable', reason_code='SCAN_LIMIT_REACHED')
+            else:
+                result.update(state='error', reason_code='PREPARATION_FAILED')
+            return result
+        candidate = resolution.candidate
     if failed:
         result.update(state='error', reason_code='PREPARATION_FAILED')
     if selection and media(selection) and media(selection) != current_ref:
@@ -72,7 +144,8 @@ def project(current, candidate=None, *, preparing=False, failed=False, selection
         # Existing prepared/direct routes revalidate on final submit. BT remains
         # provisional, even if metadata already proved the family.
         if (result['release_family_ref'] and candidate.get('_next_cloud_verified') is True
-                and not candidate.get('_next_cloud_pending') and candidate.get('_next_transport') != 'bt'):
+                and not candidate.get('_next_cloud_pending') and not candidate.get('_next_recheck')
+                and candidate.get('_next_transport') != 'bt'):
             result.update(state='ready', reason_code='SAME_RELEASE_PREPARED')
     return result
 
@@ -104,9 +177,16 @@ def envelope(summary, adapter, identity, account, generation):
 
 def label(summary):
     value = checked({key: summary[key] for key in FIELDS})
-    labels = {'unavailable': '', 'preparing': '正在准备同版下一集',
-        'ready': '同版下一集已就绪 · 播放前仍核验', 'needs_selection': '下一集需手动选源',
-        'complete': '已到当前播放序列末尾', 'error': '下一集准备失败 · 可手动选源'}
+    labels = {
+        'unavailable': '',
+        'preparing': '正在准备同版下一集',
+        'ready': '同版下一集已就绪 · 播放前仍核验',
+        'needs_selection': '下一集需手动选源',
+        'complete': '已到当前播放序列末尾',
+        'error': '下一集准备失败 · 可手动选源',
+        'offline': '下一集来源暂不可达 · 可手动选源',
+        'auth_required': '下一集来源需重新授权 · 可手动选源',
+    }
     text = labels[value['state']]
     if value['state'] == 'preparing' and value['next_media_ref']:
         text = '下一集候选已确认 · 播放前仍需检查'

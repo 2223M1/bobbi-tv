@@ -13,6 +13,9 @@ import time
 from urllib.parse import urlsplit
 from uuid import uuid4
 
+import inspect
+
+from bobbi_core.next_episode_summary import NextResolution
 from bobbi_core.playback_request import (
     SelectionChanged,
     bind_and_claim,
@@ -30,15 +33,68 @@ def _sha256(text: str) -> str:
     return hashlib.sha256(text.encode('utf-8')).hexdigest()
 
 
+def next_selection_locator(candidate: dict) -> str:
+    meta = candidate.get('_owned_source') if isinstance(candidate, dict) else None
+    if isinstance(meta, dict) and meta.get('source_id') and meta.get('item_id'):
+        provider = str(meta.get('provider') or 'owned')
+        mid = str(meta.get('media_source_id') or '')
+        base = f"{provider}-next://{meta['source_id']}/{meta['item_id']}"
+        return f"{base}/{mid}" if mid else base
+    raw_url = str((candidate or {}).get('url') or '').partition('|')[0]
+    if not raw_url:
+        raise ValueError('OWNED_NEXT_LOCATOR_MISSING')
+    return raw_url
+
+
+def next_selection_identity(candidate: dict) -> str:
+    return 'transport:' + _sha256(next_selection_locator(candidate))
+
+
 def register_next_resolver(name: str, fn) -> None:
     _NEXT_RESOLVERS[name] = fn
 
 
-def resolve_owned_next(current: dict, spec: dict, cancelled) -> dict | None:
-    fn = _NEXT_RESOLVERS.get(spec.get('resolver'))
+def _coerce_next_resolution(raw, cancelled) -> NextResolution:
+    if isinstance(raw, NextResolution):
+        return raw
+    if isinstance(raw, dict):
+        return NextResolution('candidate', candidate=raw)
+    if cancelled():
+        return NextResolution('cancelled')
+    return NextResolution('error', detail='unresolved')
+
+
+def resolve_owned_next_result(
+    current: dict,
+    spec: dict,
+    cancelled,
+    *,
+    open_session: bool = True,
+) -> NextResolution:
+    if cancelled():
+        return NextResolution('cancelled')
+    if resolve_owned_next is not _default_resolve_owned_next:
+        return _coerce_next_resolution(resolve_owned_next(current, spec, cancelled), cancelled)
+    fn = _NEXT_RESOLVERS.get(spec.get('resolver')) if isinstance(spec, dict) else None
     if fn is None:
-        return None
-    return fn(current, spec, cancelled)
+        return NextResolution('error', detail='unknown_resolver')
+    try:
+        sig = inspect.signature(fn)
+        accepts_open = 'open_session' in sig.parameters or any(
+            p.kind == inspect.Parameter.VAR_KEYWORD for p in sig.parameters.values()
+        )
+    except (TypeError, ValueError):
+        accepts_open = False
+    raw = fn(current, spec, cancelled, open_session=open_session) if accepts_open else fn(current, spec, cancelled)
+    return _coerce_next_resolution(raw, cancelled)
+
+
+def _default_resolve_owned_next(current: dict, spec: dict, cancelled) -> dict | None:
+    res = resolve_owned_next_result(current, spec, cancelled, open_session=True)
+    return res.candidate if res.outcome == 'candidate' else None
+
+
+resolve_owned_next = _default_resolve_owned_next
 
 
 def library_source_scope(source_id: str, generation: str) -> dict:
@@ -142,6 +198,32 @@ class OwnedPlaybackReservation:
         self.owner_context = deepcopy(owner_context) if owner_context else None
         self.submitted = False
         self.cancelled = False
+
+    @classmethod
+    def from_child_reservation(
+        cls,
+        *,
+        reserved_snapshot: dict,
+        child_request_id: str,
+        selection_identity: str,
+        account_scope: dict,
+        playback_client,
+        host_call,
+        binding=None,
+    ) -> OwnedPlaybackReservation:
+        if not isinstance(child_request_id, str) or not re.fullmatch(r'[0-9a-f]{32}', child_request_id):
+            raise ValueError('OWNED_REQUEST_ID_INVALID')
+        owner_ctx = context(reserved_snapshot, child_request_id)
+        return cls(
+            binding=binding,
+            playback_client=playback_client,
+            host_call=host_call,
+            adapter='native',
+            request_id=child_request_id,
+            selection_identity=selection_identity,
+            account_scope=account_scope,
+            owner_context=owner_ctx,
+        )
 
     def is_current(self) -> bool:
         if self.cancelled:

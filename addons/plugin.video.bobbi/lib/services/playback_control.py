@@ -322,6 +322,10 @@ class PlaybackControlServer:
         self._owned_state = None
         self._owned_poll_due = 0.0
         self._owned_next_worker = None
+        self._owned_next_candidates = Queue(maxsize=4)
+        self._owned_next_ready = Queue(maxsize=4)
+        self._owned_next_consumed_parents = []
+        self._owned_terminal_parent = None
         self._owned_resume_seek = None
         if path is None:
             # The authenticated portable IPC queues to this same actor on the
@@ -475,7 +479,10 @@ class PlaybackControlServer:
 
     def _observe_owned_tracks(self, now):
         host = getattr(self, 'host', None)
-        if host is None or not getattr(host, 'owned_tracks', None):
+        if host is None:
+            return
+        self._drain_owned_next_queues()
+        if not getattr(host, 'owned_tracks', None):
             return
         pending_summaries = getattr(self, '_owned_next_summaries', None)
         if pending_summaries is not None:
@@ -485,7 +492,17 @@ class PlaybackControlServer:
                 except Empty:
                     break
                 try:
-                    self.authority.dispatch(msg)
+                    cand = msg.pop('_prefetched_candidate', None) if isinstance(msg, dict) else None
+                    reply = self.authority.dispatch(msg)
+                    if (
+                        isinstance(reply, dict)
+                        and reply.get('accepted') is True
+                        and isinstance(cand, dict)
+                        and isinstance(self._owned_state, dict)
+                        and self._owned_state.get('request_id') == msg.get('request_id')
+                        and self._owned_state.get('native_instance') == msg.get('native_instance')
+                    ):
+                        self._owned_state['prefetched_next'] = dict(cand)
                 except Exception:
                     pass
 
@@ -557,7 +574,19 @@ class PlaybackControlServer:
                 })
                 self._owned_state = None
                 if reason == 'NATURAL_EOF' and isinstance(prev['data'].get('_owned_next'), dict):
-                    self._launch_owned_next(prev['data'])
+                    owner_obj = getattr(self.authority, 'owner', None)
+                    self._owned_terminal_parent = {
+                        'boot_id': prev.get('boot_id') or getattr(owner_obj, 'boot_id', ''),
+                        'epoch': prev.get('epoch') if prev.get('epoch') is not None else getattr(owner_obj, 'epoch', 0),
+                        'request_id': prev['request_id'],
+                        'native_instance': prev['native_instance'],
+                        'account_scope': dict(prev['account']),
+                        'prefetched_next': prev.get('prefetched_next'),
+                    }
+                    try:
+                        self._launch_owned_next(prev['data'])
+                    finally:
+                        self._owned_terminal_parent = None
 
         if not obs_req or not obs_inst or not obs_started:
             return
@@ -641,8 +670,11 @@ class PlaybackControlServer:
                             return
 
             self._owned_state = {
+                'boot_id': getattr(self.authority.owner, 'boot_id', ''),
+                'epoch': getattr(self.authority.owner, 'epoch', 0),
                 'request_id': obs_req,
                 'native_instance': obs_inst,
+                'prefetched_next': None,
                 'account': dict(tracked['account']),
                 'data': dict(tracked['data']),
                 'position': pos,
@@ -826,16 +858,18 @@ class PlaybackControlServer:
         def _resolve():
             try:
                 from bobbi_core.next_episode_summary import project
-                from bobbi_platform.owned_playback import resolve_owned_next
+                from bobbi_platform.owned_playback import resolve_owned_next_result
                 cancelled = lambda: host.stopping.is_set() or not host.check_profile()
-                nxt = resolve_owned_next(current_data, dict(current_data['_owned_next']), cancelled)
-                if cancelled():
+                res = resolve_owned_next_result(
+                    current_data,
+                    dict(current_data['_owned_next']),
+                    cancelled,
+                    open_session=False,
+                )
+                if cancelled() or res.outcome == 'cancelled':
                     return
-                summary = project(current_data, nxt)
-                if nxt is None and summary.get('state') == 'unavailable':
-                    summary['state'] = 'complete'
-                    summary['reason_code'] = 'SEQUENCE_COMPLETE'
-                self._owned_next_summaries.put_nowait({
+                summary = project(current_data, resolution=res)
+                payload = {
                     'operation': 'next_summary',
                     'boot_id': boot_id,
                     'epoch': epoch,
@@ -843,42 +877,273 @@ class PlaybackControlServer:
                     'native_instance': native_instance,
                     'account_scope': account_scope,
                     'summary': summary,
-                })
+                }
+                if res.outcome == 'candidate' and isinstance(res.candidate, dict):
+                    payload['_prefetched_candidate'] = dict(res.candidate)
+                self._owned_next_summaries.put_nowait(payload)
             except Exception:
                 pass
         Thread(target=_resolve, name='bobbi-native-next-summary', daemon=True).start()
 
+    def _capture_parent_continuation_context(self, current_data):
+        captured = getattr(self, '_owned_terminal_parent', None)
+        if isinstance(captured, dict) and captured.get('request_id'):
+            return dict(captured)
+        owner = getattr(getattr(self, 'authority', None), 'owner', None)
+        desired = getattr(owner, 'desired', None) if owner is not None else None
+        terminal = getattr(owner, 'terminal', None) if owner is not None else None
+        req_id = (
+            current_data.get('request_id')
+            or (terminal.get('request_id') if isinstance(terminal, dict) else '')
+            or (desired.get('request_id') if isinstance(desired, dict) else '')
+        )
+        inst = (
+            terminal.get('native_instance')
+            if isinstance(terminal, dict) and terminal.get('request_id', req_id) == req_id
+            else ''
+        )
+        return {
+            'boot_id': getattr(owner, 'boot_id', '') if owner is not None else '',
+            'epoch': getattr(owner, 'epoch', 0) if owner is not None else 0,
+            'request_id': req_id,
+            'native_instance': inst,
+            'account_scope': dict(current_data.get('_account') or {}),
+            'prefetched_next': None,
+        }
+
+    def _local_owner_transport(self):
+        from bobbi_core.playback_request import Client as PlaybackClient
+        host = self.host
+        playback_client = PlaybackClient(lambda msg, timeout=0.3: self.authority.dispatch(msg))
+
+        def local_host_call(action, body, timeout=3):
+            if host.stopping.is_set() or (hasattr(host, 'check_profile') and not host.check_profile()):
+                raise OSError('PROFILE_CHANGED')
+            if hasattr(host, '_dispatch'):
+                return host._dispatch(action, body)
+            if action == 'owned_playback_track':
+                with host.lock:
+                    host.owned_tracks[body['request_id']] = {
+                        'account': dict(body['account']),
+                        'data': dict(body['data']),
+                        'cancelled': False,
+                    }
+                return {'tracked': True}
+            if action == 'owned_playback_cancel':
+                with host.lock:
+                    entry = host.owned_tracks.get(body['request_id'])
+                    if entry is not None:
+                        entry['cancelled'] = True
+                return {'cancelled': True}
+            if action == 'status':
+                return {'playback_adapter': 'native'}
+            raise ValueError('UNSUPPORTED_LOCAL_HOST_ACTION')
+
+        return playback_client, local_host_call
+
+    def _authorize_and_reserve_owned_next(self, parent_ctx, current_data, candidate):
+        from uuid import uuid4
+        from bobbi_platform.owned_playback import OwnedPlaybackReservation, next_selection_identity
+        host = getattr(self, 'host', None)
+        if host is None or host.stopping.is_set() or (hasattr(host, 'check_profile') and not host.check_profile()):
+            return None
+        boot_id = parent_ctx.get('boot_id')
+        epoch = parent_ctx.get('epoch')
+        req_id = parent_ctx.get('request_id')
+        inst = parent_ctx.get('native_instance')
+        if not boot_id or type(epoch) is not int or not req_id or not inst:
+            return None
+        parent_key = (boot_id, epoch, req_id, inst)
+        consumed = getattr(self, '_owned_next_consumed_parents', None)
+        if consumed is None:
+            consumed = self._owned_next_consumed_parents = []
+        if parent_key in consumed:
+            return None
+        scope = dict(candidate.get('_account') or parent_ctx.get('account_scope') or {})
+        pb_accounts = getattr(host, 'playback_accounts', None)
+        if pb_accounts is not None and scope and not pb_accounts.is_current(scope):
+            return None
+        auth_accounts = getattr(self.authority, 'accounts', None)
+        include_scope = bool(scope) and (auth_accounts is not None or getattr(self.authority, 'selection_account', None) is not None)
+        sel_identity = next_selection_identity(candidate)
+        grant = self.authority.dispatch({
+            'operation': 'authorize_next',
+            'boot_id': boot_id,
+            'epoch': epoch,
+            'request_id': req_id,
+            'native_instance': inst,
+            'selection_identity': sel_identity,
+            **({'account_scope': scope} if include_scope else {}),
+        })
+        if not isinstance(grant, dict) or grant.get('authorized') is not True:
+            return None
+        consumed.append(parent_key)
+        if len(consumed) > 32:
+            del consumed[:-32]
+        child_req_id = uuid4().hex
+        reserved = self.authority.dispatch({
+            'operation': 'reserve_child',
+            'boot_id': boot_id,
+            'epoch': epoch,
+            'request_id': req_id,
+            'token': grant['token'],
+            'child_request_id': child_req_id,
+            'selection_identity': sel_identity,
+            **({'account_scope': scope} if include_scope else {}),
+        })
+        playback_client, local_host_call = self._local_owner_transport()
+        return OwnedPlaybackReservation.from_child_reservation(
+            reserved_snapshot=reserved,
+            child_request_id=child_req_id,
+            selection_identity=sel_identity,
+            account_scope=scope,
+            playback_client=playback_client,
+            host_call=local_host_call,
+        )
+
+    def _submit_owned_child_reservation(self, child_res, candidate):
+        host = getattr(self, 'host', None)
+        if host is None:
+            child_res.cancel()
+            return False
+        cancelled = lambda: (
+            host.stopping.is_set()
+            or (hasattr(host, 'check_profile') and not host.check_profile())
+            or (
+                getattr(host, 'playback_accounts', None) is not None
+                and bool(child_res.account_scope)
+                and not host.playback_accounts.is_current(child_res.account_scope)
+            )
+        )
+        try:
+            with child_res:
+                child_res.submit(
+                    -1,
+                    candidate['url'],
+                    title=candidate['title'],
+                    source_meta=candidate.get('_owned_source'),
+                    info=candidate.get('video_info'),
+                    mime=candidate.get('mime'),
+                    start_over=True,
+                    next_candidate=candidate.get('_owned_next'),
+                    ready=lambda: not cancelled(),
+                )
+            return True
+        except Exception:
+            return False
+
+    def _spawn_owned_next_session_open(self, child_res, parent_ctx, current_data, spec):
+        host = self.host
+        from threading import Thread
+        if getattr(self, '_owned_next_ready', None) is None:
+            self._owned_next_ready = Queue(maxsize=4)
+
+        def _open_work():
+            try:
+                from bobbi_platform.owned_playback import resolve_owned_next_result
+                cancelled = lambda: (
+                    host.stopping.is_set()
+                    or (hasattr(host, 'check_profile') and not host.check_profile())
+                    or child_res.cancelled
+                )
+                final_res = resolve_owned_next_result(current_data, spec, cancelled, open_session=True)
+                self._owned_next_ready.put_nowait((child_res, parent_ctx, final_res))
+            except Exception:
+                try:
+                    from bobbi_core.next_episode_summary import NextResolution
+                    self._owned_next_ready.put_nowait((child_res, parent_ctx, NextResolution('error')))
+                except Exception:
+                    pass
+
+        self._owned_next_worker = Thread(target=_open_work, name='bobbi-native-owned-next', daemon=True)
+        self._owned_next_worker.start()
+
+    def _drain_owned_next_queues(self):
+        from bobbi_platform.owned_playback import next_selection_identity
+        cand_q = getattr(self, '_owned_next_candidates', None)
+        if cand_q is not None:
+            while True:
+                try:
+                    parent_ctx, current_data, res = cand_q.get_nowait()
+                except Empty:
+                    break
+                try:
+                    if res.outcome != 'candidate' or not isinstance(res.candidate, dict):
+                        continue
+                    child_res = self._authorize_and_reserve_owned_next(parent_ctx, current_data, res.candidate)
+                    if child_res is None:
+                        continue
+                    if res.candidate.get('_next_recheck'):
+                        self._spawn_owned_next_session_open(
+                            child_res,
+                            parent_ctx,
+                            current_data,
+                            dict(current_data['_owned_next']),
+                        )
+                    else:
+                        self._submit_owned_child_reservation(child_res, res.candidate)
+                except Exception:
+                    pass
+
+        ready_q = getattr(self, '_owned_next_ready', None)
+        if ready_q is not None:
+            while True:
+                try:
+                    child_res, _parent_ctx, final_res = ready_q.get_nowait()
+                except Empty:
+                    break
+                try:
+                    if (
+                        final_res.outcome != 'candidate'
+                        or not isinstance(final_res.candidate, dict)
+                        or next_selection_identity(final_res.candidate) != child_res.selection_identity
+                    ):
+                        child_res.cancel()
+                        continue
+                    self._submit_owned_child_reservation(child_res, final_res.candidate)
+                except Exception:
+                    child_res.cancel()
+
     def _launch_owned_next(self, current_data):
         host = getattr(self, 'host', None)
-        if host is None or (self._owned_next_worker is not None and self._owned_next_worker.is_alive()):
+        if host is None or not isinstance(current_data, dict) or not isinstance(current_data.get('_owned_next'), dict):
             return
+        if self._owned_next_worker is not None and self._owned_next_worker.is_alive():
+            return
+        if getattr(self, '_owned_next_candidates', None) is None:
+            self._owned_next_candidates = Queue(maxsize=4)
+        if getattr(self, '_owned_next_ready', None) is None:
+            self._owned_next_ready = Queue(maxsize=4)
+
+        parent_ctx = self._capture_parent_continuation_context(current_data)
+        spec = dict(current_data['_owned_next'])
+        prefetched = parent_ctx.get('prefetched_next')
+        if isinstance(prefetched, dict):
+            try:
+                child_res = self._authorize_and_reserve_owned_next(parent_ctx, current_data, prefetched)
+            except Exception:
+                child_res = None
+            if child_res is None:
+                return
+            if prefetched.get('_next_recheck'):
+                self._spawn_owned_next_session_open(child_res, parent_ctx, current_data, spec)
+            else:
+                self._submit_owned_child_reservation(child_res, prefetched)
+            return
+
         from threading import Thread
+
         def _work():
             try:
-                import xbmc
-                from bobbi_platform.owned_playback import reserve_playback, resolve_owned_next
-                cancelled = lambda: host.stopping.is_set() or not host.check_profile()
-                spec = dict(current_data['_owned_next'])
-                nxt = resolve_owned_next(current_data, spec, cancelled)
-                if not nxt or cancelled() or xbmc.Player().isPlaying():
+                from bobbi_platform.owned_playback import resolve_owned_next_result
+                cancelled = lambda: host.stopping.is_set() or (hasattr(host, 'check_profile') and not host.check_profile())
+                res = resolve_owned_next_result(current_data, spec, cancelled, open_session=False)
+                if cancelled() or res.outcome == 'cancelled':
                     return
-                with reserve_playback(
-                    f"emby-next://{nxt['_owned_source']['source_id']}/{nxt['_owned_source']['item_id']}",
-                    nxt['_account'],
-                ) as res:
-                    res.submit(
-                        -1,
-                        nxt['url'],
-                        title=nxt['title'],
-                        source_meta=nxt['_owned_source'],
-                        info=nxt.get('video_info'),
-                        mime=nxt.get('mime'),
-                        start_over=True,
-                        next_candidate=nxt.get('_owned_next'),
-                        ready=lambda: not cancelled() and not xbmc.Player().isPlaying(),
-                    )
+                self._owned_next_candidates.put_nowait((parent_ctx, dict(current_data), res))
             except Exception:
                 pass
+
         self._owned_next_worker = Thread(target=_work, name='bobbi-native-owned-next', daemon=True)
         self._owned_next_worker.start()
 
