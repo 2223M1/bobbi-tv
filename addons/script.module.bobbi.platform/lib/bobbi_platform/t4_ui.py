@@ -407,44 +407,50 @@ def execute_directory(handle, params, store, item):
                 binding=binding,
                 allow_starting=True,
             ) as reservation:
-                try:
-                    result = reservation.host_call('source_stream_open', {
-                        'source_id': source.id,
-                        'generation': generation,
-                        'request_id': reservation.request_id,
-                        'selection': choice,
-                    }, timeout=18)
-                except LibraryError as err:
-                    if err.code != 'T4_MEDIA_ORIGIN':
-                        raise
-                    cand_origin = getattr(err, 'blocked_origin', None)
-                    if not cand_origin:
-                        raw_vid = play_meta.get('vod_id') or ''
-                        if not raw_vid:
-                            with T4TokenStore(root / 't4-tokens.sqlite3', read_only=True) as tstore:
-                                raw_vid = tstore.get_item(source.id, generation, site_hash, play_meta['item_token'])
-                        for lname, eps in client.detail(raw_vid):
-                            if _opaque(lname) == play_meta['line']:
-                                for _, ep_id in eps:
-                                    if _opaque(ep_id) == play_meta['episode']:
-                                        m_url, _ = client.play(lname, ep_id)
-                                        u_m = urlsplit(m_url)
-                                        cand_origin = f'{u_m.scheme.lower()}://{u_m.netloc.lower()}'
-                    if not cand_origin or not dialog.yesno(
-                        '允许连接外部媒体域名？',
-                        f'此片源位于 {cand_origin}，是否允许当前来源按需读取（不会发送站点凭据）？',
-                    ):
-                        return
-                    require_current()
-                    reservation.require_current()
-                    with T4TokenStore(root / 't4-tokens.sqlite3') as tstore:
-                        tstore.approve_origin(source.id, generation, cand_origin)
-                    result = reservation.host_call('source_stream_open', {
-                        'source_id': source.id,
-                        'generation': generation,
-                        'request_id': reservation.request_id,
-                        'selection': choice,
-                    }, timeout=18)
+                result = None
+                for _hop_prompt in range(5):
+                    try:
+                        result = reservation.host_call('source_stream_open', {
+                            'source_id': source.id,
+                            'generation': generation,
+                            'request_id': reservation.request_id,
+                            'selection': choice,
+                        }, timeout=18)
+                        break
+                    except LibraryError as err:
+                        if err.code != 'T4_MEDIA_ORIGIN':
+                            raise
+                        cand_origin = getattr(err, 'blocked_origin', None)
+                        if not cand_origin:
+                            with T4TokenStore(root / 't4-tokens.sqlite3') as tstore:
+                                cand_origin = tstore.pop_blocked_origin(
+                                    source.id,
+                                    generation,
+                                    reservation.request_id,
+                                )
+                        if not cand_origin:
+                            raw_vid = play_meta.get('vod_id') or ''
+                            if not raw_vid:
+                                with T4TokenStore(root / 't4-tokens.sqlite3', read_only=True) as tstore:
+                                    raw_vid = tstore.get_item(source.id, generation, site_hash, play_meta['item_token'])
+                            for lname, eps in client.detail(raw_vid):
+                                if _opaque(lname) == play_meta['line']:
+                                    for _, ep_id in eps:
+                                        if _opaque(ep_id) == play_meta['episode']:
+                                            m_url, _ = client.play(lname, ep_id)
+                                            u_m = urlsplit(m_url)
+                                            cand_origin = f'{u_m.scheme.lower()}://{u_m.netloc.lower()}'
+                        if not cand_origin or not dialog.yesno(
+                            '允许连接外部媒体域名？',
+                            f'此片源位于 {cand_origin}，是否允许当前来源按需读取（不会发送站点凭据）？',
+                        ):
+                            return
+                        require_current()
+                        reservation.require_current()
+                        with T4TokenStore(root / 't4-tokens.sqlite3') as tstore:
+                            tstore.approve_origin(source.id, generation, cand_origin)
+                if result is None:
+                    raise LibraryError('MEDIA_REDIRECT')
 
                 media_url = local_media_url(result)
                 reservation.submit(

@@ -139,6 +139,25 @@ def selection_with_play_token(site, play_token: str):
     )
 
 
+def canonical_media_origin(url: str) -> str:
+    from bobbi_core.source_endpoint import endpoint as media_endpoint
+    checked = media_endpoint(url, 'SOURCE_HTTP_URL')
+    parts = urlsplit(checked)
+    return f'{parts.scheme.lower()}://{parts.netloc.lower()}'
+
+
+def site_for_choice(source, choice: dict) -> dict:
+    if source.kind != 't4' or not isinstance(choice, dict) or choice.get('kind') != 't4':
+        raise LibraryError('T4_CHANGED')
+    site_hash = choice.get('site')
+    if not isinstance(site_hash, str) or not re.fullmatch(r'[0-9a-f]{64}', site_hash):
+        raise LibraryError('T4_CHANGED')
+    sites = [s for s in source.metadata['sites'] if _opaque(s['key']) == site_hash]
+    if len(sites) != 1:
+        raise LibraryError('T4_CHANGED')
+    return sites[0]
+
+
 def _media_origin_allowed(url: str, site: dict, approved_origins: set[str]) -> bool:
     u_orig = _origin(url)
     api_orig = _origin(site['api'])
@@ -227,7 +246,9 @@ def resolve_selected(
             if _opaque(episode) == target_ep_hash:
                 url, play_headers = client.play(name, episode)
                 if not _media_origin_allowed(url, site, approved):
-                    raise LibraryError('T4_MEDIA_ORIGIN')
+                    err = LibraryError('T4_MEDIA_ORIGIN')
+                    err.blocked_origin = canonical_media_origin(url)
+                    raise err
                 if _origin(url) != _origin(site['api']):
                     # Cross-origin approved CDN never receives Referer pointing at private T4 API
                     play_headers = {

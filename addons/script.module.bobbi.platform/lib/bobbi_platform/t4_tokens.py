@@ -109,6 +109,17 @@ class T4TokenStore:
                 """
             )
             self.db.execute(
+                """
+                CREATE TABLE IF NOT EXISTS t4_pending_origin_prompts (
+                    request_id TEXT PRIMARY KEY,
+                    source_id TEXT NOT NULL,
+                    generation TEXT NOT NULL,
+                    origin TEXT NOT NULL,
+                    created_at INTEGER NOT NULL
+                )
+                """
+            )
+            self.db.execute(
                 'INSERT OR IGNORE INTO t4_meta(key, value) VALUES (?, ?)',
                 ('hmac_salt', secrets.token_hex(32)),
             )
@@ -636,3 +647,79 @@ class T4TokenStore:
         except sqlite3.Error:
             return set()
         return {r[0] for r in rows if isinstance(r[0], str)}
+
+    def revoke_origin(self, source_id: str, generation: str | None = None, raw_origin: str | None = None) -> int:
+        if self.read_only or self.db is None:
+            raise LibraryError('STORAGE_UNAVAILABLE')
+        if not isinstance(source_id, str) or not re.fullmatch(r'[0-9a-f]{32}', source_id):
+            raise LibraryError('T4_TOKEN_EXPIRED')
+        canonical = None
+        if raw_origin is not None:
+            from urllib.parse import urlsplit
+            checked = endpoint(raw_origin, 'SOURCE_HTTP_URL')
+            parts = urlsplit(checked)
+            canonical = f'{parts.scheme}://{parts.netloc.lower()}'
+        with self.db:
+            if generation is not None and canonical is not None:
+                cur = self.db.execute(
+                    'DELETE FROM t4_approved_origins WHERE source_id=? AND generation=? AND origin=?',
+                    (source_id, generation, canonical),
+                )
+            elif generation is not None:
+                cur = self.db.execute(
+                    'DELETE FROM t4_approved_origins WHERE source_id=? AND generation=?',
+                    (source_id, generation),
+                )
+            else:
+                cur = self.db.execute(
+                    'DELETE FROM t4_approved_origins WHERE source_id=?',
+                    (source_id,),
+                )
+            return int(cur.rowcount or 0)
+
+    def record_blocked_origin(self, source_id: str, generation: str, request_id: str, raw_origin: str) -> str:
+        if self.read_only or self.db is None:
+            raise LibraryError('STORAGE_UNAVAILABLE')
+        self._check_scope(source_id, generation, '0' * 64)
+        if not isinstance(request_id, str) or not re.fullmatch(r'[0-9a-f]{32}', request_id):
+            raise LibraryError('SOURCE_STREAM_INVALID')
+        from urllib.parse import urlsplit
+        checked = endpoint(raw_origin, 'SOURCE_HTTP_URL')
+        parts = urlsplit(checked)
+        canonical = f'{parts.scheme}://{parts.netloc.lower()}'
+        with self.db:
+            self.db.execute(
+                """
+                INSERT INTO t4_pending_origin_prompts(request_id, source_id, generation, origin, created_at)
+                VALUES (?, ?, ?, ?, ?)
+                ON CONFLICT(request_id) DO UPDATE SET
+                    source_id=excluded.source_id,
+                    generation=excluded.generation,
+                    origin=excluded.origin,
+                    created_at=excluded.created_at
+                """,
+                (request_id, source_id, generation, canonical, time.time_ns()),
+            )
+            self.db.execute(
+                """
+                DELETE FROM t4_pending_origin_prompts
+                WHERE request_id IN (
+                    SELECT request_id FROM t4_pending_origin_prompts
+                    ORDER BY created_at DESC LIMIT -1 OFFSET 32
+                )
+                """
+            )
+        return canonical
+
+    def pop_blocked_origin(self, source_id: str, generation: str, request_id: str) -> str | None:
+        if self.read_only or self.db is None:
+            return None
+        if not isinstance(request_id, str) or not re.fullmatch(r'[0-9a-f]{32}', request_id):
+            return None
+        with self.db:
+            row = self.db.execute(
+                'SELECT origin FROM t4_pending_origin_prompts WHERE request_id=? AND source_id=? AND generation=?',
+                (request_id, source_id, generation),
+            ).fetchone()
+            self.db.execute('DELETE FROM t4_pending_origin_prompts WHERE request_id=?', (request_id,))
+        return row[0] if row and isinstance(row[0], str) else None

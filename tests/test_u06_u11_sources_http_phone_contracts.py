@@ -760,7 +760,7 @@ def test_u07_src02_4500_episodes_bounded_pagination_single_tx_and_native_filters
     shash = t4_http._opaque(site['key'])
 
     # Pre-fill T4TokenStore to MAX_TOKENS (4096) before browsing 4500-episode detail!
-    with T4TokenStore(tmp_path / 't4-tokens.sqlite3') as pre_store:
+    with T4TokenStore(plugin.path.parent / 't4-tokens.sqlite3') as pre_store:
         for idx in range(MAX_TOKENS):
             pre_store.put_item(src.id, gen, shash, f'prefill-{idx}')
 
@@ -878,7 +878,7 @@ def test_u07_src02_4500_episodes_bounded_pagination_single_tx_and_native_filters
             ep_rows = [(u, li) for u, li, is_folder in rendered if not is_folder]
             assert len(ep_rows) == (100 if expected_pg == 8 else 200)
             # Parent item_token MUST NEVER be evicted during page creation!
-            with T4TokenStore(tmp_path / 't4-tokens.sqlite3', read_only=True) as check_store:
+            with T4TokenStore(plugin.path.parent / 't4-tokens.sqlite3', read_only=True) as check_store:
                 assert check_store.get_item(src.id, gen, shash, parent_tok) == 'film4500'
             if expected_pg < 8:
                 cur_url = next(u for u, li, is_f in rendered if is_f and li.props.get('Bobbi.NextPage') == 'true')
@@ -893,7 +893,7 @@ def test_u07_src02_4500_episodes_bounded_pagination_single_tx_and_native_filters
         @contextmanager
         def real_resolve_reservation(target, scope, **kw):
             def host_call(op, body, timeout=18):
-                with T4TokenStore(tmp_path / 't4-tokens.sqlite3', read_only=True) as hs:
+                with T4TokenStore(plugin.path.parent / 't4-tokens.sqlite3', read_only=True) as hs:
                     m_url, _, _ = t4_http.resolve_selected(
                         src,
                         body['selection'],
@@ -1385,3 +1385,552 @@ def test_u08_src04_src06_streaming_limits_redirect_close_nuvio_and_debrid_dedup(
     assert rd_calls[-1]['params'] == {}
     rd_client.get_user_downloads_list(page=2)
     assert rd_calls[-1]['params'] == {'page': 2}
+import json
+import re
+from types import SimpleNamespace
+from test_library_plugin import plugin  # noqa: F401
+
+
+# ==============================================================================
+# U09 · Per-Hop Media Origin Policy & Approved Emby HTTP / STRM Subset
+# ==============================================================================
+
+
+def test_u09_src08_per_hop_origin_policy_probe_and_seek_and_tv_chain_approval(plugin, tmp_path, monkeypatch):
+    """Inverted merge witness source_owner_redirect + CT-MEDIA-ORIGIN (R14-01..05, A07-01..03, SRC-08):
+    - Approved A -> unapproved B stops BEFORE sending any request to B (len(visited) == 1, registered == 0).
+    - A -> B -> C validates and prompts hop-by-hop on TV without pre-approving unseen downstream hops.
+    - Post-probe ShareStream GET/Range seek enforces the same live (source_id, generation) origin policy
+      when upstream redirect target changes or approval/generation is revoked.
+    - Cross-origin sensitive headers stripped; same-origin headers & signed query preserved verbatim.
+    """
+    from email.message import Message
+    from http.client import HTTPConnection
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+    from threading import Thread
+    from urllib.error import HTTPError
+    from urllib.parse import parse_qs, parse_qsl, urlsplit
+    from urllib.request import Request, urlopen
+    from unittest.mock import patch
+
+    from bobbi_core import media_pointer, t4
+    from bobbi_core.library_contract import LibraryError
+    from bobbi_platform import source_media_http, source_streams, t4_http, t4_ui
+    from bobbi_platform.host import Host
+    from bobbi_platform.libraries import Registry
+    from bobbi_platform.t4_tokens import T4TokenStore
+
+    # 1. Exact inverted witness of verify_source_merge.py::source_owner_redirect
+    visited, registered = [], []
+    initial = 'https://approved.example.invalid/media.mkv'
+    final = 'https://unapproved.example.invalid/final.mkv?Policy=eyJ%2B1&Signature=AbC~9'
+
+    class Reply:
+        def __init__(self, redirect):
+            self.status, self.headers = (302 if redirect else 206), Message()
+            if redirect:
+                self.headers['Location'] = final
+            else:
+                for k, v in {
+                    'Content-Type': 'video/x-matroska',
+                    'Content-Length': '1',
+                    'Content-Range': 'bytes 0-0/100',
+                    'ETag': '"fixed"',
+                }.items():
+                    self.headers[k] = v
+            self.data = b'' if redirect else b'X'
+
+        def getheader(self, key, default=None):
+            return self.headers.get(key, default)
+
+        def close(self):
+            pass
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_):
+            pass
+
+        def read1(self, size):
+            out, self.data = self.data[:size], self.data[size:]
+            return out
+
+    class Conn:
+        sock = None
+
+        def __init__(self, url):
+            self.url = url
+
+        def request(self, method, target, headers):
+            visited.append(dict(url=self.url, target=target, headers=dict(headers)))
+
+        def getresponse(self):
+            return Reply(self.url == initial)
+
+        def close(self):
+            pass
+
+    class DummyTransport:
+        def __init__(self, *a, **kw):
+            pass
+
+        def register(self, body):
+            registered.append(body)
+            return {'url': 'http://127.0.0.1:4567/stream/' + 'f' * 32 + '/video.mkv'}
+
+        def close(self):
+            pass
+
+    def fake_fetch(url, *_a, **_kw):
+        q = parse_qs(urlsplit(url).query)
+        if 'play' in q:
+            val = {'parse': 0, 'url': initial, 'header': {'Referer': 'https://approved.example.invalid/'}}
+        else:
+            val = {'list': [{'vod_id': 'v1', 'vod_name': 'Synthetic', 'vod_play_from': 'A', 'vod_play_url': 'E1$e1'}]}
+        return json.dumps(val).encode('utf-8')
+
+    w_root = tmp_path / 'witness_case'
+    w_root.mkdir()
+    cfg = {'sites': [{'key': 'k', 'name': 'Synthetic', 'type': 4, 'api': 'https://approved.example.invalid/t4'}]}
+    src = t4.preview(json.dumps(cfg).encode('utf-8')).source('')
+    reg = Registry(w_root / 'libraries.sqlite3')
+    reg.save(src)
+    _, gen = reg.source_snapshot(src.id)
+    reg.close()
+
+    choice = t4_http.selection(src.metadata['sites'][0], 'v1', 'A', 'e1')
+    owner = source_streams.SourceStreams(w_root, lambda: True)
+    with patch.object(t4_http, 'read', fake_fetch), \
+         patch.object(source_media_http, 'connection', lambda u, _rem: (Conn(u), urlsplit(u).path + ('?' + urlsplit(u).query if urlsplit(u).query else ''))), \
+         patch.object(source_streams, 'ShareStream', DummyTransport):
+        with pytest.raises(LibraryError, match='T4_MEDIA_ORIGIN') as exc_info:
+            owner.open(dict(request_id='a' * 32, source_id=src.id, generation=gen, selection=choice))
+        assert getattr(exc_info.value, 'blocked_origin', None) == 'https://unapproved.example.invalid'
+        # CRITICAL: Unapproved hop was NEVER contacted!
+        assert len(visited) == 1 and visited[0]['url'] == initial
+        assert len(registered) == 0
+
+        # Approve target origin -> now A -> B succeeds with cross-origin Referer stripped and signed query intact!
+        with T4TokenStore(w_root / 't4-tokens.sqlite3') as tstore:
+            tstore.approve_origin(src.id, gen, 'https://unapproved.example.invalid')
+        visited.clear()
+        res = owner.open(dict(request_id='b' * 32, source_id=src.id, generation=gen, selection=choice))
+        assert res['size'] == 100 and res['identity_mode'] == 'strong_etag'
+        assert len(visited) == 2 and len(registered) == 1
+        assert 'Referer' in visited[0]['headers'] and 'Referer' not in visited[1]['headers']
+        assert visited[1]['target'].endswith('?Policy=eyJ%2B1&Signature=AbC~9')
+    owner.close()
+
+    # 2. Full loopback ShareStream + Host + t4_ui hop-by-hop A -> B -> C approval & post-probe Range redirect check
+    payload = b'0123456789ABCDEF'
+    state = SimpleNamespace(
+        b_target='https://cdn-b.example.invalid/hop1?sig=b_raw%2B1',
+        c_target='https://cdn-c.example.invalid/final.mkv?Policy=eyJ%2B2&Signature=Sig~C',
+        seen=[],
+        approve_decisions=[],
+        prompts=[],
+    )
+
+    class ChainHandler(BaseHTTPRequestHandler):
+        def log_message(self, *a):
+            pass
+
+        def do_GET(self):
+            host_h, _, real_path = self.path.lstrip('/').partition('/')
+            real_path = '/' + real_path
+            rng = self.headers.get('Range', '')
+            state.seen.append((host_h, real_path, rng, self.headers.get('Referer'), self.headers.get('Authorization')))
+            if host_h == 't4-a.example.invalid':
+                self.send_response(302)
+                self.send_header('Location', state.b_target)
+                self.send_header('Content-Length', '0')
+                self.end_headers()
+                return
+            if host_h == 'cdn-b.example.invalid':
+                self.send_response(302)
+                self.send_header('Location', state.c_target)
+                self.send_header('Content-Length', '0')
+                self.end_headers()
+                return
+            m = re.fullmatch(r'bytes=(\d+)-(\d+)', rng)
+            s_idx, e_idx = int(m[1]), int(m[2])
+            chunk = payload[s_idx:e_idx + 1]
+            self.send_response(206)
+            self.send_header('Content-Type', 'video/x-matroska')
+            self.send_header('Content-Range', f'bytes {s_idx}-{e_idx}/{len(payload)}')
+            self.send_header('Content-Length', str(len(chunk)))
+            self.send_header('ETag', '"strong-chain-v1"')
+            self.end_headers()
+            self.wfile.write(chunk)
+
+    server = ThreadingHTTPServer(('127.0.0.1', 0), ChainHandler)
+    srv_thread = Thread(target=server.serve_forever, kwargs={'poll_interval': 0.02}, daemon=True)
+    srv_thread.start()
+
+    def live_conn(url, remaining, **kw):
+        u = urlsplit(url)
+        target = '/' + (u.hostname or '') + (u.path or '/') + ('?' + u.query if u.query else '')
+        return HTTPConnection('127.0.0.1', server.server_port, timeout=remaining()), target
+
+    def chain_t4_read(url, deadline, cancelled, **kw):
+        q = parse_qs(urlsplit(url).query)
+        if 'play' in q:
+            return json.dumps({
+                'parse': 0,
+                'url': 'https://t4-a.example.invalid/hop0?entry=1',
+                'header': {'Referer': 'https://t4-a.example.invalid/'},
+            }).encode('utf-8')
+        if 'ids' in q:
+            return json.dumps({
+                'list': [{
+                    'vod_id': 'vid_chain',
+                    'vod_name': '三跳测试片',
+                    'vod_play_from': '主线',
+                    'vod_play_url': '第1集$ep1',
+                }]
+            }).encode('utf-8')
+        return json.dumps({
+            'class': [{'type_id': '1', 'type_name': '电影'}],
+            'list': [{'vod_id': 'vid_chain', 'vod_name': '三跳测试片'}],
+        }).encode('utf-8')
+
+    monkeypatch.setattr(source_media_http, 'connection', live_conn)
+    monkeypatch.setattr(t4_ui, 'read', chain_t4_read)
+    monkeypatch.setattr(t4_http, 'read', chain_t4_read)
+
+    live_cfg = json.dumps({
+        'sites': [{'key': 'chain_s', 'name': '三跳站', 'type': 4, 'api': 'https://t4-a.example.invalid/vod'}]
+    }).encode('utf-8')
+    live_src = t4.preview(live_cfg).source('https://t4-a.example.invalid/cfg.json')
+    reg2 = Registry(plugin.path)
+    reg2.save(live_src)
+    _, live_gen = reg2.source_snapshot(live_src.id)
+    reg2.close()
+
+    def on_yesno(title, body):
+        state.prompts.append(body)
+        return state.approve_decisions.pop(0)
+
+    monkeypatch.setattr(
+        plugin.module.xbmcgui,
+        'Dialog',
+        lambda: SimpleNamespace(yesno=on_yesno, ok=lambda *a: None, select=lambda *a: 0, input=lambda *a: ''),
+    )
+
+    host = Host(plugin.path.parent)
+    host.start()
+    try:
+        plugin.rows.clear()
+        plugin.module.execute(19, {'action': 'browse', 'source': live_src.id})
+        detail_url = plugin.rows[2][0]
+        plugin.rows.clear()
+        plugin.module.execute(19, dict(parse_qsl(urlsplit(detail_url).query)))
+        play_url = plugin.rows[0][0]
+        play_params = dict(parse_qsl(urlsplit(play_url).query))
+
+        # Decline B on first attempt -> neither B nor C is ever contacted!
+        state.seen.clear()
+        state.prompts.clear()
+        state.approve_decisions = [False]
+        plugin.module.execute(19, dict(play_params))
+        assert [h for h, *_ in state.seen] == ['t4-a.example.invalid']
+        assert len(state.prompts) == 1 and 'https://cdn-b.example.invalid' in state.prompts[0]
+        assert 'cdn-c.example.invalid' not in state.prompts[0]
+
+        # Approve B then decline C -> B contacted, C NEVER contacted, only B stored in approvals!
+        state.seen.clear()
+        state.prompts.clear()
+        state.approve_decisions = [True, False]
+        plugin.module.execute(19, dict(play_params))
+        assert [h for h, *_ in state.seen] == ['t4-a.example.invalid', 't4-a.example.invalid', 'cdn-b.example.invalid']
+        assert len(state.prompts) == 2
+        assert 'https://cdn-b.example.invalid' in state.prompts[0]
+        assert 'https://cdn-c.example.invalid' in state.prompts[1]
+        with T4TokenStore(plugin.path.parent / 't4-tokens.sqlite3', read_only=True) as ro:
+            assert ro.approved_origins(live_src.id, live_gen) == {'https://cdn-b.example.invalid'}
+
+        # Now approve C -> since B is already approved, prompts ONLY for C and plays!
+        state.seen.clear()
+        state.prompts.clear()
+        state.approve_decisions = [True]
+        plugin.resolved.clear()
+        plugin.module.execute(19, dict(play_params))
+        assert len(state.prompts) == 1 and 'https://cdn-c.example.invalid' in state.prompts[0]
+        assert plugin.resolved[-1][:2] == (19, True)
+        stream_url = plugin.resolved[-1][2].path
+
+        # Range read 1 succeeds over A -> B -> C with exact signed query on C and Referer stripped on B & C
+        state.seen.clear()
+        with urlopen(Request(stream_url, headers={'Range': 'bytes=0-7'}), timeout=3) as resp:
+            assert resp.status == 206 and resp.read() == b'01234567'
+        assert [h for h, *_ in state.seen] == ['t4-a.example.invalid', 'cdn-b.example.invalid', 'cdn-c.example.invalid']
+        assert state.seen[0][3] == 'https://t4-a.example.invalid/'
+        assert state.seen[1][3] is None and state.seen[2][3] is None
+        assert state.seen[2][1] == '/final.mkv?Policy=eyJ%2B2&Signature=Sig~C'
+
+        # Post-probe redirect target switches to unapproved rogue-d -> ShareStream rejects BEFORE contacting rogue-d!
+        state.seen.clear()
+        state.c_target = 'https://rogue-d.example.invalid/evil.mkv'
+        with pytest.raises((HTTPError, OSError)):
+            urlopen(Request(stream_url, headers={'Range': 'bytes=8-15'}), timeout=3).read()
+        assert 'rogue-d.example.invalid' not in [h for h, *_ in state.seen]
+
+        # Restore C, then revoke C's approval -> subsequent Range read is rejected before contacting C!
+        state.c_target = 'https://cdn-c.example.invalid/final.mkv?Policy=eyJ%2B2&Signature=Sig~C'
+        with T4TokenStore(plugin.path.parent / 't4-tokens.sqlite3') as tstore:
+            tstore.revoke_origin(live_src.id, live_gen, 'https://cdn-c.example.invalid')
+        state.seen.clear()
+        with pytest.raises((HTTPError, OSError)):
+            urlopen(Request(stream_url, headers={'Range': 'bytes=8-15'}), timeout=3).read()
+        assert 'cdn-c.example.invalid' not in [h for h, *_ in state.seen]
+    finally:
+        host.close()
+        server.shutdown()
+        server.server_close()
+        srv_thread.join(2.0)
+
+
+def test_u09_emby_http_gateway_subset_and_strm_finite_boundaries(tmp_path, monkeypatch):
+    """CT-STRM (R14-06..08) + Emby cross-origin signed HTTP / RequiredHttpHeaders subset (U09):
+    - Approved Emby cross-origin HTTP MediaSource with signed query and safe RequiredHttpHeaders
+      streams byte-accurately via SourceStreams/ShareStream while preserving server/user/item/media-source
+      identity and PlaySessionId, without leaking X-Emby-Token or Emby Referer cross-origin.
+    - HLS (.m3u8), DASH (.mpd), infinite live streams, BluRay/BDMV folders, recursive .strm, and
+      untrusted RequiredHttpHeaders (Authorization/Cookie) fail closed with explicit error codes.
+    """
+    from http.client import HTTPConnection
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+    from threading import Thread
+    from urllib.parse import urlsplit
+    from urllib.request import Request, urlopen
+
+    from bobbi_core import media_pointer
+    from bobbi_core.library_contract import LibraryError, Source
+    from bobbi_platform import server_http, source_media_http, source_pointers
+    from bobbi_platform.host import Host
+    from bobbi_platform.libraries import Registry, vfs_source
+    from bobbi_platform.owned_playback import emby_source_scope, reserve_playback
+    from bobbi_platform.paths import ProfileBinding
+    from bobbi_platform.source_streams import open_emby_http_gateway_playback
+
+    media_bytes = b'EMBY-FINITE-HTTP-ORIGINAL-STREAM-BYTES-0123456789'
+    state = SimpleNamespace(
+        media_source={
+            'Id': 'ms_http_1',
+            'Name': '4K Signed CDN',
+            'Protocol': 'Http',
+            'Path': 'https://emby-cdn.example.invalid/bucket/movie.mkv?X-Amz-Signature=keep%2Bexact~1',
+            'SupportsDirectPlay': True,
+            'VideoType': 'VideoFile',
+            'Size': len(media_bytes),
+            'RequiredHttpHeaders': {
+                'User-Agent': 'EmbyCustomUA/2.1',
+                'Referer': '',  # filled below with Emby server origin to verify cross-origin stripping
+            },
+        },
+        cdn_requests=[],
+        emby_requests=[],
+    )
+
+    class EmbyAndCdnHandler(BaseHTTPRequestHandler):
+        def log_message(self, *a):
+            pass
+
+        def do_GET(self):
+            host_h = self.headers.get('Host', '').split(':')[0]
+            if host_h.startswith('emby-cdn.example.invalid'):
+                state.cdn_requests.append({
+                    'path': self.path,
+                    'ua': self.headers.get('User-Agent'),
+                    'referer': self.headers.get('Referer'),
+                    'emby_tok': self.headers.get('X-Emby-Token'),
+                    'auth': self.headers.get('Authorization'),
+                    'range': self.headers.get('Range', ''),
+                })
+                m = re.fullmatch(r'bytes=(\d+)-(\d+)', self.headers.get('Range', ''))
+                s_i, e_i = int(m[1]), int(m[2])
+                chunk = media_bytes[s_i:e_i + 1]
+                self.send_response(206)
+                self.send_header('Content-Type', 'video/x-matroska')
+                self.send_header('Content-Range', f'bytes {s_i}-{e_i}/{len(media_bytes)}')
+                self.send_header('Content-Length', str(len(chunk)))
+                self.end_headers()
+                self.wfile.write(chunk)
+                return
+
+            state.emby_requests.append((self.command, self.path, self.headers.get('X-Emby-Token')))
+            if self.path == '/emby/System/Info/Public':
+                body = {'Id': 'srv01'}
+            elif self.path == '/emby/Users/usr01':
+                body = {'Id': 'usr01', 'ServerId': 'srv01'}
+            elif self.path == '/emby/Users/usr01/Items/item01':
+                body = {
+                    'Id': 'item01',
+                    'Name': '沙丘2',
+                    'Type': 'Movie',
+                    'IsFolder': False,
+                    'MediaSources': [dict(state.media_source)],
+                }
+            else:
+                self.send_error(404)
+                return
+            raw = json.dumps(body).encode('utf-8')
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Content-Length', str(len(raw)))
+            self.end_headers()
+            self.wfile.write(raw)
+
+        def do_POST(self):
+            state.emby_requests.append((self.command, self.path, self.headers.get('X-Emby-Token')))
+            length = int(self.headers.get('Content-Length', '0'))
+            req_json = json.loads(self.rfile.read(length))
+            if self.path == '/emby/Items/item01/PlaybackInfo':
+                body = {
+                    'MediaSources': [dict(state.media_source)],
+                    'PlaySessionId': 'ps-emby-http-01' if req_json.get('IsPlayback') else '',
+                }
+                raw = json.dumps(body).encode('utf-8')
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json')
+                self.send_header('Content-Length', str(len(raw)))
+                self.end_headers()
+                self.wfile.write(raw)
+                return
+            self.send_error(404)
+
+    server = ThreadingHTTPServer(('127.0.0.1', 0), EmbyAndCdnHandler)
+    srv_thread = Thread(target=server.serve_forever, kwargs={'poll_interval': 0.02}, daemon=True)
+    srv_thread.start()
+
+    import socket as _sock2
+
+    class CdnRoutedConn(HTTPConnection):
+        def connect(self):
+            self.sock = _sock2.create_connection(('127.0.0.1', server.server_port), self.timeout)
+
+    emby_base = f'http://127.0.0.1:{server.server_port}/emby'
+    state.media_source['RequiredHttpHeaders']['Referer'] = 'https://emby-origin.example.invalid/'
+    monkeypatch.setattr(
+        'bobbi_platform.server_emby._origin_key',
+        lambda u: ('http', '127.0.0.1', server.server_port) if 'emby-origin.example.invalid' in u else source_media_http._origin_key(u),
+        raising=False,
+    )
+    monkeypatch.setattr(
+        source_media_http,
+        'connection',
+        lambda url, rem, **kw: (
+            CdnRoutedConn(urlsplit(url).hostname, urlsplit(url).port or 443, timeout=rem()),
+            (urlsplit(url).path or '/') + ('?' + urlsplit(url).query if urlsplit(url).query else ''),
+        ),
+    )
+
+    emby_src = Source(
+        id='e' * 32,
+        name='Home Emby',
+        kind='media_server',
+        location=emby_base,
+        password='secret-emby-token-xyz',
+        metadata={'schema': 1, 'provider': 'emby', 'server_id': 'srv01', 'user_id': 'usr01'},
+    )
+    reg = Registry(tmp_path / 'libraries.sqlite3')
+    reg.save(emby_src)
+    _, emby_gen = reg.source_snapshot(emby_src.id)
+    reg.close()
+
+    binding = ProfileBinding(lambda addon='plugin.video.bobbi': tmp_path)
+    scope = emby_source_scope(
+        source_id=emby_src.id,
+        generation=emby_gen,
+        server_id='srv01',
+        user_id='usr01',
+    )
+    prompts = []
+    dialog = SimpleNamespace(yesno=lambda title, body: prompts.append(body) or True)
+
+    host = Host(tmp_path)
+    host.start()
+    try:
+        with reserve_playback(f'emby://{emby_src.id}/item01', scope, binding=binding, allow_starting=True) as resv:
+            opened = open_emby_http_gateway_playback(
+                resv,
+                dialog,
+                tmp_path,
+                source_id=emby_src.id,
+                generation=emby_gen,
+                server_id='srv01',
+                user_id='usr01',
+                item_id='item01',
+                media_source_id='ms_http_1',
+                require_current=lambda: True,
+                open_session=True,
+            )
+            assert opened is not None
+            assert len(prompts) == 1 and 'https://emby-cdn.example.invalid' in prompts[0]
+            assert opened['play_session_id'] == 'ps-emby-http-01'
+            assert opened['identity_mode'] == 'weak_session'
+            assert opened['size'] == len(media_bytes)
+
+            with urlopen(Request(opened['url'], headers={'Range': f'bytes=0-{len(media_bytes) - 1}'}), timeout=3) as r:
+                assert r.status == 206 and r.read() == media_bytes
+
+            # Verify CDN received custom User-Agent, preserved exact signed query, and ZERO Emby credentials/Referer!
+            assert state.cdn_requests[-1]['path'] == '/bucket/movie.mkv?X-Amz-Signature=keep%2Bexact~1'
+            assert state.cdn_requests[-1]['ua'] == 'EmbyCustomUA/2.1'
+            assert state.cdn_requests[-1]['referer'] is None
+            assert state.cdn_requests[-1]['emby_tok'] is None
+            assert state.cdn_requests[-1]['auth'] is None
+
+        # Negative capability checks: HLS, DASH, infinite live, BluRay/BDMV, recursive .strm, untrusted headers
+        for bad_patch, expected_code in [
+            ({'Path': 'https://emby-cdn.example.invalid/live/index.m3u8'}, 'MEDIA_NOT_FINITE'),
+            ({'Path': 'https://emby-cdn.example.invalid/dash/manifest.mpd'}, 'MEDIA_NOT_FINITE'),
+            ({'IsInfiniteStream': True}, 'MEDIA_NOT_FINITE'),
+            ({'VideoType': 'BluRay'}, 'MEDIA_TYPE_UNSUPPORTED'),
+            ({'Path': 'https://emby-cdn.example.invalid/disc/BDMV/index.bdmv'}, 'MEDIA_TYPE_UNSUPPORTED'),
+            ({'Path': 'https://emby-cdn.example.invalid/nested/pointer.strm'}, 'MEDIA_TYPE_UNSUPPORTED'),
+            ({'RequiredHttpHeaders': {'Authorization': 'Bearer leaked'}}, 'T4_HEADERS'),
+        ]:
+            orig_ms = dict(state.media_source)
+            state.media_source.update(bad_patch)
+            try:
+                with reserve_playback(f'emby://{emby_src.id}/item01', scope, binding=binding, allow_starting=True) as resv:
+                    with pytest.raises(LibraryError, match=expected_code):
+                        open_emby_http_gateway_playback(
+                            resv,
+                            dialog,
+                            tmp_path,
+                            source_id=emby_src.id,
+                            generation=emby_gen,
+                            server_id='srv01',
+                            user_id='usr01',
+                            item_id='item01',
+                            media_source_id='ms_http_1',
+                            require_current=lambda: True,
+                        )
+            finally:
+                state.media_source = orig_ms
+    finally:
+        host.close()
+        server.shutdown()
+        server.server_close()
+        srv_thread.join(2.0)
+
+    # 3. CT-STRM (R14-06): STRM BOM/CRLF positive vs >16KB, multiline, #KODIPROP, HLS, recursive .strm negative
+    strm_root = tmp_path / 'strm_bounds'
+    strm_root.mkdir()
+    (strm_root / 'bom_ok.strm').write_bytes(b'\xef\xbb\xbfhttps://cdn.example.invalid/movie.mkv?sig=1\r\n')
+    vfs = vfs_source('STRM Bounds', str(strm_root))
+    parsed_url, obs = source_pointers.read(vfs, 'bom_ok.strm')
+    assert parsed_url == 'https://cdn.example.invalid/movie.mkv?sig=1' and len(obs) == 64
+
+    for bad_name, bad_raw, exp_err in [
+        ('oversize.strm', b'https://cdn.example.invalid/' + b'a' * 16400, 'POINTER_INVALID'),
+        ('multiline.strm', b'https://cdn.example.invalid/a.mkv\nhttps://cdn.example.invalid/b.mkv\n', 'INVALID_VALUE'),
+        ('kodiprop.strm', b'#KODIPROP:inputstream=inputstream.adaptive\nhttps://cdn.example.invalid/a.mpd', 'POINTER_PROPERTY_UNSUPPORTED'),
+        ('hls.strm', b'https://cdn.example.invalid/live/stream.m3u8\n', 'MEDIA_NOT_FINITE'),
+    ]:
+        (strm_root / bad_name).write_bytes(bad_raw)
+        with pytest.raises(LibraryError, match=exp_err):
+            source_pointers.read(vfs, bad_name)

@@ -149,10 +149,11 @@ def _strip_redirect_headers(headers: dict, prev_url: str, next_url: str) -> dict
 
 
 class Session:
-    def __init__(self, *, ssl_context=None, max_redirects: int = 0):
+    def __init__(self, *, ssl_context=None, max_redirects: int = 0, origin_policy=None):
         self.cancelled = None
         self.ssl_context = ssl_context
         self.max_redirects = max_redirects
+        self.origin_policy = origin_policy
 
     def __enter__(self):
         return self
@@ -161,18 +162,34 @@ class Session:
         pass  # Connections belong to individual bounded responses, never pooled.
 
     @contextmanager
-    def get(self, url, *, headers, stream, allow_redirects, timeout, deadline=None, cancelled=None, max_redirects=None):
+    def get(
+        self,
+        url,
+        *,
+        headers,
+        stream,
+        allow_redirects,
+        timeout,
+        deadline=None,
+        cancelled=None,
+        max_redirects=None,
+        origin_policy=None,
+    ):
         if not stream or allow_redirects:
             raise LibraryError('MEDIA_RANGE_INVALID')
         allowed_hops = self.max_redirects if max_redirects is None else int(max_redirects)
         connect_cap, read_window = timeout if isinstance(timeout, tuple) else (timeout, timeout)
         active_cancel = cancelled or self.cancelled
+        active_origin_policy = origin_policy if origin_policy is not None else self.origin_policy
         overall_deadline = deadline if deadline is not None else (time.monotonic() + connect_cap + read_window)
         cur_url = url
         cur_headers = dict(headers)
         visited = {cur_url}
 
         for hop in range(allowed_hops + 1):
+            endpoint(cur_url, 'SOURCE_HTTP_URL')
+            if active_origin_policy is not None:
+                active_origin_policy(cur_url)
             hop_conn = None
             try:
                 with AttemptHandle(
@@ -275,14 +292,30 @@ def probe(url, headers, session_factory=Session, *, deadline=None, cancelled=Non
             return probe_evidence(reply)
 
 
-def probe_stream(url, headers, session_factory=Session, *, max_redirects=3, deadline=None, cancelled=None):
+def probe_stream(
+    url,
+    headers,
+    session_factory=Session,
+    *,
+    max_redirects=3,
+    deadline=None,
+    cancelled=None,
+    origin_policy=None,
+):
     """Probe finite Range media with controlled <=3-hop redirect and strong_etag vs weak_session classification."""
     probe_deadline = deadline if deadline is not None else (time.monotonic() + 9.0)
     req_headers = dict(headers, Range='bytes=0-0', **{'Accept-Encoding': 'identity', 'Connection': 'close'})
     with session_factory() as session:
         kwargs = dict(headers=req_headers, stream=True, allow_redirects=False, timeout=(3, 5))
         if isinstance(session, Session):
-            kwargs.update(deadline=probe_deadline, cancelled=cancelled, max_redirects=max_redirects)
+            kwargs.update(
+                deadline=probe_deadline,
+                cancelled=cancelled,
+                max_redirects=max_redirects,
+                origin_policy=origin_policy,
+            )
+        elif origin_policy is not None:
+            origin_policy(url)
         with session.get(url, **kwargs) as reply:
             size, raw_tag = probe_evidence(reply, require_etag=False)
             mime = reply.headers.get('Content-Type', '').partition(';')[0].strip().lower()

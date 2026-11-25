@@ -36,6 +36,24 @@ def _id(value):
         raise PanError('PAN_REPLY_INVALID') from None
 
 
+def emby_media_origin_allowed(url: str, server_base: str, approved_origins: set[str]) -> bool:
+    """Source-bound origin check for Emby cross-origin HTTP media (U09)."""
+    u_parts = urlsplit(url)
+    b_parts = urlsplit(server_base)
+    u_scheme = u_parts.scheme.lower()
+    b_scheme = b_parts.scheme.lower()
+    u_port = u_parts.port or (443 if u_scheme == 'https' else 80)
+    b_port = b_parts.port or (443 if b_scheme == 'https' else 80)
+    u_host = (u_parts.hostname or '').lower()
+    b_host = (b_parts.hostname or '').lower()
+    if (u_scheme, u_host, u_port) == (b_scheme, b_host, b_port):
+        return True
+    if u_scheme == 'https' and b_host and u_host.endswith('.' + b_host):
+        return True
+    canonical = f'{u_scheme}://{u_parts.netloc.lower()}'
+    return canonical in approved_origins
+
+
 def static_original_url(base, entry, mid):
     """One canonical Emby/Jellyfin URL for an exact file version; never embeds credentials."""
     return address(base, '/Videos/' + _id(entry) + '/stream') + '?' + urlencode(
@@ -362,3 +380,83 @@ class Client:
         if matching.count(selected) != 1:
             raise PanError('PAN_FILE_CHANGED')
         return item_progress(self.provider, entry, item)
+
+    def resolve_gateway_http(self, item_id, media_id, *, is_playback=False):
+        """Resolve Emby HTTP / RequiredHttpHeaders finite direct media for SourceStreams gateway (U09).
+
+        Preserves exact server_id / user_id / item_id / media_source_id identity and signed queries,
+        strips cross-origin server Referer, and explicitly rejects HLS/DASH/live/BDMV/untrusted headers.
+        """
+        from bobbi_core import t4
+        from bobbi_core.library_contract import LibraryError
+        from bobbi_core.source_endpoint import endpoint as media_endpoint
+        from .source_media_http import _origin_key
+
+        if self.provider != 'emby':
+            raise PanError('PAN_PROVIDER_INVALID')
+        entry, mid = _id(item_id), _id(media_id)
+        self._identity()
+        detail = self._item(entry)
+        matching = [m for m in _rows(detail, 'MediaSources') if m.get('Id') == mid]
+        if len(matching) != 1:
+            raise LibraryError('SOURCE_STREAM_CHANGED')
+        chosen = matching[0]
+        play_session_id = ''
+        if is_playback:
+            current, play_session_id = self._playback_source(entry, mid, is_playback=True)
+        else:
+            current = self._playback_source(entry, mid)
+
+        for media in (chosen, current):
+            if media.get('IsInfiniteStream') or media.get('RequiresOpening') or media.get('LiveStreamId'):
+                raise LibraryError('MEDIA_NOT_FINITE')
+            vtype = media.get('VideoType', 'VideoFile')
+            if vtype is not None and vtype != 'VideoFile':
+                raise LibraryError('MEDIA_TYPE_UNSUPPORTED')
+            container = str(media.get('Container') or '').strip().lower()
+            if container in ('m3u8', 'hls', 'dash', 'mpd', 'ism'):
+                raise LibraryError('MEDIA_NOT_FINITE')
+            if container in ('bluray', 'bdmv', 'dvd', 'video_ts', 'strm'):
+                raise LibraryError('MEDIA_TYPE_UNSUPPORTED')
+
+        if chosen.get('Protocol') != current.get('Protocol') or chosen.get('Path') != current.get('Path'):
+            raise LibraryError('SOURCE_STREAM_CHANGED')
+        if current.get('Protocol') != 'Http':
+            raise LibraryError('SOURCE_STREAM_INVALID')
+
+        url = current.get('Path')
+        if not isinstance(url, str) or not url.strip():
+            raise LibraryError('SOURCE_HTTP_URL')
+        if self.saved.get('token') and self.saved['token'] in unquote(url):
+            raise LibraryError('MEDIA_AUTH')
+
+        raw_path_lower = unquote(urlsplit(url).path).lower()
+        if raw_path_lower.endswith(('.m3u', '.m3u8', '.mpd', '.ism', '.pls')):
+            raise LibraryError('MEDIA_NOT_FINITE')
+        if raw_path_lower.endswith(('.strm', '.bdmv', '.ifo')) or '/bdmv/' in raw_path_lower or '/video_ts/' in raw_path_lower:
+            raise LibraryError('MEDIA_TYPE_UNSUPPORTED')
+
+        checked_url = media_endpoint(url, 'SOURCE_HTTP_URL')
+        raw_hdrs = current.get('RequiredHttpHeaders')
+        if raw_hdrs is None:
+            raw_hdrs = chosen.get('RequiredHttpHeaders')
+        cleaned_headers = t4.validate_headers(raw_hdrs)
+        if 'Referer' in cleaned_headers and _origin_key(cleaned_headers['Referer']) != _origin_key(checked_url):
+            cleaned_headers.pop('Referer', None)
+
+        declared_sizes = [number(d, 1) for d in (chosen.get('Size'), current.get('Size')) if d is not None]
+        if len(set(declared_sizes)) > 1:
+            raise LibraryError('SOURCE_STREAM_CHANGED')
+        declared_size = declared_sizes[0] if declared_sizes else None
+        title = text(detail.get('Name') or current.get('Name') or mid)
+        return dict(
+            url=checked_url,
+            headers=cleaned_headers,
+            title=title,
+            declared_size=declared_size,
+            play_session_id=play_session_id,
+            server_id=self.saved['server_id'],
+            user_id=self.saved['user_id'],
+            item_id=entry,
+            media_source_id=mid,
+        )
