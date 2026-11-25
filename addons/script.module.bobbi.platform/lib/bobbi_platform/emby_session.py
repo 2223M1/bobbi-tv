@@ -23,7 +23,7 @@ import re
 import select
 import socket
 import struct
-from threading import Event, Lock, Thread
+from threading import Event, Lock, Thread, current_thread
 import time
 from urllib.parse import urlencode, urlsplit
 
@@ -167,49 +167,40 @@ class EmbyInvalidationHub:
             else:
                 st['last_confirmed_at'] = now
                 st['sync_state'] = 'synced'
-            return {
-                'revision': st['revision'],
-                'sync_state': st['sync_state'],
-                'auth_state': st['auth_state'],
-                'ws_connected': st['ws_connected'],
-                'last_event_at': st['last_event_at'],
-                'last_confirmed_at': st['last_confirmed_at'],
-                'poll_interval_seconds': self.POLL_INTERVAL_SECONDS,
-                'refresh_target_seconds': (
-                    self.WS_REFRESH_BUDGET_SECONDS if st['ws_connected']
-                    else self.POLL_INTERVAL_SECONDS + self.POLL_READ_BUDGET_SECONDS
-                ),
-            }
+            return self._snapshot_locked(st)
+
+    def _snapshot_locked(self, st: dict) -> dict:
+        """Project a captured state while the caller owns self._lock; no lock or IO."""
+        return {
+            'revision': st['revision'],
+            'sync_state': st['sync_state'],
+            'auth_state': st['auth_state'],
+            'ws_connected': st['ws_connected'],
+            'last_event_at': st['last_event_at'],
+            'last_confirmed_at': st['last_confirmed_at'],
+            'poll_interval_seconds': self.POLL_INTERVAL_SECONDS,
+            'refresh_target_seconds': (
+                self.WS_REFRESH_BUDGET_SECONDS if st['ws_connected']
+                else self.POLL_INTERVAL_SECONDS + self.POLL_READ_BUDGET_SECONDS
+            ),
+        }
 
     def snapshot(self, source_id: str, generation: str) -> dict:
         with self._lock:
-            st = self._entry(source_id, generation)
-            return {
-                'revision': st['revision'],
-                'sync_state': st['sync_state'],
-                'auth_state': st['auth_state'],
-                'ws_connected': st['ws_connected'],
-                'last_event_at': st['last_event_at'],
-                'last_confirmed_at': st['last_confirmed_at'],
-                'poll_interval_seconds': self.POLL_INTERVAL_SECONDS,
-                'refresh_target_seconds': (
-                    self.WS_REFRESH_BUDGET_SECONDS if st['ws_connected']
-                    else self.POLL_INTERVAL_SECONDS + self.POLL_READ_BUDGET_SECONDS
-                ),
-            }
+            return self._snapshot_locked(self._entry(source_id, generation))
 
     def poll_server_digest(self, source_id: str, generation: str, *, client_loader=None, force: bool = False) -> dict:
         """Bounded fallback server UserData/recent digest poll when WebSocket is unavailable (<=30s)."""
         now = self.clock()
         with self._lock:
             st = self._entry(source_id, generation)
-            if st['auth_state'] == 'AUTH_REQUIRED':
-                return self.snapshot(source_id, generation)
+            if self._stop.is_set() or st['auth_state'] == 'AUTH_REQUIRED':
+                return self._snapshot_locked(st)
             if not force and st['ws_connected']:
-                return self.snapshot(source_id, generation)
+                return self._snapshot_locked(st)
             last_poll = st.get('last_poll_at')
             if not force and last_poll is not None and (now - last_poll) < self.POLL_INTERVAL_SECONDS:
-                return self.snapshot(source_id, generation)
+                return self._snapshot_locked(st)
             st['last_poll_at'] = now
         loader = client_loader or (lambda sid, gen: _load_emby_client(self.root, sid, gen))
         try:
@@ -251,7 +242,7 @@ class EmbyInvalidationHub:
                 st['sync_state'] = 'dirty'
             elif st['sync_state'] == 'offline':
                 st['sync_state'] = 'synced'
-        return self.snapshot(source_id, generation)
+            return self._snapshot_locked(st)
 
     def ingest_ws_message(self, source_id: str, generation: str, expected_user_id: str, raw_text: str) -> bool:
         """Validate and process one Emby WebSocket JSON frame as an invalidation hint only."""
@@ -405,14 +396,23 @@ class EmbyInvalidationHub:
                     st['ws_connected'] = False
             _ = ws_scheme
 
-    def close(self) -> None:
+    def close(self) -> bool:
         self._stop.set()
         with self._lock:
-            workers = list(self._ws_workers.values())
-            self._ws_workers.clear()
-        for ev, wk in workers:
+            workers = list(self._ws_workers.items())
+        drained = True
+        for key, entry in workers:
+            ev, wk = entry[0], entry[1]
             ev.set()
-            wk.join(1.0)
+            if wk is not current_thread():
+                wk.join(1.0)
+            if wk.is_alive():
+                drained = False
+            else:
+                with self._lock:
+                    if self._ws_workers.get(key) is entry:
+                        self._ws_workers.pop(key, None)
+        return drained
 
 
 class EmbySessionReporter:
