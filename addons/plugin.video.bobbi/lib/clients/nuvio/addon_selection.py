@@ -1,13 +1,18 @@
 import hashlib
-import ipaddress
 import json
-import socket
+import time
 from datetime import timedelta
-from urllib.parse import urljoin, urlsplit, urlunsplit
+from urllib.parse import urlsplit, urlunsplit
 
 import requests
 import xbmcgui
 
+from bobbi_core.http_policy import (
+    canonical_https_manifest_url,
+    is_safe_https_url,
+    read_bounded_http_body,
+    request_with_safe_redirects,
+)
 from lib.api.nuvio import NuvioClient
 from lib.clients.nuvio.constants import (
     NUVIO_ADDONS_KEY,
@@ -21,84 +26,49 @@ from lib.utils.kodi.settings import get_int_setting
 from lib.utils.kodi.utils import kodilog, translation
 
 MAX_MANIFEST_BYTES = 512 * 1024
-MAX_REDIRECTS = 5
 
 
 def _safe_manifest_url(url):
-    normalized = str(url or "").strip()
-    if normalized.startswith("stremio://"):
-        normalized = normalized.replace("stremio://", "https://", 1)
-    parts = urlsplit(normalized)
-    if (
-        parts.scheme.lower() != "https"
-        or not parts.hostname
-        or parts.username
-        or parts.password
-        or parts.fragment
-        or not parts.path.rstrip("/").endswith("/manifest.json")
-    ):
-        return ""
-    return urlunsplit(("https", parts.netloc, parts.path, parts.query, ""))
+    return canonical_https_manifest_url(url)
 
 
-def _is_safe_http_url(url):
+def _fetch_manifest(url, *, cancelled=None):
+    manifest_url = _safe_manifest_url(url)
+    if not manifest_url or not is_safe_https_url(manifest_url):
+        raise ValueError("invalid manifest URL")
+    timeout_s = max(1, int(get_int_setting("stremio_timeout") or 10))
+    deadline = time.monotonic() + timeout_s
+    headers = dict(USER_AGENT_HEADER)
+    headers.setdefault("Accept-Encoding", "identity")
+    session = requests.Session()
+    session.trust_env = False
+    response = None
     try:
-        parts = urlsplit(str(url or ""))
-        if (
-            parts.scheme.lower() != "https"
-            or not parts.hostname
-            or parts.username
-            or parts.password
-        ):
-            return False
-        try:
-            addresses = [str(ipaddress.ip_address(parts.hostname))]
-        except ValueError:
-            addresses = [entry[4][0] for entry in socket.getaddrinfo(parts.hostname, None)]
-        return all(ipaddress.ip_address(address).is_global for address in addresses)
-    except (OSError, ValueError):
-        return False
-
-
-def _request_with_safe_redirects(url):
-    target = url
-    for _ in range(MAX_REDIRECTS + 1):
-        if not _is_safe_http_url(target):
-            raise ValueError("unsafe request destination")
-        response = requests.get(
-            target,
-            allow_redirects=False,
-            headers=USER_AGENT_HEADER,
-            timeout=get_int_setting("stremio_timeout"),
+        response = request_with_safe_redirects(
+            session.get,
+            manifest_url,
+            validator=is_safe_https_url,
+            headers=headers,
+            timeout=timeout_s,
+            deadline=deadline,
+            cancelled=cancelled,
             stream=True,
         )
-        if response.status_code not in {301, 302, 303, 307, 308}:
-            return response
-        location = (response.headers or {}).get("Location")
-        if not location:
-            return response
-        target = urljoin(target, location)
-    raise ValueError("too many redirects")
-
-
-def _fetch_manifest(url):
-    manifest_url = _safe_manifest_url(url)
-    if not manifest_url or not _is_safe_http_url(manifest_url):
-        raise ValueError("invalid manifest URL")
-    response = _request_with_safe_redirects(manifest_url)
-    response.raise_for_status()
-    final_url = _safe_manifest_url(response.url)
-    if not final_url or not _is_safe_http_url(final_url):
-        raise ValueError("unsafe redirect")
-    content_length = response.headers.get("Content-Length")
-    if content_length and int(content_length) > MAX_MANIFEST_BYTES:
-        raise ValueError("manifest too large")
-    content = bytearray()
-    for chunk in response.iter_content(chunk_size=8192):
-        content.extend(chunk)
-        if len(content) > MAX_MANIFEST_BYTES:
-            raise ValueError("manifest too large")
-    manifest = json.loads(content.decode("utf-8"))
+        response.raise_for_status()
+        final_url = _safe_manifest_url(response.url)
+        if not final_url or not is_safe_https_url(final_url):
+            raise ValueError("unsafe redirect")
+        raw = read_bounded_http_body(
+            response,
+            max_bytes=MAX_MANIFEST_BYTES,
+            deadline=deadline,
+            cancelled=cancelled,
+        )
+    finally:
+        if response is not None and hasattr(response, "close"):
+            response.close()
+        session.close()
+    manifest = json.loads(raw.decode("utf-8"))
     if not isinstance(manifest, dict) or not (manifest.get("id") or manifest.get("name")):
         raise ValueError("invalid manifest")
     if not isinstance(manifest.get("resources", []), (list, dict, str)):
@@ -159,7 +129,7 @@ def _merge_records(existing, imported):
     return merged
 
 
-def nuvio_toggle_addons(params=None):
+def nuvio_toggle_addons(params=None, *, cancelled=None):
     """Select enabled Nuvio addon manifests without changing Stremio state."""
     rows = NuvioClient().get_addons()
     if rows is None:
@@ -167,8 +137,10 @@ def nuvio_toggle_addons(params=None):
         return
     imported = []
     for row in rows:
+        if cancelled is not None and cancelled():
+            return
         try:
-            manifest, manifest_url = _fetch_manifest(row["url"])
+            manifest, manifest_url = _fetch_manifest(row["url"], cancelled=cancelled)
             imported.append(
                 {
                     "manifest": manifest,
@@ -177,7 +149,7 @@ def nuvio_toggle_addons(params=None):
                     "nuvioName": row.get("name") or "",
                 }
             )
-        except (requests.RequestException, ValueError, UnicodeDecodeError):
+        except (requests.RequestException, TimeoutError, ValueError, UnicodeDecodeError):
             kodilog("[NUVIO] skipped unavailable or invalid addon manifest")
     if not imported:
         xbmcgui.Dialog().ok(translation(91018), translation(91021))

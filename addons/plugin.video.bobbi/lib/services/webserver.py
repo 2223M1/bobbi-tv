@@ -169,6 +169,8 @@ def _allowed_manifest_url(url):
     parts = urlsplit(url)
     if parts.scheme not in {"http", "https"} or parts.username or parts.password:
         return False
+    if parts.scheme == "http":
+        return _is_local_or_private_host(url)
     return is_safe_http_url(url) or _is_local_or_private_host(url)
 
 
@@ -235,58 +237,41 @@ def format_stremio_addon(addon, selected=None):
     }
 
 
-def _fetch_manifest(url, initial_url):
-    def try_fetch(target_url):
-        session = requests.Session()
-        session.trust_env = False
-        resp = None
-        try:
-            if not _allowed_manifest_url(target_url):
-                raise ValueError("manifest destination rejected")
-            kodilog(f"[WebServer] Fetching Stremio manifest: {_safe_url_description(target_url)}")
-            headers = dict(USER_AGENT_HEADER)
-            headers.setdefault("Accept-Encoding", "identity")
-            resp = request_with_safe_redirects(
-                session.get,
-                target_url,
-                validator=_allowed_manifest_url,
-                headers=headers,
-                timeout=10,
-                stream=True,
-            )
-            resp.raise_for_status()
-            if not _allowed_manifest_url(resp.url):
-                raise ValueError("manifest redirect rejected")
-            raw = read_bounded_http_body(resp, max_bytes=MAX_RESOURCE_JSON_BYTES)
-            manifest = json.loads(raw.decode("utf-8"))
-            if not isinstance(manifest, dict):
-                raise ValueError("manifest invalid")
-            return resp, manifest, None
-        except ValueError as ex:
-            return None, None, str(ex) or type(ex).__name__
-        except Exception as ex:
-            return None, None, type(ex).__name__
-        finally:
-            if resp is not None and hasattr(resp, "close"):
-                resp.close()
-            session.close()
-
-    resp, manifest, error = try_fetch(url)
-
-    if (
-        error
-        and url.startswith("https://")
-        and (initial_url.startswith("stremio://") or _is_local_or_private_host(url))
-    ):
-        http_url = url.replace("https://", "http://", 1)
-        kodilog(
-            f"[WebServer] HTTPS failed, trying HTTP fallback: {_safe_url_description(http_url)}"
+def _fetch_manifest(url):
+    session = requests.Session()
+    session.trust_env = False
+    resp = None
+    deadline = time.monotonic() + 10.0
+    try:
+        if not _allowed_manifest_url(url):
+            raise ValueError("manifest destination rejected")
+        kodilog(f"[WebServer] Fetching Stremio manifest: {_safe_url_description(url)}")
+        headers = dict(USER_AGENT_HEADER)
+        headers.setdefault("Accept-Encoding", "identity")
+        resp = request_with_safe_redirects(
+            session.get,
+            url,
+            validator=_allowed_manifest_url,
+            headers=headers,
+            timeout=10,
+            stream=True,
         )
-        r2, m2, e2 = try_fetch(http_url)
-        if not e2:
-            return r2, m2, None
-
-    return resp, manifest, error
+        resp.raise_for_status()
+        if not _allowed_manifest_url(resp.url):
+            raise ValueError("manifest redirect rejected")
+        raw = read_bounded_http_body(resp, max_bytes=MAX_RESOURCE_JSON_BYTES, deadline=deadline)
+        manifest = json.loads(raw.decode("utf-8"))
+        if not isinstance(manifest, dict):
+            raise ValueError("manifest invalid")
+        return resp, manifest, None
+    except ValueError as ex:
+        return None, None, str(ex) or type(ex).__name__
+    except Exception as ex:
+        return None, None, type(ex).__name__
+    finally:
+        if resp is not None and hasattr(resp, "close"):
+            resp.close()
+        session.close()
 
 
 def prepare_stremio_addon(url):
@@ -294,9 +279,8 @@ def prepare_stremio_addon(url):
     url = (url or "").strip()
     if not url:
         return None, None, "STREMIO_URL_REQUIRED"
-    initial_url = url
     normalized = _normalize_manifest_url(url)
-    resp, manifest, error = _fetch_manifest(normalized, initial_url)
+    resp, manifest, error = _fetch_manifest(normalized)
     if error or not resp or not isinstance(manifest, dict):
         kodilog(f"[WebServer] Manifest fetch failed: {error}")
         return None, None, "STREMIO_MANIFEST_UNAVAILABLE"

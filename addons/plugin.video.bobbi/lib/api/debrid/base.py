@@ -54,6 +54,7 @@ class DebridClient(ABC):
         """
         Make an HTTP request and handle errors.
         """
+        params = {} if params is None else params
         response = self._perform_request(method, url, data, params, json)
         self._handle_errors(response, is_expected_to_fail)
         return self._parse_response(response, is_return_none)

@@ -1,5 +1,6 @@
 import contextlib
 import re
+import time
 from datetime import timedelta
 from typing import Any, Dict, List, Mapping, Optional
 
@@ -13,6 +14,8 @@ from lib.clients.stremio.playback import classify, normalize_stream
 from lib.clients.stremio.protocol import (
     build_resource_url,
     cache_ttl_seconds,
+    configured_addon_url_validator,
+    request_with_safe_redirects,
     response_json,
     safe_cache_key,
 )
@@ -122,10 +125,18 @@ class StremioAddonCatalogsClient(BaseClient):
         log_context = f"catalog_type={catalog_type} extra_keys={extra_keys}"
 
         kodilog(f"Stremio catalog request: {log_context}")
-
+        timeout_s = max(1, int(get_int_setting("stremio_timeout") or 10))
+        deadline = time.monotonic() + timeout_s
+        res = None
         try:
-            res = self.session.get(
-                url, headers=USER_AGENT_HEADER, timeout=get_int_setting("stremio_timeout")
+            res = request_with_safe_redirects(
+                self.session.get,
+                url,
+                validator=configured_addon_url_validator(url),
+                headers=USER_AGENT_HEADER,
+                timeout=timeout_s,
+                deadline=deadline,
+                stream=True,
             )
         except Exception:
             kodilog(
@@ -134,14 +145,17 @@ class StremioAddonCatalogsClient(BaseClient):
             )
             raise
         if res.status_code != 200:
+            status_code = res.status_code
+            if hasattr(res, "close"):
+                res.close()
             kodilog(
                 f"Stremio catalog response failed: {log_context} "
-                f"http_status={res.status_code} failure=http_error"
+                f"http_status={status_code} failure=http_error"
             )
             return
 
         try:
-            data = response_json(res, max_bytes=MAX_CATALOG_JSON_BYTES)
+            data = response_json(res, max_bytes=MAX_CATALOG_JSON_BYTES, deadline=deadline)
         except Exception:
             kodilog(
                 f"Stremio catalog response failed: {log_context} "
@@ -164,14 +178,23 @@ class StremioAddonCatalogsClient(BaseClient):
         url = build_resource_url(self.base_url, "meta", catalog_type, meta_id)
 
         kodilog(f"Stremio meta request: catalog_type={catalog_type}")
-
-        res = self.session.get(
-            url, headers=USER_AGENT_HEADER, timeout=get_int_setting("stremio_timeout")
+        timeout_s = max(1, int(get_int_setting("stremio_timeout") or 10))
+        deadline = time.monotonic() + timeout_s
+        res = request_with_safe_redirects(
+            self.session.get,
+            url,
+            validator=configured_addon_url_validator(url),
+            headers=USER_AGENT_HEADER,
+            timeout=timeout_s,
+            deadline=deadline,
+            stream=True,
         )
         if res.status_code != 200:
+            if hasattr(res, "close"):
+                res.close()
             return
 
-        data = response_json(res)
+        data = response_json(res, deadline=deadline)
         if "meta" in data:
             data["meta"] = Meta.from_dict(data["meta"])
         return data
@@ -182,14 +205,23 @@ class StremioAddonCatalogsClient(BaseClient):
         url = build_resource_url(self.base_url, "stream", catalog_type, meta_id)
 
         kodilog(f"Stremio stream request: catalog_type={catalog_type}")
-
-        res = self.session.get(
-            url, headers=USER_AGENT_HEADER, timeout=get_int_setting("stremio_timeout")
+        timeout_s = max(1, int(get_int_setting("stremio_timeout") or 10))
+        deadline = time.monotonic() + timeout_s
+        res = request_with_safe_redirects(
+            self.session.get,
+            url,
+            validator=configured_addon_url_validator(url),
+            headers=USER_AGENT_HEADER,
+            timeout=timeout_s,
+            deadline=deadline,
+            stream=True,
         )
         if res.status_code != 200:
+            if hasattr(res, "close"):
+                res.close()
             return
 
-        data = response_json(res)
+        data = response_json(res, deadline=deadline)
         if "streams" in data:
             data["streams"] = [Stream.from_dict(s) for s in data["streams"]]
         return data
@@ -276,14 +308,22 @@ class StremioAddonClient(BaseClient):
                 f"type={'series' if mode == 'tv' or media_type == 'tv' else 'movie'}"
             )
 
-            res = self.session.get(
+            timeout_s = max(1, int(self._timeout() or 10))
+            deadline = time.monotonic() + timeout_s
+            res = request_with_safe_redirects(
+                self.session.get,
                 url,
+                validator=configured_addon_url_validator(url),
                 headers=USER_AGENT_HEADER,
-                timeout=self._timeout(),
+                timeout=timeout_s,
+                deadline=deadline,
+                stream=True,
             )
             if res.status_code != 200:
+                if hasattr(res, "close"):
+                    res.close()
                 return SearchResults([], SearchCompletion(1, failed=1))
-            data = response_json(res)
+            data = response_json(res, deadline=deadline)
             response = parsed(data)
             if not response.completion.complete:
                 return response

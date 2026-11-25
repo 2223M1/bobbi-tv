@@ -925,3 +925,463 @@ def test_u07_src02_4500_episodes_bounded_pagination_single_tx_and_native_filters
             t4_ui.execute_directory(1, dict(detail_q, rev='f' * 64), store, make_item)
     finally:
         store.close()
+
+
+# ============================================================================
+# U08: CT-HTTP-BOUNDARY, CT-NUVIO, CT-DEBRID (SRC-03, SRC-04, SRC-06, SRC-07)
+# ============================================================================
+
+
+def test_u08_src07_connect_tcp_slice_fallback_ipv6_ipv4_and_sticky_global_cancel():
+    """Inverted merge witness connect_controls + A05-01..03 (SRC-07):
+    - Address #1 exhausting its 1s slice (out of 2s connect_cap / 10s deadline) closes socket #1
+      without poisoning AttemptHandle and connects on socket #2 (including IPv6 blackhole -> IPv4).
+    - Immediate refusal falls back cleanly; all-fail, global deadline expiry, and explicit cancel
+      exit boundedly with all failed sockets closed and no cross-attempt socket interference.
+    """
+    import errno
+    import socket
+    from unittest.mock import patch
+    from bobbi_core import bounded_http
+
+    for mode, addr_families, expected_res, expected_socks in [
+        ('slice_timeout', (socket.AF_INET, socket.AF_INET), 'connected', 2),
+        ('ipv6_blackhole', (socket.AF_INET6, socket.AF_INET), 'connected', 2),
+        ('immediate_refusal', (socket.AF_INET, socket.AF_INET), 'connected', 2),
+        ('all_timeout', (socket.AF_INET, socket.AF_INET), 'TimeoutError', 2),
+        ('global_expired', (socket.AF_INET, socket.AF_INET), 'TimeoutError', 1),
+        ('already_expired', (socket.AF_INET, socket.AF_INET), 'TimeoutError', 0),
+        ('cancelled', (socket.AF_INET, socket.AF_INET), 'AttemptCancelled', 0),
+    ]:
+        now = [0.5 if mode == 'already_expired' else 0.0]
+        created = []
+
+        class FakeSock:
+            def __init__(self, family, *_):
+                self.family = family
+                self.number = len(created)
+                self.closed = False
+                created.append(self)
+
+            def setblocking(self, _):
+                pass
+
+            def connect_ex(self, _):
+                if mode in ('slice_timeout', 'ipv6_blackhole', 'immediate_refusal') and self.number == 1:
+                    return 0
+                if mode == 'immediate_refusal':
+                    return errno.ECONNREFUSED
+                return errno.EINPROGRESS
+
+            def shutdown(self, _):
+                pass
+
+            def close(self):
+                self.closed = True
+
+        def fake_select(r, w, x, timeout):
+            if mode == 'global_expired':
+                now[0] += max(timeout, 0.6)
+            else:
+                now[0] += timeout
+            return [], [], []
+
+        addrs = [
+            (addr_families[0], socket.SOCK_STREAM, 6, '', ('2001:db8::1', 443, 0, 0) if addr_families[0] == socket.AF_INET6 else ('192.0.2.1', 443)),
+            (addr_families[1], socket.SOCK_STREAM, 6, '', ('192.0.2.2', 443)),
+        ]
+        deadline_val = 0.5 if mode in ('global_expired', 'already_expired') else 10.0
+        attempt = bounded_http.AttemptHandle(
+            deadline=deadline_val,
+            clock=lambda: now[0],
+            cancelled=lambda: mode == 'cancelled',
+        )
+        connected_sock = None
+        with patch.object(bounded_http.socket, 'socket', FakeSock), patch.object(bounded_http.select, 'select', fake_select):
+            try:
+                connected_sock = bounded_http.connect_tcp(addrs, attempt, connect_cap=2.0)
+                status = 'connected'
+                assert not connected_sock.closed
+                if mode in ('slice_timeout', 'ipv6_blackhole'):
+                    assert created[0].closed is True
+                    assert pytest.approx(now[0], abs=0.05) == 1.0
+                    assert not attempt._aborted
+            except Exception as exc:
+                status = type(exc).__name__
+            finally:
+                if connected_sock is not None:
+                    connected_sock.close()
+                attempt.close()
+
+        assert status == expected_res, f'{mode}: got {status}'
+        assert len(created) == expected_socks, f'{mode}: got {len(created)} sockets'
+        if mode == 'global_expired':
+            assert attempt._aborted is True
+        assert all(s.closed for s in created)
+
+    # A05-03: Cancelling/aborting/closing an old attempt handle never shuts down or closes a new attempt's socket
+    old_attempt = bounded_http.AttemptHandle(deadline=10.0, clock=lambda: 0.0)
+    new_attempt = bounded_http.AttemptHandle(deadline=10.0, clock=lambda: 0.0)
+    live_events = []
+    live_sock = type('S', (), {
+        'shutdown': lambda self, *_: live_events.append('shutdown'),
+        'close': lambda self: live_events.append('close'),
+    })()
+    new_attempt.attach_tcp(live_sock)
+    old_attempt.abort()
+    old_attempt.close()
+    assert live_events == []
+    new_attempt.abort()
+    new_attempt.close()
+    assert live_events == ['shutdown']
+
+
+def test_u08_src03_stremio_never_downgrades_to_http_while_preserving_explicit_lan_http(tmp_path, monkeypatch):
+    """Inverted witness test_stremio_uri_tls_failure_retries_secret_path_over_http (F-SRC-03-1..3):
+    - TLS/network error, timeout, HTTP 4xx/5xx, and malformed JSON on stremio:// or https://
+      NEVER trigger an http:// fallback retry, and secret paths/queries never enter logs.
+    - Explicit LAN http://192.168.x.x/... remains supported, while public cleartext http:// is rejected.
+    """
+    import importlib.util
+    import json
+    from types import ModuleType, SimpleNamespace
+    from bobbi_core import http_policy
+
+    plugin_root = REPO_ROOT / 'addons/plugin.video.bobbi'
+    logs = []
+
+    def stub_mod(name, **attrs):
+        m = ModuleType(name)
+        m.__dict__.update(attrs)
+        monkeypatch.setitem(sys.modules, name, m)
+
+    stub_mod('lib.api.stremio.addon_manager', build_addon_instance_key=lambda a: 'id|0')
+    stub_mod(
+        'lib.clients.stremio.constants',
+        STREMIO_ADDONS_CATALOGS_KEY='c',
+        STREMIO_ADDONS_KEY='s',
+        STREMIO_TV_ADDONS_KEY='t',
+        STREMIO_USER_ADDONS='u',
+        decode_selected_ids=lambda v: list(v or []),
+        encode_selected_ids=lambda v: list(v),
+    )
+    stub_mod(
+        'lib.clients.stremio.protocol',
+        MAX_RESOURCE_JSON_BYTES=http_policy.MAX_RESOURCE_JSON_BYTES,
+        is_safe_http_url=http_policy.is_safe_http_url,
+        request_with_safe_redirects=http_policy.request_with_safe_redirects,
+    )
+    stub_mod('lib.db.cached', cache=SimpleNamespace(get=lambda k: None, set=lambda *a, **kw: None))
+    stub_mod('lib.utils.general.utils', USER_AGENT_HEADER={'User-Agent': 'test'})
+    stub_mod('lib.utils.kodi.utils', kodilog=lambda msg, *a: logs.append(str(msg)))
+
+    spec = importlib.util.spec_from_file_location('u08_webserver', plugin_root / 'lib/services/webserver.py')
+    web = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(web)
+
+    monkeypatch.setattr(http_policy.socket, 'getaddrinfo', lambda *a: [(2, 1, 6, '', ('8.8.8.8', 443))])
+    monkeypatch.setattr(web.socket, 'getaddrinfo', lambda host, *a: (
+        [(2, 1, 6, '', ('192.168.1.50', 80))] if host == 'lan-box.local' else [(2, 1, 6, '', ('8.8.8.8', 443))]
+    ))
+
+    for failure_kind in ('tls', 'timeout', 'http404', 'bad_json'):
+        attempts = []
+
+        def fake_redirect_get(getter, target_url, **kw):
+            attempts.append(target_url)
+            if failure_kind == 'tls':
+                raise ConnectionError('synthetic TLS failure')
+            if failure_kind == 'timeout':
+                raise TimeoutError('synthetic timeout')
+            if failure_kind == 'http404':
+                def raise_404():
+                    raise RuntimeError('404 Not Found')
+                return SimpleNamespace(url=target_url, status_code=404, headers={}, raise_for_status=raise_404, close=lambda: None)
+            return SimpleNamespace(
+                url=target_url,
+                status_code=200,
+                headers={},
+                raise_for_status=lambda: None,
+                iter_content=lambda chunk_size=8192: [b'not-json{{{'],
+                close=lambda: None,
+            )
+
+        monkeypatch.setattr(web, 'request_with_safe_redirects', fake_redirect_get)
+        resolved, manifest, err = web.prepare_stremio_addon(
+            'stremio://addon.example.invalid/SYNTHETIC_SECRET_TOKEN/manifest.json?key=TOP_SECRET'
+        )
+        assert resolved is None and manifest is None and err == 'STREMIO_MANIFEST_UNAVAILABLE'
+        assert attempts == ['https://addon.example.invalid/SYNTHETIC_SECRET_TOKEN/manifest.json?key=TOP_SECRET']
+
+    assert all('SYNTHETIC_SECRET_TOKEN' not in line and 'TOP_SECRET' not in line for line in logs)
+
+    # Explicit LAN HTTP works; public HTTP is rejected before network I/O!
+    lan_calls = []
+    raw_ok = json.dumps({'id': 'lan.addon', 'name': 'LAN Addon', 'resources': ['stream'], 'types': ['movie']}).encode('utf-8')
+    monkeypatch.setattr(
+        web,
+        'request_with_safe_redirects',
+        lambda getter, target_url, **kw: (
+            lan_calls.append(target_url)
+            or SimpleNamespace(
+                url=target_url,
+                status_code=200,
+                headers={},
+                raise_for_status=lambda: None,
+                iter_content=lambda chunk_size=8192: [raw_ok],
+                close=lambda: None,
+            )
+        ),
+    )
+    res_lan, man_lan, err_lan = web.prepare_stremio_addon('http://192.168.1.50:7000/manifest.json')
+    assert err_lan is None and res_lan == 'http://192.168.1.50:7000/manifest.json' and man_lan['id'] == 'lan.addon'
+
+    lan_calls.clear()
+    res_pub_http, _, err_pub_http = web.prepare_stremio_addon('http://addon.example.invalid/manifest.json')
+    assert res_pub_http is None and err_pub_http == 'STREMIO_MANIFEST_UNAVAILABLE' and lan_calls == []
+
+
+def test_u08_src04_src06_streaming_limits_redirect_close_nuvio_and_debrid_dedup(monkeypatch):
+    """Covers F-SRC-04-1..5, F-SRC-06-1..3, A14-01..03 (CT-HTTP-BOUNDARY, CT-NUVIO, CT-DEBRID):
+    - request_with_safe_redirects closes every intermediate 3xx response and closes on loop/downgrade/max-hops.
+    - StremioAddonCatalogsClient (catalog/meta/stream) streams with Content-Length pre-check, chunked/gzip caps,
+      and response close BEFORE buffering 3 MiB into Response._content!
+    - Nuvio _fetch_manifest & nuvio_toggle_addons share http_policy (deleting _request_with_safe_redirects),
+      enforce trust_env=False, deadlines, body caps, response/session close, and keep Nuvio cache keys isolated.
+    - RealDebrid and Premiumize duplicate _make_request overrides are deleted while keeping params={} parity.
+    """
+    import gzip
+    from http.server import BaseHTTPRequestHandler, HTTPServer
+    import importlib
+    from types import SimpleNamespace
+    import requests
+    from bobbi_core import http_policy
+
+    # 1) F-SRC-06-1..3: Intermediate 302 responses closed, final 200 owned by caller; loop/downgrade/max-hops closed
+    replies = []
+
+    def fake_get(url, **kw):
+        closed = []
+        r = SimpleNamespace(
+            status_code=302 if len(replies) < 2 else 200,
+            headers={'Location': f'/next{len(replies)}'},
+            close=lambda: closed.append(True),
+            was_closed=closed,
+        )
+        replies.append(r)
+        return r
+
+    final_resp = http_policy.request_with_safe_redirects(
+        fake_get, 'https://example.invalid/start', lambda _: True, stream=True
+    )
+    assert final_resp is replies[2]
+    assert len(replies[0].was_closed) == 1 and len(replies[1].was_closed) == 1
+    assert replies[2].was_closed == []
+
+    # HTTPS -> HTTP downgrade closes intermediate response and raises ValueError
+    downgrade_closed = []
+    with pytest.raises(ValueError, match='downgrade'):
+        http_policy.request_with_safe_redirects(
+            lambda u, **kw: SimpleNamespace(
+                status_code=302,
+                headers={'Location': 'http://example.invalid/plain'},
+                close=lambda: downgrade_closed.append(u),
+            ),
+            'https://example.invalid/secure',
+            lambda _: True,
+            stream=True,
+        )
+    assert downgrade_closed == ['https://example.invalid/secure']
+
+    # 2) F-SRC-04-1..4: Real loopback HTTPServer proves Content-Length > limit reads 0 body into _content,
+    # and chunked / gzip bombs abort mid-stream with response closed!
+    big_body = b'{"padding":"' + b'x' * (3 * 1024 * 1024) + b'"}'
+    gz_bomb = gzip.compress(b'{"padding":"' + b'z' * (2 * 1024 * 1024) + b'"}')
+    mode = ['content_length']
+
+    class BoundedHandler(BaseHTTPRequestHandler):
+        def log_message(self, *a):
+            pass
+
+        def do_GET(self):
+            if mode[0] == 'content_length':
+                self.send_response(200)
+                self.send_header('Content-Length', str(len(big_body)))
+                self.end_headers()
+                try:
+                    self.wfile.write(big_body)
+                except OSError:
+                    pass
+            elif mode[0] == 'gzip_bomb':
+                self.send_response(200)
+                self.send_header('Content-Encoding', 'gzip')
+                self.end_headers()
+                try:
+                    self.wfile.write(gz_bomb)
+                except OSError:
+                    pass
+            elif mode[0] == 'valid_catalog':
+                payload = b'{"metas":[{"id":"tt1","type":"movie","name":"Valid"}]}'
+                self.send_response(200)
+                self.send_header('Content-Length', str(len(payload)))
+                self.end_headers()
+                self.wfile.write(payload)
+
+    srv = HTTPServer(('127.0.0.1', 0), BoundedHandler)
+    srv_thread = Thread(target=srv.serve_forever, kwargs={'poll_interval': 0.01}, daemon=True)
+    srv_thread.start()
+    observed_gets = []
+
+    class MeasuringSession(requests.Session):
+        def get(self, *args, **kwargs):
+            resp = super().get(*args, **kwargs)
+            observed_gets.append((dict(kwargs), resp._content))
+            return resp
+
+    # Bootstrap Kodi doubles via private_baseline conftest if not already loaded
+    if 'xbmc' not in sys.modules or not hasattr(sys.modules['xbmc'], 'LOGINFO'):
+        import runpy
+        runpy.run_path(str(REPO_ROOT / 'tests/private_baseline/conftest.py'))
+    sys.path.insert(0, str(REPO_ROOT / 'addons/plugin.video.bobbi'))
+    addon_client = importlib.import_module('lib.clients.stremio.addon_client')
+    monkeypatch.setattr(addon_client, 'get_int_setting', lambda *_: 3)
+
+    msess = MeasuringSession()
+    try:
+        cat_client = object.__new__(addon_client.StremioAddonCatalogsClient)
+        cat_client.params = {'catalog_type': 'movie', 'catalog_id': 'top', 'meta_id': 'tt1'}
+        cat_client.base_url = f'http://127.0.0.1:{srv.server_port}'
+        cat_client.session = msess
+
+        with pytest.raises(ValueError, match='JSON response too large'):
+            cat_client.get_catalog_info()
+        assert observed_gets[-1][0].get('stream') is True
+        assert observed_gets[-1][1] is False  # Zero eager download into Response._content!
+
+        # Gzip bomb on get_meta_info (1 MiB cap) rejected even though compressed wire < 10 KiB!
+        assert len(gz_bomb) < 32768
+        mode[0] = 'gzip_bomb'
+        with pytest.raises(ValueError, match='JSON response too large'):
+            cat_client.get_meta_info()
+
+        # Valid catalog succeeds
+        mode[0] = 'valid_catalog'
+        ok_cat = cat_client.get_catalog_info()
+        assert len(ok_cat['metas']) == 1 and ok_cat['metas'][0].id == 'tt1'
+    finally:
+        msess.close()
+        srv.shutdown()
+        srv.server_close()
+        srv_thread.join(2)
+
+    # 3) CT-NUVIO (A14-01..02): Nuvio uses shared http_policy, trust_env=False, closes responses, isolates cache
+    nuvio_sel = importlib.import_module('lib.clients.nuvio.addon_selection')
+    assert not hasattr(nuvio_sel, '_request_with_safe_redirects')
+
+    nuvio_closed = []
+    nuvio_sessions = []
+
+    class FakeNuvioSession:
+        def __init__(self):
+            self.trust_env = True
+            self.closed = False
+            nuvio_sessions.append(self)
+
+        def get(self, target_url, **kw):
+            c_flag = []
+            nuvio_closed.append(c_flag)
+            if target_url.endswith('/start/manifest.json'):
+                return SimpleNamespace(
+                    url=target_url,
+                    status_code=302,
+                    headers={'Location': 'https://nuvio2.example.invalid/final/manifest.json'},
+                    close=lambda: c_flag.append(True),
+                )
+            body = b'{"id":"org.nuvio.test","name":"Nuvio Test","resources":["stream"],"types":["movie"]}'
+            return SimpleNamespace(
+                url=target_url,
+                status_code=200,
+                headers={'Content-Length': str(len(body))},
+                raise_for_status=lambda: None,
+                iter_content=lambda chunk_size=8192: [body],
+                close=lambda: c_flag.append(True),
+            )
+
+        def close(self):
+            self.closed = True
+
+    monkeypatch.setenv('HTTPS_PROXY', 'http://127.0.0.1:9999')
+    monkeypatch.setattr(http_policy.socket, 'getaddrinfo', lambda *a: [(2, 1, 6, '', ('8.8.8.8', 443))])
+    monkeypatch.setattr(nuvio_sel.requests, 'Session', FakeNuvioSession)
+    monkeypatch.setattr(nuvio_sel, 'get_int_setting', lambda *_: 5)
+
+    kv_cache = {'stremio_user_addons': [{'id': 'keep-stremio'}]}
+    monkeypatch.setattr(
+        nuvio_sel,
+        'cache',
+        SimpleNamespace(
+            get=lambda k: kv_cache.get(k),
+            set=lambda k, v, *a: kv_cache.__setitem__(k, v),
+        ),
+    )
+    monkeypatch.setattr(
+        nuvio_sel,
+        'NuvioClient',
+        lambda: SimpleNamespace(get_addons=lambda: [{'url': 'https://nuvio1.example.invalid/start/manifest.json', 'name': 'Nuvio One'}]),
+    )
+    monkeypatch.setattr(
+        nuvio_sel.xbmcgui,
+        'Dialog',
+        lambda: SimpleNamespace(multiselect=lambda *a, **kw: [0], ok=lambda *a: None),
+    )
+    monkeypatch.setattr(
+        nuvio_sel.xbmcgui,
+        'ListItem',
+        lambda label='', label2='': SimpleNamespace(label=label, setArt=lambda *a: None),
+    )
+
+    nuvio_sel.nuvio_toggle_addons()
+    assert len(nuvio_sessions) == 1
+    assert nuvio_sessions[0].trust_env is False and nuvio_sessions[0].closed is True
+    assert all(len(c) == 1 for c in nuvio_closed) and len(nuvio_closed) == 2
+    assert kv_cache['stremio_user_addons'] == [{'id': 'keep-stremio'}]
+    assert kv_cache[nuvio_sel.NUVIO_USER_ADDONS][0]['transportName'] == 'nuvio'
+
+    # 4) CT-DEBRID (A14-03): Duplicate _make_request deleted in RealDebrid & Premiumize; params={} parity kept
+    rd_mod = importlib.import_module('lib.api.debrid.realdebrid')
+    pm_mod = importlib.import_module('lib.api.debrid.premiumize')
+    assert '_make_request' not in rd_mod.RealDebrid.__dict__
+    assert '_make_request' not in pm_mod.Premiumize.__dict__
+
+    recorded_debrid = []
+    inj_sess = SimpleNamespace(
+        request=lambda **kw: (
+            recorded_debrid.append(kw)
+            or SimpleNamespace(raise_for_status=lambda: None, status_code=200, headers={}, json=lambda: {'status': 'success', 'ok': True})
+        ),
+        close=lambda: (_ for _ in ()).throw(AssertionError('Injected session must not be closed by constructor')),
+    )
+    pm_client = pm_mod.Premiumize('pm-tok', session=inj_sess)
+    assert pm_client.get_account_info()['status'] == 'success'
+    assert recorded_debrid[-1]['params'] == {}
+    assert 'Bearer pm-tok' in recorded_debrid[-1]['headers']['Authorization']
+
+    rd_tok = rd_mod.RealDebrid.encode_token_data('cid', 'csec', 'ccode')
+    rd_calls = []
+    rd_sess = SimpleNamespace(
+        request=lambda **kw: (
+            rd_calls.append(kw)
+            or SimpleNamespace(
+                raise_for_status=lambda: None,
+                status_code=200,
+                headers={},
+                json=lambda: {'access_token': 'rd-access'} if kw['url'].endswith('/token') else {'username': 'u'},
+            )
+        ),
+        close=lambda: None,
+    )
+    rd_client = rd_mod.RealDebrid(rd_tok, session=rd_sess)
+    assert rd_client.get_user()['username'] == 'u'
+    assert rd_calls[-1]['params'] == {}
+    rd_client.get_user_downloads_list(page=2)
+    assert rd_calls[-1]['params'] == {'page': 2}

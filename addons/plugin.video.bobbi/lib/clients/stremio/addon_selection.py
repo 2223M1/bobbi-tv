@@ -35,8 +35,11 @@ from lib.clients.stremio.helpers import (
     set_addon_alias,
     set_catalog_alias,
 )
+import time
+
 from lib.clients.stremio.protocol import (
-    is_safe_http_url,
+    canonical_https_manifest_url,
+    is_safe_https_url,
     read_bounded_http_body,
     request_with_safe_redirects,
 )
@@ -65,21 +68,7 @@ def _redact_url(url):
 
 def _safe_manifest_url(url):
     """Return a safe configured manifest endpoint, or an empty string."""
-    normalized = str(url or "").strip()
-    if normalized.startswith("stremio://"):
-        normalized = normalized.replace("stremio://", "https://", 1)
-
-    parts = urlsplit(normalized)
-    if (
-        parts.scheme.lower() != "https"
-        or not parts.hostname
-        or parts.username
-        or parts.password
-        or parts.fragment
-        or not parts.path.rstrip("/").endswith("/manifest.json")
-    ):
-        return ""
-    return urlunsplit(("https", parts.netloc, parts.path, parts.query, ""))
+    return canonical_https_manifest_url(url)
 
 
 def _configuration_url(addon):
@@ -98,9 +87,11 @@ def _configuration_url(addon):
 def _fetch_manifest(url):
     """Fetch a small JSON manifest without exposing a configured URL."""
     manifest_url = _safe_manifest_url(url)
-    if not manifest_url or not is_safe_http_url(manifest_url):
+    if not manifest_url or not is_safe_https_url(manifest_url):
         raise ValueError("invalid manifest URL")
 
+    timeout_s = max(1, int(get_int_setting("stremio_timeout") or 10))
+    deadline = time.monotonic() + timeout_s
     headers = dict(USER_AGENT_HEADER)
     headers.setdefault("Accept-Encoding", "identity")
     session = requests.Session()
@@ -110,16 +101,17 @@ def _fetch_manifest(url):
         response = request_with_safe_redirects(
             session.get,
             manifest_url,
-            validator=is_safe_http_url,
+            validator=is_safe_https_url,
             headers=headers,
-            timeout=get_int_setting("stremio_timeout"),
+            timeout=timeout_s,
+            deadline=deadline,
             stream=True,
         )
         response.raise_for_status()
         final_url = _safe_manifest_url(response.url)
-        if not final_url or not is_safe_http_url(final_url):
+        if not final_url or not is_safe_https_url(final_url):
             raise ValueError("unsafe redirect")
-        raw = read_bounded_http_body(response, max_bytes=MAX_MANIFEST_BYTES)
+        raw = read_bounded_http_body(response, max_bytes=MAX_MANIFEST_BYTES, deadline=deadline)
     finally:
         if response is not None and hasattr(response, "close"):
             response.close()

@@ -31,27 +31,6 @@ class Premiumize(DebridClient):
     def _handle_service_specific_errors(self, error_data, status_code: int):
         pass
 
-    def _make_request(
-        self,
-        method,
-        url,
-        data=None,
-        params=None,
-        json=None,
-        is_return_none=False,
-        is_expected_to_fail=False,
-    ):
-        params = params or {}
-        return super()._make_request(
-            method,
-            url,
-            data=data,
-            params=params,
-            json=json,
-            is_return_none=is_return_none,
-            is_expected_to_fail=is_expected_to_fail,
-        )
-
     def get_device_code(self):
         return self._make_request(
             "POST",

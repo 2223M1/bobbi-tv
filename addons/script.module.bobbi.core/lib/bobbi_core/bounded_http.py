@@ -320,8 +320,18 @@ def connect_tcp(
             sock.setblocking(False)
             code = sock.connect_ex(sockaddr)
             while code in _CONNECT_PENDING:
-                rem = attempt.remaining(slice_end - attempt.clock())
-                _, writable, exceptional = select.select([], [sock], [sock], min(0.02, rem))
+                # Check shared attempt deadline/cancellation stickily, while keeping
+                # per-address slice expiry local to this candidate socket (SRC-07).
+                global_rem = attempt.remaining()
+                cur = attempt.clock()
+                connect_left = overall_connect_end - cur
+                if connect_left <= 0:
+                    raise TimeoutError('Connection budget exhausted')
+                slice_rem = slice_end - cur
+                if slice_rem <= 0:
+                    raise TimeoutError('Address connect slice timed out')
+                wait_s = min(0.02, global_rem, connect_left, slice_rem)
+                _, writable, exceptional = select.select([], [sock], [sock], wait_s)
                 attempt.check()
                 if writable or exceptional:
                     code = sock.getsockopt(socket.SOL_SOCKET, socket.SO_ERROR)
@@ -334,12 +344,16 @@ def connect_tcp(
             with attempt._lock:
                 if attempt._sock is sock:
                     attempt._sock = None
-                    attempt._phase = 'failed'
+                    attempt._phase = 'failed' if attempt._aborted else 'init'
             _safe_shutdown_and_close(sock)
-            if isinstance(exc, AttemptCancelled):
+            if isinstance(exc, AttemptCancelled) or attempt._aborted:
                 raise
             if attempt.deadline is not None and attempt.clock() >= attempt.deadline:
-                raise TimeoutError('HTTP deadline exceeded') from None
+                err = TimeoutError('HTTP deadline exceeded')
+                attempt.abort(err)
+                raise err from None
+            if attempt.clock() >= overall_connect_end:
+                raise TimeoutError('Connection budget exhausted') from None
     if isinstance(last_err, TimeoutError):
         raise last_err
     raise last_err

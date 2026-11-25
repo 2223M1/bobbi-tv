@@ -83,27 +83,6 @@ class RealDebrid(DebridClient):
             raise ProviderException(f"{err} (code {error_code})")
         raise ProviderException(f"Real-Debrid error (code {error_code})")
 
-    def _make_request(
-        self,
-        method,
-        url,
-        data=None,
-        params=None,
-        json=None,
-        is_return_none=False,
-        is_expected_to_fail=False,
-    ):
-        params = params or {}
-        return super()._make_request(
-            method,
-            url,
-            data=data,
-            params=params,
-            json=json,
-            is_return_none=is_return_none,
-            is_expected_to_fail=is_expected_to_fail,
-        )
-
     @staticmethod
     def encode_token_data(client_id, client_secret, code):
         token = f"{client_id}:{client_secret}:{code}"
