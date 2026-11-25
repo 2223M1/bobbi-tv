@@ -5,34 +5,31 @@ from pathlib import Path
 import stat
 import tempfile
 
-from . import ce_glass_boot as boot
+from . import ce_glass_boot as boot, ce_glass_host as glass_host
 from .ce_update_notice import coreelec
-from .home_rails_meta import (
-    HOME_RAIL_CONTROL_IDS,
-    HOME_RAIL_KEYS,
-    HOME_RAIL_SPECS,
-    HOME_RAIL_TITLES,
-    HOME_RAILS,
-)
+from .home_rails_meta import HOME_RAIL_CONTROL_IDS, HOME_RAIL_KEYS, HOME_RAIL_SPECS, HOME_RAIL_TITLES, HOME_RAILS
 from .paths import ProfileBinding
 
 SETTING = 'BobbiLiquidGlassEnabled'
-GUARD_HASH = '58eb1babf11a506fde4fb7e6bfc7acfaa6c43b3e8bc607deefb0197cdb3af0b3'
+GUARD_HASH = '2dc5b5a1063ea6f4d89348bc8dc2fd8d3fe1ae19f02909dacebe2a8cf4286e90'
+CE2185_HASH = '58eb1babf11a506fde4fb7e6bfc7acfaa6c43b3e8bc607deefb0197cdb3af0b3'
 PREVIOUS_HASH = '810db4ef0e4ad787cc450e651d068c0926141050bc9fdb2055cfa99f0caedff6'
 CE2183_HASH = '51cc4c15f7e7d4a99f63181e26ec3f5c79e31d63186d71a0ee8dabff10c4dbd7'
 LEGACY_HASH = '08576e40aae95c1bc37fc7c5b43ce115a6bd34b42e74ff4e6bee9930a074ee38'
 EARLIER_HASH = 'b6ea905c6f5d96731f37bc474f08c423d89d7d35fa0821aaa456d71ee2f376d2'
 SNAPSHOT = Path('.local/share/bobbi-glass-optin') / GUARD_HASH / 'ce_glass_boot.py'
 DROP = Path('.config/system.d/kodi.service.d/86-bobbi-opt-in-glass.conf')
-UNIT = ('# Bobbi TV: user-enabled stock CE optics\n[Service]\n'
+UNIT = ('# Bobbi TV: user-enabled CE optics\n[Service]\n'
         'RuntimeDirectory=bobbi-glass\nRuntimeDirectoryMode=0700\n'
         'ExecStartPre=-/usr/bin/python3 -IB /storage/' + SNAPSHOT.as_posix() +
-        ' --stock-opt-in\nEnvironmentFile=-/run/bobbi-glass/loader.env\n').encode('ascii')
-
-
-PREVIOUS_UNIT = UNIT.replace(GUARD_HASH.encode(), PREVIOUS_HASH.encode())
-OLD_UNITS = {digest: UNIT.replace(GUARD_HASH.encode(), digest.encode())
-             for digest in (PREVIOUS_HASH, CE2183_HASH, LEGACY_HASH, EARLIER_HASH)}
+        ' --opt-in\nEnvironmentFile=-/run/bobbi-glass/loader.env\n').encode('ascii')
+_STOCK_TPL = ('# Bobbi TV: user-enabled stock CE optics\n[Service]\n'
+              'RuntimeDirectory=bobbi-glass\nRuntimeDirectoryMode=0700\n'
+              'ExecStartPre=-/usr/bin/python3 -IB /storage/.local/share/bobbi-glass-optin/{}/ce_glass_boot.py'
+              ' --stock-opt-in\nEnvironmentFile=-/run/bobbi-glass/loader.env\n')
+OLD_UNITS = {d: _STOCK_TPL.format(d).encode('ascii')
+             for d in (CE2185_HASH, PREVIOUS_HASH, CE2183_HASH, LEGACY_HASH, EARLIER_HASH)}
+PREVIOUS_UNIT = OLD_UNITS[CE2185_HASH]
 
 
 def _previous(path):
@@ -82,6 +79,9 @@ class HostOptics:
     storage = Path('/storage')
     exe = Path('/usr/lib/kodi/kodi.bin')
     running = Path('/proc/self/exe')
+    proc_root = Path('/proc')
+    lib_dirs = None
+    systemctl_runner = None
 
     def __init__(self, master):
         self.master = master
@@ -89,64 +89,51 @@ class HostOptics:
         self.snapshot = self.storage / SNAPSHOT
 
     def mapped(self):
-        # Only trust our exact module in this process, not an old stats file.
-        try:
-            for line in Path('/proc/self/maps').read_text().splitlines():
-                fields = line.split(maxsplit=5)
-                if len(fields) != 6 or 'x' not in fields[1]:
-                    continue
-                path = Path(fields[-1])
-                if (path.name == 'libbobbi_liquid_glass.so' and
-                        (path.parent == boot.RUNTIME or Path('/storage/.local/share') in path.parents)
-                        and boot.sha(path) == boot.REFINED_RENDERER):
-                    return True
-        except OSError:
-            pass
-        return False
+        return bool(glass_host._is_renderer_mapped(self.proc_root / 'self/maps', boot.RUNTIME, self.storage))
+
+    def inspect_dropins(self):
+        return glass_host.inspect_dropins(self.storage, UNIT, OLD_UNITS)
+
+    def qualify(self):
+        addons = self.storage / '.kodi/addons'
+        return glass_host.qualify_host_cached(self.exe, addons / boot.PACKAGED_FILE, addons=addons, lib_dirs=self.lib_dirs)
 
     def available(self):
-        if not self.master or not coreelec():
+        if not self.master or not coreelec() or not self.exe.is_file() or not self.running.samefile(self.exe):
             return False
-        # An administrator's Kodi/renderer remains its own responsibility.
-        if not self.exe.is_file() or not self.running.samefile(self.exe) or boot.sha(self.exe) != boot.STOCK_CE213_AMLOGIC_NG:
+        if not self.inspect_dropins()['available']:
             return False
-        _ordinary(self.drop)
-        if self.drop.exists() and not (_matches(self.drop, UNIT) or _previous(self.drop)):
-            return False
-        for conf in self.drop.parent.glob('*.conf'):
-            if conf != self.drop:
-                _ordinary(conf)
-                if conf.stat().st_size > 32768:
-                    return False
-                content = conf.read_bytes()
-                if any(v in content for v in (b'LD_PRELOAD', b'bobbi-glass', b'EnvironmentFile', b'ExecStart')):
-                    return False
         addons = self.storage / '.kodi/addons'
+        state = self.storage / '.local/share/bobbi-private-updates/state.json'
         journal = self.storage / '.kodi/userdata/addon_data/script.bobbi.start/installation.json'
-        release = boot._record(journal)
-        return (release is not None and release['sequence'] in boot.OPT_IN_SEQUENCES
-                and boot.verified_module(self.storage / '.local/share/bobbi-private-updates/state.json',
-                                         addons, self.exe, installation=journal) == addons / boot.PACKAGED_FILE)
+        release = boot._release(state, journal)
+        if (release is None or not journal.exists() or release.get('phase') != 'complete'
+                or (release['sequence'] not in boot.OPT_IN_SEQUENCES
+                    and release['sequence'] <= boot.ZIP_JUKU_CONVERGENCE)):
+            return False
+        with self.exe.open('rb') as handle:
+            exe_magic = handle.read(4)
+        if self.lib_dirs is not None or exe_magic == b'\x7fELF' or release['sequence'] > boot.ZIP_JUKU_CONVERGENCE:
+            if not self.qualify()['ok']:
+                return False
+        return boot.verified_module(state, addons, self.exe, installation=journal, lib_dirs=self.lib_dirs) == addons / boot.PACKAGED_FILE
 
     def mode(self):
         if not coreelec():
             return 'material'
-        if self.available():
-            return 'stock'  # Re-arm persistence even after disabling in this same process.
-        return 'live' if self.mapped() else 'material'
+        return 'stock' if self.available() else ('live' if self.mapped() else 'material')
 
-    def enable(self):
+    def enable(self, *, fault_hook=None):
         if not self.available():
             raise ValueError('GLASS_HOST_CHANGED')
         source = Path(boot.__file__)
         _ordinary(source)
-        data = source.read_bytes()
-        if hashlib.sha256(data).hexdigest() != GUARD_HASH:
-            raise ValueError('GLASS_GUARD_CHANGED')
-        _place(self.snapshot, data)
-        if _previous(self.drop):
-            self.drop.unlink()
-        _place(self.drop, UNIT)  # Last step; no reload, restart or touch of other units.
+        return glass_host.execute_migration(
+            storage=self.storage, snapshot_path=self.snapshot, guard_bytes=source.read_bytes(),
+            guard_hash=GUARD_HASH, drop_86_path=self.drop, unit_bytes=UNIT,
+            old_units=OLD_UNITS, place_fn=_place,
+            systemctl_runner=self.systemctl_runner, fault_hook=fault_hook,
+        )
 
     def disable(self):
         if not self.master or not coreelec():
@@ -158,7 +145,17 @@ class HostOptics:
                 _ordinary(snapshot)
                 if snapshot.exists() and boot.sha(snapshot) == digest:
                     snapshot.unlink()
+                glass_host._bounded_daemon_reload(self.systemctl_runner)
                 break
+
+    def runtime_status(self, *, opted_in=None, now=None, pid=None):
+        user_on = boot.opted_in(self.storage / '.kodi/userdata') if opted_in is None else bool(opted_in)
+        owned_86 = self.drop.exists() and (_matches(self.drop, UNIT) or _previous(self.drop))
+        return glass_host.inspect_runtime_status(
+            opted_in=user_on, is_coreelec=coreelec(), host_available=self.available(),
+            owned_86_present=owned_86, storage=self.storage, runtime_dir=boot.RUNTIME,
+            proc_root=self.proc_root, pid=pid, now=now,
+        )
 
 
 def refresh_owned():
@@ -167,8 +164,7 @@ def refresh_owned():
     if not coreelec() or profile_root() != Path('/storage/.kodi/userdata/addon_data/script.module.bobbi.platform'):
         return
     host = HostOptics(True)
-    if (_previous(host.drop) and boot.opted_in(host.storage / '.kodi/userdata')
-            and host.available()):
+    if _previous(host.drop) and boot.opted_in(host.storage / '.kodi/userdata') and host.available():
         host.enable()
 
 
@@ -176,15 +172,11 @@ def toggle(dialog, host, enabled, apply, current):
     if not current():
         return
     if enabled():
-        # Always allow going back to classic. Never uninstall an external launcher.
         apply(False)
         host.disable()
         return
     mode = host.mode()
-    prompt = {'stock': '这台 CoreELEC 支持实时折射。将为 Kodi 添加可撤销的启动项，不更换内核、不自动重启。重启盒子后生效；关闭此开关会移除该启动项。',
-              'live': '本机已加载实时渲染器。现在启用液态玻璃？不会修改系统启动项。',
-              'material': '当前环境没有可启用的实时渲染器。仅开启皮肤自带的玻璃材质，不修改系统启动项。'}
-    if not dialog.yesno('开启液态玻璃？', prompt[mode]):
+    if not dialog.yesno(*glass_host.toggle_dialog_copy(mode)):
         return
     if not current() or enabled() or host.mode() != mode:
         return
@@ -203,7 +195,7 @@ def show(dialog):
     host = HostOptics(profile_root() == Path('/storage/.kodi/userdata/addon_data/script.module.bobbi.platform'))
     def current():
         return (binding.is_current() and xbmc.getSkinDir() == 'skin.bobbi.cinema'
-                and xbmc.getCondVisibility('Window.IsActive(skinsettings)'))
+                and xbmc.getCondVisibility('Window.IsActive(skinsettings) | Window.IsActive(settings)'))
     toggle(dialog, host, lambda: xbmc.getCondVisibility('Skin.HasSetting(' + SETTING + ')'),
            lambda on: xbmc.executebuiltin(('Skin.SetBool(' if on else 'Skin.Reset(') + SETTING + ')', True), current)
 

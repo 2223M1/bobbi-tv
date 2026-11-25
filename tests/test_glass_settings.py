@@ -65,7 +65,7 @@ def test_owned_files_are_exclusive_revocable_and_match_shipped_guard(tmp_path, m
         host.enable()
     host.disable()
     assert host.drop.read_text() == 'administrator'
-    assert b'ExecStartPre=-' in s.UNIT and b'--stock-opt-in' in s.UNIT
+    assert b'ExecStartPre=-' in s.UNIT and b'--opt-in' in s.UNIT
 
 
 @pytest.mark.parametrize('old,consent,eligible,changed', [(True, True, True, True), (False, True, True, False), (True, False, True, False), (True, True, False, False)])

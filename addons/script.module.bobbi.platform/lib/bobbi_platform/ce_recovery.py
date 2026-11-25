@@ -11,9 +11,11 @@ import shutil
 import stat
 import zipfile
 
+from .bootstrap_i18n import tr
 from .offline_updates import SignedBundle, MAX_BUNDLE
 from .updates import UpdateError, _safe_path, _atomic, _json
-from .ce_storage import RESERVE
+from .ce_storage import RESERVE, bundle_manifests
+from .upstream_addons import OWNED_COMPONENTS, plan_dependencies
 
 NAME = re.compile(r'([1-9][0-9]{0,18})-([a-f0-9]{64})\.zip')
 KEEP = 3
@@ -204,6 +206,29 @@ class RecoveryStore:
         return dict(name=name, sequence=manifest['sequence'], size=path.stat().st_size,
                     versions={r['id']: r['version'] for r in manifest['components']})
 
+    def plan_dependencies(self, name, addons_root, *, details=None, managed=None):
+        """Read-only closure plan against this recovery bundle's own real manifests."""
+        from .ce_installer import MANAGED as DEFAULT_MANAGED
+        path = self.path(name)
+        with SignedBundle(path, self.trust, 'coreelec') as signed:
+            manifest = signed.check_all()
+            signed.archive.fp.seek(0)
+            digest = hashlib.sha256()
+            for block in iter(lambda: signed.archive.fp.read(1024 * 1024), b''):
+                digest.update(block)
+            if name != '{}-{}.zip'.format(manifest['sequence'], digest.hexdigest()):
+                raise UpdateError('RECOVERY_POINT_INVALID')
+            manifests = bundle_manifests(signed)
+        return plan_dependencies(
+            addons_root,
+            None,
+            managed=DEFAULT_MANAGED if managed is None else managed,
+            details=details,
+            candidate_manifests=manifests,
+            strict_roots=True,
+            require_installed_upstream=(details is None),
+        )
+
     def list(self):
         if not self.root.exists():
             return dict(points=[], unavailable=0)
@@ -278,18 +303,18 @@ def show(installer, host, dialog):
     listing = installer.saved_generations()
     points = listing['points']
     if not points:
-        dialog.ok('暂无恢复版本', '空间足够时，更新后会保存最近三个版本。也可返回使用“恢复上一版本”。')
+        dialog.ok(tr('recovery_empty_title', host=host), tr('recovery_empty_body', host=host))
         return False
-    rows = ['版本 {} · {:.1f} MiB'.format(row['sequence'], row['size'] / 1024**2) for row in points]
-    choice = dialog.select('选择恢复版本', rows)
+    rows = [tr('recovery_row', host=host, seq=row['sequence'], mib=row['size'] / 1024**2) for row in points]
+    choice = dialog.select(tr('recovery_select_title', host=host), rows)
     if choice < 0:
         return False
     point = points[choice]
-    dialog.textviewer('恢复版本说明',
-        '将恢复到版本 {}，完成后需重启 Kodi。\n'
-        '账号、观看记录和媒体保留，不改第三方插件与音画设置。\n'
-        '有 {} 个不可用的恢复包未列出，原文件仍保留。'.format(point['sequence'], listing['unavailable']))
-    if not dialog.yesno('恢复这个版本？', '仅恢复程序，个人数据保留。完成后需重启 Kodi。'):
+    dialog.textviewer(
+        tr('recovery_info_title', host=host),
+        tr('recovery_info_body', host=host, seq=point['sequence'], unavailable=listing['unavailable']),
+    )
+    if not dialog.yesno(tr('recovery_confirm_title', host=host), tr('recovery_confirm_body', host=host)):
         return False
     host.check_idle()
     installer.restore_saved(point['name'])
