@@ -21,6 +21,11 @@ from lib.utils.kodi.utils import (
 )
 
 
+def _tr(po_id, zh_text):
+    val = translation(po_id)
+    return val if isinstance(val, str) and val else zh_text
+
+
 def has_continue_watching_items():
     try:
         return bool(_history_snapshot(PickleDatabase())[1])
@@ -39,7 +44,7 @@ def remove_continue_watching_item(params):
             if history_digest(current) == params.get('digest'):
                 files.remove(params['history_id'], current)
         except (OSError, ValueError, TypeError):
-            notification('本地文件记录暂不可用')
+            notification(_tr(91215, '本地文件记录暂不可用'))
         executebuiltin('Container.Refresh')
         return
     if params.get('entries'):
@@ -94,9 +99,9 @@ def _source_label(data):
 
 def _source_kind(data):
     if data.get('prepared_resource_id') or data.get('direct_cloud_key') or '115' in str(data.get('indexer', '')):
-        return '网盘'
+        return _tr(91216, '网盘')
     label = _source_label(data)
-    return '种子' if label == 'Torrent' else '直链' if label in ('Direct', 'Easynews') else '网盘' if label else ''
+    return _tr(91217, '种子') if label == 'Torrent' else _tr(91218, '直链') if label in ('Direct', 'Easynews') else _tr(91216, '网盘') if label else ''
 
 
 def continue_action(params):
@@ -111,7 +116,7 @@ def continue_action(params):
 def _resume_status(state):
     # The completion receipt travels with this provider result. No global
     # window flag can be overwritten by a late Home/Personal request.
-    label = '还没有在看的影片' if state == 'empty' else '暂时无法读取观看记录'
+    label = _tr(91219, '还没有在看的影片') if state == 'empty' else _tr(91220, '暂时无法读取观看记录')
     item = make_list_item(label=label)
     item.setProperty('Bobbi.Resume.State', state)
     from lib.cinema.frontend_contract import apply_rail_state
@@ -132,7 +137,7 @@ def open_resume_card(params):
     except (OSError, ValueError, TypeError, AttributeError):
         matches = []
     if len(matches) != 1:
-        notification('记录已变化，请重新选择影片')
+        notification(_tr(91221, '记录已变化，请重新选择影片'))
         return
     from lib.navigation import play_media
     play_media(dict(data=json.dumps(matches[0]), continue_watching='true'))
@@ -150,7 +155,7 @@ def _series_browse_context(data):
         return []
     url = build_url('show_tmdb_item', id=identity[1], mode='tv', media_type='tv',
                     title=clean_title(data.get('title')))
-    return [('查看全剧分集', 'ActivateWindow(Videos,{},return)'.format(url))]
+    return [(_tr(91222, '查看全剧分集'), 'ActivateWindow(Videos,{},return)'.format(url))]
 
 
 def _history_snapshot(database):
@@ -186,7 +191,7 @@ def _file_item(record, link=None):
     from bobbi_core.server_ref import resumable
     start_only = not resumable(record['file_ref'])
     if start_only:
-        display.update(state='start_only', detail='历史进度仅供查看 · 重新核验后从头播放，不自动续播')
+        display.update(state='start_only', detail=_tr(91223, '历史进度仅供查看 · 重新核验后从头播放，不自动续播'))
     item = make_list_item(label=display['title'])
     item.setArt({'icon': os.path.join(ADDON_PATH, 'resources', 'img', 'history.png')})
     if display['percent'] is not None:
@@ -218,10 +223,10 @@ def _file_item(record, link=None):
             detail += ' · ' + display['detail']
         item.setLabel2(detail)
         item.setProperty('Bobbi.File.ResumeDetail', detail)
-        item.addContextMenuItems([('查看此作品的文件版本', 'ActivateWindow(Videos,"' + target + '",return)')])
+        item.addContextMenuItems([(_tr(91224, '查看此作品的文件版本'), 'ActivateWindow(Videos,"' + target + '",return)')])
     item.addContextMenuItems([
-        ('从头播放', 'RunPlugin({})'.format(build_url('pan_history_play', history_id=record['id'], start_over='true'))),
-        ('从继续观看中移除', 'RunPlugin({})'.format(build_url('remove_continue_watching',
+        (_tr(91225, '从头播放'), 'RunPlugin({})'.format(build_url('pan_history_play', history_id=record['id'], start_over='true'))),
+        (_tr(91226, '从继续观看中移除'), 'RunPlugin({})'.format(build_url('remove_continue_watching',
             history_id=record['id'], digest=history_digest(record)))),
     ])
     return build_url('pan_history_play', history_id=record['id'],
@@ -270,7 +275,7 @@ def show_continue_watching(params=None):
 
     for title, data, source_keys in items:
         if data.get('_file_unavailable'):
-            unavailable = make_list_item(label='个人文件观看记录暂不可用')
+            unavailable = make_list_item(label=_tr(91227, '个人文件观看记录暂不可用'))
             unavailable.setProperty('IsPlayable', 'false')
             unavailable.setProperty('Bobbi.Resume.State', 'error')
             unavailable.setProperty('Bobbi.Rail.State', 'error')
@@ -303,19 +308,19 @@ def show_continue_watching(params=None):
         # This action may open the picker before any media is resolved.
         list_item.setProperty("IsPlayable", "false")
         context_menu = [
-            ('从头播放', 'RunPlugin({})'.format(build_url('play_media', data=json.dumps(data), start_over='true', continue_watching='true'))),
-            ('选择其他片源', 'RunPlugin({})'.format(build_url('bobbi_continue_action', data=json.dumps(data)))),
+            (_tr(91225, '从头播放'), 'RunPlugin({})'.format(build_url('play_media', data=json.dumps(data), start_over='true', continue_watching='true'))),
+            (_tr(91228, '选择其他片源'), 'RunPlugin({})'.format(build_url('bobbi_continue_action', data=json.dumps(data)))),
         ]
         context_menu.extend(_series_browse_context(data))
         context_menu.append(
             (
-                '从继续观看中移除',
+                _tr(91226, '从继续观看中移除'),
                 'RunPlugin({})'.format(build_url('remove_continue_watching', entries=json.dumps({k: history_digest(history[k]) for k in source_keys}))),
             )
         )
         context_menu.append(
             (
-                '清空继续观看',
+                _tr(91229, '清空继续观看'),
                 f"RunPlugin({build_url('remove_continue_watching', title='__all__')})",
             )
         )
@@ -352,7 +357,7 @@ def show_continue_watching(params=None):
         directory_items.append((url, list_item, False))
 
     if not preview and not rail and end < total:
-        list_item = make_list_item(label="下一页")
+        list_item = make_list_item(label=_tr(91255, "下一页"))
         list_item.setProperty("Bobbi.NextPage", "true")
         list_item.setArt({"icon": os.path.join(ADDON_PATH, "resources", "img", "nextpage.png")})
         directory_items.append(

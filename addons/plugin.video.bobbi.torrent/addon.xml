@@ -11,6 +11,8 @@
   <extension point="xbmc.addon.metadata">
     <summary lang="zh_CN">只解析用户所选片源，复用已配置的本机 BT 后台</summary>
     <description lang="zh_CN">可选后台；不启动服务、不管理种子、不更换片源、不改变音画质。</description>
+    <summary lang="en_GB">Resolve only the user-selected source through your configured local BT engine</summary>
+    <description lang="en_GB">Optional local BT resolver; never auto-starts services, manages torrents, switches sources, or alters audio/video quality.</description>
     <platform>all</platform>
     <license></license>
     <reuselanguageinvoker>false</reuselanguageinvoker>

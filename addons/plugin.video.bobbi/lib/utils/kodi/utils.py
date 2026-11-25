@@ -390,20 +390,8 @@ def enable_addon(addon_id: str):
         return False
 
 
-_CINEMA_CONTEXT_LABELS = {
-    90049: "重新查找片源", 90115: "选择片源", 90755: "管理片源来源",
-    90733: "选择搜索方式", 90050: "相关作品推荐", 90051: "相似作品",
-    90081: "查看相关演员", 90116: "打开插件设置", 90205: "加入媒体库",
-    90672: "播放预告片",
-}
-
-
 def translation(id_value):
-    # The catalog is not Chinese. Scope these verified context
-    # captions to the Chinese Cinema skin; keep other locales/skins unchanged.
-    if id_value in _CINEMA_CONTEXT_LABELS and xbmc.getSkinDir() == "skin.bobbi.cinema":
-        return _CINEMA_CONTEXT_LABELS[id_value]
-    return ADDON.getLocalizedString(id_value)
+    return _resolve_plugin_translation(id_value)
 
 
 def logger(message, level=xbmc.LOGINFO):
@@ -463,7 +451,7 @@ def dialog_text(heading: str, content: str = "", file=None):
                 content = r.read()
         except Exception as e:
             logger(f"Error reading file {file}: {e}", xbmc.LOGERROR)
-            notification("Error reading file.")
+            notification(translation(91165))
             return
     dialog.textviewer(heading, content, False)
     return dialog
@@ -887,3 +875,19 @@ def end_of_directory(cache=True):
     endOfDirectory(ADDON_HANDLE, cacheToDisc=not (is_widget() or not cache))
     from lib.clients.tmdb.frontend_metadata import flush
     flush()
+
+
+def _resolve_plugin_translation(id_value):
+    code = int(id_value)
+    try:
+        localized = ADDON.getLocalizedString(code)
+        if isinstance(localized, str) and localized:
+            return localized
+    except Exception:
+        pass
+    try:
+        from bobbi_platform.i18n import addon_po_string, current_locale
+        return addon_po_string("plugin.video.bobbi", code, lang=current_locale())
+    except Exception:
+        return ""
+

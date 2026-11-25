@@ -1,0 +1,63 @@
+# Kodi Media Center language file
+# Addon id: plugin.video.bobbi.library
+# Addon Provider: bobbi TV contributors
+msgid ""
+msgstr ""
+"Project-Id-Version: plugin.video.bobbi.library\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en_GB\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgctxt "#32000"
+msgid "Cloud & Libraries"
+msgstr ""
+
+msgctxt "#32001"
+msgid "Manage Library Sources"
+msgstr ""
+
+msgctxt "#32002"
+msgid "Connect cloud drives, CD2 mounts, and LAN shares"
+msgstr ""
+
+msgctxt "#32003"
+msgid "Personal Cloud Drives"
+msgstr ""
+
+msgctxt "#32004"
+msgid "Browse connected cloud drives or existing CD2 mounts"
+msgstr ""
+
+msgctxt "#32005"
+msgid "Poster Library"
+msgstr ""
+
+msgctxt "#32006"
+msgid "Indexed movies, series, and multi-release files"
+msgstr ""
+
+msgctxt "#32007"
+msgid "Play Media Referenced by STRM?"
+msgstr ""
+
+msgctxt "#32008"
+msgid "Will connect to %s://%s without sending library credentials."
+msgstr ""
+
+msgctxt "#32009"
+msgid "Next Page"
+msgstr ""
+
+msgctxt "#32010"
+msgid "No Videos Found"
+msgstr ""
+
+msgctxt "#32011"
+msgid "Folder may be empty or unreadable. Check the connection in \"Manage Library Sources\"."
+msgstr ""
+
+msgctxt "#32012"
+msgid "Library Temporarily Unavailable"
+msgstr ""

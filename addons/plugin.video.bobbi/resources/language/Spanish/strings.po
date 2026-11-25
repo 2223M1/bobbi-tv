@@ -13,7 +13,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-
 msgctxt "#30000"
 msgid "Players"
 msgstr "Players"
@@ -474,7 +473,6 @@ msgctxt "#30945"
 msgid "Seconds before auto-playing next episode. 0 = disabled, dialog waits for user input."
 msgstr "Segundos antes de reproducir automáticamente el siguiente episodio. 0 = desactivado, el diálogo espera la entrada del usuario."
 
-
 msgctxt "#30946"
 msgid "Offcloud Configuration"
 msgstr "Configuración de Offcloud"
@@ -502,6 +500,7 @@ msgstr "Autorizar el complemento para acceder a la cuenta de Offcloud."
 msgctxt "#30952"
 msgid "Revoke Offcloud account access."
 msgstr "Revocar el acceso de la cuenta de Offcloud."
+
 msgctxt "#30728"
 msgid "Seeds"
 msgstr "Seeds"
@@ -1618,8 +1617,6 @@ msgctxt "#90017"
 msgid "History"
 msgstr "Historial"
 
-
-
 msgctxt "#90019"
 msgid "Recently Watched Files"
 msgstr "Archivos Recientemente Reproducidos"
@@ -1631,10 +1628,6 @@ msgstr "Titulos Recientemente Reproducidos"
 msgctxt "#90021"
 msgid "TV Calendar"
 msgstr "Calendario de TV"
-
-
-
-
 
 msgctxt "#90024"
 msgid "Trending Recent"
@@ -3060,7 +3053,6 @@ msgctxt "#90466"
 msgid "Delete this Trakt list?"
 msgstr "¿Eliminar esta lista de Trakt?"
 
-
 msgctxt "#90510"
 msgid "No meta available"
 msgstr "Sin metadatos"
@@ -3745,10 +3737,6 @@ msgctxt "#90736"
 msgid "Edit title"
 msgstr "Editar título"
 
-msgctxt "#90512"
-msgid "Season"
-msgstr "Temporada"
-
 msgctxt "#90737"
 msgid "Invalid season"
 msgstr "Temporada no válida"
@@ -4080,14 +4068,6 @@ msgstr "Selecciona los idiomas a excluir"
 msgctxt "#90814"
 msgid "Choose original languages to hide from TMDB listings"
 msgstr "Elige los idiomas originales que quieres ocultar de los listados de TMDB"
-
-
-
-
-
-
-
-
 
 msgctxt "#90300"
 msgid "External Scraper"
@@ -4488,6 +4468,7 @@ msgstr "Stremio: Renombrado y personalización"
 msgctxt "#90835"
 msgid "Stremio: Search & Behavior"
 msgstr "Stremio: Búsqueda y comportamiento"
+
 msgctxt "#30956"
 msgid "Use integrated OpenSubtitles"
 msgstr ""

@@ -1,0 +1,119 @@
+# Kodi Media Center language file
+# Addon id: script.bobbi.opensubtitles
+# Addon Provider: bobbi TV contributors
+msgid ""
+msgstr ""
+"Project-Id-Version: script.bobbi.opensubtitles\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: zh_CN\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgctxt "#32000"
+msgid "OpenSubtitles"
+msgstr "OpenSubtitles"
+
+msgctxt "#32001"
+msgid "Personal OpenSubtitles API Key"
+msgstr "个人 OpenSubtitles API Key"
+
+msgctxt "#32002"
+msgid "Find Subtitles · OpenSubtitles"
+msgstr "找中文字幕 · OpenSubtitles"
+
+msgctxt "#32003"
+msgid "Chinese Subtitle Candidate"
+msgstr "中文字幕候选"
+
+msgctxt "#32004"
+msgid "%s  ·  %s  ·  Sync unverified"
+msgstr "%s  ·  %s  ·  待校准"
+
+msgctxt "#32005"
+msgid "Chinese"
+msgstr "中文"
+
+msgctxt "#32006"
+msgid "Enter your OpenSubtitles API Key in the add-on settings first. Current playback is unaffected."
+msgstr "请先在“找中文字幕”插件设置中填写 OpenSubtitles API Key。当前播放不受影响。"
+
+msgctxt "#32007"
+msgid "Current player does not support this subtitle action; existing subtitles and playback are kept."
+msgstr "当前播放器不支持此字幕功能，原字幕和播放保留。"
+
+msgctxt "#32008"
+msgid "Start playing a video first and wait for video output before searching subtitles."
+msgstr "请先开始播放影片，待画面出现后再找字幕。"
+
+msgctxt "#32009"
+msgid "Action cancelled or playback changed; no subtitle was loaded."
+msgstr "操作已取消或播放选择已变化，未加载字幕。"
+
+msgctxt "#32010"
+msgid "Insufficient media metadata to search for matching subtitles."
+msgstr "影片资料不足，无法查找对应字幕。"
+
+msgctxt "#32011"
+msgid "Subtitle download or search quota reached; retry later. Existing subtitles are kept."
+msgstr "字幕下载或查询次数已达限制，请稍后重试。原字幕保留。"
+
+msgctxt "#32012"
+msgid "Subtitle service timed out; retry later. Existing subtitles are kept."
+msgstr "字幕服务响应超时，请稍后重试。原字幕保留。"
+
+msgctxt "#32013"
+msgid "Subtitle service authentication failed; check add-on settings. Existing subtitles are kept."
+msgstr "字幕服务登录验证失败，请检查插件设置。原字幕保留。"
+
+msgctxt "#32014"
+msgid "Subtitle action did not complete; retry later. Existing subtitles and playback are kept."
+msgstr "字幕操作未完成，请稍后重试。原字幕和播放保留。"
+
+msgctxt "#32015"
+msgid "Subtitle downloaded; load it manually. Timing adjustment may be needed."
+msgstr "字幕已下载，需手动加载。时间可能需要调整。"
+
+msgctxt "#32016"
+msgid "Reused cached file without consuming download quota."
+msgstr "使用已下载文件，不占下载次数。"
+
+msgctxt "#32017"
+msgid "Last recorded remaining downloads: %d (subject to website)."
+msgstr "上次记录还可下载 %d 次，以网站为准。"
+
+msgctxt "#32018"
+msgid "Remaining downloads: %d (subject to website)."
+msgstr "还可下载 %d 次，以网站为准。"
+
+msgctxt "#32019"
+msgid "Select \"Browse Subtitles\" and pick the following file in local cache"
+msgstr "点击“浏览字幕”，在本地缓存中选择以下文件"
+
+msgctxt "#32020"
+msgid "Searching Chinese subtitles for current video; press Back to cancel."
+msgstr "正在搜索当前影片的中文字幕；可返回取消。"
+
+msgctxt "#32021"
+msgid "No Chinese subtitles found; existing subtitles are kept."
+msgstr "未找到中文字幕，原字幕保留。"
+
+msgctxt "#32022"
+msgid " · Select to Download"
+msgstr " · 选择后下载"
+
+msgctxt "#32023"
+msgid "Downloading selected subtitle; saved locally only and never auto-applied."
+msgstr "正在下载所选字幕；仅保存到本地，不自动应用。"
+
+msgctxt "#32024"
+msgid "Later"
+msgstr "稍后"
+
+msgctxt "#32025"
+msgid "Browse Subtitles"
+msgstr "浏览字幕"
+
+msgctxt "#32026"
+msgid "Another subtitle search window is active; finish or cancel it first."
+msgstr "已有字幕搜索窗口，请先完成或取消上次操作。"

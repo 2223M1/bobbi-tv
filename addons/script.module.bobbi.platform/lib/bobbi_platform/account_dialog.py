@@ -2,6 +2,11 @@
 from contextlib import contextmanager
 
 
+def _tr(msg_id, zh_text, en_text):
+    from .i18n import tr
+    return tr(msg_id, zh_text, en_text)
+
+
 def safe_close(window):
     """A dismissed Kodi control must not change an acknowledged login outcome."""
     if window is not None:
@@ -12,12 +17,16 @@ def safe_close(window):
 
 
 @contextmanager
-def login_dialog(root, prefix, title='登录 115 分享播放', instruction='用「115 生活」App 扫码', monitor=None):
+def login_dialog(root, prefix, title=None, instruction=None, monitor=None):
     """Single QR window and temporary image lifecycle; protocols and commits stay with callers."""
     from pathlib import Path
     import tempfile
     import xbmc
     from .login_flow import LoginRunner
+    if title is None:
+        title = _tr(32000, '登录 115 分享播放', 'Sign in to 115 Share Playback')
+    if instruction is None:
+        instruction = _tr(32001, '用「115 生活」App 扫码', 'Scan with the 115 Life app')
     Path(root).mkdir(parents=True, exist_ok=True)
     monitor = monitor or xbmc.Monitor()
     with tempfile.TemporaryDirectory(prefix=prefix, dir=str(root)) as directory:
@@ -25,7 +34,7 @@ def login_dialog(root, prefix, title='登录 115 分享播放', instruction='用
         window = None
         try:
             window = create('', title, instruction)
-            window.message = '正在准备二维码，可按返回取消。'
+            window.message = _tr(32002, '正在准备二维码，可按返回取消。', 'Preparing QR code; press Back to cancel.')
             window.show()
             runner = LoginRunner(window, monitor)
             yield window, runner, image
@@ -55,11 +64,23 @@ def failure_details(runner, error, provider):
     from .pan_accounts import NAMES
     value = runner.diagnostic(error)
     provider = provider if provider in NAMES else 'unknown'
-    phase = {'prepare': '准备二维码', 'confirm': '等待手机确认', 'exchange': '获取登录信息',
-             'identity': '核验登录信息', 'commit': '保存登录', 'complete': '完成',
-             'cancelled': '取消'}.get(value['phase'], '登录')
-    receipt = ('已收到保存回执' if value['commit_acknowledged'] else
-               '保存回执待确认' if value['commit_sent'] else '尚未提交保存')
+    phase_map = {
+        'prepare': (32005, '准备二维码', 'Preparing QR code'),
+        'confirm': (32006, '等待手机确认', 'Waiting for phone confirmation'),
+        'exchange': (32007, '获取登录信息', 'Fetching sign-in token'),
+        'identity': (32008, '核验登录信息', 'Verifying account identity'),
+        'commit': (32009, '保存登录', 'Saving sign-in'),
+        'complete': (32010, '完成', 'Completed'),
+        'cancelled': (32011, '取消', 'Cancelled'),
+    }
+    phase = _tr(*phase_map.get(value['phase'], (32012, '登录', 'Sign-in')))
+    receipt = (
+        _tr(32013, '已收到保存回执', 'Save receipt confirmed')
+        if value['commit_acknowledged']
+        else _tr(32014, '保存回执待确认', 'Save receipt pending')
+        if value['commit_sent']
+        else _tr(32015, '尚未提交保存', 'Not submitted for save yet')
+    )
     try:
         import xbmc
         xbmc.log('[Bobbi login] provider=%s phase=%s code=%s commit_sent=%s commit_ack=%s' %
@@ -67,24 +88,26 @@ def failure_details(runner, error, provider):
             xbmc.LOGWARNING)
     except (ImportError, AttributeError, RuntimeError):
         pass
-    return '%s（%s）；%s。' % (phase, value['code'], receipt)
+    return _tr(32016, '%s（%s）；%s。', '%s (%s); %s.') % (phase, value['code'], receipt)
 
 
-def create(image, title='登录 115 分享播放', instruction='用「115 生活」App 扫码'):
+def create(image, title=None, instruction=None):
     import xbmc
     import xbmcaddon
     import xbmcgui
+    resolved_title = _tr(32000, '登录 115 分享播放', 'Sign in to 115 Share Playback') if title is None else title
+    resolved_instruction = _tr(32001, '用「115 生活」App 扫码', 'Scan with the 115 Life app') if instruction is None else instruction
 
     class AccountQR(xbmcgui.WindowXMLDialog):
         def onInit(self):
             cinema = xbmc.getSkinDir() == 'skin.bobbi.cinema'
-            self.getControl(100).setLabel(title, font='Head40' if cinema else 'font24')
-            self.getControl(102).setLabel(instruction, font='Head34' if cinema else 'font24')
+            self.getControl(100).setLabel(resolved_title, font='Head40' if cinema else 'font24')
+            self.getControl(102).setLabel(resolved_instruction, font='Head34' if cinema else 'font24')
             # Kodi may deliver onInit after the asynchronous QR request has
             # already published its image. Never restore the initial blank.
             self.getControl(101).setImage(self.image)
             self.getControl(103).setLabel(self.message, font='Body26' if cinema else 'font20')
-            self.getControl(9001).setLabel('取消', font='Button28' if cinema else 'font20')
+            self.getControl(9001).setLabel(_tr(32003, '取消', 'Cancel'), font='Button28' if cinema else 'font20')
             self.setFocusId(9001)
 
         def set_status(self, value):
@@ -115,5 +138,5 @@ def create(image, title='登录 115 分享播放', instruction='用「115 生活
         xbmcaddon.Addon('script.module.bobbi.platform').getAddonInfo('path'), 'Default', '1080i')
     window.cancelled = False
     window.image = str(image)
-    window.message = '扫码后在手机确认。取消会保留当前账号。'
+    window.message = _tr(32004, '扫码后在手机确认。取消会保留当前账号。', 'Confirm on your phone after scanning. Cancelling keeps the current account.')
     return window

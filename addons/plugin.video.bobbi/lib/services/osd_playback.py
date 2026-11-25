@@ -146,7 +146,7 @@ def publish(view, window):
     if view.get('available'):
         window.setProperty('AM6B.SubtitleState', view.get('subtitle_status', ''))
         window.setProperty('AM6B.AudioState', view.get('audio_status', ''))
-        window.setProperty('Bobbi.OSD.Truncated', '列表已截短' if any(
+        window.setProperty('Bobbi.OSD.Truncated', _tr(91200, '列表已截短') if any(
             view.get(key + '_truncated') for key in ('audio', 'subtitles', 'chapters')) else '')
     else:
         window.clearProperty('Bobbi.OSD.Truncated')
@@ -239,11 +239,11 @@ def stream_directory(handle, stream_type, panel=None):
 
 def _notice(status):
     from xbmcgui import Dialog
-    text = {'applied': '操作已生效', 'queued': '操作已提交，等待播放器确认',
-            'unknown': '操作结果待确认，请稍后重新打开面板；不会重复发送',
-            'rejected': '播放状态已变化，请重新打开面板', 'failed': '播放器未完成操作',
-            'unavailable': '当前无法安全控制此播放，请稍后重试'}.get(status, '当前操作不可用')
-    Dialog().notification('播放控制', text)
+    text = {'applied': _tr(91202, '操作已生效'), 'queued': _tr(91203, '操作已提交，等待播放器确认'),
+            'unknown': _tr(91204, '操作结果待确认，请稍后重新打开面板；不会重复发送'),
+            'rejected': _tr(91205, '播放状态已变化，请重新打开面板'), 'failed': _tr(91206, '播放器未完成操作'),
+            'unavailable': _tr(91207, '当前无法安全控制此播放，请稍后重试')}.get(status, _tr(91208, '当前操作不可用'))
+    Dialog().notification(_tr(91201, '播放控制'), text)
 
 
 def _locked(owner, operation):
@@ -306,7 +306,7 @@ def transport(owner, view, action):
         # Never fall back here after a managed command was rejected/unknown.
         if action == 'confirm_stop':
             if not xbmc.getCondVisibility('Skin.HasSetting(backstopplay)') and not Dialog().yesno(
-                    '播放控制', '确定关闭播放吗？'):
+                    _tr(91201, '播放控制'), _tr(91209, '确定关闭播放吗？')):
                 return
             if owner.read()['mode'] not in NATIVE_MODES:
                 _notice('rejected')
@@ -326,7 +326,7 @@ def transport(owner, view, action):
         return
     captured = Client.capture(view, 'user_' + target, {})
     if action == 'confirm_stop' and not xbmc.getCondVisibility('Skin.HasSetting(backstopplay)'):
-        if not Dialog().yesno('播放控制', '确定关闭播放吗？'):
+        if not Dialog().yesno(_tr(91201, '播放控制'), _tr(91209, '确定关闭播放吗？')):
             return
     return _submit(owner, captured)
 
@@ -368,7 +368,7 @@ def run(bobbi_osd, token=None, **kwargs):
         music = 'Player.HasAudio + !Player.HasVideo'
         if xbmc.getCondVisibility(music):
             if (xbmc.getCondVisibility('Skin.HasSetting(backstopplay)')
-                    or Dialog().yesno('播放控制', '确定关闭播放吗？')):
+                    or Dialog().yesno(_tr(91201, '播放控制'), _tr(91209, '确定关闭播放吗？'))):
                 if xbmc.getCondVisibility(music):
                     from bobbi_platform.kodi import rpc
                     return rpc('Player.Stop', dict(playerid=0))
@@ -384,7 +384,7 @@ def run(bobbi_osd, token=None, **kwargs):
         if bobbi_osd in native:
             xbmc.executebuiltin(native[bobbi_osd])
         elif bobbi_osd == 'seek':
-            seconds = Dialog().numeric(0, '跳转到第几秒')
+            seconds = Dialog().numeric(0, _tr(91210, '跳转到第几秒'))
             if seconds and seconds.isdigit() and owner.read()['mode'] in NATIVE_MODES:
                 from bobbi_platform.kodi import rpc
                 value = int(seconds)
@@ -403,7 +403,7 @@ def run(bobbi_osd, token=None, **kwargs):
         target = view['position_ms'] + (-10000 if bobbi_osd == 'seek_back' else 30000)
         target = max(0, min(target, view['duration_ms'] - 1))
     elif bobbi_osd == 'seek':
-        seconds = Dialog().numeric(0, '跳转到第几秒（当前 %d 秒）' % (view['position_ms'] // 1000))
+        seconds = Dialog().numeric(0, _tr(91211, '跳转到第几秒（当前 %d 秒）') % (view['position_ms'] // 1000))
         if not seconds:
             return
         try:
@@ -413,8 +413,9 @@ def run(bobbi_osd, token=None, **kwargs):
             return
     elif bobbi_osd == 'chapters':
         rows = view['chapters']
-        selected = Dialog().select('章节' + ('（列表已截短）' if view.get('chapters_truncated') else ''),
-            ['%s  ·  %d 秒' % (row['name'] or '章节', row['position_ms'] // 1000) for row in rows])
+        chapter_word = _tr(91212, '章节')
+        selected = Dialog().select(chapter_word + (_tr(91213, '（列表已截短）') if view.get('chapters_truncated') else ''),
+            [_tr(91214, '%s  ·  %d 秒') % (row['name'] or chapter_word, row['position_ms'] // 1000) for row in rows])
         if selected < 0 or selected >= len(rows):
             return
         target = rows[selected]['position_ms']
@@ -429,3 +430,11 @@ def run(bobbi_osd, token=None, **kwargs):
         return
     # view was captured BEFORE the numeric/chapter dialog. No re-read/rebase.
     return _submit(owner, Client.capture(view, 'seek', dict(position_ms=target)))
+
+
+def _tr(po_id, zh_text):
+    try:
+        from bobbi_platform.i18n import tr
+        return tr(po_id, zh_text, '', addon_id='plugin.video.bobbi')
+    except Exception:
+        return zh_text

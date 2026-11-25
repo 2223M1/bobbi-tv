@@ -18,6 +18,14 @@ PAGE_SIZE = 200
 SELECTION = 'bobbi.portable_selection'
 
 
+def _tr(msg_id, zh_text, en_text):
+    try:
+        from bobbi_platform.i18n import tr
+        return tr(msg_id, zh_text, en_text, addon_id='plugin.video.bobbi.library')
+    except Exception:
+        return zh_text
+
+
 def route(**values):
     # Only local source IDs and relative item keys cross Kodi plugin URLs.
     return 'plugin://plugin.video.bobbi.library/?' + urlencode(values)
@@ -87,10 +95,10 @@ def execute(handle, params):
     try:
         store = registry(xbmcvfs.translatePath)
         rows = []
-        category = '云盘与片库'
+        category = _tr(32000, '云盘与片库', 'Cloud & Libraries')
         if action == 'root':
-            rows.append(item('管理片库来源', route(action='manage'), False, playable=False,
-                             label2='连接云盘账号、CD2 挂载与局域网共享',
+            rows.append(item(_tr(32001, '管理片库来源', 'Manage Library Sources'), route(action='manage'), False, playable=False,
+                             label2=_tr(32002, '连接云盘账号、CD2 挂载与局域网共享', 'Connect cloud drives, CD2 mounts, and LAN shares'),
                              properties={'Bobbi.Library.Manage': 'true'}))
             for source in store.sources():
                 kind, label2 = source_presentation(source)
@@ -98,11 +106,11 @@ def execute(handle, params):
                                  folder=(source.kind != 'media_server' or
                                          source.metadata.get('provider') == 'emby'), playable=False,
                                  label2=label2, properties={'Bobbi.Library.Kind': kind}))
-            rows.append(item('个人云盘', route(action='native_files'), False, playable=False,
-                label2='浏览已连接的网盘，或使用已有 CD2 挂载',
+            rows.append(item(_tr(32003, '个人云盘', 'Personal Cloud Drives'), route(action='native_files'), False, playable=False,
+                label2=_tr(32004, '浏览已连接的网盘，或使用已有 CD2 挂载', 'Browse connected cloud drives or existing CD2 mounts'),
                 properties={'Bobbi.Library.Kind': 'native_pan'}))
-            rows.append(item('影视海报库', 'plugin://plugin.video.bobbi/?action=personal_catalog',
-                label2='已刮削电影、剧集与多版本片源',
+            rows.append(item(_tr(32005, '影视海报库', 'Poster Library'), 'plugin://plugin.video.bobbi/?action=personal_catalog',
+                label2=_tr(32006, '已刮削电影、剧集与多版本片源', 'Indexed movies, series, and multi-release files'),
                 properties={'Bobbi.Library.Kind': 'personal_catalog'}))
         elif action in (
             'browse', 'play', 'play_pointer',
@@ -143,8 +151,11 @@ def execute(handle, params):
                         raise LibraryError('SOURCE_STREAM_CHANGED')
                     target, observation = read(source, relative)
                     origin = urlsplit(target)
-                    if not xbmcgui.Dialog().yesno('播放 STRM 指向的媒体？',
-                            '将连接 ' + origin.scheme + '://' + origin.netloc + '，不会发送片库账号密码。'):
+                    if not xbmcgui.Dialog().yesno(
+                        _tr(32007, '播放 STRM 指向的媒体？', 'Play Media Referenced by STRM?'),
+                        _tr(32008, '将连接 %s://%s，不会发送片库账号密码。',
+                            'Will connect to %s://%s without sending library credentials.') % (origin.scheme, origin.netloc),
+                    ):
                         xbmcplugin.setResolvedUrl(handle, False, xbmcgui.ListItem())
                         return
                     if not binding.is_current() or store.source_snapshot(source.id) != (source, revision):
@@ -240,10 +251,14 @@ def execute(handle, params):
                     rows.append(item(name, route(action='browse' if folder else play_action,
                         source=source.id, relative=child), folder, info=metadata.get(name) if not folder else None))
             if len(listing) > offset + PAGE_SIZE:
-                rows.append(item('下一页', route(action='browse', source=source.id, relative=relative,
+                rows.append(item(_tr(32009, '下一页', 'Next Page'), route(action='browse', source=source.id, relative=relative,
                                                offset=offset + PAGE_SIZE), properties={'Bobbi.NextPage': 'true'}))
             if not listing:
-                xbmcgui.Dialog().ok('没有找到视频', '目录可能为空或无法读取。请到“管理片库来源”检查连接。')
+                xbmcgui.Dialog().ok(
+                    _tr(32010, '没有找到视频', 'No Videos Found'),
+                    _tr(32011, '目录可能为空或无法读取。请到“管理片库来源”检查连接。',
+                        'Folder may be empty or unreadable. Check the connection in "Manage Library Sources".'),
+                )
         else:
             raise LibraryError('INVALID_VALUE')
         if xbmc.Monitor().abortRequested():
@@ -270,7 +285,7 @@ if __name__ == '__main__':
         execute(handle, query)
     except (LibraryError, OSError, RuntimeError, ValueError) as error:
         xbmc.log('[bobbi] library operation failed: ' + type(error).__name__, xbmc.LOGWARNING)
-        xbmcgui.Dialog().ok('片库暂时不可用', message(error))
+        xbmcgui.Dialog().ok(_tr(32012, '片库暂时不可用', 'Library Temporarily Unavailable'), message(error))
         # No alternate source or playback retry after an uncertain submission.
         if handle >= 0 and query.get('action') not in ('play', 'play_pointer', 'emby_play', 'emby_mark', 't4_play'):
             xbmcplugin.endOfDirectory(handle, succeeded=False, cacheToDisc=False)

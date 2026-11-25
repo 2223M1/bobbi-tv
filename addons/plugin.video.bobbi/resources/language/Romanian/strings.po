@@ -14,6 +14,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 # Settings
+
 msgctxt "#30000"
 msgid "Players"
 msgstr "Playere"
@@ -474,7 +475,6 @@ msgctxt "#30945"
 msgid "Seconds before auto-playing next episode. 0 = disabled, dialog waits for user input."
 msgstr "Secunde înainte de redarea automată a episodului următor. 0 = dezactivat, dialogul așteaptă intervenția utilizatorului."
 
-
 msgctxt "#30946"
 msgid "Offcloud Configuration"
 msgstr "Configurare Offcloud"
@@ -502,6 +502,7 @@ msgstr "Autorizează addon-ul să acceseze contul Offcloud."
 msgctxt "#30952"
 msgid "Revoke Offcloud account access."
 msgstr "Revocă accesul contului Offcloud."
+
 msgctxt "#30728"
 msgid "Seeds"
 msgstr "Seederi"
@@ -1618,8 +1619,6 @@ msgctxt "#90017"
 msgid "History"
 msgstr "Istoric"
 
-
-
 msgctxt "#90019"
 msgid "Recently Watched Files"
 msgstr "Fișiere vizionate recent"
@@ -1631,11 +1630,6 @@ msgstr "Titluri vizionate recent"
 msgctxt "#90021"
 msgid "TV Calendar"
 msgstr "Calendar TV"
-
-
-
-
-
 
 msgctxt "#90024"
 msgid "Trending Recent"
@@ -1736,8 +1730,6 @@ msgstr "Selectează furnizorii Torrentio"
 msgctxt "#90048"
 msgid "Choose which providers to include in the stream request."
 msgstr "Alege ce furnizori să incluzi în cererea de stream"
-
-# Context menus
 
 msgctxt "#90049"
 msgid "Scrape again"
@@ -1895,7 +1887,6 @@ msgctxt "#90099"
 msgid "Filter by Source Type"
 msgstr "Filtrează după tipul sursei"
 
-# BluRay/UHD
 msgctxt "#90100"
 msgid "Include BluRay/UHD sources"
 msgstr "Include surse BluRay/UHD"
@@ -1904,7 +1895,6 @@ msgctxt "#90105"
 msgid "Includes releases such as: BluRay, BluRay REMUX, BRRip, BDRip, UHDRip, REMUX"
 msgstr "Include versiuni precum: BluRay, BluRay REMUX, BRRip, BDRip, UHDRip, REMUX"
 
-# WEB/HD
 msgctxt "#90101"
 msgid "Include WEB/HD sources"
 msgstr "Include surse WEB/HD"
@@ -1913,7 +1903,6 @@ msgctxt "#90106"
 msgid "Includes releases such as: WEB-DL, WEB-DLRip, WEBRip, HDRip, WEBMux"
 msgstr "Include versiuni precum: WEB-DL, WEB-DLRip, WEBRip, HDRip, WEBMux"
 
-# DVD/TV/SAT
 msgctxt "#90102"
 msgid "Include DVD/TV/SAT sources"
 msgstr "Include surse DVD/TV/SAT"
@@ -1922,7 +1911,6 @@ msgctxt "#90107"
 msgid "Includes releases such as: DVD, DVDRip, HDTV, SATRip, TVRip, PPVRip, PDTV"
 msgstr "Include versiuni precum: DVD, DVDRip, HDTV, SATRip, TVRip, PPVRip, PDTV"
 
-# CAM/Screener
 msgctxt "#90103"
 msgid "Include CAM/Screener sources"
 msgstr "Include surse CAM/Screener"
@@ -1931,7 +1919,6 @@ msgctxt "#90108"
 msgid "Includes releases such as: CAM, TeleSync, TeleCine, SCR"
 msgstr "Include versiuni precum: CAM, TeleSync, TeleCine, SCR"
 
-# Unknown
 msgctxt "#90104"
 msgid "Include Unknown sources"
 msgstr "Include surse necunoscute"
@@ -4096,10 +4083,6 @@ msgctxt "#90736"
 msgid "Edit title"
 msgstr "Editează titlul"
 
-msgctxt "#90512"
-msgid "Season"
-msgstr "Sezon"
-
 msgctxt "#90737"
 msgid "Invalid season"
 msgstr "Sezon invalid"
@@ -4424,14 +4407,6 @@ msgctxt "#90814"
 msgid "Choose original languages to hide from TMDB listings"
 msgstr "Alege limbile originale de ascuns din listele TMDB"
 
-
-
-
-
-
-
-
-
 msgctxt "#90819"
 msgid "Rename Stremio add-on"
 msgstr "Redenumește addonul Stremio"
@@ -4495,6 +4470,7 @@ msgstr "Deschide setările scraperului extern"
 msgctxt "#90307"
 msgid "Open the settings for the selected external scraper module."
 msgstr "Deschide setările pentru modulul scraper extern selectat."
+
 msgctxt "#30956"
 msgid "Use integrated OpenSubtitles"
 msgstr ""

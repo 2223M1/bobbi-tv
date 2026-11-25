@@ -8,6 +8,8 @@
   <extension point="xbmc.addon.metadata">
     <summary lang="zh_CN">腾讯目录与经核验补充分享的统一115资源目录</summary>
     <description lang="zh_CN">保留原始表格出处，按作品、年份和季集校验实际文件。后台有限查询，点击时解析临时地址，不转存、不创建云任务。未核实的字幕不标为已验证。可独立关闭和更新目录。</description>
+    <summary lang="en_GB">Unified 115 resource catalog with verified share entries</summary>
+    <description lang="en_GB">Preserves original catalog provenance and verifies files by work, year, and episode without cloud transfers or background tasks.</description>
     <license>MIT</license><platform>all</platform>
   </extension>
 </addon>

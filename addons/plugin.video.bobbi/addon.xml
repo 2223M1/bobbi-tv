@@ -18,8 +18,12 @@
   <extension point="xbmc.addon.metadata">
     
     <reuselanguageinvoker>false</reuselanguageinvoker>
+    <summary lang="en_GB">bobbi TV cinema</summary>
     <summary lang="en">bobbi TV cinema</summary>
+    <summary lang="zh_CN">波比 TV 影院</summary>
+    <description lang="en_GB">Browse films and series, select a source and play.</description>
     <description lang="en">Browse films and series, select a source and play.</description>
+    <description lang="zh_CN">浏览电影与剧集，手动选择片源后播放。</description>
     <source>https://github.com/2223M1/bobbi-tv</source>
     <assets>
       <icon>icon.png</icon>

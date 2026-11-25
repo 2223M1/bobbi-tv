@@ -102,12 +102,16 @@ class Owner:
         self.diagnostic(dict(detail, stage='buffering'))
         speed = detail.get('download_bps')
         rate = ('{:,} B/s'.format(speed) if type(speed) is int
-                and 0 <= speed <= MAX_DIAGNOSTIC_NUMBER else '未知')
-        answer = xbmcgui.Dialog().yesno('BT 下载较慢',
-            '所选视频仍在缓冲，是否再等一轮？\n'
-            '种子总下载速度 ' + rate + '，不代表当前视频的速度。\n'
-            '等待期间不换片源、不降画质。',
-            nolabel='返回选源', yeslabel='继续等待', autoclose=30000)
+                and 0 <= speed <= MAX_DIAGNOSTIC_NUMBER else _tr(32000, '未知', 'unknown'))
+        answer = xbmcgui.Dialog().yesno(
+            _tr(32001, 'BT 下载较慢', 'Slow BT Buffering'),
+            _tr(32002,
+                '所选视频仍在缓冲，是否再等一轮？\n种子总下载速度 %s，不代表当前视频的速度。\n等待期间不换片源、不降画质。',
+                'Selected video is still buffering. Wait another round?\nTotal swarm speed %s (not exact file rate).\nSource and quality are never changed while waiting.') % rate,
+            nolabel=_tr(32003, '返回选源', 'Back to Sources'),
+            yeslabel=_tr(32004, '继续等待', 'Keep Waiting'),
+            autoclose=30000,
+        )
         self.active()  # A newer selection/stop while the dialog was up wins.
         return answer
 
@@ -117,7 +121,8 @@ class Owner:
         self.active()
         # No preselection or timeout default. A choice means this file only,
         # never an assertion that its release/episode has been auto-verified.
-        choice = xbmcgui.Dialog().select('请选择正片文件（本次不自动续播）',
+        choice = xbmcgui.Dialog().select(
+            _tr(32005, '请选择正片文件（本次不自动续播）', 'Select Main Feature File (No Auto-Continue)'),
             ['%s  ·  %.2f GiB' % (f['path'].replace('[', '［').replace(']', '］'),
                                   f['length'] / 1024**3) for f in files], autoclose=FILE_CHOICE_SECONDS * 1000)
         self.active()
@@ -159,3 +164,11 @@ class Owner:
                 category=category)).get('recorded') is True
         except (OSError, RuntimeError, ValueError):
             return False  # Never signal a newer request or revive an old owner.
+
+
+def _tr(msg_id, zh_text, en_text):
+    try:
+        from bobbi_platform.i18n import tr
+        return tr(msg_id, zh_text, en_text, addon_id='plugin.video.bobbi.torrent')
+    except Exception:
+        return zh_text

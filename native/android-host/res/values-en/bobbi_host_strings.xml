@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="bobbi_host_app_title">bobbi TV</string>
+    <string name="bobbi_host_channel_name">BT Playback</string>
+    <string name="bobbi_host_stop_bt">Stop BT</string>
+    <string name="bobbi_host_starting_verify">Starting and verifying local control interface</string>
+    <string name="bobbi_host_ready">BT playback ready</string>
+    <string name="bobbi_host_stopping">Stopping BT</string>
+</resources>

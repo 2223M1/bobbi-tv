@@ -6,7 +6,12 @@ import xbmc
 import xbmcgui
 
 from lib.utils.kodi.settings import get_setting
-from lib.utils.kodi.utils import kodilog, set_setting
+from lib.utils.kodi.utils import kodilog, set_setting, translation
+
+
+def _tr(po_id, fallback):
+    val = translation(po_id)
+    return val if isinstance(val, str) and val else fallback
 
 
 def choose_external_scraper():
@@ -20,7 +25,7 @@ def choose_external_scraper():
     if not addons:
         xbmcgui.Dialog().notification(
             "bobbi TV",
-            get_setting("external_scraper_no_modules_msg") or "No compatible modules found",
+            get_setting("external_scraper_no_modules_msg") or _tr(91166, "No compatible modules found"),
         )
         return
 
@@ -32,7 +37,7 @@ def choose_external_scraper():
         li.setArt({"icon": icon})
         items.append(li)
 
-    heading = get_setting("external_scraper_choose_heading") or "Choose External Scraper"
+    heading = get_setting("external_scraper_choose_heading") or _tr(91167, "Choose External Scraper")
     selected = xbmcgui.Dialog().select(heading, items, useDetails=True)
     if selected == -1:
         return
@@ -45,7 +50,7 @@ def choose_external_scraper():
     if not _test_module_compatibility(chosen):
         error_msg = (
             get_setting("external_scraper_incompatible_msg")
-            or "The selected module is not compatible. Please choose a different one."
+            or _tr(91168, "The selected module is not compatible. Please choose a different one.")
         )
         xbmcgui.Dialog().ok("bobbi TV", error_msg)
         # Let user try again
@@ -59,7 +64,7 @@ def choose_external_scraper():
 
     success_msg = (
         get_setting("external_scraper_success_msg")
-        or f"Success!\n{module_name} set as External Scraper"
+        or (_tr(91169, "Success!\n%s set as External Scraper") % module_name)
     )
     xbmcgui.Dialog().ok("bobbi TV", success_msg)
 
@@ -69,7 +74,7 @@ def open_external_scraper_settings():
     module_id = get_setting("external_scraper_module")
     kodilog(f"ExternalScraper: open settings requested, module={module_id}")
     if not module_id:
-        xbmcgui.Dialog().notification("bobbi TV", "No external scraper selected")
+        xbmcgui.Dialog().notification("bobbi TV", _tr(91170, "No external scraper selected"))
         return
     try:
         # When this action is launched from the settings window, the
@@ -82,7 +87,7 @@ def open_external_scraper_settings():
         xbmc.sleep(500)
     except Exception as exc:
         kodilog(f"ExternalScraper: Addon.OpenSettings failed: {exc}")
-        xbmcgui.Dialog().notification("bobbi TV", f"Unable to open settings: {module_id}")
+        xbmcgui.Dialog().notification("bobbi TV", _tr(91171, "Unable to open settings: %s") % module_id)
 
 
 # ------------------------------------------------------------------

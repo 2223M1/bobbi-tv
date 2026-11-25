@@ -6,16 +6,31 @@ import xbmcaddon
 import xbmcgui
 
 
+def _tr(po_id, zh_fallback, en_fallback):
+    try:
+        from bobbi_platform.i18n import tr
+        return tr(po_id, zh_fallback, en_fallback, addon_id='plugin.video.bobbi')
+    except Exception:
+        return zh_fallback
+
+
 class TerminalActions(xbmcgui.WindowXMLDialog):
     def configure(self, current, episode, ended):
         self.current, self.episode, self.ended = current, episode, ended
         self.choice, self.done = None, Event()
 
     def onInit(self):
-        self.getControl(100).setLabel('本集已播完' if self.ended
-                                     else '播放已结束')
-        self.getControl(101).setLabel('未找到可靠的同版下一集，可查看分集手动选择。' if self.ended
-                                     else '可返回选源重试，不会自动更换版本。')
+        self.getControl(100).setLabel(
+            _tr(91185, '本集已播完', 'Episode Finished') if self.ended
+            else _tr(91186, '播放已结束', 'Playback Ended')
+        )
+        self.getControl(101).setLabel(
+            _tr(91187, '未找到可靠的同版下一集，可查看分集手动选择。',
+                'No verified same-release next episode found. Browse episodes to choose manually.')
+            if self.ended
+            else _tr(91188, '可返回选源重试，不会自动更换版本。',
+                     'Return to source selection to retry; releases are never switched automatically.')
+        )
         self.getControl(9002).setVisible(self.episode)
         self.setFocusId(9003)  # No default action ever starts media or searches.
         Thread(target=self.watch, name='bobbi-terminal-menu', daemon=True).start()

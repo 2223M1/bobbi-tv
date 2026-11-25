@@ -58,6 +58,11 @@ def stage(app, abi, engine_root, native_library, probe_library, font_directory, 
     (java/'EngineBuildConfig.java').write_text(policy + '}\n')
     for file in (ROOT/'native/android-host/java/org/bobbi/helper').glob('*.java'):
         shutil.copy2(file, java/file.name)
+    for res_dir in ('values', 'values-en', 'values-zh-rCN'):
+        src_res = ROOT/'native/android-host/res'/res_dir/'bobbi_host_strings.xml'
+        dst_res = app/'res'/res_dir/'bobbi_host_strings.xml'
+        dst_res.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(src_res, dst_res)
     main = java/'Main.java'
     text = main.read_text()
     for call, replacement in (

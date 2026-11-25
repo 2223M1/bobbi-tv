@@ -5,6 +5,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.os.Build;
@@ -19,6 +20,7 @@ public final class EngineService extends Service implements EngineRunner.Listene
     static final String START = "org.bobbi.helper.START";
     static final String STOP = "org.bobbi.helper.STOP";
     static final String PAIR = "org.bobbi.helper.PAIR";
+    static final String REFRESH_LOCALE = "org.bobbi.helper.REFRESH_LOCALE";
     static volatile PairBridge pairing;
     private static final String CHANNEL = "bobbi_engine";
     private static final int NOTIFICATION = 8090;
@@ -35,29 +37,53 @@ public final class EngineService extends Service implements EngineRunner.Listene
     private EngineRunner runner;
     private boolean destroyed;
 
-    @Override public void onCreate() {
-        super.onCreate();
-        NotificationManager manager = getSystemService(NotificationManager.class);
-        manager.createNotificationChannel(new NotificationChannel(CHANNEL,
-                getString(R.string.channel_name), NotificationManager.IMPORTANCE_LOW));
+    static void refreshLocale(Context app) {
+        Context localized = AppLocale.wrap(app);
+        NotificationManager manager = app.getSystemService(NotificationManager.class);
+        if (manager != null) {
+            manager.createNotificationChannel(new NotificationChannel(CHANNEL,
+                    localized.getString(R.string.channel_name), NotificationManager.IMPORTANCE_LOW));
+        }
+        if (snapshot.busy()) {
+            try { app.startService(new Intent(app, EngineService.class).setAction(REFRESH_LOCALE)); }
+            catch (RuntimeException ignored) { }
+        }
     }
 
-    private Notification notification(String message) {
+    private Context localizedContext() {
+        return AppLocale.wrap(this);
+    }
+
+    @Override public void onCreate() {
+        super.onCreate();
+        Context localized = localizedContext();
+        NotificationManager manager = getSystemService(NotificationManager.class);
+        manager.createNotificationChannel(new NotificationChannel(CHANNEL,
+                localized.getString(R.string.channel_name), NotificationManager.IMPORTANCE_LOW));
+    }
+
+    private Notification notification(Context localized, String message) {
         PendingIntent open = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class),
                 PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
         PendingIntent stop = PendingIntent.getService(this, 1, new Intent(this, EngineService.class).setAction(STOP),
                 PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
         return new Notification.Builder(this, CHANNEL).setSmallIcon(R.drawable.ic_bobbi)
-                .setContentTitle(getString(R.string.app_name)).setContentText(message)
+                .setContentTitle(localized.getString(R.string.app_name)).setContentText(message)
                 .setContentIntent(open).setOngoing(true).setOnlyAlertOnce(true)
-                .addAction(new Notification.Action.Builder(null, getString(R.string.stop), stop).build()).build();
+                .addAction(new Notification.Action.Builder(null, localized.getString(R.string.stop), stop).build()).build();
+    }
+
+    private String statusNotificationText(Context localized, String state) {
+        if ("STARTING".equals(state)) return localized.getString(R.string.notification_starting_verify);
+        return EnginePresentation.state(localized, state);
     }
 
     @Override public int onStartCommand(Intent intent, int flags, int startId) {
         String action = intent == null ? null : intent.getAction();
+        Context localized = localizedContext();
         if (START.equals(action) && runner == null) {
             snapshot = new Snapshot("STARTING", "VERIFYING_PACKAGED_ENGINE");
-            Notification notice = notification("正在启动并验证本机控制接口");
+            Notification notice = notification(localized, localized.getString(R.string.notification_starting_verify));
             try {
                 if (Build.VERSION.SDK_INT >= 34)
                     startForeground(NOTIFICATION, notice, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE);
@@ -69,6 +95,11 @@ public final class EngineService extends Service implements EngineRunner.Listene
             }
             runner = new EngineRunner(this, this);
             executor.execute(runner);
+        } else if (REFRESH_LOCALE.equals(action) && runner != null && snapshot.busy()) {
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(new NotificationChannel(CHANNEL,
+                    localized.getString(R.string.channel_name), NotificationManager.IMPORTANCE_LOW));
+            manager.notify(NOTIFICATION, notification(localized, statusNotificationText(localized, snapshot.state)));
         } else if (PAIR.equals(action) && runner != null && "RUNNING".equals(snapshot.state)) {
             if (pairing != null) pairing.close();
             try { pairing = new PairBridge(Credentials.load(this).pairing()); }
@@ -93,8 +124,9 @@ public final class EngineService extends Service implements EngineRunner.Listene
             if (("RUNNING".equals(state) || "STARTING".equals(state)) && !owner.requested()) return;
             snapshot = new Snapshot(state, detail);
             if ("RUNNING".equals(state) || "STOPPING".equals(state) || "STOP_UNCONFIRMED".equals(state)) {
-                String label = EnginePresentation.state(state);
-                getSystemService(NotificationManager.class).notify(NOTIFICATION, notification(label));
+                Context localized = localizedContext();
+                String label = EnginePresentation.state(localized, state);
+                getSystemService(NotificationManager.class).notify(NOTIFICATION, notification(localized, label));
             }
         });
     }

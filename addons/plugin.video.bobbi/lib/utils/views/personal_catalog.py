@@ -25,13 +25,13 @@ def filter_target(expected, query=None, review=False):
 
 
 def filter_summary(query):
-    labels = [dict(choices).get(query.get(key), '') for key, (_, choices) in FILTER_CHOICES.items()
+    labels = [dict(choices).get(query.get(key), '') for key, (_, choices) in _filter_choices().items()
               if query.get(key) and not (key == 'sort' and query[key] == 'name')]
     if query.get('source_id'):
-        labels.insert(0, '已选来源')
+        labels.insert(0, _tr(91551, '已选来源'))
     if query.get('text'):
         text = query['text']
-        labels.append('关键词：' + text[:24] + ('…' if len(text) > 24 else ''))
+        labels.append(_tr(91552, '关键词：%s') % (text[:24] + ('…' if len(text) > 24 else '')))
     return ' · '.join(labels)
 
 
@@ -46,20 +46,20 @@ def filters(dialog, params, expected, origin, rpc, scope_check=None):
     selected.setdefault('sort', 'name')
     if mounted:
         selected['source_id'] = expected['source_id']
-    source_name = '当前已登记来源' if mounted else '已选来源' if selected.get('source_id') else '当前账号全部来源'
+    source_name = _tr(91553, '当前已登记来源') if mounted else _tr(91551, '已选来源') if selected.get('source_id') else _tr(91554, '当前账号全部来源')
     while True:
-        fields = ([] if mounted else ['source_id']) + list(FILTER_CHOICES) + ['text']
+        fields = ([] if mounted else ['source_id']) + list(_filter_choices()) + ['text']
         labels = []
         for key in fields:
             if key == 'source_id':
-                labels.append('目录来源 · ' + source_name)
+                labels.append(_tr(91555, '目录来源 · %s') % source_name)
             elif key == 'text':
-                labels.append('关键词 · ' + (selected.get('text') or '全部作品 / 原文件 / 版本备注'))
+                labels.append(_tr(91556, '关键词 · %s') % (selected.get('text') or _tr(91557, '全部作品 / 原文件 / 版本备注')))
             else:
-                title, choices = FILTER_CHOICES[key]
+                title, choices = _filter_choices()[key]
                 labels.append(title + ' · ' + dict(choices).get(selected.get(key), choices[0][1]))
-        action = dialog.select('片库筛选与排序' + (' · 当前已登记来源' if mounted else ''),
-            labels + ['应用筛选', '清除筛选（保留当前来源）', '保存为常用视图'])
+        action = dialog.select(_tr(91558, '片库筛选与排序') + (_tr(91559, ' · 当前已登记来源') if mounted else ''),
+            labels + [_tr(91560, '应用筛选'), _tr(91561, '清除筛选（保留当前来源）'), _tr(91562, '保存为常用视图')])
         scope_check()
         if action < 0:
             return
@@ -89,19 +89,19 @@ def filters(dialog, params, expected, origin, rpc, scope_check=None):
         key = fields[action]
         if key == 'source_id':
             rows = rpc('catalog_sources', dict(expected=expected))['items']
-            options = [(None, '当前账号全部来源')] + [(row['id'], row['name']) for row in rows]
+            options = [(None, _tr(91554, '当前账号全部来源'))] + [(row['id'], row['name']) for row in rows]
         elif key == 'text':
-            text = dialog.input('搜索作品 / 原文件 / 版本备注（最多 160 字）', defaultt=selected.get('text', '')).strip()
+            text = dialog.input(_tr(91563, '搜索作品 / 原文件 / 版本备注（最多 160 字）'), defaultt=selected.get('text', '')).strip()
             scope_check()
             if text:
                 if len(text) > 160 or re.search(r'[\x00-\x1f\x7f]', text):
-                    dialog.ok('关键词过长或含控制字符', '请使用 160 字以内的关键词。当前筛选保留。')
+                    dialog.ok(_tr(91564, '关键词过长或含控制字符'), _tr(91565, '请使用 160 字以内的关键词。当前筛选保留。'))
                 else:
                     selected['text'] = text
             continue
         else:
-            options = FILTER_CHOICES[key][1]
-        chosen = dialog.select('选择' + ('目录来源' if key == 'source_id' else FILTER_CHOICES[key][0]),
+            options = _filter_choices()[key][1]
+        chosen = dialog.select(_tr(91566, '选择目录来源') if key == 'source_id' else (_tr(91567, '选择%s') % _filter_choices()[key][0]),
                                [label for _, label in options])
         scope_check()
         if 0 <= chosen < len(options):
@@ -236,13 +236,13 @@ def manage(params=None, rpc=None):
             # a stale view must remain possible while the Host is unavailable.
             return manage_view(params, rpc or call)
         except (ValueError, OSError, RuntimeError, KeyError, TypeError) as error:
-            xbmcgui.Dialog().ok('常用视图未修改', '记录已变化，请重新打开后再操作。' if
-                str(error) == 'CATALOG_VIEW_CONFLICT' else '来源或记录暂不可用，可重试、删除或重新保存筛选。')
+            xbmcgui.Dialog().ok(_tr(91568, '常用视图未修改'), _tr(91569, '记录已变化，请重新打开后再操作。') if
+                str(error) == 'CATALOG_VIEW_CONFLICT' else _tr(91570, '来源或记录暂不可用，可重试、删除或重新保存筛选。'))
             return
     try:
         binding, rpc = _profile_rpc(rpc)
     except (ValueError, OSError, RuntimeError):
-        xbmcgui.Dialog().ok('片库范围已变化', '请返回重新选择来源。已保存的整理与原文件均保留。')
+        xbmcgui.Dialog().ok(_tr(91571, '片库范围已变化'), _tr(91572, '请返回重新选择来源。已保存的整理与原文件均保留。'))
         return
     if not params.get('provider') and not params.get('source'):
         return catalog_ui.manage(scope_check=binding.require_current)
@@ -265,10 +265,10 @@ def manage(params=None, rpc=None):
                 raise ValueError('CATALOG_FILE_NOT_FOUND')
             if origin_is_current(params, expected, origin, rpc):
                 from bobbi_core.catalog_display import media_facts_text
-                xbmcgui.Dialog().textviewer('本文件信息与依据', media_facts_text(page['items'][0]))
+                xbmcgui.Dialog().textviewer(_tr(91573, '本文件信息与依据'), media_facts_text(page['items'][0]))
             return
         if params.get('mode') == 'search':
-            text = xbmcgui.Dialog().input('搜索自己的片库', defaultt=params.get('text', '')).strip()
+            text = xbmcgui.Dialog().input(_tr(91574, '搜索自己的片库'), defaultt=params.get('text', '')).strip()
             if text and origin_is_current(params, expected, origin, rpc):
                 query = {key: params[key] for key in ('view', 'source_id', 'review_state',
                     'availability', 'media_kind', 'parent_entity_id', 'sort') if params.get(key)}
@@ -298,7 +298,8 @@ def manage(params=None, rpc=None):
                     source_id=params.get('source_id'), context=context, candidate_tools=catalog_candidates)
             if result:
                 if result.get('pending_request_id') and xbmcgui.Dialog().yesno(
-                        '查询原提交回执？', '结果尚待核对。只查询原提交编号，不重新写入；也可稍后从片库管理继续查询。'):
+                        _tr(91575, '查询原提交回执？'),
+                        _tr(91576, '结果尚待核对。只查询原提交编号，不重新写入；也可稍后从片库管理继续查询。')):
                     catalog_ui.query_receipt(xbmcgui.Dialog(), expected, result['pending_request_id'], context=context)
                 if origin_is_current(params, expected, origin, rpc):
                     xbmc.executebuiltin('Container.Refresh')
@@ -307,7 +308,8 @@ def manage(params=None, rpc=None):
         if mode in ('scan', 'cancel') and expected.get('reference_kind') in TYPED_KINDS:
             body = request_scope(expected)
             if mode == 'scan':
-                if not xbmcgui.Dialog().yesno('扫描当前已登记来源？', '只建立本机作品索引，不移动或修改原文件。'):
+                if not xbmcgui.Dialog().yesno(_tr(91577, '扫描当前已登记来源？'),
+                                              _tr(91578, '只建立本机作品索引，不移动或修改原文件。')):
                     return
                 rpc(typed_action(expected, 'scan'), body)
             else:
@@ -321,12 +323,13 @@ def manage(params=None, rpc=None):
             try:
                 from lib.clients.stremio.manage_phone import catalog_manage_phone
             except ImportError:
-                xbmcgui.Dialog().ok('手机管理暂不可用', '手机管理组件未就绪；未创建授权。电视片库与原文件浏览仍可使用。')
+                xbmcgui.Dialog().ok(_tr(91279, '手机管理暂不可用'),
+                                    _tr(91579, '手机管理组件未就绪；未创建授权。电视片库与原文件浏览仍可使用。'))
                 return
             return catalog_manage_phone(account)
         return catalog_ui.manage_scope(expected, context=context, phone_launcher=launch_phone)
     except (ValueError, OSError, RuntimeError, KeyError, TypeError):
-        xbmcgui.Dialog().ok('片库范围已变化', '请返回重新选择来源。已保存的整理与原文件均保留。')
+        xbmcgui.Dialog().ok(_tr(91571, '片库范围已变化'), _tr(91572, '请返回重新选择来源。已保存的整理与原文件均保留。'))
 
 
 def file_progress(items, account, history):
@@ -394,7 +397,7 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
     import xbmcplugin
     from bobbi_platform.pan_accounts import ALL_NAMES as NAMES, scope
     handle = int(sys.argv[1]) if handle is None else handle
-    rows, category, content = [], '我的作品片库', 'videos'
+    rows, category, content = [], _tr(91580, '我的作品片库'), 'videos'
     mode = params.get('mode', '')
     rail = mode == 'rail'
     state, revision, presentation_scope = 'ready', '', 'local-profile'
@@ -424,7 +427,7 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
             binding = ProfileBinding()
             entries(entry)
             binding.require_current()
-            xbmcplugin.setPluginCategory(handle, '常用视图')
+            xbmcplugin.setPluginCategory(handle, _tr(91581, '常用视图'))
             xbmcplugin.setContent(handle, 'files')
             xbmcplugin.addDirectoryItems(handle, rows, len(rows))
             xbmcplugin.endOfDirectory(handle, cacheToDisc=False)
@@ -452,7 +455,7 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
             params = dict(params, provider=accounts[0]['provider'], scope=scope_key(accounts[0]))
         if not mounted and not params.get('provider'):
             if not rail:
-                entry('常用视图', route(action='personal_catalog', mode='views'))
+                entry(_tr(91581, '常用视图'), route(action='personal_catalog', mode='views'))
             for account in accounts:
                 entry(NAMES.get(account['provider'], account['provider']), route(
                     action='personal_catalog', provider=account['provider'], scope=scope_key(account),
@@ -461,22 +464,22 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
             for source in mounts:
                 from bobbi_platform.catalog_ui import source_status
                 observed = source_status(source)
-                entry(source['name'] + {'local_path': ' · 本地', 'network_path': ' · 网络目录（实验）'}.get(source.get('reference_kind'), ' · CD2'), route(action='personal_catalog', source=source['id'],
+                entry(source['name'] + {'local_path': _tr(91582, ' · 本地'), 'network_path': _tr(91583, ' · 网络目录（实验）')}.get(source.get('reference_kind'), _tr(91584, ' · CD2')), route(action='personal_catalog', source=source['id'],
                     reference_kind=source.get('reference_kind') if source.get('reference_kind') != 'mounted_path' else None,
                     section=params.get('section') if mode == 'owned' else None,
                     mode='owned' if mode == 'owned' else None, metadata_key=params.get('metadata_key') if mode == 'owned' else None),
-                      detail=observed or ('复用已有挂载 · 描述保留，播放时复核' if source.get('available') else
-                             '挂载暂不可用 · 已有作品和任务仍可查看'))
+                      detail=observed or (_tr(91585, '复用已有挂载 · 描述保留，播放时复核') if source.get('available') else
+                             _tr(91586, '挂载暂不可用 · 已有作品和任务仍可查看')))
                 if source.get('has_jobs'):
-                    entry(source['name'] + ' · 扫描任务', route(action='personal_catalog_manage',
+                    entry(source['name'] + _tr(91587, ' · 扫描任务'), route(action='personal_catalog_manage',
                         source=source['id'], mode='jobs', reference_kind=source.get('reference_kind') if source.get('reference_kind') != 'mounted_path' else None),
-                        False, '直接查看或取消，无需读取挂载目录')
+                        False, _tr(91588, '直接查看或取消，无需读取挂载目录'))
             if not accounts and not mounts:
                 state = 'auth_required'
-                entry('添加或管理个人网盘', route(action='personal_catalog_manage'), False,
-                      '原有 CD2、NAS 和本机视频仍可从原目录浏览')
-            entry('浏览原文件与已有挂载', 'plugin://plugin.video.bobbi.library/')
-            entry('已有聚合片库', route(action='bobbi_library'))
+                entry(_tr(91589, '添加或管理个人网盘'), route(action='personal_catalog_manage'), False,
+                      _tr(91590, '原有 CD2、NAS 和本机视频仍可从原目录浏览'))
+            entry(_tr(91591, '浏览原文件与已有挂载'), 'plugin://plugin.video.bobbi.library/')
+            entry(_tr(91592, '已有聚合片库'), route(action='bobbi_library'))
         else:
             account = mounted_for(params, rpc) if mounted else account_for(params, accounts)
             if mode == 'owned':
@@ -493,9 +496,9 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
                                   'seasons' if owned['media_kind'] == 'tv' else 'files',
                                   parent_entity_id=owned['entity_id'])
                 else:
-                    entry('当前片库未确认收录此作品' if owned.get('state') == 'not_indexed' else '当前来源收录状态未知',
+                    entry(_tr(91593, '当前片库未确认收录此作品') if owned.get('state') == 'not_indexed' else _tr(91594, '当前来源收录状态未知'),
                           route(action='personal_catalog', **scope_params(account)),
-                          detail='公共作品可继续浏览；可进入片库扫描或整理原文件。')
+                          detail=_tr(91595, '公共作品可继续浏览；可进入片库扫描或整理原文件。'))
                     # Keep the original public page in navigation history.
                     if mounted:
                         mounted_for(dict(params, **scope_params(account)), rpc)
@@ -517,32 +520,32 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
             if mode == 'review':
                 base['mode'] = 'review'
             if mode == 'review' and not params.get('view'):
-                category = '待整理工作台'
-                for state_name, label in (('unmatched', '未匹配原文件'), ('ambiguous', '身份不明确'),
-                        ('proposed', '待确认建议'), ('ignored', '已忽略原文件')):
+                category = _tr(91596, '待整理工作台')
+                for state_name, label in (('unmatched', _tr(91597, '未匹配原文件')), ('ambiguous', _tr(91324, '身份不明确')),
+                        ('proposed', _tr(91325, '待确认建议')), ('ignored', _tr(91598, '已忽略原文件'))):
                     entry(label, route(**base, view='files', review_state=state_name, source_id=params.get('source_id')))
-                entry('筛选与排序', filter_target(account, params, review=True), False)
-                entry('当前片库管理与原提交查询', route(action='personal_catalog_manage', **scope_params(account)), False)
+                entry(_tr(91599, '筛选与排序'), filter_target(account, params, review=True), False)
+                entry(_tr(91600, '当前片库管理与原提交查询'), route(action='personal_catalog_manage', **scope_params(account)), False)
             elif not params.get('view') and mode != 'rail' and not params.get('search'):
                 for label, values in (
-                    ('全部作品', dict(view='works', sort='name')),
-                    ('最近加入', dict(view='works', sort='recent_added')),
-                    ('未匹配原文件', dict(view='files', review_state='unmatched')),
-                    ('身份不明确', dict(view='files', review_state='ambiguous')),
-                    ('待确认建议', dict(view='files', review_state='proposed')),
-                    ('已忽略原文件', dict(view='files', review_state='ignored'))):
+                    (_tr(91601, '全部作品'), dict(view='works', sort='name')),
+                    (_tr(91336, '最近加入'), dict(view='works', sort='recent_added')),
+                    (_tr(91597, '未匹配原文件'), dict(view='files', review_state='unmatched')),
+                    (_tr(91324, '身份不明确'), dict(view='files', review_state='ambiguous')),
+                    (_tr(91325, '待确认建议'), dict(view='files', review_state='proposed')),
+                    (_tr(91598, '已忽略原文件'), dict(view='files', review_state='ignored'))):
                     entry(label, route(**base, **values, **(dict(mode='review') if values.get('review_state') else {})))
-                entry('搜索片库', route(action='personal_catalog_manage', mode='search',
+                entry(_tr(91602, '搜索片库'), route(action='personal_catalog_manage', mode='search',
                     source_id=params.get('source_id'), **scope_params(account)), False)
-                entry('筛选与排序', filter_target(account, params), False)
-                entry('常用视图', route(action='personal_catalog', mode='views'))
-                entry('继续观看', route(action='continue_watching_menu'))
+                entry(_tr(91599, '筛选与排序'), filter_target(account, params), False)
+                entry(_tr(91581, '常用视图'), route(action='personal_catalog', mode='views'))
+                entry(_tr(90200, '继续观看'), route(action='continue_watching_menu'))
                 if mounted:
-                    entry('扫描 / 更新当前已登记来源', route(action='personal_catalog_manage',
+                    entry(_tr(91603, '扫描 / 更新当前已登记来源'), route(action='personal_catalog_manage',
                         mode='scan', **scope_params(account)), False)
-                entry('整理作品与扫描任务', route(action='personal_catalog_manage', **scope_params(account)), False)
-                entry('浏览原文件与已有挂载', 'plugin://plugin.video.bobbi.library/')
-                entry('已有聚合片库', route(action='bobbi_library'))
+                entry(_tr(91604, '整理作品与扫描任务'), route(action='personal_catalog_manage', **scope_params(account)), False)
+                entry(_tr(91591, '浏览原文件与已有挂载'), 'plugin://plugin.video.bobbi.library/')
+                entry(_tr(91592, '已有聚合片库'), route(action='bobbi_library'))
             else:
                 query = {key: params[key] for key in ('view', 'source_id', 'review_state',
                     'availability', 'media_kind', 'text', 'parent_entity_id', 'sort') if params.get(key)}
@@ -562,7 +565,7 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
                     page = query_page(rpc, account, query=query, cursor=cursor, limit=20)
                 except (OSError, RuntimeError, ValueError) as error:
                     if str(error) == 'CATALOG_CURSOR_STALE' and cursor:
-                        xbmcgui.Dialog().notification('片库已更新', '已回到第一页，请重新选择。')
+                        xbmcgui.Dialog().notification(_tr(91605, '片库已更新'), _tr(91606, '已回到第一页，请重新选择。'))
                         page = query_page(rpc, account, query=query, cursor=None, limit=20)
                     elif (rail and rail_cache is not None and not cursor
                           and str(error) not in ('PAN_ACCOUNT_CHANGED', 'PAN_LOGIN_REQUIRED', 'PAN_SCOPE_INVALID')):
@@ -587,9 +590,9 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
                     except (OSError, ValueError, TypeError):
                         pass
                 progress = file_progress(page['items'], account, history) if type(history) is dict else {}
-                availability = {'observed_present': '已收录 · 播放前核验',
-                    'observed_absent': '来源未发现此文件', 'source_unavailable': '来源暂不可用',
-                    'unverified': '待确认来源'}
+                availability = {'observed_present': _tr(91330, '已收录 · 播放前核验'),
+                    'observed_absent': _tr(91331, '来源未发现此文件'), 'source_unavailable': _tr(91332, '来源暂不可用'),
+                    'unverified': _tr(91333, '待确认来源')}
                 projections = {}  # One immutable work/season view per directory render.
                 for card in page['items']:
                     target, folder = card_target(card, account, query)
@@ -597,26 +600,25 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
                         target = route(action='personal_catalog_manage', object_id=card['entity_id'],
                                        source_id=query.get('source_id'), **scope_params(account))
                     title = card['display_title']
-                    detail = availability.get(card.get('availability'), '待确认来源')
+                    detail = availability.get(card.get('availability'), _tr(91333, '待确认来源'))
                     if mode == 'review':
-                        from bobbi_platform.catalog_ui import LABELS
-                        detail = LABELS.get(card.get('review_state'), '待整理') + ' · ' + detail
+                        detail = _review_label(card.get('review_state')) + ' · ' + detail
                     if card['entity_kind'] != 'file':
-                        detail += ' · %d 个文件版本' % card.get('variant_count', 0)
+                        detail += _tr(91608, ' · %d 个文件版本') % card.get('variant_count', 0)
                     else:
-                        detail += ' · ' + ({'local_path': '本地', 'network_path': '网络目录（实验）'}.get(account.get('reference_kind'), 'CD2') + ' · 从头播放，不继承旧路径进度' if mounted else
+                        detail += ' · ' + ({'local_path': _tr(91609, '本地'), 'network_path': _tr(91610, '网络目录（实验）')}.get(account.get('reference_kind'), 'CD2') + _tr(91611, ' · 从头播放，不继承旧路径进度') if mounted else
                                           NAMES.get(account['provider'], account['provider']))
                         if account.get('provider') in SERVER_PROVIDERS:
-                            detail += ' · 从头播放，历史进度仅供查看'
+                            detail += _tr(91612, ' · 从头播放，历史进度仅供查看')
                         from bobbi_core.catalog_display import file_description
                         descriptions = [file_description(card)]
                         sources = card.get('sources') or []
                         descriptions.extend(row['name'] for row in sources)
                         if card.get('source_total', 0) > len(sources):
-                            descriptions.append('等 %d 个来源' % card['source_total'])
+                            descriptions.append(_tr(91613, '等 %d 个来源') % card['source_total'])
                         detail += ''.join(' · ' + value for value in descriptions if value)
                         if card.get('truncated'):
-                            detail += ' · 显示已截短，原记录保留'
+                            detail += _tr(91614, ' · 显示已截短，原记录保留')
                     properties = {'Bobbi.CardKey': 'catalog:' + scope_key(account) + ':' + card['entity_id'],
                         'Bobbi.File.State': card.get('availability', 'unverified'),
                         'Bobbi.Review.State': card.get('review_state', ''),
@@ -629,25 +631,25 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
                         properties['Bobbi.Catalog.Supplements'] = route(action='personal_catalog', view='supplements',
                             parent_entity_id=card['entity_id'], **scope_params(account))
                     if card.get('supplement'):
-                        from lib.utils.views.catalog_supplement_ui import LABELS as SUPPLEMENT_LABELS
+                        from lib.utils.views.catalog_supplement_ui import supplement_label
                         supplement = card['supplement']
-                        detail += ' · ' + SUPPLEMENT_LABELS.get(supplement['kind'], '补充内容') + '：' + supplement['title']
+                        detail += _tr(91615, ' · %s：%s') % (supplement_label(supplement['kind']), supplement['title'])
                         if supplement.get('state') != 'confirmed':
-                            detail += ' · 主作品或版本已变化，请核对关联'
+                            detail += _tr(91616, ' · 主作品或版本已变化，请核对关联')
                     if rail and not mounted:
                         properties['node.visible'] = ('String.IsEqual(Window(Home).Property(Bobbi.Rail.Scope.%s),%s)'
                             % ('115.personal' if account['provider'] == '115' else account['provider'], presentation_scope))
                     if card['entity_id'] in progress:
                         properties['PercentPlayed'] = progress[card['entity_id']]
-                        detail += ' · 本文件已观看 %d%%' % progress[card['entity_id']]
+                        detail += _tr(91617, ' · 本文件已观看 %d%%') % progress[card['entity_id']]
                     properties['Bobbi.Catalog.ActionLabel'] = (
-                        '整理原文件' if mode == 'review' and card['entity_kind'] == 'file' else
-                        ('从头播放本文件' if mounted or account.get('provider') in SERVER_PROVIDERS else
-                         '继续播放本文件' if card['entity_id'] in progress else '播放本文件')
+                        _tr(91618, '整理原文件') if mode == 'review' and card['entity_kind'] == 'file' else
+                        (_tr(91619, '从头播放本文件') if mounted or account.get('provider') in SERVER_PROVIDERS else
+                         _tr(91620, '继续播放本文件') if card['entity_id'] in progress else _tr(91621, '播放本文件'))
                         if card['entity_kind'] == 'file' else
-                        '选择文件版本' if card['entity_kind'] == 'episode' or card.get('media_kind') == 'movie' else
-                        '选择分集' if card['entity_kind'] == 'season' else
-                        '选择季集' if card.get('media_kind') == 'tv' else '查看原文件')
+                        _tr(91622, '选择文件版本') if card['entity_kind'] == 'episode' or card.get('media_kind') == 'movie' else
+                        _tr(91623, '选择分集') if card['entity_kind'] == 'season' else
+                        _tr(91624, '选择季集') if card.get('media_kind') == 'tv' else _tr(91625, '查看原文件'))
                     item = entry(title, target, folder, detail, properties)
                     info = dict(title=title, mediatype={'work': {'tv': 'tvshow', 'movie': 'movie'}.get(
                         card.get('media_kind'), 'video'), 'season': 'season', 'episode': 'episode'}.get(card['entity_kind'], 'video'))
@@ -660,37 +662,37 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
                     except (ImportError, AttributeError, ValueError, TypeError, KeyError, RuntimeError):
                         pass  # Missing public metadata cannot hide a real local file.
                     if card['entity_kind'] == 'file' and hasattr(item, 'addContextMenuItems'):
-                        item.addContextMenuItems([('整理这个原文件', 'RunPlugin(' + route(
+                        item.addContextMenuItems([(_tr(91626, '整理这个原文件'), 'RunPlugin(' + route(
                             action='personal_catalog_manage', object_id=card['entity_id'],
                             source_id=query.get('source_id'), **scope_params(account)) + ')'),
-                            ('查看文件与媒体信息', 'RunPlugin(' + route(action='personal_catalog_manage',
+                            (_tr(91627, '查看文件与媒体信息'), 'RunPlugin(' + route(action='personal_catalog_manage',
                                 mode='file_facts', object_id=card['entity_id'], **scope_params(account)) + ')'),
-                            ('整理补充内容关联', 'RunPlugin(' + route(action='personal_catalog_manage',
+                            (_tr(91628, '整理补充内容关联'), 'RunPlugin(' + route(action='personal_catalog_manage',
                                 mode='supplement', object_id=card['entity_id'], **scope_params(account)) + ')')])
                     elif variants and hasattr(item, 'addContextMenuItems'):
-                        item.addContextMenuItems([('选择文件版本', 'ActivateWindow(Videos,"' + variants + '",return)')])
+                        item.addContextMenuItems([(_tr(91622, '选择文件版本'), 'ActivateWindow(Videos,"' + variants + '",return)')])
                     if properties.get('Bobbi.Catalog.Supplements') and hasattr(item, 'addContextMenuItems'):
-                        item.addContextMenuItems([('我的补充内容', 'ActivateWindow(Videos,"' + properties['Bobbi.Catalog.Supplements'] + '",return)')])
+                        item.addContextMenuItems([(_tr(91629, '我的补充内容'), 'ActivateWindow(Videos,"' + properties['Bobbi.Catalog.Supplements'] + '",return)')])
                     if not rail and hasattr(item, 'addContextMenuItems'):
-                        item.addContextMenuItems([('筛选与排序', 'RunPlugin(' + filter_target(
+                        item.addContextMenuItems([(_tr(91599, '筛选与排序'), 'RunPlugin(' + filter_target(
                             account, query, review=mode == 'review') + ')'),
-                            ('保存为常用视图', 'RunPlugin(' + route(action='personal_catalog_manage',
+                            (_tr(91562, '保存为常用视图'), 'RunPlugin(' + route(action='personal_catalog_manage',
                                 mode='view_save', **scope_params(account), **query) + ')')])
                 if page.get('next_cursor') and mode != 'rail':
-                    entry('下一页', route(**base, **query, cursor=page['next_cursor']),
+                    entry(_tr(91255, '下一页'), route(**base, **query, cursor=page['next_cursor']),
                           properties={'Bobbi.NextPage': 'true'})
                 if not page['items']:
                     state = 'empty'
                     if query.get('parent_entity_id'):
                         recovery = dict(action='personal_catalog', source_id=query.get('source_id'),
                             **scope_params(account))
-                        entry('返回当前来源作品', route(**recovery, view='works', sort='name'),
-                              detail='此分组暂时没有文件，整理后的作品可能已归入新分组')
-                        entry('继续整理当前来源', route(**recovery, mode='review'))
+                        entry(_tr(91630, '返回当前来源作品'), route(**recovery, view='works', sort='name'),
+                              detail=_tr(91631, '此分组暂时没有文件，整理后的作品可能已归入新分组'))
+                        entry(_tr(91632, '继续整理当前来源'), route(**recovery, mode='review'))
                     else:
-                        entry('当前筛选没有作品 · 调整筛选', filter_target(account, query, review=mode == 'review'), False)
+                        entry(_tr(91633, '当前筛选没有作品 · 调整筛选'), filter_target(account, query, review=mode == 'review'), False)
                     if not rail and not query.get('parent_entity_id'):
-                        entry('保存为常用视图', route(action='personal_catalog_manage', mode='view_save',
+                        entry(_tr(91562, '保存为常用视图'), route(action='personal_catalog_manage', mode='view_save',
                             **scope_params(account), **query), False)
                 try:
                     from lib.clients.tmdb.frontend_metadata import flush
@@ -725,7 +727,7 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
             from lib.cinema.frontend_contract import apply_rail_state
             rows.clear()
             auth = str(error) in ('PAN_ACCOUNT_CHANGED', 'PAN_LOGIN_REQUIRED', 'PAN_SCOPE_INVALID')
-            entry('常用视图需重新选择来源' if saved_error else '登录或重新选择网盘' if auth else '片库暂不可用 · 选择重试',
+            entry(_tr(91634, '常用视图需重新选择来源') if saved_error else _tr(91635, '登录或重新选择网盘') if auth else _tr(91636, '片库暂不可用 · 选择重试'),
                   route(action='personal_catalog', mode='views') if saved_error else route(action='personal_catalog_manage') if auth else
                   route(action='bobbi_retry_rail', rail='personal_library'), False)
             apply_rail_state(rows, 'auth_required' if auth else 'error',
@@ -733,8 +735,61 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
             xbmcplugin.addDirectoryItems(handle, rows, len(rows))
             xbmcplugin.endOfDirectory(handle, cacheToDisc=False)
             return
-        message = ('常用视图仍保留；请从常用视图管理重命名或删除，或在当前来源重新筛选并更新此视图。' if saved_error else
-                   '账号已变化，请返回片库重新选择。' if str(error) in ('PAN_ACCOUNT_CHANGED', 'PAN_LOGIN_REQUIRED')
-                   else '片库暂不可用，原文件、观看记录与已保存的整理结果仍保留。')
-        xbmcgui.Dialog().ok('未读取片库', message)
+        message = (_tr(91637, '常用视图仍保留；请从常用视图管理重命名或删除，或在当前来源重新筛选并更新此视图。') if saved_error else
+                   _tr(91638, '账号已变化，请返回片库重新选择。') if str(error) in ('PAN_ACCOUNT_CHANGED', 'PAN_LOGIN_REQUIRED')
+                   else _tr(91639, '片库暂不可用，原文件、观看记录与已保存的整理结果仍保留。'))
+        xbmcgui.Dialog().ok(_tr(91640, '未读取片库'), message)
         xbmcplugin.endOfDirectory(handle, succeeded=False, cacheToDisc=False)
+
+
+def _tr(po_id, zh_text):
+    try:
+        from bobbi_platform.i18n import tr
+        return tr(po_id, zh_text, '', addon_id='plugin.video.bobbi')
+    except Exception:
+        return zh_text
+
+
+def _review_label(state_key):
+    mapping = {
+        'unmatched': (91323, '待匹配'),
+        'ambiguous': (91324, '身份不明确'),
+        'proposed': (91325, '待确认建议'),
+        'confirmed': (91326, '人工确认'),
+        'ignored': (91327, '已忽略'),
+    }
+    if state_key in mapping:
+        return _tr(*mapping[state_key])
+    from bobbi_platform.catalog_ui import LABELS
+    return LABELS.get(state_key, _tr(91607, '待整理'))
+
+
+def _filter_choices():
+    return {
+        'media_kind': (_tr(91316, '作品类型'), (
+            (None, _tr(91317, '全部类型')),
+            ('movie', _tr(91318, '电影')),
+            ('tv', _tr(91319, '剧集')),
+            ('unknown', _tr(91320, '尚未确认作品')),
+        )),
+        'review_state': (_tr(91321, '整理状态'), (
+            (None, _tr(91322, '全部状态')),
+            ('unmatched', _tr(91323, '待匹配')),
+            ('ambiguous', _tr(91324, '身份不明确')),
+            ('proposed', _tr(91325, '待确认建议')),
+            ('confirmed', _tr(91326, '人工确认')),
+            ('ignored', _tr(91327, '已忽略')),
+        )),
+        'availability': (_tr(91328, '来源观察'), (
+            (None, _tr(91329, '全部观察状态')),
+            ('observed_present', _tr(91330, '已收录 · 播放前核验')),
+            ('observed_absent', _tr(91331, '来源未发现此文件')),
+            ('source_unavailable', _tr(91332, '来源暂不可用')),
+            ('unverified', _tr(91333, '待确认来源')),
+        )),
+        'sort': (_tr(91334, '排序'), (
+            ('name', _tr(91335, '按名称')),
+            ('recent_added', _tr(91336, '最近加入')),
+            ('recent_edited', _tr(91337, '最近整理')),
+        )),
+    }

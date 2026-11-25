@@ -163,6 +163,11 @@ public final class HostBridge {
                 install(app, file);
                 return "{\"state\":\"REQUESTED\"}";
             }
+            if ("ui_locale".equals(action)) {
+                if (!EngineService.applyUiLocale(app, argument)) return "{\"state\":\"REJECTED\"}";
+                return new JSONObject().put("state", "APPLIED")
+                        .put("ui_locale", EngineService.effectiveLocale(app)).toString();
+            }
             return "{\"state\":\"UNSUPPORTED\"}";
         } catch (Exception error) {
             return "{\"state\":\"REJECTED\"}";

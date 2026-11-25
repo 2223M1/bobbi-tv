@@ -45,6 +45,7 @@
       "lib/bobbi_platform/glass_settings.py",
       "lib/bobbi_platform/home_rails_meta.py",
       "lib/bobbi_platform/host.py",
+      "lib/bobbi_platform/i18n.py",
       "lib/bobbi_platform/instance_lock.py",
       "lib/bobbi_platform/kodi.py",
       "lib/bobbi_platform/libraries.py",
@@ -121,6 +122,8 @@
       "licenses/p115rsacipher-pyproject.txt",
       "licenses/p115rsacipher.txt",
       "licenses/segno.txt",
+      "resources/language/resource.language.en_gb/strings.po",
+      "resources/language/resource.language.zh_cn/strings.po",
       "resources/renderer/ce-armhf/libbobbi_liquid_glass.so",
       "resources/skins/Default/1080i/account-login.xml"
     ],
@@ -128,6 +131,8 @@
       "addon.xml",
       "default.py",
       "metadata_credits.py",
+      "resources/language/resource.language.en_gb/strings.po",
+      "resources/language/resource.language.zh_cn/strings.po",
       "resources/skins/Default/1080i/tmdb-attribution.xml",
       "resources/tmdb-logo.png",
       "resources/tmdb-logo.svg",
@@ -135,7 +140,9 @@
     ],
     "plugin.video.bobbi.library": [
       "addon.xml",
-      "default.py"
+      "default.py",
+      "resources/language/resource.language.en_gb/strings.po",
+      "resources/language/resource.language.zh_cn/strings.po"
     ],
     "script.module.bobbi.core": [
       "addon.xml",

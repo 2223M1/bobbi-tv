@@ -11,6 +11,8 @@
   <extension point="xbmc.addon.metadata">
     <summary lang="zh_CN">在线安装波比影院与更新安装入口</summary>
     <description lang="zh_CN">从程序插件安装“波比 TV · 开始使用”。影院通过完整版本更新，不分别自动替换播放组件；保留离线安装与程序回退。</description>
+    <summary lang="en_GB">Online installation and full-release update repository for bobbi Cinema</summary>
+    <description lang="en_GB">Install bobbi TV Get Started from Program Add-ons. Updates apply as verified full releases while preserving offline rollback.</description>
     <license>GPL-3.0-or-later</license><platform>all</platform>
     <source>https://github.com/2223M1/bobbi-tv</source>
   </extension>

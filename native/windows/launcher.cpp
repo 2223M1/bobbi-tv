@@ -11,6 +11,7 @@
 #include <stdexcept>
 #include <cstdint>
 #include <cwctype>
+#include "launcher.h"
 
 namespace fs = std::filesystem;
 HANDLE lifecycleLock = nullptr;
@@ -23,6 +24,99 @@ struct Handle {
   Handle(const Handle&) = delete;
   Handle& operator=(const Handle&) = delete;
 };
+
+namespace {
+int readOnlyKodiLocalePref() noexcept
+{
+  try {
+    wchar_t module[32768];
+    fs::path profile;
+    if (GetModuleFileNameW(nullptr, module, 32768)) {
+      const fs::path root = fs::path(module).parent_path();
+      std::error_code ec;
+      if (fs::exists(root / L"portable.flag", ec)) profile = root / L"profile";
+    }
+    if (profile.empty()) {
+      wchar_t* local = nullptr;
+      if (SUCCEEDED(SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, nullptr, &local)) && local) {
+        profile = fs::path(local) / L"bobbi TV" / L"profile";
+        CoTaskMemFree(local);
+      }
+    }
+    if (profile.empty()) return 0;
+    const fs::path gui = profile / L"userdata" / L"guisettings.xml";
+    Handle file(CreateFileW(gui.c_str(), GENERIC_READ,
+        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+        nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr));
+    if (file.value == INVALID_HANDLE_VALUE) return 0;
+    LARGE_INTEGER size{};
+    if (!GetFileSizeEx(file.value, &size) || size.QuadPart <= 0 || size.QuadPart > 512 * 1024) return 0;
+    std::string raw(static_cast<size_t>(size.QuadPart), '\0');
+    DWORD read = 0;
+    if (!ReadFile(file.value, raw.data(), static_cast<DWORD>(raw.size()), &read, nullptr) || !read) return 0;
+    raw.resize(read);
+    const auto pos = raw.find("id=\"locale.language\"");
+    if (pos == std::string::npos) return 0;
+    const auto gt = raw.find('>', pos);
+    const auto lt = gt == std::string::npos ? std::string::npos : raw.find('<', gt + 1);
+    if (gt == std::string::npos || lt == std::string::npos || lt <= gt + 1) return 0;
+    std::string val = raw.substr(gt + 1, lt - gt - 1);
+    for (char& ch : val) ch = static_cast<char>(tolower(static_cast<unsigned char>(ch)));
+    if (val.find("resource.language.en") != std::string::npos || val == "en" || val.rfind("en_", 0) == 0) return 1;
+    if (val.find("resource.language.zh") != std::string::npos || val == "zh" || val.rfind("zh_", 0) == 0) return -1;
+  } catch (...) {
+  }
+  return 0;
+}
+
+bool preferEnglishStartupUi() noexcept
+{
+  const int kodiPref = readOnlyKodiLocalePref();
+  if (kodiPref != 0) return kodiPref > 0;
+  wchar_t regBuf[32]{};
+  DWORD regBytes = sizeof(regBuf);
+  if (RegGetValueW(HKEY_CURRENT_USER, L"Software\\bobbi TV\\Installer", L"InstallerLanguage",
+                   RRF_RT_REG_SZ, nullptr, regBuf, &regBytes) == ERROR_SUCCESS) {
+    const std::wstring langId(regBuf);
+    if (langId == L"1033") return true;
+    if (langId == L"2052") return false;
+  }
+  DWORD regDword = 0;
+  regBytes = sizeof(regDword);
+  if (RegGetValueW(HKEY_CURRENT_USER, L"Software\\bobbi TV\\Installer", L"InstallerLanguage",
+                   RRF_RT_REG_DWORD, nullptr, &regDword, &regBytes) == ERROR_SUCCESS) {
+    if (regDword == 1033) return true;
+    if (regDword == 2052) return false;
+  }
+  return PRIMARYLANGID(GetUserDefaultUILanguage()) == LANG_ENGLISH;
+}
+
+std::wstring loadResourceOrFallback(UINT id, const wchar_t* fallback) noexcept
+{
+  wchar_t buffer[1024]{};
+  const int len = LoadStringW(GetModuleHandleW(nullptr), id, buffer,
+                              static_cast<int>(sizeof(buffer) / sizeof(buffer[0])));
+  if (len > 0) return std::wstring(buffer, static_cast<size_t>(len));
+  return std::wstring(fallback);
+}
+
+void showStartupFailureDialog() noexcept
+{
+  const bool english = preferEnglishStartupUi();
+  const std::wstring title = loadResourceOrFallback(
+      english ? IDS_APP_TITLE_EN : IDS_APP_TITLE_ZH, L"bobbi TV");
+  const std::wstring body = loadResourceOrFallback(
+      english ? IDS_STARTUP_ERROR_EN : IDS_STARTUP_ERROR_ZH,
+      english
+          ? L"bobbi TV could not start safely. Close any existing instance, then retry.\n"
+            L"If an update failed, keep the maintenance folder and use the previous installer.\n"
+            L"No account data or profile has been removed."
+          : L"bobbi TV \u672a\u80fd\u5b89\u5168\u542f\u52a8\u3002\u8bf7\u5148\u5173\u95ed\u5df2\u8fd0\u884c\u7684\u7a97\u53e3\u540e\u518d\u8bd5\u3002\n"
+            L"\u82e5\u66f4\u65b0\u4e2d\u65ad\uff0c\u8bf7\u4fdd\u7559 maintenance \u6587\u4ef6\u5939\u5e76\u8fd0\u884c\u4e0a\u4e00\u7248\u672c\u7684\u5b89\u88c5\u7a0b\u5e8f\u3002\n"
+            L"\u8d26\u53f7\u6570\u636e\u4e0e\u4e2a\u4eba\u914d\u7f6e\u5747\u672a\u88ab\u79fb\u9664\u3002");
+  MessageBoxW(nullptr, body.c_str(), title.c_str(), MB_OK | MB_ICONERROR);
+}
+} // namespace
 
 std::wstring quote(const std::wstring& value)
 {
@@ -236,9 +330,7 @@ int WINAPI wWinMain(HINSTANCE, HINSTANCE, PWSTR, int)
     return 0;
   }
   catch (...) {
-    if (!quietFailure) MessageBoxW(nullptr, L"bobbi TV could not start safely. Close any existing instance, then retry.\n"
-      L"If an update failed, keep the maintenance folder and use the previous installer.\n"
-      L"No account data or profile has been removed.", L"bobbi TV", MB_OK | MB_ICONERROR);
+    if (!quietFailure) showStartupFailureDialog();
     return 1;
   }
 }
