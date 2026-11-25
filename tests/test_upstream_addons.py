@@ -167,15 +167,23 @@ def test_unreviewed_partial_inventory_is_rejected(dependencies):
 
 
 def test_linked_upstream_path_is_rejected(dependencies, tmp_path):
+    import os, shutil, subprocess
     addons, stage = dependencies
     install(stage, 'plugin.video.bobbi', requires=(dict(addon='script.module.requests', version='1.0.0'),))
-    path = addons / 'script.module.requests' / 'addon.xml'
+    req_dir = addons / 'script.module.requests'
+    path = req_dir / 'addon.xml'
     outside = tmp_path / 'other.xml'
     outside.write_bytes(path.read_bytes())
     path.unlink()
     try:
         path.symlink_to(outside)
     except OSError:
-        pytest.skip('Host does not permit symlink fixture')
-    with pytest.raises(UpdateError, match='Symlink'):
+        if os.name != 'nt':
+            pytest.skip('Host does not permit symlink fixture')
+        outside_dir = tmp_path / 'outside_requests'
+        shutil.move(str(req_dir), str(outside_dir))
+        shutil.copyfile(str(outside), str(outside_dir / 'addon.xml'))
+        subprocess.run(['cmd', '/c', 'mklink', '/J', str(req_dir), str(outside_dir)],
+                       check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    with pytest.raises(UpdateError, match='Symlink|Reparse'):
         check_dependencies(addons, stage)
