@@ -1,12 +1,13 @@
 """Persistent bounded SQLite store for opaque T4 selection tokens and approved media origins.
 
-Implements R13-01, R13-02, R13-05, R14-02, and REV-11:
-- Keeps URL-shaped/arbitrary vod_id, category type_id, and line/episode play references out of
-  Kodi plugin URLs, Host IPC, and logs.
-- Strictly separated from short-lived playback grants so directory pages remain navigable across
-  pauses and Host restarts, while invalidating immediately on (source_id, generation) change.
-- Bounded at MAX_TOKENS (4096) with LRU eviction; missing/evicted tokens raise T4_TOKEN_EXPIRED
-  and are NEVER forwarded as raw vod_id strings.
+Implements R13-01, R13-02, R13-05, R14-02, REV-11, and U07 (SRC-02):
+- Keeps URL-shaped/arbitrary vod_id, category type_id, filter maps, and line/episode play
+  references out of Kodi plugin URLs, Host IPC, and logs.
+- Play records are self-contained on disk (storing vod_id, line/episode hashes & raw summary
+  bound to source_id, generation, and site_hash) so parent item eviction never invalidates
+  an existing play token, while external URLs remain 100% opaque 32-hex HMAC tokens.
+- True read-LRU ordering with strictly monotonic timestamps and single-transaction page batches
+  that pin the active page's parent/sibling tokens against self-eviction.
 """
 from __future__ import annotations
 
@@ -24,14 +25,20 @@ from bobbi_core.library_contract import LibraryError
 from bobbi_core.source_endpoint import endpoint
 
 MAX_TOKENS = 4096
+MAX_BATCH_TOKENS = 512
 MAX_APPROVED_ORIGINS_PER_SOURCE = 64
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
+
+
+def _sha256_hex(value: str) -> str:
+    return hashlib.sha256(value.encode('utf-8')).hexdigest()
 
 
 class T4TokenStore:
     def __init__(self, path: Path | str, *, read_only: bool = False, timeout: float = 1.0):
         self.path = Path(path)
         self.read_only = read_only
+        self._last_clock = 0
         if any(p.is_symlink() for p in (self.path, *self.path.parents)):
             raise LibraryError('STORAGE_UNSAFE')
         self.db: sqlite3.Connection | None = None
@@ -57,6 +64,16 @@ class T4TokenStore:
             self.close()
             if not read_only:
                 raise LibraryError('STORAGE_UNAVAILABLE') from None
+
+    def _next_stamp(self) -> int:
+        assert self.db is not None
+        if self._last_clock == 0:
+            row = self.db.execute('SELECT COALESCE(MAX(updated_at), 0) FROM t4_tokens').fetchone()
+            if row and isinstance(row[0], int):
+                self._last_clock = row[0]
+        candidate = time.time_ns()
+        self._last_clock = candidate if candidate > self._last_clock else self._last_clock + 1
+        return self._last_clock
 
     def _ensure_schema(self) -> None:
         assert self.db is not None
@@ -95,7 +112,50 @@ class T4TokenStore:
                 'INSERT OR IGNORE INTO t4_meta(key, value) VALUES (?, ?)',
                 ('hmac_salt', secrets.token_hex(32)),
             )
-            self.db.execute(f'PRAGMA user_version={SCHEMA_VERSION}')
+            ver = self.db.execute('PRAGMA user_version').fetchone()[0]
+            if ver < SCHEMA_VERSION:
+                self._migrate_play_rows_v1_to_v2()
+                self.db.execute(f'PRAGMA user_version={SCHEMA_VERSION}')
+
+    def _migrate_play_rows_v1_to_v2(self) -> None:
+        """Upgrade existing v1 play rows in-place when their parent item_token is still present."""
+        assert self.db is not None
+        rows = self.db.execute(
+            "SELECT token, source_id, generation, site_hash, payload_json FROM t4_tokens WHERE kind='play'"
+        ).fetchall()
+        for tok, sid, gen, shash, pjson in rows:
+            try:
+                val = json.loads(pjson)
+            except ValueError:
+                continue
+            if not isinstance(val, dict) or 'vod_id' in val:
+                continue
+            itok = val.get('item_token', '')
+            prow = self.db.execute(
+                "SELECT payload_json FROM t4_tokens WHERE token=? AND source_id=? AND generation=? AND site_hash=? AND kind='item'",
+                (itok, sid, gen, shash),
+            ).fetchone()
+            if not prow:
+                continue
+            try:
+                vid = json.loads(prow[0])
+            except ValueError:
+                continue
+            if isinstance(vid, str) and vid:
+                upgraded = {
+                    'schema': SCHEMA_VERSION,
+                    'item_token': itok,
+                    'vod_id': vid,
+                    'line': val.get('line', ''),
+                    'line_name': '',
+                    'episode': val.get('episode', ''),
+                    'episode_id': '',
+                    'title': str(val.get('title') or '')[:512],
+                }
+                self.db.execute(
+                    'UPDATE t4_tokens SET payload_json=? WHERE token=?',
+                    (json.dumps(upgraded, ensure_ascii=False, sort_keys=True, separators=(',', ':')), tok),
+                )
 
     def close(self) -> None:
         if self.db is not None:
@@ -118,39 +178,89 @@ class T4TokenStore:
             raise LibraryError('STORAGE_UNAVAILABLE')
         return row[0].encode('ascii')
 
-    def _put(self, source_id: str, generation: str, site_hash: str, kind: str, payload: object) -> str:
-        if self.read_only or self.db is None:
-            raise LibraryError('STORAGE_UNAVAILABLE')
+    @staticmethod
+    def _check_scope(source_id: str, generation: str, site_hash: str) -> None:
         if (
-            not re.fullmatch(r'[0-9a-f]{32}', source_id)
+            not isinstance(source_id, str)
+            or not re.fullmatch(r'[0-9a-f]{32}', source_id)
+            or not isinstance(generation, str)
             or not re.fullmatch(r'[0-9a-f]{64}', generation)
+            or not isinstance(site_hash, str)
             or not re.fullmatch(r'[0-9a-f]{64}', site_hash)
         ):
             raise LibraryError('T4_CHANGED')
-        raw = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+
+    def _mint(self, salt: bytes, source_id: str, generation: str, site_hash: str, kind: str, raw: str) -> str:
         msg = f'{source_id}:{generation}:{site_hash}:{kind}:{raw}'.encode('utf-8')
-        tok = hmac.new(self._salt(), msg, hashlib.sha256).hexdigest()[:32]
-        now_ns = time.time_ns()
+        return hmac.new(salt, msg, hashlib.sha256).hexdigest()[:32]
+
+    def _evict_in_tx(self, protected: set[str]) -> None:
+        assert self.db is not None
+        count = self.db.execute('SELECT COUNT(*) FROM t4_tokens').fetchone()[0]
+        if count <= MAX_TOKENS:
+            return
+        excess = count - MAX_TOKENS
+        keep = [t for t in protected if isinstance(t, str) and re.fullmatch(r'[0-9a-f]{32}', t)]
+        if keep and len(keep) < MAX_TOKENS:
+            placeholders = ','.join('?' for _ in keep)
+            self.db.execute(
+                f"""
+                DELETE FROM t4_tokens WHERE token IN (
+                    SELECT token FROM t4_tokens
+                    WHERE token NOT IN ({placeholders})
+                    ORDER BY updated_at ASC LIMIT ?
+                )
+                """,
+                (*keep, excess),
+            )
+        else:
+            self.db.execute(
+                """
+                DELETE FROM t4_tokens WHERE token IN (
+                    SELECT token FROM t4_tokens ORDER BY updated_at ASC LIMIT ?
+                )
+                """,
+                (excess,),
+            )
+
+    def _touch_in_tx(self, source_id: str, generation: str, site_hash: str, tokens) -> None:
+        assert self.db is not None
+        for tok in tokens:
+            if isinstance(tok, str) and re.fullmatch(r'[0-9a-f]{32}', tok):
+                self.db.execute(
+                    'UPDATE t4_tokens SET updated_at=? WHERE token=? AND source_id=? AND generation=? AND site_hash=?',
+                    (self._next_stamp(), tok, source_id, generation, site_hash),
+                )
+
+    def _put(
+        self,
+        source_id: str,
+        generation: str,
+        site_hash: str,
+        kind: str,
+        payload: object,
+        *,
+        token_identity: str | None = None,
+        pinned_tokens=(),
+    ) -> str:
+        if self.read_only or self.db is None:
+            raise LibraryError('STORAGE_UNAVAILABLE')
+        self._check_scope(source_id, generation, site_hash)
+        raw = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+        ident_raw = token_identity if token_identity is not None else raw
+        tok = self._mint(self._salt(), source_id, generation, site_hash, kind, ident_raw)
         with self.db:
+            self._touch_in_tx(source_id, generation, site_hash, pinned_tokens)
+            stamp = self._next_stamp()
             self.db.execute(
                 """
                 INSERT INTO t4_tokens(token, source_id, generation, site_hash, kind, payload_json, updated_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
-                ON CONFLICT(token) DO UPDATE SET updated_at=excluded.updated_at
+                ON CONFLICT(token) DO UPDATE SET payload_json=excluded.payload_json, updated_at=excluded.updated_at
                 """,
-                (tok, source_id, generation, site_hash, kind, raw, now_ns),
+                (tok, source_id, generation, site_hash, kind, raw, stamp),
             )
-            count = self.db.execute('SELECT COUNT(*) FROM t4_tokens').fetchone()[0]
-            if count > MAX_TOKENS:
-                excess = count - MAX_TOKENS
-                self.db.execute(
-                    """
-                    DELETE FROM t4_tokens WHERE token IN (
-                        SELECT token FROM t4_tokens ORDER BY updated_at ASC LIMIT ?
-                    )
-                    """,
-                    (excess,),
-                )
+            self._evict_in_tx({tok, *pinned_tokens})
         return tok
 
     def _get(self, source_id: str, generation: str, site_hash: str, kind: str, tok: str):
@@ -175,16 +285,68 @@ class T4TokenStore:
                 """,
                 (tok, source_id, generation, site_hash, kind),
             ).fetchone()
+            if not row:
+                raise LibraryError('T4_TOKEN_EXPIRED')
+            if not self.read_only:
+                with self.db:
+                    self.db.execute(
+                        'UPDATE t4_tokens SET updated_at=? WHERE token=?',
+                        (self._next_stamp(), tok),
+                    )
+        except LibraryError:
+            raise
         except sqlite3.Error:
             raise LibraryError('T4_TOKEN_EXPIRED') from None
-        if not row:
-            raise LibraryError('T4_TOKEN_EXPIRED')
         return json.loads(row[0])
 
-    def put_item(self, source_id: str, generation: str, site_hash: str, vod_id: str) -> str:
+    @staticmethod
+    def _validate_vod_id(vod_id: str) -> str:
         if not isinstance(vod_id, str) or not (1 <= len(vod_id) <= 4096) or any(ord(c) < 32 for c in vod_id):
             raise LibraryError('T4_PLAY_UNSUPPORTED')
-        return self._put(source_id, generation, site_hash, 'item', vod_id)
+        return vod_id
+
+    def put_item(self, source_id: str, generation: str, site_hash: str, vod_id: str, *, pinned_tokens=()) -> str:
+        self._validate_vod_id(vod_id)
+        return self._put(source_id, generation, site_hash, 'item', vod_id, pinned_tokens=pinned_tokens)
+
+    def put_item_batch(
+        self,
+        source_id: str,
+        generation: str,
+        site_hash: str,
+        vod_ids: list[str],
+        *,
+        pinned_tokens=(),
+    ) -> list[str]:
+        if self.read_only or self.db is None:
+            raise LibraryError('STORAGE_UNAVAILABLE')
+        self._check_scope(source_id, generation, site_hash)
+        if not isinstance(vod_ids, list) or len(vod_ids) > MAX_BATCH_TOKENS:
+            raise LibraryError('T4_LIMIT')
+        for vid in vod_ids:
+            self._validate_vod_id(vid)
+        if not vod_ids:
+            return []
+        salt = self._salt()
+        out_tokens: list[str] = []
+        rows_to_insert = []
+        with self.db:
+            self._touch_in_tx(source_id, generation, site_hash, pinned_tokens)
+            for vid in vod_ids:
+                raw = json.dumps(vid, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+                tok = self._mint(salt, source_id, generation, site_hash, 'item', raw)
+                out_tokens.append(tok)
+                rows_to_insert.append((tok, source_id, generation, site_hash, 'item', raw, self._next_stamp()))
+            self.db.executemany(
+                """
+                INSERT INTO t4_tokens(token, source_id, generation, site_hash, kind, payload_json, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(token) DO UPDATE SET updated_at=excluded.updated_at
+                """,
+                rows_to_insert,
+            )
+            self._evict_in_tx({*out_tokens, *pinned_tokens})
+        return out_tokens
 
     def get_item(self, source_id: str, generation: str, site_hash: str, tok: str) -> str:
         val = self._get(source_id, generation, site_hash, 'item', tok)
@@ -192,16 +354,138 @@ class T4TokenStore:
             raise LibraryError('T4_TOKEN_EXPIRED')
         return val
 
-    def put_category(self, source_id: str, generation: str, site_hash: str, type_id: str) -> str:
+    def put_category(
+        self,
+        source_id: str,
+        generation: str,
+        site_hash: str,
+        type_id: str,
+        *,
+        facets: list | None = None,
+        name: str = '',
+    ) -> str:
         if not isinstance(type_id, str) or not (1 <= len(type_id) <= 512) or any(ord(c) < 32 for c in type_id):
             raise LibraryError('INVALID_DOCUMENT')
-        return self._put(source_id, generation, site_hash, 'cat', type_id)
+        ident = json.dumps(type_id, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+        if facets is None and not name:
+            payload: object = type_id
+        else:
+            payload = {
+                'type_id': type_id,
+                'name': str(name or '')[:120],
+                'facets': list(facets) if facets is not None else None,
+            }
+        return self._put(source_id, generation, site_hash, 'cat', payload, token_identity=ident)
+
+    def get_category_meta(self, source_id: str, generation: str, site_hash: str, tok: str) -> dict:
+        val = self._get(source_id, generation, site_hash, 'cat', tok)
+        if isinstance(val, str) and val:
+            return {'type_id': val, 'name': '', 'facets': None}
+        if isinstance(val, dict) and isinstance(val.get('type_id'), str) and val['type_id']:
+            return {
+                'type_id': val['type_id'],
+                'name': str(val.get('name') or ''),
+                'facets': val.get('facets') if isinstance(val.get('facets'), list) else None,
+            }
+        raise LibraryError('T4_TOKEN_EXPIRED')
 
     def get_category(self, source_id: str, generation: str, site_hash: str, tok: str) -> str:
-        val = self._get(source_id, generation, site_hash, 'cat', tok)
-        if not isinstance(val, str) or not val:
+        return self.get_category_meta(source_id, generation, site_hash, tok)['type_id']
+
+    def put_filter(
+        self,
+        source_id: str,
+        generation: str,
+        site_hash: str,
+        type_id: str,
+        filters: dict[str, str],
+        *,
+        pinned_tokens=(),
+    ) -> str:
+        if not isinstance(type_id, str) or not (1 <= len(type_id) <= 512):
+            raise LibraryError('INVALID_DOCUMENT')
+        if not isinstance(filters, dict) or len(filters) > 16:
+            raise LibraryError('INVALID_DOCUMENT')
+        cleaned: dict[str, str] = {}
+        for k, v in filters.items():
+            if (
+                not isinstance(k, str)
+                or not (1 <= len(k) <= 64)
+                or any(ord(c) < 32 for c in k)
+                or not isinstance(v, str)
+                or len(v) > 256
+                or any(ord(c) < 32 for c in v)
+            ):
+                raise LibraryError('INVALID_DOCUMENT')
+            if v:
+                cleaned[k] = v
+        payload = {'type_id': type_id, 'filters': cleaned}
+        return self._put(source_id, generation, site_hash, 'flt', payload, pinned_tokens=pinned_tokens)
+
+    def get_filter(self, source_id: str, generation: str, site_hash: str, type_id: str, tok: str) -> dict[str, str]:
+        val = self._get(source_id, generation, site_hash, 'flt', tok)
+        if (
+            not isinstance(val, dict)
+            or val.get('type_id') != type_id
+            or not isinstance(val.get('filters'), dict)
+        ):
             raise LibraryError('T4_TOKEN_EXPIRED')
-        return val
+        return dict(val['filters'])
+
+    def _build_play_record(
+        self,
+        source_id: str,
+        generation: str,
+        site_hash: str,
+        item_token: str,
+        line: str,
+        episode: str,
+        title: str,
+        vod_id: str | None,
+        line_name: str | None,
+        episode_id: str | None,
+    ) -> tuple[dict, str]:
+        if not isinstance(item_token, str) or not re.fullmatch(r'[0-9a-f]{32}', item_token):
+            raise LibraryError('T4_TOKEN_EXPIRED')
+        if not isinstance(line, str) or not line or not isinstance(episode, str) or not episode:
+            raise LibraryError('T4_PLAY_UNSUPPORTED')
+        resolved_vid = vod_id
+        if resolved_vid is None and self.db is not None:
+            prow = self.db.execute(
+                "SELECT payload_json FROM t4_tokens WHERE token=? AND source_id=? AND generation=? AND site_hash=? AND kind='item'",
+                (item_token, source_id, generation, site_hash),
+            ).fetchone()
+            if prow:
+                loaded = json.loads(prow[0])
+                if isinstance(loaded, str) and loaded:
+                    resolved_vid = loaded
+        if resolved_vid is not None:
+            self._validate_vod_id(resolved_vid)
+        else:
+            resolved_vid = ''
+        is_lhash = bool(re.fullmatch(r'[0-9a-f]{64}', line))
+        is_ehash = bool(re.fullmatch(r'[0-9a-f]{64}', episode))
+        lhash = line if is_lhash else _sha256_hex(line)
+        ehash = episode if is_ehash else _sha256_hex(episode)
+        raw_lname = str(line_name if line_name is not None else ('' if is_lhash else line))[:120]
+        raw_eid = str(episode_id if episode_id is not None else ('' if is_ehash else episode))[:8192]
+        payload = {
+            'schema': SCHEMA_VERSION,
+            'item_token': item_token,
+            'vod_id': resolved_vid,
+            'line': lhash,
+            'line_name': raw_lname,
+            'episode': ehash,
+            'episode_id': raw_eid,
+            'title': str(title or '')[:512],
+        }
+        ident_key = json.dumps(
+            {'vod_id': resolved_vid or item_token, 'line': lhash, 'episode': ehash},
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(',', ':'),
+        )
+        return payload, ident_key
 
     def put_play(
         self,
@@ -209,27 +493,118 @@ class T4TokenStore:
         generation: str,
         site_hash: str,
         item_token: str,
-        line_hash: str,
-        episode_hash: str,
+        line: str,
+        episode: str,
         title: str,
+        *,
+        vod_id: str | None = None,
+        line_name: str | None = None,
+        episode_id: str | None = None,
     ) -> str:
-        payload = {
-            'item_token': item_token,
-            'line': line_hash,
-            'episode': episode_hash,
-            'title': str(title or '')[:512],
-        }
-        return self._put(source_id, generation, site_hash, 'play', payload)
+        if self.read_only or self.db is None:
+            raise LibraryError('STORAGE_UNAVAILABLE')
+        self._check_scope(source_id, generation, site_hash)
+        payload, ident_key = self._build_play_record(
+            source_id, generation, site_hash, item_token, line, episode, title, vod_id, line_name, episode_id
+        )
+        return self._put(
+            source_id,
+            generation,
+            site_hash,
+            'play',
+            payload,
+            token_identity=ident_key,
+            pinned_tokens=(item_token,),
+        )
+
+    def put_play_batch(
+        self,
+        source_id: str,
+        generation: str,
+        site_hash: str,
+        item_token: str,
+        vod_id: str,
+        entries: list[tuple[str, str, str]],
+        *,
+        pinned_tokens=(),
+    ) -> list[str]:
+        """Batch-insert up to MAX_BATCH_TOKENS self-contained play records in ONE SQLite transaction."""
+        if self.read_only or self.db is None:
+            raise LibraryError('STORAGE_UNAVAILABLE')
+        self._check_scope(source_id, generation, site_hash)
+        self._validate_vod_id(vod_id)
+        if not isinstance(entries, list) or len(entries) > MAX_BATCH_TOKENS:
+            raise LibraryError('T4_LIMIT')
+        if not entries:
+            return []
+        salt = self._salt()
+        out_tokens: list[str] = []
+        rows_to_insert = []
+        all_pinned = (item_token, *pinned_tokens)
+        with self.db:
+            self._touch_in_tx(source_id, generation, site_hash, all_pinned)
+            for raw_line, raw_ep, ep_title in entries:
+                payload, ident_key = self._build_play_record(
+                    source_id,
+                    generation,
+                    site_hash,
+                    item_token,
+                    raw_line,
+                    raw_ep,
+                    ep_title,
+                    vod_id,
+                    raw_line,
+                    raw_ep,
+                )
+                raw_json = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+                tok = self._mint(salt, source_id, generation, site_hash, 'play', ident_key)
+                out_tokens.append(tok)
+                rows_to_insert.append((tok, source_id, generation, site_hash, 'play', raw_json, self._next_stamp()))
+            self.db.executemany(
+                """
+                INSERT INTO t4_tokens(token, source_id, generation, site_hash, kind, payload_json, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(token) DO UPDATE SET payload_json=excluded.payload_json, updated_at=excluded.updated_at
+                """,
+                rows_to_insert,
+            )
+            self._evict_in_tx({*out_tokens, *all_pinned})
+        return out_tokens
 
     def get_play(self, source_id: str, generation: str, site_hash: str, tok: str) -> dict:
         val = self._get(source_id, generation, site_hash, 'play', tok)
-        if not isinstance(val, dict) or set(val) != {'item_token', 'line', 'episode', 'title'}:
+        if not isinstance(val, dict):
+            raise LibraryError('T4_TOKEN_EXPIRED')
+        if set(val) == {'item_token', 'line', 'episode', 'title'}:
+            # Legacy v1 row fallback ONLY via valid resident item_token; NEVER raw token!
+            vid = self.get_item(source_id, generation, site_hash, val['item_token'])
+            return {
+                'schema': 1,
+                'item_token': val['item_token'],
+                'vod_id': vid,
+                'line': val['line'],
+                'line_name': '',
+                'episode': val['episode'],
+                'episode_id': '',
+                'title': val['title'],
+            }
+        expected_keys = {'schema', 'item_token', 'vod_id', 'line', 'line_name', 'episode', 'episode_id', 'title'}
+        if not expected_keys <= set(val):
+            raise LibraryError('T4_TOKEN_EXPIRED')
+        if (
+            not isinstance(val['line'], str)
+            or not re.fullmatch(r'[0-9a-f]{64}', val['line'])
+            or not isinstance(val['episode'], str)
+            or not re.fullmatch(r'[0-9a-f]{64}', val['episode'])
+            or not isinstance(val['vod_id'], str)
+        ):
             raise LibraryError('T4_TOKEN_EXPIRED')
         return val
 
     def approve_origin(self, source_id: str, generation: str, raw_origin: str) -> str:
         if self.read_only or self.db is None:
             raise LibraryError('STORAGE_UNAVAILABLE')
+        self._check_scope(source_id, generation, '0' * 64)
         from urllib.parse import urlsplit
         checked = endpoint(raw_origin, 'SOURCE_HTTP_URL')
         parts = urlsplit(checked)

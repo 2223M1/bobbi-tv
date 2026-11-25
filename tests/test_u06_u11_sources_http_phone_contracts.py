@@ -626,3 +626,302 @@ def test_u06_all_13_providers_page_cursor_contracts_and_100k_bounded_scan(tmp_pa
     finally:
         bcat.close()
         bpans.close()
+
+
+# ============================================================================
+# U07: CT-T4-IDENTITY & CT-T4-CACHE (SRC-02, SRC-GAP-01, SRC-GAP-02)
+# ============================================================================
+
+
+def test_u07_src02_at_capacity_keeps_parent_and_play_token_resolves_without_parent(tmp_path):
+    """Inverted witness test_t4_small_detail_also_loses_recently_read_parent_at_capacity:
+    1) At 4096 full capacity, reading parent refreshes its LRU position and put_play pins parent,
+       so BOTH parent item_token and the newly minted play_token remain valid.
+    2) Even after parent item_token is later evicted by 4096 newer items (while play_token is read),
+       play_token remains self-contained on disk and resolves cleanly via selection_with_play_token,
+       and raw/evicted tokens NEVER fall back to vod_id (R13-01/02/05).
+    """
+    import json
+    from bobbi_core import t4
+    from bobbi_core.library_contract import LibraryError
+    from bobbi_platform import t4_http
+    from bobbi_platform.t4_tokens import MAX_TOKENS, T4TokenStore
+
+    cfg = {'sites': [{'key': 'x', 'name': 'X', 'type': 4, 'api': 'https://t4.example.invalid/vod'}]}
+    src = t4.preview(json.dumps(cfg).encode('utf-8')).source('')
+    site = src.metadata['sites'][0]
+    sid = src.id
+    gen = 'b' * 64
+    shash = t4_http._opaque(site['key'])
+    complex_vod_id = 'https://upstream.example.invalid/item/9988?cat=drama&token=internal'
+    complex_ep_id = 'play://lineA/ep01?sign=abc123&ts=1700000000'
+
+    with T4TokenStore(tmp_path / 'small-tokens.db') as store:
+        parent = store.put_item(sid, gen, shash, complex_vod_id)
+        for idx in range(MAX_TOKENS - 1):
+            store.put_item(sid, gen, shash, f'film-{idx}')
+        assert store.get_item(sid, gen, shash, parent) == complex_vod_id
+        play_tok = store.put_play(sid, gen, shash, parent, 'LineA', complex_ep_id, 'Film · Ep 1')
+        # Inverted witness assertion: parent MUST still be valid!
+        assert store.get_item(sid, gen, shash, parent) == complex_vod_id
+        rec = store.get_play(sid, gen, shash, play_tok)
+        assert rec['vod_id'] == complex_vod_id
+        assert rec['item_token'] == parent
+        assert complex_vod_id not in play_tok and complex_ep_id not in play_tok
+
+        # Now evict parent by filling 4096 new items while touching play_tok once mid-way
+        for idx in range(MAX_TOKENS):
+            if idx == MAX_TOKENS // 2:
+                assert store.get_play(sid, gen, shash, play_tok)['vod_id'] == complex_vod_id
+            store.put_item(sid, gen, shash, f'later-{idx}')
+        with pytest.raises(LibraryError, match='T4_TOKEN_EXPIRED'):
+            store.get_item(sid, gen, shash, parent)
+
+    # Reopen store (simulating Host restart) and resolve play_tok without parent!
+    def wire(url):
+        if 'ids=' in url:
+            return json.dumps({
+                'list': [{
+                    'vod_id': complex_vod_id,
+                    'vod_name': 'Film',
+                    'vod_play_from': 'LineA',
+                    'vod_play_url': f'Ep 1${complex_ep_id}',
+                }]
+            }).encode('utf-8')
+        return json.dumps({'parse': 0, 'url': 'https://t4.example.invalid/media/ep1.mp4'}).encode('utf-8')
+
+    with T4TokenStore(tmp_path / 'small-tokens.db', read_only=True) as ro_store:
+        choice = t4_http.selection_with_play_token(site, play_tok)
+        assert complex_vod_id not in json.dumps(choice)
+        media_url, _, ep_title = t4_http.resolve_selected(
+            src,
+            choice,
+            generation=gen,
+            token_store=ro_store,
+            fetch=wire,
+        )
+        assert media_url == 'https://t4.example.invalid/media/ep1.mp4'
+        assert ep_title == 'Ep 1'
+
+        # Generation change rejects play_tok immediately (R13-05)
+        with pytest.raises(LibraryError, match='T4_TOKEN_EXPIRED'):
+            t4_http.resolve_selected(src, choice, generation='c' * 64, token_store=ro_store, fetch=wire)
+
+
+def test_u07_src02_4500_episodes_bounded_pagination_single_tx_and_native_filters(tmp_path, monkeypatch):
+    """Inverted witness test_t4_legal_detail_evicts_own_parent_token + A08-01..03 + GAP-SRC-FILTER + SRC-GAP-02:
+    - Legacy modal t4_ui.browse is removed.
+    - 3 lines x 1500 = 4500 episodes paginate cleanly at <= 200 episodes/page in ONE SQLite tx per page,
+      reaching the final page (Line C page 8, episode 1500), keeping parent tok and all current-page
+      play tokens valid & playable even when starting at 4096 full capacity.
+    - Native t4_cat exposes category filters within <= 7 query parameters (default.py max_num_fields=8).
+    - Evicted directory token offers an explicit refresh entry back to t4_site, while changed generation rejects.
+    - Import preview wires export_probed_lives_playlist when lives > 0 (SRC-GAP-02).
+    """
+    import base64
+    from contextlib import contextmanager
+    import json
+    from types import SimpleNamespace
+    from urllib.parse import parse_qs, parse_qsl, urlsplit
+    from bobbi_core import t4
+    from bobbi_core.library_contract import LibraryError
+    from bobbi_platform import owned_playback, paths, source_library_ui, t4_http, t4_ui
+    from bobbi_platform.t4_tokens import MAX_TOKENS, T4TokenStore
+
+    assert not hasattr(t4_ui, 'browse')
+
+    cfg = {
+        'sites': [{'key': 'big', 'name': 'BigVOD', 'type': 4, 'api': 'https://t4.example.invalid/vod', 'searchable': 1}],
+        'lives': [{'name': 'LiveGroup', 'type': 0, 'url': 'https://t4.example.invalid/live.txt'}],
+    }
+    raw_cfg = json.dumps(cfg).encode('utf-8')
+    store = Registry(tmp_path / 'libraries.sqlite3')
+
+    # Verify SRC-GAP-02: t4_ui.add reaches lives export when lives > 0
+    live_txt = '央视,#genre#\nCCTV1,https://t4.example.invalid/cctv1.m3u8\n'.encode('utf-8')
+    monkeypatch.setattr(paths, 'ProfileBinding', lambda: SimpleNamespace(root=lambda: tmp_path, is_current=lambda: True, require_current=lambda: None))
+    monkeypatch.setattr(source_library_ui, 'operation', lambda fn: fn(10**12, lambda: False))
+    monkeypatch.setattr(t4_ui, 'read', lambda url, *a, **kw: live_txt if url.endswith('live.txt') else raw_cfg)
+    selects = iter([0])  # method='url'
+    yesnos = iter([True, True])  # confirm T4 import, confirm lives export
+    oks = []
+    dlg_add = SimpleNamespace(
+        select=lambda *a: next(selects),
+        input=lambda *a: 'https://t4.example.invalid/config.json',
+        yesno=lambda *a: next(yesnos),
+        ok=lambda *a: oks.append(a),
+    )
+    assert t4_ui.add(dlg_add, None, store) is True
+    exported_files = list((tmp_path / 'exports').glob('bobbi-lives-*.m3u8'))
+    assert len(exported_files) == 1 and '#EXTM3U' in exported_files[0].read_text(encoding='utf-8')
+
+    src, gen = store.source_snapshot(store.sources()[0].id)
+    site = src.metadata['sites'][0]
+    shash = t4_http._opaque(site['key'])
+
+    # Pre-fill T4TokenStore to MAX_TOKENS (4096) before browsing 4500-episode detail!
+    with T4TokenStore(tmp_path / 't4-tokens.sqlite3') as pre_store:
+        for idx in range(MAX_TOKENS):
+            pre_store.put_item(src.id, gen, shash, f'prefill-{idx}')
+
+    groups = ['#'.join(f'E{i}$line{line}-ep{i}' for i in range(1500)) for line in range(3)]
+    observed_exts = []
+
+    def wire_4500(url, *a, **kw):
+        q = parse_qs(urlsplit(url).query)
+        if 'ids' in q:
+            return json.dumps({
+                'list': [{
+                    'vod_id': 'film4500',
+                    'vod_name': 'LongSeries',
+                    'vod_play_from': 'LineA$$$LineB$$$LineC',
+                    'vod_play_url': '$$$'.join(groups),
+                }]
+            }).encode('utf-8')
+        if 'play' in q:
+            ep = q['play'][0]
+            return json.dumps({'parse': 0, 'url': f'https://t4.example.invalid/media/{ep}.mp4'}).encode('utf-8')
+        if q.get('ac') == ['detail'] and 't' in q:
+            ext_dec = json.loads(base64.urlsafe_b64decode(q['ext'][0].encode('ascii')).decode('utf-8'))
+            observed_exts.append(ext_dec)
+            return json.dumps({
+                'page': int(q['pg'][0]),
+                'pagecount': 2,
+                'list': [{'vod_id': 'film4500', 'vod_name': 'LongSeries'}],
+            }).encode('utf-8')
+        return json.dumps({
+            'class': [{'type_id': 'series', 'type_name': '剧集'}],
+            'filters': {
+                'series': [{
+                    'key': 'year',
+                    'name': '年份',
+                    'value': [{'n': '全部', 'v': ''}, {'n': '2026', 'v': '2026'}],
+                }]
+            },
+            'list': [{'vod_id': 'film4500', 'vod_name': 'LongSeries'}],
+        }).encode('utf-8')
+
+    monkeypatch.setattr(t4_ui, 'read', wire_4500)
+    rendered = []
+    monkeypatch.setitem(sys.modules, 'xbmc', SimpleNamespace(Monitor=lambda: SimpleNamespace(abortRequested=lambda: False)))
+    monkeypatch.setitem(
+        sys.modules,
+        'xbmcgui',
+        SimpleNamespace(
+            Dialog=lambda: SimpleNamespace(input=lambda *_: '', yesno=lambda *_: True, ok=lambda *_: None),
+            ListItem=lambda label='': SimpleNamespace(
+                label=label,
+                setInfo=lambda *a: None,
+                setArt=lambda *a: None,
+                setProperty=lambda *a: None,
+                setLabel2=lambda *a: None,
+            ),
+        ),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        'xbmcplugin',
+        SimpleNamespace(
+            setPluginCategory=lambda *a: None,
+            setContent=lambda *a: None,
+            addDirectoryItems=lambda _h, rows, _n: rendered.extend(rows),
+            endOfDirectory=lambda *a, **kw: None,
+            setResolvedUrl=lambda *a: None,
+        ),
+    )
+
+    def make_item(label, target, folder=True, label2='', properties=None, info=None, *, playable=True):
+        li = sys.modules['xbmcgui'].ListItem(label)
+        li.props = dict(properties or {})
+        return target, li, folder
+
+    def parse_plugin_query(u):
+        pairs = parse_qsl(urlsplit(u).query, keep_blank_values=True, max_num_fields=8)
+        return dict(pairs)
+
+    try:
+        # 1. Home -> Category -> Filter ('2026') -> Filtered Category -> Detail
+        rendered.clear()
+        t4_ui.execute_directory(1, {'action': 'browse', 'source': src.id}, store, make_item)
+        cat_url = next(u for u, li, _ in rendered if li.label == '剧集')
+
+        rendered.clear()
+        t4_ui.execute_directory(1, parse_plugin_query(cat_url), store, make_item)
+        filter_entry_url = next(u for u, li, _ in rendered if li.props.get('Bobbi.FilterEntry') == 'true')
+
+        rendered.clear()
+        t4_ui.execute_directory(1, parse_plugin_query(filter_entry_url), store, make_item)
+        year_facet_url = rendered[0][0]
+
+        rendered.clear()
+        t4_ui.execute_directory(1, parse_plugin_query(year_facet_url), store, make_item)
+        opt_2026_url = next(u for u, li, _ in rendered if '2026' in li.label)
+        assert '2026' not in opt_2026_url  # Opaque filter token in URL!
+
+        rendered.clear()
+        t4_ui.execute_directory(1, parse_plugin_query(opt_2026_url), store, make_item)
+        assert observed_exts[-1] == {'year': '2026'}
+        detail_url = next(u for u, li, _ in rendered if li.label == 'LongSeries')
+        detail_q = parse_plugin_query(detail_url)
+        parent_tok = detail_q['tok']
+
+        # 2. Open 4500-episode detail -> renders 3 line folders, then walk LineC (ln=2) pages 1..8!
+        rendered.clear()
+        t4_ui.execute_directory(1, detail_q, store, make_item)
+        assert len(rendered) == 3
+        line_c_url = rendered[2][0]
+
+        cur_url = line_c_url
+        for expected_pg in range(1, 9):
+            rendered.clear()
+            t4_ui.execute_directory(1, parse_plugin_query(cur_url), store, make_item)
+            ep_rows = [(u, li) for u, li, is_folder in rendered if not is_folder]
+            assert len(ep_rows) == (100 if expected_pg == 8 else 200)
+            # Parent item_token MUST NEVER be evicted during page creation!
+            with T4TokenStore(tmp_path / 't4-tokens.sqlite3', read_only=True) as check_store:
+                assert check_store.get_item(src.id, gen, shash, parent_tok) == 'film4500'
+            if expected_pg < 8:
+                cur_url = next(u for u, li, is_f in rendered if is_f and li.props.get('Bobbi.NextPage') == 'true')
+
+        # 3. Play the very last episode (LineC E1499, 4500th episode!) via real Host resolver
+        final_ep_url, final_ep_li = ep_rows[-1]
+        assert 'E1499' in final_ep_li.label and 'line2-ep1499' not in final_ep_url
+        final_q = parse_plugin_query(final_ep_url)
+
+        played = []
+
+        @contextmanager
+        def real_resolve_reservation(target, scope, **kw):
+            def host_call(op, body, timeout=18):
+                with T4TokenStore(tmp_path / 't4-tokens.sqlite3', read_only=True) as hs:
+                    m_url, _, _ = t4_http.resolve_selected(
+                        src,
+                        body['selection'],
+                        generation=body['generation'],
+                        token_store=hs,
+                        fetch=wire_4500,
+                    )
+                played.append(m_url)
+                return {'url': 'http://127.0.0.1:4100/stream/' + 'd' * 32 + '/video.mp4', 'size': 1024}
+
+            yield SimpleNamespace(
+                request_id='e' * 32,
+                require_current=lambda: None,
+                host_call=host_call,
+                submit=lambda *a, **skw: None,
+            )
+
+        monkeypatch.setattr(owned_playback, 'reserve_playback', real_resolve_reservation)
+        t4_ui.execute_directory(1, final_q, store, make_item)
+        assert played == ['https://t4.example.invalid/media/line2-ep1499.mp4']
+
+        # 4. Evicted directory token renders explicit refresh link; changed generation rejects!
+        rendered.clear()
+        stale_q = dict(detail_q, tok='0' * 32)
+        t4_ui.execute_directory(1, stale_q, store, make_item)
+        assert len(rendered) == 1 and rendered[0][1].props.get('Bobbi.ExpiredRefresh') == 'true'
+
+        with pytest.raises(LibraryError, match='T4_CHANGED'):
+            t4_ui.execute_directory(1, dict(detail_q, rev='f' * 64), store, make_item)
+    finally:
+        store.close()

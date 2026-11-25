@@ -1,17 +1,17 @@
 """TVBox type-4 adapter with native Kodi directory navigation and persistent opaque tokens."""
 import re
 from urllib.parse import urlencode, urlsplit
-from uuid import uuid4
 
 from bobbi_core import t4
 from bobbi_core.library_contract import LibraryError, MAX_CATALOG_BYTES, _text
 from bobbi_core.playback_request import SelectionChanged
 from bobbi_core.source_endpoint import endpoint
 from .source_media_http import MESSAGES
-from .t4_http import _opaque, read, selection, selection_with_token
+from .t4_http import _opaque, read, selection, selection_with_play_token, selection_with_token
 from .t4_tokens import T4TokenStore
 
 BASE_ROUTE = 'plugin://plugin.video.bobbi.library/?'
+DETAIL_PAGE_SIZE = 200
 
 
 def _route(**params):
@@ -110,6 +110,46 @@ def export_probed_lives_playlist(raw_config: bytes, export_dir, *, index: int = 
     }
 
 
+def offer_lives_export(dialog, raw_bytes: bytes, diag: dict, export_dir, *, operation_fn=None) -> dict | None:
+    """User-reachable import preview action for TVBox lives playlist export (SRC-GAP-02)."""
+    lives_subs = diag.get('lives_subscriptions') or []
+    lives_cnt = (diag.get('counts') or {}).get('lives', 0)
+    if lives_cnt <= 0 or not lives_subs:
+        return None
+    if not dialog.yesno(
+        '导出直播订阅列表？',
+        f'检测到 {lives_cnt} 个直播入口（仅代表入口数，非频道数）。是否探测格式并导出独立 M3U8 文件（不自动修改 PVR 设置）？',
+    ):
+        return None
+    idx = 0
+    if len(lives_subs) > 1:
+        picked = _pick(
+            dialog,
+            '选择要导出的直播入口',
+            [(_clean_label(s.get('name'), 80, f'直播 {i + 1}'), i) for i, s in enumerate(lives_subs)],
+        )
+        if picked is None:
+            return None
+        idx = picked
+    if operation_fn is not None:
+        exported = operation_fn(
+            lambda end, stop: export_probed_lives_playlist(
+                raw_bytes,
+                export_dir,
+                index=idx,
+                fetch_fn=lambda u: read(u, end, stop),
+            )
+        )
+    else:
+        exported = export_probed_lives_playlist(raw_bytes, export_dir, index=idx)
+    if exported:
+        dialog.ok(
+            '直播列表已导出',
+            f"已探测到 {exported['channel_count']} 个频道条目，已保存至：\n{exported['path']}",
+        )
+    return exported
+
+
 def add(dialog, vfs, store, previous=None):
     from .paths import ProfileBinding
     from .source_library_ui import operation
@@ -173,8 +213,12 @@ def add(dialog, vfs, store, previous=None):
     summary = diag.get('summary_zh') or (
         '可用 %d 个 · 不支持的类型 %d 个 · 无效 %d 个' % (len(parsed.sites), parsed.unsupported, parsed.invalid)
     )
+    lives_cnt = (diag.get('counts') or {}).get('lives', 0)
     if not parsed.sites:
         dialog.ok('未导入 T4 站点', summary + '\n' + MESSAGES['T4_NO_SITES'])
+        if lives_cnt > 0:
+            export_root = binding.root() / 'exports' if hasattr(binding, 'root') else store.path.parent / 'exports'
+            offer_lives_export(dialog, raw_bytes, diag, export_root, operation_fn=operation)
         return False
     # Show the actual origins (never path/query credentials), including explicitly
     # opt-in third-party site origins declared by a local or remote config.
@@ -184,6 +228,9 @@ def add(dialog, vfs, store, previous=None):
     binding.require_current()
     store.save(parsed.source(location, previous), expected_snapshot=expected)
     dialog.ok('T4 站点已保存', '打开“我的片库”可按站点浏览与搜索。')
+    if lives_cnt > 0:
+        export_root = binding.root() / 'exports' if hasattr(binding, 'root') else store.path.parent / 'exports'
+        offer_lives_export(dialog, raw_bytes, diag, export_root, operation_fn=operation)
     return True
 
 
@@ -256,124 +303,17 @@ def _fetch_site_url(site, url, end, stop):
     return read(url, end, stop)
 
 
-def browse(dialog, store, source):
-    """Modal T4 browser retained for direct callers/tests while enforcing opaque tokens for URL-shaped IDs."""
-    import xbmc
-    from .source_library_ui import operation
-    from .paths import ProfileBinding
-    from .runtime import bind_call
-    from .source_streams import local_media_url
-    from .kodi import standard_handoff
-    from .playback import selected_identity
-    binding = ProfileBinding()
-    snapshot = store.source_snapshot(source.id)
-    if snapshot[0] != source:
-        raise LibraryError('T4_CHANGED')
-    generation = snapshot[1]
-    root = binding.root()
-    call = bind_call(root / 'runtime.json')
-
-    def current():
-        return binding.is_current() and not xbmc.Monitor().abortRequested() and store.source_snapshot(source.id) == snapshot
-
-    sites = source.metadata['sites']
-    site = sites[0] if len(sites) == 1 else _pick(dialog, source.name, [(s['name'], s) for s in sites])
-    if not site:
-        return
-
-    def fetch(url):
-        if not current():
-            raise LibraryError('T4_CHANGED')
-        raw = operation(lambda end, stop: _fetch_site_url(site, url, end, stop))
-        if raw is None:
-            raise LibraryError('T4_CANCELLED')
-        if not current():
-            raise LibraryError('T4_CHANGED')
-        return raw
-
-    client = t4.Client(site, fetch)
-    home = client.home()
-    categories = _rows(home, 'class', 'type_id', 'type_name')
-    recommendations = _rows(home, 'list', 'vod_id', 'vod_name')
-    while current():
-        first = ([('搜索本站', ('search', ''))] if site['searchable'] else [])
-        first.extend((name, ('category', ident)) for name, ident in categories)
-        first.extend((name, ('detail', (name, ident))) for name, ident in recommendations)
-        action = _pick(dialog, site['name'], first)
-        if not action:
-            return
-        op, key = action
-        filters = {}
-        if op == 'search':
-            key = dialog.input('搜索本站')
-            if not key:
-                continue
-        page = 1
-        while current():
-            if op == 'detail':
-                chosen = key
-            else:
-                data = client.search(key, page) if op == 'search' else client.category(key, page, filters)
-                rows = _rows(data, 'list', 'vod_id', 'vod_name')
-                choices = [(name, (name, ident)) for name, ident in rows]
-                facets = list(_filter_options(home, key)) if op == 'category' else []
-                if facets:
-                    choices.append(('筛选条件', 'filters'))
-                try:
-                    last = int(data.get('pagecount', page))
-                except (TypeError, ValueError):
-                    raise LibraryError('INVALID_DOCUMENT') from None
-                if page < min(10000, last):
-                    choices.append(('下一页', 1))
-                if page > 1:
-                    choices.append(('上一页', -1))
-                if not choices:
-                    dialog.ok(site['name'], '没有结果。')
-                chosen = _pick(dialog, '%s · 第 %d 页' % (site['name'], page), choices)
-                if chosen == 'filters':
-                    facet = _pick(dialog, '选择筛选条件', [(n, (n, k, v)) for n, k, v in facets])
-                    if facet:
-                        val = _pick(dialog, facet[0], facet[2])
-                        if val is not None:
-                            filters[facet[1]] = val
-                            page = 1
-                    continue
-                if isinstance(chosen, int):
-                    page += chosen
-                    continue
-            if chosen is None:
-                break
-            title, ident = chosen
-            lines = client.detail(ident)
-            line = lines[0] if len(lines) == 1 else _pick(dialog, title + ' · 选线路', [(n, (n, e)) for n, e in lines])
-            if line:
-                name, episodes = line
-                episode = episodes[0] if len(episodes) == 1 else _pick(dialog, title + ' · 选集', [(n, (n, i)) for n, i in episodes])
-                if episode:
-                    if re.fullmatch(r'[\w.:-]{1,256}', ident):
-                        choice = selection(site, ident, name, episode[1])
-                    else:
-                        with T4TokenStore(root / 't4-tokens.sqlite3') as tstore:
-                            itok = tstore.put_item(source.id, generation, _opaque(site['key']), ident)
-                        choice = selection_with_token(site, itok, name, episode[1])
-                    request = uuid4().hex
-                    if not current():
-                        raise LibraryError('T4_CHANGED')
-                    result = operation(lambda end, stop: None if stop() else call('source_stream_open', dict(
-                        source_id=source.id, generation=generation, request_id=request, selection=choice), timeout=18))
-                    if result is None:
-                        return
-                    url = local_media_url(result)
-                    identity = selected_identity(t4.compact([source.id, generation, choice]))
-                    standard_handoff(identity, -1, current).submit(identity, {
-                        'url': url, 'title': title + ' · ' + episode[0], '_bobbi_start_over': True})
-                    return
-            if op == 'detail':
-                break
+def _positive_int(raw_val: str, maximum: int) -> int:
+    if not isinstance(raw_val, str) or not re.fullmatch(r'[0-9]{1,5}', raw_val):
+        raise LibraryError('INVALID_VALUE')
+    val = int(raw_val)
+    if not 1 <= val <= maximum:
+        raise LibraryError('INVALID_VALUE')
+    return val
 
 
 def execute_directory(handle, params, store, item):
-    """Native Kodi directory views for T4 sites (posters, plots, pagination, owned playback)."""
+    """Native Kodi directory views for T4 sites (posters, plots, filters, bounded pagination, owned playback)."""
     import time
     import xbmc
     import xbmcgui
@@ -459,13 +399,7 @@ def execute_directory(handle, params, store, item):
                 raise LibraryError('INVALID_VALUE')
             with T4TokenStore(root / 't4-tokens.sqlite3', read_only=True) as tstore:
                 play_meta = tstore.get_play(source.id, generation, site_hash, params['ptok'])
-            choice = selection_with_token(
-                site,
-                play_meta['item_token'],
-                play_meta['line'],
-                play_meta['episode'],
-                prehashed=True,
-            )
+            choice = selection_with_play_token(site, params['ptok'])
             scope = library_source_scope(source.id, generation)
             with reserve_playback(
                 f"t4://{source.id}/{params['ptok']}",
@@ -483,17 +417,19 @@ def execute_directory(handle, params, store, item):
                 except LibraryError as err:
                     if err.code != 'T4_MEDIA_ORIGIN':
                         raise
-                    # Probe play JSON locally to display only scheme://netloc for explicit user approval (R14-02)
-                    with T4TokenStore(root / 't4-tokens.sqlite3', read_only=True) as tstore:
-                        raw_vid = tstore.get_item(source.id, generation, site_hash, play_meta['item_token'])
-                    cand_origin = None
-                    for lname, eps in client.detail(raw_vid):
-                        if _opaque(lname) == play_meta['line']:
-                            for _, ep_id in eps:
-                                if _opaque(ep_id) == play_meta['episode']:
-                                    m_url, _ = client.play(lname, ep_id)
-                                    u_m = urlsplit(m_url)
-                                    cand_origin = f'{u_m.scheme.lower()}://{u_m.netloc.lower()}'
+                    cand_origin = getattr(err, 'blocked_origin', None)
+                    if not cand_origin:
+                        raw_vid = play_meta.get('vod_id') or ''
+                        if not raw_vid:
+                            with T4TokenStore(root / 't4-tokens.sqlite3', read_only=True) as tstore:
+                                raw_vid = tstore.get_item(source.id, generation, site_hash, play_meta['item_token'])
+                        for lname, eps in client.detail(raw_vid):
+                            if _opaque(lname) == play_meta['line']:
+                                for _, ep_id in eps:
+                                    if _opaque(ep_id) == play_meta['episode']:
+                                        m_url, _ = client.play(lname, ep_id)
+                                        u_m = urlsplit(m_url)
+                                        cand_origin = f'{u_m.scheme.lower()}://{u_m.netloc.lower()}'
                     if not cand_origin or not dialog.yesno(
                         '允许连接外部媒体域名？',
                         f'此片源位于 {cand_origin}，是否允许当前来源按需读取（不会发送站点凭据）？',
@@ -532,131 +468,386 @@ def execute_directory(handle, params, store, item):
         content = 'videos'
         category_label = f"{source.name} · {site['name']}"
 
-        with T4TokenStore(root / 't4-tokens.sqlite3') as tstore:
-            if action in ('browse', 't4_site'):
-                if action == 't4_site' and set(params) != {'action', 'source', 'rev', 'site'}:
-                    raise LibraryError('INVALID_VALUE')
-                home = client.home()
-                if site.get('searchable'):
-                    rows.append(item(
-                        '搜索本站',
-                        _route(action='t4_search', source=source.id, rev=generation, site=site_idx_str),
-                        True,
-                        label2=f"在「{site['name']}」中搜索影视",
-                    ))
-                for cname, cid in _rows(home, 'class', 'type_id', 'type_name'):
-                    ctok = tstore.put_category(source.id, generation, site_hash, cid)
-                    rows.append(item(
-                        _clean_label(cname, 120),
-                        _route(action='t4_cat', source=source.id, rev=generation, site=site_idx_str, cat=ctok, pg='1'),
-                        True,
-                        label2='分类',
-                    ))
-                for vtitle, vid, remarks, poster in _vod_cards(home, 'list'):
-                    itok = tstore.put_item(source.id, generation, site_hash, vid)
-                    li_row = item(
-                        vtitle,
-                        _route(action='t4_detail', source=source.id, rev=generation, site=site_idx_str, tok=itok),
-                        True,
-                        label2=remarks,
-                    )
-                    li_row[1].setInfo('video', {'title': vtitle, 'mediatype': 'tvshow'})
-                    if poster:
-                        li_row[1].setArt({'poster': poster, 'thumb': poster})
-                    rows.append(li_row)
+        def _render_cards(tstore, cards, *, pinned=()):
+            if not cards:
+                return
+            itoks = tstore.put_item_batch(
+                source.id,
+                generation,
+                site_hash,
+                [vid for _, vid, _, _ in cards],
+                pinned_tokens=pinned,
+            )
+            for (vtitle, _vid, remarks, poster), itok in zip(cards, itoks):
+                li_row = item(
+                    vtitle,
+                    _route(action='t4_detail', source=source.id, rev=generation, site=site_idx_str, tok=itok),
+                    True,
+                    label2=remarks,
+                )
+                li_row[1].setInfo('video', {'title': vtitle, 'mediatype': 'tvshow'})
+                if poster:
+                    li_row[1].setArt({'poster': poster, 'thumb': poster})
+                rows.append(li_row)
 
-            elif action in ('t4_cat', 't4_search'):
-                page = int(params.get('pg', '1'))
-                if not 1 <= page <= 10000:
-                    raise LibraryError('INVALID_VALUE')
-                if action == 't4_search':
-                    if set(params) - {'action', 'source', 'rev', 'site', 'pg', 'q'}:
+        try:
+            with T4TokenStore(root / 't4-tokens.sqlite3') as tstore:
+                if action in ('browse', 't4_site'):
+                    if action == 't4_site' and set(params) != {'action', 'source', 'rev', 'site'}:
                         raise LibraryError('INVALID_VALUE')
-                    term = params.get('q', '').strip()
-                    if not term:
-                        term = dialog.input(f"搜索 {site['name']}").strip()
-                        if not term:
-                            return
-                    data = client.search(term, page)
-                    category_label += f' · 搜索：{term}'
-                else:
-                    if set(params) != {'action', 'source', 'rev', 'site', 'cat', 'pg'}:
-                        raise LibraryError('INVALID_VALUE')
-                    raw_cat = tstore.get_category(source.id, generation, site_hash, params['cat'])
-                    data = client.category(raw_cat, page)
+                    home = client.home()
+                    if site.get('searchable'):
+                        rows.append(item(
+                            '搜索本站',
+                            _route(action='t4_search', source=source.id, rev=generation, site=site_idx_str),
+                            True,
+                            label2=f"在「{site['name']}」中搜索影视",
+                        ))
+                    cat_tokens = []
+                    for cname, cid in _rows(home, 'class', 'type_id', 'type_name'):
+                        facets = list(_filter_options(home, cid))
+                        ctok = tstore.put_category(
+                            source.id,
+                            generation,
+                            site_hash,
+                            cid,
+                            facets=facets,
+                            name=cname,
+                        )
+                        cat_tokens.append(ctok)
+                        rows.append(item(
+                            _clean_label(cname, 120),
+                            _route(action='t4_cat', source=source.id, rev=generation, site=site_idx_str, cat=ctok, pg='1'),
+                            True,
+                            label2='分类 · 可筛选' if facets else '分类',
+                        ))
+                    _render_cards(tstore, _vod_cards(home, 'list'), pinned=tuple(cat_tokens))
 
-                for vtitle, vid, remarks, poster in _vod_cards(data, 'list'):
-                    itok = tstore.put_item(source.id, generation, site_hash, vid)
-                    li_row = item(
-                        vtitle,
-                        _route(action='t4_detail', source=source.id, rev=generation, site=site_idx_str, tok=itok),
-                        True,
-                        label2=remarks,
-                    )
-                    li_row[1].setInfo('video', {'title': vtitle, 'mediatype': 'tvshow'})
-                    if poster:
-                        li_row[1].setArt({'poster': poster, 'thumb': poster})
-                    rows.append(li_row)
-
-                try:
-                    last_pg = int(data.get('pagecount', page))
-                except (TypeError, ValueError):
-                    last_pg = page
-                if page < min(10000, last_pg):
-                    next_params = dict(params, pg=str(page + 1))
+                elif action in ('t4_cat', 't4_search'):
                     if action == 't4_search':
-                        next_params['q'] = term
-                    rows.append(item('下一页', _route(**next_params), True, properties={'Bobbi.NextPage': 'true'}))
+                        if set(params) - {'action', 'source', 'rev', 'site', 'pg', 'q'}:
+                            raise LibraryError('INVALID_VALUE')
+                        page = _positive_int(params.get('pg', '1'), 10000)
+                        term = params.get('q', '').strip()
+                        if not term:
+                            term = dialog.input(f"搜索 {site['name']}").strip()
+                            if not term:
+                                return
+                        data = client.search(term, page)
+                        category_label += f' · 搜索：{term}'
+                        _render_cards(tstore, _vod_cards(data, 'list'))
+                        try:
+                            last_pg = int(data.get('pagecount', page))
+                        except (TypeError, ValueError):
+                            last_pg = page
+                        if page > 1:
+                            rows.append(item(
+                                '上一页',
+                                _route(action='t4_search', source=source.id, rev=generation, site=site_idx_str, pg=str(page - 1), q=term),
+                                True,
+                                properties={'Bobbi.PrevPage': 'true'},
+                            ))
+                        if page < min(10000, last_pg):
+                            rows.append(item(
+                                '下一页',
+                                _route(action='t4_search', source=source.id, rev=generation, site=site_idx_str, pg=str(page + 1), q=term),
+                                True,
+                                properties={'Bobbi.NextPage': 'true'},
+                            ))
+                    else:
+                        allowed = {'action', 'source', 'rev', 'site', 'cat', 'pg', 'flt', 'pick'}
+                        if not {'action', 'source', 'rev', 'site', 'cat'} <= set(params) or set(params) - allowed:
+                            raise LibraryError('INVALID_VALUE')
+                        cat_meta = tstore.get_category_meta(source.id, generation, site_hash, params['cat'])
+                        raw_cat = cat_meta['type_id']
+                        facets = cat_meta['facets']
+                        if facets is None:
+                            facets = list(_filter_options(client.home(), raw_cat))
+                        active_filters = (
+                            tstore.get_filter(source.id, generation, site_hash, raw_cat, params['flt'])
+                            if params.get('flt')
+                            else {}
+                        )
+                        pinned = (params['cat'], *([params['flt']] if params.get('flt') else ()))
+                        if 'pick' in params:
+                            if 'pg' in params:
+                                raise LibraryError('INVALID_VALUE')
+                            content = 'files'
+                            pick_mode = params['pick']
+                            if pick_mode == 'all':
+                                category_label += ' · 筛选条件'
+                                if active_filters:
+                                    rows.append(item(
+                                        '清除全部筛选',
+                                        _route(action='t4_cat', source=source.id, rev=generation, site=site_idx_str, cat=params['cat'], pg='1'),
+                                        True,
+                                        label2='恢复默认全部结果',
+                                    ))
+                                for f_idx, (fname, fkey, fvals) in enumerate(facets):
+                                    cur_v = active_filters.get(fkey, '')
+                                    cur_n = next((n for n, v in fvals if v == cur_v), '全部')
+                                    f_route_kw = dict(
+                                        action='t4_cat',
+                                        source=source.id,
+                                        rev=generation,
+                                        site=site_idx_str,
+                                        cat=params['cat'],
+                                        pick=str(f_idx),
+                                    )
+                                    if params.get('flt'):
+                                        f_route_kw['flt'] = params['flt']
+                                    rows.append(item(
+                                        f'{_clean_label(fname, 80, fkey)}：{_clean_label(cur_n, 80, "全部")}',
+                                        _route(**f_route_kw),
+                                        True,
+                                        label2='选择筛选值',
+                                    ))
+                            else:
+                                if not re.fullmatch(r'[0-9]{1,2}', pick_mode) or int(pick_mode) >= len(facets):
+                                    raise LibraryError('INVALID_VALUE')
+                                fname, fkey, fvals = facets[int(pick_mode)]
+                                category_label += f' · 筛选：{_clean_label(fname, 80, fkey)}'
+                                cur_v = active_filters.get(fkey, '')
+                                for opt_n, opt_v in fvals:
+                                    next_f = dict(active_filters)
+                                    if opt_v == '':
+                                        next_f.pop(fkey, None)
+                                    else:
+                                        next_f[fkey] = opt_v
+                                    opt_kw = dict(
+                                        action='t4_cat',
+                                        source=source.id,
+                                        rev=generation,
+                                        site=site_idx_str,
+                                        cat=params['cat'],
+                                        pg='1',
+                                    )
+                                    if next_f:
+                                        opt_kw['flt'] = tstore.put_filter(
+                                            source.id,
+                                            generation,
+                                            site_hash,
+                                            raw_cat,
+                                            next_f,
+                                            pinned_tokens=pinned,
+                                        )
+                                    selected_mark = '✓ ' if opt_v == cur_v else ''
+                                    rows.append(item(
+                                        selected_mark + _clean_label(opt_n, 120, opt_v or '全部'),
+                                        _route(**opt_kw),
+                                        True,
+                                        label2='当前已选' if opt_v == cur_v else '',
+                                    ))
+                        else:
+                            page = _positive_int(params.get('pg', '1'), 10000)
+                            data = client.category(raw_cat, page, active_filters or None)
+                            if cat_meta['name']:
+                                category_label += f" · {_clean_label(cat_meta['name'], 80)}"
+                            if facets:
+                                summary_parts = []
+                                for fname, fkey, fvals in facets:
+                                    if fkey in active_filters:
+                                        vn = next((n for n, v in fvals if v == active_filters[fkey]), active_filters[fkey])
+                                        summary_parts.append(_clean_label(vn, 40))
+                                flt_kw = dict(
+                                    action='t4_cat',
+                                    source=source.id,
+                                    rev=generation,
+                                    site=site_idx_str,
+                                    cat=params['cat'],
+                                    pick='all',
+                                )
+                                if params.get('flt'):
+                                    flt_kw['flt'] = params['flt']
+                                rows.append(item(
+                                    '筛选条件' + (f"（{' · '.join(summary_parts)}）" if summary_parts else ''),
+                                    _route(**flt_kw),
+                                    True,
+                                    label2='按条件过滤当前分类',
+                                    properties={'Bobbi.FilterEntry': 'true'},
+                                ))
+                            _render_cards(tstore, _vod_cards(data, 'list'), pinned=pinned)
+                            try:
+                                last_pg = int(data.get('pagecount', page))
+                            except (TypeError, ValueError):
+                                last_pg = page
+                            base_pg_kw = dict(
+                                action='t4_cat',
+                                source=source.id,
+                                rev=generation,
+                                site=site_idx_str,
+                                cat=params['cat'],
+                            )
+                            if params.get('flt'):
+                                base_pg_kw['flt'] = params['flt']
+                            if page > 1:
+                                rows.append(item(
+                                    '上一页',
+                                    _route(**base_pg_kw, pg=str(page - 1)),
+                                    True,
+                                    properties={'Bobbi.PrevPage': 'true'},
+                                ))
+                            if page < min(10000, last_pg):
+                                rows.append(item(
+                                    '下一页',
+                                    _route(**base_pg_kw, pg=str(page + 1)),
+                                    True,
+                                    properties={'Bobbi.NextPage': 'true'},
+                                ))
 
-            elif action == 't4_detail':
-                if set(params) != {'action', 'source', 'rev', 'site', 'tok'}:
-                    raise LibraryError('INVALID_VALUE')
-                raw_vid = tstore.get_item(source.id, generation, site_hash, params['tok'])
-                detail = client.detail_record(raw_vid)
-                vtitle = _clean_label(detail['title'], 240, site['name'])
-                plot = _clean_label(detail.get('plot', ''), 4096)
-                poster = detail.get('poster', '')
-                lines = detail['lines']
-                multi_line = len(lines) > 1
-                category_label = vtitle
-                content = 'episodes'
-                for line_name, episodes in lines:
-                    clean_line = _clean_label(line_name, 80, '线路')
-                    lhash = _opaque(line_name)
-                    for idx, (ep_label, ep_id) in enumerate(episodes, start=1):
-                        clean_ep = _clean_label(ep_label, 160, f'第 {idx} 集')
-                        disp = f'{clean_line} · {clean_ep}' if multi_line else clean_ep
-                        ehash = _opaque(ep_id)
-                        ptok = tstore.put_play(
+                elif action == 't4_detail':
+                    allowed_detail = {'action', 'source', 'rev', 'site', 'tok', 'ln', 'pg'}
+                    if not {'action', 'source', 'rev', 'site', 'tok'} <= set(params) or set(params) - allowed_detail:
+                        raise LibraryError('INVALID_VALUE')
+                    raw_vid = tstore.get_item(source.id, generation, site_hash, params['tok'])
+                    detail = client.detail_record(raw_vid)
+                    vtitle = _clean_label(detail['title'], 240, site['name'])
+                    plot = _clean_label(detail.get('plot', ''), 4096)
+                    poster = detail.get('poster', '')
+                    lines = detail['lines']
+                    total_eps = sum(len(eps) for _, eps in lines)
+                    multi_line = len(lines) > 1
+                    category_label = vtitle
+
+                    def _append_episode_batch(batch_specs):
+                        # batch_specs: list of (line_name, ep_id, full_title, disp, label2_text, ep_num)
+                        ptoks = tstore.put_play_batch(
                             source.id,
                             generation,
                             site_hash,
                             params['tok'],
-                            lhash,
-                            ehash,
-                            f'{vtitle} · {clean_ep}',
+                            raw_vid,
+                            [(ln_n, ep_i, f_title) for ln_n, ep_i, f_title, _, _, _ in batch_specs],
+                            pinned_tokens=(params['tok'],),
                         )
-                        info = {
-                            'title': disp,
-                            'tvshowtitle': vtitle,
-                            'mediatype': 'episode',
-                            'episode': idx,
-                        }
-                        if plot:
-                            info['plot'] = plot
-                        li_row = item(
-                            disp,
-                            _route(action='t4_play', source=source.id, rev=generation, site=site_idx_str, ptok=ptok),
-                            False,
-                            label2=clean_line if multi_line else detail.get('remarks', ''),
-                            info=info,
-                            playable=True,
+                        for (_ln_n, _ep_i, _f_title, disp, lbl2, ep_num), ptok in zip(batch_specs, ptoks):
+                            info = {
+                                'title': disp,
+                                'tvshowtitle': vtitle,
+                                'mediatype': 'episode',
+                                'episode': ep_num,
+                            }
+                            if plot:
+                                info['plot'] = plot
+                            li_row = item(
+                                disp,
+                                _route(action='t4_play', source=source.id, rev=generation, site=site_idx_str, ptok=ptok),
+                                False,
+                                label2=lbl2,
+                                info=info,
+                                playable=True,
+                            )
+                            if poster:
+                                li_row[1].setArt({'poster': poster, 'thumb': poster})
+                            rows.append(li_row)
+
+                    if 'ln' not in params and 'pg' not in params and total_eps <= DETAIL_PAGE_SIZE:
+                        content = 'episodes'
+                        batch_specs = []
+                        for line_name, episodes in lines:
+                            clean_line = _clean_label(line_name, 80, '线路')
+                            for idx, (ep_label, ep_id) in enumerate(episodes, start=1):
+                                clean_ep = _clean_label(ep_label, 160, f'第 {idx} 集')
+                                disp = f'{clean_line} · {clean_ep}' if multi_line else clean_ep
+                                batch_specs.append((
+                                    line_name,
+                                    ep_id,
+                                    f'{vtitle} · {clean_ep}',
+                                    disp,
+                                    clean_line if multi_line else detail.get('remarks', ''),
+                                    idx,
+                                ))
+                        _append_episode_batch(batch_specs)
+                    elif 'ln' not in params and multi_line:
+                        if 'pg' in params:
+                            raise LibraryError('INVALID_VALUE')
+                        content = 'files'
+                        for l_idx, (line_name, episodes) in enumerate(lines):
+                            clean_line = _clean_label(line_name, 80, f'线路 {l_idx + 1}')
+                            rows.append(item(
+                                f'{clean_line}（共 {len(episodes)} 集）',
+                                _route(
+                                    action='t4_detail',
+                                    source=source.id,
+                                    rev=generation,
+                                    site=site_idx_str,
+                                    tok=params['tok'],
+                                    ln=str(l_idx),
+                                    pg='1',
+                                ),
+                                True,
+                                label2=f'分页选集（每页 {DETAIL_PAGE_SIZE} 集）',
+                            ))
+                    else:
+                        content = 'episodes'
+                        if 'ln' in params:
+                            if not re.fullmatch(r'[0-9]{1,3}', params['ln']) or int(params['ln']) >= len(lines):
+                                raise LibraryError('INVALID_VALUE')
+                            l_idx = int(params['ln'])
+                        else:
+                            l_idx = 0
+                        page = _positive_int(params.get('pg', '1'), 1000)
+                        line_name, episodes = lines[l_idx]
+                        clean_line = _clean_label(line_name, 80, '线路')
+                        start = (page - 1) * DETAIL_PAGE_SIZE
+                        if start >= len(episodes) and episodes:
+                            raise LibraryError('INVALID_VALUE')
+                        end = min(page * DETAIL_PAGE_SIZE, len(episodes))
+                        total_pages = max(1, (len(episodes) + DETAIL_PAGE_SIZE - 1) // DETAIL_PAGE_SIZE)
+                        category_label = f'{vtitle} · {clean_line}（第 {page}/{total_pages} 页）'
+                        batch_specs = []
+                        for idx in range(start + 1, end + 1):
+                            ep_label, ep_id = episodes[idx - 1]
+                            clean_ep = _clean_label(ep_label, 160, f'第 {idx} 集')
+                            disp = f'{clean_line} · {clean_ep}' if multi_line else clean_ep
+                            batch_specs.append((
+                                line_name,
+                                ep_id,
+                                f'{vtitle} · {clean_ep}',
+                                disp,
+                                clean_line if multi_line else detail.get('remarks', ''),
+                                idx,
+                            ))
+                        _append_episode_batch(batch_specs)
+                        nav_base = dict(
+                            action='t4_detail',
+                            source=source.id,
+                            rev=generation,
+                            site=site_idx_str,
+                            tok=params['tok'],
                         )
-                        if poster:
-                            li_row[1].setArt({'poster': poster, 'thumb': poster})
-                        rows.append(li_row)
-            else:
-                raise LibraryError('INVALID_VALUE')
+                        if 'ln' in params or multi_line:
+                            nav_base['ln'] = str(l_idx)
+                        if page > 1:
+                            rows.append(item(
+                                '上一页',
+                                _route(**nav_base, pg=str(page - 1)),
+                                True,
+                                properties={'Bobbi.PrevPage': 'true'},
+                            ))
+                        if end < len(episodes):
+                            rows.append(item(
+                                '下一页',
+                                _route(**nav_base, pg=str(page + 1)),
+                                True,
+                                properties={'Bobbi.NextPage': 'true'},
+                            ))
+                else:
+                    raise LibraryError('INVALID_VALUE')
+        except LibraryError as tok_err:
+            if tok_err.code != 'T4_TOKEN_EXPIRED' or action not in ('t4_cat', 't4_detail'):
+                raise
+            # Same-generation expired directory token provides an explicit refresh path back to site home (A08-03).
+            content = 'files'
+            rows = [
+                item(
+                    '页面令牌已过期 · 返回站点首页刷新',
+                    _route(action='t4_site', source=source.id, rev=generation, site=site_idx_str),
+                    True,
+                    label2='重新获取最新目录令牌',
+                    properties={'Bobbi.ExpiredRefresh': 'true'},
+                )
+            ]
 
         require_current()
         xbmcplugin.setPluginCategory(handle, category_label)

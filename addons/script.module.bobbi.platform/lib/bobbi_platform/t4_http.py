@@ -129,6 +129,16 @@ def selection_with_token(site, item_token, line_hash_or_name, episode_hash_or_id
     )
 
 
+def selection_with_play_token(site, play_token: str):
+    if not isinstance(play_token, str) or not re.fullmatch(r'[0-9a-f]{32}', play_token):
+        raise LibraryError('T4_TOKEN_EXPIRED')
+    return dict(
+        kind='t4',
+        site=_opaque(site['key']),
+        play_token=play_token,
+    )
+
+
 def _media_origin_allowed(url: str, site: dict, approved_origins: set[str]) -> bool:
     u_orig = _origin(url)
     api_orig = _origin(site['api'])
@@ -158,25 +168,44 @@ def resolve_selected(
     if source.kind != 't4' or not isinstance(choice, dict) or choice.get('kind') != 't4':
         raise LibraryError('T4_CHANGED')
     keys = set(choice)
-    if keys == {'kind', 'site', 'item', 'line', 'episode'}:
-        use_token = False
-    elif keys == {'kind', 'site', 'item_token', 'line', 'episode'}:
-        use_token = True
-    else:
-        raise LibraryError('T4_CHANGED')
-
-    if any(
-        not isinstance(choice[k], str) or not re.fullmatch('[0-9a-f]{64}', choice[k])
-        for k in ('site', 'line', 'episode')
-    ):
-        raise LibraryError('T4_CHANGED')
-
-    if use_token:
+    if keys == {'kind', 'site', 'play_token'}:
+        if (
+            not isinstance(choice['site'], str)
+            or not re.fullmatch('[0-9a-f]{64}', choice['site'])
+            or not isinstance(choice['play_token'], str)
+            or not re.fullmatch('[0-9a-f]{32}', choice['play_token'])
+        ):
+            raise LibraryError('T4_TOKEN_EXPIRED')
         if token_store is None or not generation:
             raise LibraryError('T4_TOKEN_EXPIRED')
-        item_id = token_store.get_item(source.id, generation, choice['site'], choice['item_token'])
+        play_meta = token_store.get_play(source.id, generation, choice['site'], choice['play_token'])
+        item_id = play_meta['vod_id']
+        if not item_id:
+            item_id = token_store.get_item(source.id, generation, choice['site'], play_meta['item_token'])
+        target_line_hash = play_meta['line']
+        target_ep_hash = play_meta['episode']
     else:
-        item_id = _item_id(choice['item'])
+        if keys == {'kind', 'site', 'item', 'line', 'episode'}:
+            use_token = False
+        elif keys == {'kind', 'site', 'item_token', 'line', 'episode'}:
+            use_token = True
+        else:
+            raise LibraryError('T4_CHANGED')
+
+        if any(
+            not isinstance(choice[k], str) or not re.fullmatch('[0-9a-f]{64}', choice[k])
+            for k in ('site', 'line', 'episode')
+        ):
+            raise LibraryError('T4_CHANGED')
+
+        if use_token:
+            if token_store is None or not generation:
+                raise LibraryError('T4_TOKEN_EXPIRED')
+            item_id = token_store.get_item(source.id, generation, choice['site'], choice['item_token'])
+        else:
+            item_id = _item_id(choice['item'])
+        target_line_hash = choice['line']
+        target_ep_hash = choice['episode']
 
     sites = [s for s in source.metadata['sites'] if _opaque(s['key']) == choice['site']]
     if len(sites) != 1:
@@ -192,10 +221,10 @@ def resolve_selected(
     client = t4.Client(site, fetch or default_fetch)
     approved = token_store.approved_origins(source.id, generation) if (token_store and generation) else set()
     for name, episodes in client.detail(item_id):
-        if _opaque(name) != choice['line']:
+        if _opaque(name) != target_line_hash:
             continue
         for title, episode in episodes:
-            if _opaque(episode) == choice['episode']:
+            if _opaque(episode) == target_ep_hash:
                 url, play_headers = client.play(name, episode)
                 if not _media_origin_allowed(url, site, approved):
                     raise LibraryError('T4_MEDIA_ORIGIN')

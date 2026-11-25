@@ -136,29 +136,81 @@ def test_401_classified_from_http_status_not_json_body(monkeypatch):
 
 
 def test_browse_search_and_single_submission_without_raw_endpoint_in_host_ipc(tmp_path, monkeypatch):
-    from bobbi_platform import kodi, paths, runtime, source_library_ui
+    from contextlib import contextmanager
+    from urllib.parse import parse_qsl
+    from bobbi_platform import owned_playback, paths
     store = Registry(tmp_path / 'libraries.sqlite3')
     src = t4.preview(sample('01'), BASE).source(BASE)
     store.save(src)
-    submit, control = [], []
-    monkeypatch.setitem(sys.modules, 'xbmc', SimpleNamespace(Monitor=lambda: SimpleNamespace(abortRequested=lambda:False)))
-    monkeypatch.setattr(paths, 'ProfileBinding', lambda: SimpleNamespace(root=lambda:tmp_path, is_current=lambda:True))
-    monkeypatch.setattr(source_library_ui, 'operation', lambda fn: fn(10**12, lambda:False))
+    submit, control, rendered = [], [], []
+    monkeypatch.setitem(sys.modules, 'xbmc', SimpleNamespace(Monitor=lambda: SimpleNamespace(abortRequested=lambda: False)))
+    monkeypatch.setitem(
+        sys.modules,
+        'xbmcgui',
+        SimpleNamespace(
+            Dialog=lambda: SimpleNamespace(input=lambda *_: '中文搜索', yesno=lambda *_: True, ok=lambda *_: None),
+            ListItem=lambda label='': SimpleNamespace(
+                label=label,
+                setInfo=lambda *a: None,
+                setArt=lambda *a: None,
+                setProperty=lambda *a: None,
+                setLabel2=lambda *a: None,
+            ),
+        ),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        'xbmcplugin',
+        SimpleNamespace(
+            setPluginCategory=lambda *a: None,
+            setContent=lambda *a: None,
+            addDirectoryItems=lambda _h, rows, _n: rendered.extend(rows),
+            endOfDirectory=lambda *a, **kw: None,
+            setResolvedUrl=lambda *a: None,
+        ),
+    )
+    monkeypatch.setattr(paths, 'ProfileBinding', lambda: SimpleNamespace(root=lambda: tmp_path, is_current=lambda: True))
     monkeypatch.setattr(ui, 'read', lambda url, *_: sample('07' if 'ids=' in url else '06' if 'wd=' in url else '05'))
-    def call(op, body, timeout):
-        control.append((op, body))
-        return {'url':'http://127.0.0.1:3189/stream/'+'b'*32+'/video.mkv', 'size':2048}
-    monkeypatch.setattr(runtime, 'bind_call', lambda path: call)
-    monkeypatch.setattr(kodi, 'standard_handoff', lambda ident, handle, check: SimpleNamespace(
-        submit=lambda key, data: submit.append((key, handle, data, check()))))
-    choices = iter([0, 0, 1, 1])  # Search, first item, second line, second episode.
-    dialog = SimpleNamespace(select=lambda *args: next(choices), input=lambda *_:'中文搜索')
+
+    @contextmanager
+    def fake_reserve(target, scope, **kw):
+        yield SimpleNamespace(
+            request_id='a' * 32,
+            require_current=lambda: None,
+            host_call=lambda op, body, timeout=18: (
+                control.append((op, body))
+                or {'url': 'http://127.0.0.1:3189/stream/' + 'b' * 32 + '/video.mkv', 'size': 2048}
+            ),
+            submit=lambda handle, media_url, **skw: submit.append((handle, media_url, skw['ready']())),
+        )
+
+    monkeypatch.setattr(owned_playback, 'reserve_playback', fake_reserve)
+
+    def make_item(label, target, folder=True, label2='', properties=None, info=None, *, playable=True):
+        li = sys.modules['xbmcgui'].ListItem(label)
+        return target, li, folder
+
     try:
-        ui.browse(dialog, store, src)
+        # 1. Browse home -> click Search
+        ui.execute_directory(11, {'action': 'browse', 'source': src.id}, store, make_item)
+        search_url = rendered[0][0]
+        assert 'fixture-token' not in search_url
+        # 2. Search -> select first result
+        rendered.clear()
+        ui.execute_directory(11, dict(parse_qsl(urlsplit(search_url).query)), store, make_item)
+        detail_url = rendered[0][0]
+        assert 'xy:series:001' not in detail_url
+        # 3. Detail -> select second line, second episode (index 3)
+        rendered.clear()
+        ui.execute_directory(11, dict(parse_qsl(urlsplit(detail_url).query)), store, make_item)
+        play_url = rendered[3][0]
+        assert 'line:B' not in play_url and 'xy:series:001' not in play_url
+        # 4. Play -> single Host IPC submission without raw endpoint/vod_id/line in IPC
+        ui.execute_directory(11, dict(parse_qsl(urlsplit(play_url).query)), store, make_item)
         assert len(control) == len(submit) == 1
         assert control[0][0] == 'source_stream_open'
-        assert 'fixture-token' not in str(control) and 'line:B' not in str(control)
-        assert submit[0][1] == -1 and submit[0][3] and submit[0][2]['url'].startswith('http://127.0.0.1:')
+        assert 'fixture-token' not in str(control) and 'line:B' not in str(control) and 'xy:series:001' not in str(control)
+        assert submit[0][0] == 11 and submit[0][2] and submit[0][1].startswith('http://127.0.0.1:')
     finally:
         store.close()
 
