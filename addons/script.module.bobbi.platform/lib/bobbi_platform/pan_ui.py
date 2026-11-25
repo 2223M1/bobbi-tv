@@ -204,8 +204,8 @@ def _cancel_async(action, body):
 
 def login(row, dialog):
     import xbmcvfs
-    from .account_dialog import failure_details, login_dialog, refresh_account_view, render_qr
-    from .login_flow import LoginFlowError
+    from .account_dialog import failure_details, login_dialog, render_qr
+    from .login_flow import LoginFlowError, refresh_account_view
     from .environment import private_path
     provider = row['provider']
     expected = scope(row['account'], provider)

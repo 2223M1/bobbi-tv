@@ -1,9 +1,10 @@
 """QR rendered locally; no login material sent to third-party QR services."""
 from threading import Event, Lock
 from bobbi_core.account_scope import validate_snapshot
-from .account_dialog import failure_details, login_dialog, refresh_account_view, render_qr
+from .account_dialog import failure_details, login_dialog, render_qr
 from .cloud115 import Login, CloudError
 from .environment import private_path
+from .login_flow import refresh_account_view
 from .runtime import call
 
 

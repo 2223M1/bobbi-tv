@@ -43,6 +43,15 @@ def is_retryable(error):
     return isinstance(error, OSError) and not isinstance(error, HTTPError)
 
 
+def refresh_account_view():
+    """Refresh the current directory after a committed login/logout without reloading skin or stopping playback."""
+    import xbmc
+    try:
+        xbmc.executebuiltin('Container.Refresh')
+    except RuntimeError:
+        pass  # A UI refresh failure must not misreport a committed login.
+
+
 class LoginRunner:
     """One-shot login attempt; cancellation returns False, failures raise.
 
