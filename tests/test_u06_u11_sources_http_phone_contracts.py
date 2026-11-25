@@ -760,7 +760,7 @@ def test_u07_src02_4500_episodes_bounded_pagination_single_tx_and_native_filters
     shash = t4_http._opaque(site['key'])
 
     # Pre-fill T4TokenStore to MAX_TOKENS (4096) before browsing 4500-episode detail!
-    with T4TokenStore(plugin.path.parent / 't4-tokens.sqlite3') as pre_store:
+    with T4TokenStore(tmp_path / 't4-tokens.sqlite3') as pre_store:
         for idx in range(MAX_TOKENS):
             pre_store.put_item(src.id, gen, shash, f'prefill-{idx}')
 
@@ -878,7 +878,7 @@ def test_u07_src02_4500_episodes_bounded_pagination_single_tx_and_native_filters
             ep_rows = [(u, li) for u, li, is_folder in rendered if not is_folder]
             assert len(ep_rows) == (100 if expected_pg == 8 else 200)
             # Parent item_token MUST NEVER be evicted during page creation!
-            with T4TokenStore(plugin.path.parent / 't4-tokens.sqlite3', read_only=True) as check_store:
+            with T4TokenStore(tmp_path / 't4-tokens.sqlite3', read_only=True) as check_store:
                 assert check_store.get_item(src.id, gen, shash, parent_tok) == 'film4500'
             if expected_pg < 8:
                 cur_url = next(u for u, li, is_f in rendered if is_f and li.props.get('Bobbi.NextPage') == 'true')
@@ -893,7 +893,7 @@ def test_u07_src02_4500_episodes_bounded_pagination_single_tx_and_native_filters
         @contextmanager
         def real_resolve_reservation(target, scope, **kw):
             def host_call(op, body, timeout=18):
-                with T4TokenStore(plugin.path.parent / 't4-tokens.sqlite3', read_only=True) as hs:
+                with T4TokenStore(tmp_path / 't4-tokens.sqlite3', read_only=True) as hs:
                     m_url, _, _ = t4_http.resolve_selected(
                         src,
                         body['selection'],
@@ -930,6 +930,37 @@ def test_u07_src02_4500_episodes_bounded_pagination_single_tx_and_native_filters
 # ============================================================================
 # U08: CT-HTTP-BOUNDARY, CT-NUVIO, CT-DEBRID (SRC-03, SRC-04, SRC-06, SRC-07)
 # ============================================================================
+
+
+_KODI_STUB_CACHE = {}
+
+
+def _setup_plugin_test_env(monkeypatch, tmp_path=None):
+    plugin_dir = str(REPO_ROOT / 'addons/plugin.video.bobbi')
+    if plugin_dir not in sys.path:
+        monkeypatch.syspath_prepend(plugin_dir)
+    if 'xbmc' not in sys.modules or not hasattr(sys.modules['xbmc'], 'LOGINFO'):
+        if not _KODI_STUB_CACHE:
+            import runpy
+            prev_mods = dict(sys.modules)
+            prev_argv = list(sys.argv)
+            prev_path = list(sys.path)
+            ns = runpy.run_path(str(REPO_ROOT / 'tests/private_baseline/conftest.py'))
+            _KODI_STUB_CACHE['ns'] = ns
+            _KODI_STUB_CACHE['mods'] = {
+                k: sys.modules[k]
+                for k in ('xbmc', 'xbmcgui', 'xbmcaddon', 'xbmcvfs', 'xbmcplugin', 'pydevd')
+                if k in sys.modules
+            }
+            sys.argv[:] = prev_argv
+            sys.path[:] = prev_path
+            for k in list(sys.modules):
+                if k not in prev_mods:
+                    sys.modules.pop(k, None)
+                else:
+                    sys.modules[k] = prev_mods[k]
+        for k, v in _KODI_STUB_CACHE['mods'].items():
+            monkeypatch.setitem(sys.modules, k, v)
 
 
 def test_u08_src07_connect_tcp_slice_fallback_ipv6_ipv4_and_sticky_global_cancel():
@@ -1238,11 +1269,7 @@ def test_u08_src04_src06_streaming_limits_redirect_close_nuvio_and_debrid_dedup(
             observed_gets.append((dict(kwargs), resp._content))
             return resp
 
-    # Bootstrap Kodi doubles via private_baseline conftest if not already loaded
-    if 'xbmc' not in sys.modules or not hasattr(sys.modules['xbmc'], 'LOGINFO'):
-        import runpy
-        runpy.run_path(str(REPO_ROOT / 'tests/private_baseline/conftest.py'))
-    sys.path.insert(0, str(REPO_ROOT / 'addons/plugin.video.bobbi'))
+    _setup_plugin_test_env(monkeypatch, tmp_path=None)
     addon_client = importlib.import_module('lib.clients.stremio.addon_client')
     monkeypatch.setattr(addon_client, 'get_int_setting', lambda *_: 3)
 
@@ -1934,24 +1961,7 @@ def test_u09_emby_http_gateway_subset_and_strm_finite_boundaries(tmp_path, monke
         (strm_root / bad_name).write_bytes(bad_raw)
         with pytest.raises(LibraryError, match=exp_err):
             source_pointers.read(vfs, bad_name)
-def _setup_plugin_test_env(monkeypatch, profile_dir=None):
-    import runpy
-    prev_mods = dict(sys.modules)
-    prev_path = list(sys.path)
-    runpy.run_path(str(REPO_ROOT / 'tests/private_baseline/conftest.py'))
-    for k, v in list(sys.modules.items()):
-        if k not in prev_mods:
-            monkeypatch.setitem(sys.modules, k, v)
-    for p in reversed(sys.path):
-        if p not in prev_path:
-            monkeypatch.syspath_prepend(p)
-    for mod_clear in [
-        'lib.utils.kodi.utils',
-        'lib.services.subtitle_server',
-        'lib.services.webserver',
-        'lib.services.phone_management',
-    ]:
-        sys.modules.pop(mod_clear, None)
+
 
 
 # ==============================================================================
@@ -1970,7 +1980,7 @@ def test_u10_src05_stremio_list_utf8_byte_budget_12_chinese_and_65_addons_crud(t
     import importlib
     from bobbi_platform.paths import ProfileBinding
 
-    _setup_plugin_test_env(monkeypatch, tmp_path)
+    _setup_plugin_test_env(monkeypatch, tmp_path=tmp_path)
     ws_mod = importlib.import_module('lib.services.webserver')
     pm_mod = importlib.import_module('lib.services.phone_management')
 
@@ -2133,7 +2143,7 @@ def test_u10_root_subtitle_parser_bounded_malformed_and_paired_scope_a_to_b_isol
     from urllib.request import Request, urlopen
     from bobbi_platform.paths import ProfileBinding
 
-    _setup_plugin_test_env(monkeypatch, tmp_path)
+    _setup_plugin_test_env(monkeypatch, tmp_path=tmp_path)
     sub_mod = importlib.import_module('lib.services.subtitle_server')
     pm_mod = importlib.import_module('lib.services.phone_management')
     ws_mod = importlib.import_module('lib.services.webserver')
@@ -2343,3 +2353,349 @@ def test_u10_root_subtitle_parser_bounded_malformed_and_paired_scope_a_to_b_isol
         t_stop = time.monotonic()
         srv.stop()
         assert time.monotonic() - t_stop < 2.0
+# ==============================================================================
+# U11 · T4 Bridge Stage/Deadline/Exit Semantics, Input Guards & Upload Handoff
+# ==============================================================================
+
+
+def test_u11_src10_bridge_stage_attribution_shared_deadline_and_exit_codes(tmp_path):
+    """Inverted merge witness bridge_controls + CT-BRIDGE (SRC-10, A09-01, A09-02) + CT-PRIVATE-INPUT:
+    - Separates DIAGNOSED, IMPORTABLE, PROTOCOL_VERIFIED, MEDIA_VERIFIED, INCOMPLETE, FAILED, BLOCKED_INPUT.
+    - Tracks current_stage explicitly: no-category + search failure reports search (never category);
+      detail/play/media failures attribute to exact stage.
+    - Shares one per-site absolute deadline across home/category/search/detail/play/media (never resets +8s).
+    - --probe-live exits 0 ONLY on MEDIA_VERIFIED; exits non-zero on 0 type-4, INCOMPLETE, PROTOCOL_VERIFIED,
+      FAILED, or BLOCKED_INPUT.
+    """
+    import importlib.util
+    from urllib.parse import parse_qs, urlsplit
+    from unittest.mock import patch
+    from bobbi_core.library_contract import LibraryError
+
+    spec = importlib.util.spec_from_file_location('u11_bridge', REPO_ROOT / 'tools/check_t4_bridge.py')
+    bridge = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(bridge)
+
+    site = dict(key='k', name='Synthetic', api='https://approved.example.invalid/t4', extend='', searchable=True)
+
+    def healthy_wire(url):
+        q = parse_qs(urlsplit(url).query)
+        if 'ids' in q:
+            val = {'list': [{'vod_id': 'v1', 'vod_name': 'Synthetic', 'vod_play_from': 'A', 'vod_play_url': 'E1$e1'}]}
+        elif 'play' in q:
+            val = {'parse': 0, 'url': 'https://approved.example.invalid/media.mkv'}
+        else:
+            val = {'class': [{'type_id': '1', 'type_name': 'Film'}], 'list': [{'vod_id': 'v1', 'vod_name': 'Synthetic'}]}
+        return json.dumps(val).encode('utf-8')
+
+    # 1. Healthy 5-stage + media positive control
+    positive = bridge.probe_t4_site(
+        site,
+        fetch_fn=healthy_wire,
+        media_probe_fn=lambda *_: {'identity_mode': 'weak_session', 'size': 100},
+    )
+    assert positive['status'] == 'MEDIA_VERIFIED'
+    assert positive['protocol_verified'] is True and positive['media_verified'] is True
+    assert all(v.startswith('PASS') for v in positive['steps'].values())
+
+    # 2. Inverted witness: no categories + search failure MUST report search, NEVER category!
+    def search_failure(url):
+        q = parse_qs(urlsplit(url).query)
+        if 'wd' in q:
+            raise LibraryError('T4_NETWORK')
+        return json.dumps({'list': [{'vod_id': 'v1', 'vod_name': 'Synthetic'}]}).encode('utf-8')
+
+    stage_res = bridge.probe_t4_site(site, fetch_fn=search_failure)
+    assert stage_res['status'] == 'FAILED'
+    assert stage_res['failed_stage'] == 'search'
+    assert stage_res['steps']['category'] == 'SKIPPED'
+    assert stage_res['steps']['search'] == 'FAIL:T4_NETWORK'
+
+    # 3. Per-stage negative controls for home, category, detail, play, and media
+    for target_stage in ('home', 'category', 'detail', 'play', 'media'):
+        def stage_fail_wire(url, target=target_stage):
+            q = parse_qs(urlsplit(url).query)
+            if target == 'home' and not q.get('t') and not q.get('wd') and not q.get('ids') and not q.get('play'):
+                raise LibraryError('T4_TIMEOUT')
+            if target == 'category' and 't' in q:
+                raise LibraryError('T4_NETWORK')
+            if target == 'detail' and 'ids' in q:
+                raise LibraryError('T4_LIMIT')
+            if target == 'play' and 'play' in q:
+                raise LibraryError('T4_PLAY_UNSUPPORTED')
+            return healthy_wire(url)
+
+        def stage_fail_media(*_a, target=target_stage):
+            if target == 'media':
+                raise LibraryError('MEDIA_RANGE_UNSUPPORTED')
+            return {'identity_mode': 'strong_etag', 'size': 2048}
+
+        neg = bridge.probe_t4_site(site, fetch_fn=stage_fail_wire, media_probe_fn=stage_fail_media)
+        assert neg['failed_stage'] == target_stage
+        if target_stage == 'media':
+            # Protocol succeeded, media failed -> PROTOCOL_VERIFIED (NOT MEDIA_VERIFIED!)
+            assert neg['status'] == 'PROTOCOL_VERIFIED'
+            assert neg['protocol_verified'] is True and neg['media_verified'] is False
+            assert neg['steps']['play'] == 'FAIL_MEDIA:MEDIA_RANGE_UNSUPPORTED'
+        else:
+            assert neg['status'] == 'FAILED'
+            assert neg['steps'][target_stage].startswith('FAIL:')
+
+    # 4. Inverted witness: shared per-site absolute deadline (NEVER resets +8s for media!)
+    clock, media_calls = [100.0], []
+
+    def delayed_wire(url):
+        if 'play=' in url:
+            clock[0] = 111.9
+        return healthy_wire(url)
+
+    def media_capture(url, headers, **kwargs):
+        media_calls.append(dict(start=clock[0], deadline=kwargs['deadline']))
+        return {'identity_mode': 'weak_session', 'size': 100}
+
+    with patch.object(bridge.time, 'monotonic', lambda: clock[0]), \
+         patch.object(bridge.source_media_http, 'probe_stream', media_capture):
+        dl_res = bridge.probe_t4_site(site, fetch_fn=delayed_wire, timeout_sec=12)
+    assert dl_res['status'] == 'MEDIA_VERIFIED'
+    assert len(media_calls) == 1
+    assert media_calls[0]['start'] == pytest.approx(111.9)
+    assert media_calls[0]['deadline'] == pytest.approx(112.0)  # <= 112.0, NOT 119.9!
+
+    # Exhausting site deadline during play skips media_prober completely with T4_TIMEOUT
+    clock2, media_calls2 = [100.0], []
+
+    def over_budget_wire(url):
+        if 'play=' in url:
+            clock2[0] = 112.1
+        return healthy_wire(url)
+
+    with patch.object(bridge.time, 'monotonic', lambda: clock2[0]), \
+         patch.object(bridge.source_media_http, 'probe_stream', lambda *a, **kw: media_calls2.append(1)):
+        over_res = bridge.probe_t4_site(site, fetch_fn=over_budget_wire, timeout_sec=12)
+    assert over_res['status'] == 'PROTOCOL_VERIFIED'
+    assert over_res['failed_stage'] == 'media' and over_res['error_code'] == 'T4_TIMEOUT'
+    assert media_calls2 == []
+
+    # 5. Empty home & no sample -> INCOMPLETE (non-zero under --probe-live)
+    inc = bridge.probe_t4_site(
+        dict(site, searchable=False),
+        fetch_fn=lambda _u: b'{"class":[],"list":[]}',
+    )
+    assert inc['status'] == 'INCOMPLETE' and inc['incomplete_reason'] == 'EMPTY_HOME'
+
+    # 6. CLI exit codes across DIAGNOSED / IMPORTABLE / PROTOCOL_VERIFIED / MEDIA_VERIFIED / BLOCKED_INPUT
+    type3_cfg = tmp_path / 'type3_only.json'
+    type3_cfg.write_bytes(json.dumps({
+        'sites': [{'key': 'sp1', 'name': 'AList Spider', 'type': 3, 'api': 'csp_AList', 'jar': './spider.jar'}]
+    }).encode('utf-8'))
+
+    # Pure diagnosis on valid 0-T4 JSON -> DIAGNOSED, exit 0; with --probe-live -> exit 1!
+    diag_only = bridge.run_check(str(type3_cfg), probe_live=False)
+    assert diag_only['status'] == 'DIAGNOSED' and diag_only['importable'] is False
+    assert bridge.main(['--config', str(type3_cfg)]) == 0
+    assert bridge.main(['--config', str(type3_cfg), '--probe-live']) == 1
+
+    # Mutating type:3 -> type:4 on csp_AList NEVER becomes importable!
+    forged_cfg = tmp_path / 'forged_type4.json'
+    forged_cfg.write_bytes(json.dumps({
+        'sites': [{'key': 'sp1', 'name': 'Forged Spider', 'type': 4, 'api': 'csp_AList'}]
+    }).encode('utf-8'))
+    forged_res = bridge.run_check(str(forged_cfg), probe_live=False)
+    assert forged_res['importable'] is False and forged_res['status'] == 'DIAGNOSED'
+    assert bridge.main(['--config', str(forged_cfg), '--probe-live']) == 1
+
+    # Valid T4 JSON: pure diagnosis -> IMPORTABLE (exit 0); --probe-live with PROTOCOL_VERIFIED -> exit 1; MEDIA_VERIFIED -> exit 0
+    valid_cfg = tmp_path / 'valid_t4.json'
+    valid_cfg.write_bytes(json.dumps({
+        'sites': [{'key': 'k', 'name': 'S', 'type': 4, 'api': 'https://approved.example.invalid/t4', 'searchable': 1}]
+    }).encode('utf-8'))
+    imp_res = bridge.run_check(str(valid_cfg), probe_live=False)
+    assert imp_res['status'] == 'IMPORTABLE' and imp_res['importable'] is True
+    assert bridge.exit_code_for_result(imp_res, probe_live=False) == 0
+
+    proto_only_res = bridge.run_check(
+        str(valid_cfg),
+        probe_live=True,
+        fetch_fn=healthy_wire,
+        media_probe_fn=lambda *_: (_ for _ in ()).throw(LibraryError('MEDIA_TIMEOUT')),
+    )
+    assert proto_only_res['status'] == 'PROTOCOL_VERIFIED'
+    assert bridge.exit_code_for_result(proto_only_res, probe_live=True) == 1
+
+    media_ok_res = bridge.run_check(
+        str(valid_cfg),
+        probe_live=True,
+        fetch_fn=healthy_wire,
+        media_probe_fn=lambda *_: {'identity_mode': 'strong_etag', 'size': 4096},
+    )
+    assert media_ok_res['status'] == 'MEDIA_VERIFIED'
+    assert bridge.exit_code_for_result(media_ok_res, probe_live=True) == 0
+
+    # CT-PRIVATE-INPUT: Missing original my_ext.json or mismatched SHA-256 -> BLOCKED_INPUT (exit 2)
+    missing_res = bridge.run_check(str(tmp_path / 'nonexistent_my_ext.json'))
+    assert missing_res['status'] == 'BLOCKED_INPUT' and missing_res['error_code'] == 'INPUT_NOT_FOUND'
+    assert bridge.main(['--config', str(tmp_path / 'nonexistent_my_ext.json')]) == 2
+
+    sha_mismatch = bridge.run_check(
+        str(type3_cfg),
+        expected_sha256='b64b7501ff79cf34b349d61a360bc139d195908f9df19af7c9139a44a37acbac',
+    )
+    assert sha_mismatch['status'] == 'BLOCKED_INPUT' and sha_mismatch['error_code'] == 'INPUT_SHA256_MISMATCH'
+
+
+def test_u11_import_input_guards_upload_timeouts_orphan_sweep_and_handoff_lifecycle(tmp_path, monkeypatch):
+    """CT-IMPORT-INPUT (R19-02, IMPORT-TYPE-GUARDS) + CT-UPLOAD (R19-11..14, A09-03, A09-04):
+    - URL vs unreachable phone-private local paths explicitly classified with T4_PHONE_LOCAL_PATH.
+    - [], null, duplicate key, type=true, type="4", type=3-only, bad type=4 rejected with zero Registry writes;
+      valid type=4 saves once on confirmation.
+    - Crash-orphaned .part files swept on startup; idle (>60s) and total (>300s) upload timeouts abort & clean up;
+      duplicate commit rejected.
+    - Committed handoff survives normal QR revoke(), clears on consume_committed_import(), reject_committed_import(),
+      or profile switch!
+    """
+    import base64
+    import hashlib
+    import importlib
+    from bobbi_core import t4
+    from bobbi_core.library_contract import LibraryError
+    from bobbi_platform import source_media_http, t4_ui
+    from bobbi_platform.libraries import Registry
+    from bobbi_platform.paths import ProfileBinding
+
+    # 1. R19-02: URL vs phone-private path classification
+    assert t4_ui.classify_t4_url_input('https://sub.example.invalid/tvbox.json') == 'https://sub.example.invalid/tvbox.json'
+    assert t4_ui.classify_t4_url_input('http://192.168.1.20:5678/tvbox/my.json') == 'http://192.168.1.20:5678/tvbox/my.json'
+    assert 'T4_PHONE_LOCAL_PATH' in source_media_http.MESSAGES
+    assert '手机扫码上传' in source_media_http.MESSAGES['T4_PHONE_LOCAL_PATH']
+
+    for phone_local in [
+        'content://com.android.providers.downloads.documents/document/42',
+        'file:///storage/emulated/0/Download/my_ext.json',
+        '/storage/emulated/0/Download/my_ext.json',
+        '/sdcard/Download/tvbox.json',
+        '/data/user/0/com.MiXplorer/cache/sub.json',
+        'C:\\Users\\phone\\Downloads\\sub.json',
+    ]:
+        with pytest.raises(LibraryError, match='T4_PHONE_LOCAL_PATH'):
+            t4_ui.classify_t4_url_input(phone_local)
+
+    # 2. IMPORT-TYPE-GUARDS: strict JSON & type validation with zero Registry writes on invalid/unsupported
+    valid_doc = {'sites': [{'key': 'ok1', 'name': 'Valid T4', 'type': 4, 'api': 'https://t4.example.invalid/vod'}]}
+    for bad_label, bad_raw in [
+        ('list_top', b'[]'),
+        ('null_top', b'null'),
+        ('dup_key', b'{"sites":[],"sites":[]}'),
+        ('bool_type', json.dumps({'sites': [dict(valid_doc['sites'][0], type=True)]}).encode('utf-8')),
+        ('str_type', json.dumps({'sites': [dict(valid_doc['sites'][0], type='4')]}).encode('utf-8')),
+        ('type3_only', json.dumps({'sites': [dict(valid_doc['sites'][0], type=3)]}).encode('utf-8')),
+        ('bad_type4', json.dumps({'sites': [{'key': 'b', 'name': 'B', 'type': 4, 'api': 'csp_NotUrl'}]}).encode('utf-8')),
+    ]:
+        diag = t4.diagnose_config(bad_raw)
+        assert diag['can_save_t4'] is False, f'{bad_label} unexpectedly saveable'
+
+    # 3. Orphan .part crash sweep, idle/total upload timeouts, duplicate commit, and handoff lifecycle
+    _setup_plugin_test_env(monkeypatch, tmp_path=tmp_path)
+    pm_mod = importlib.import_module('lib.services.phone_management')
+
+    now = [1000.0]
+    profile_current = [True]
+    plat_dir = tmp_path / 'plat_profile'
+    staging_dir = plat_dir / 'source-import-staging'
+    staging_dir.mkdir(parents=True, exist_ok=True)
+    orphan_part = staging_dir / ('deadbeef' * 4 + '.part')
+    orphan_part.write_bytes(b'leftover-from-crash')
+    assert orphan_part.is_file()
+
+    binding = ProfileBinding(lambda addon='script.module.bobbi.platform': plat_dir)
+    monkeypatch.setattr(binding, 'is_current', lambda: profile_current[0])
+
+    def make_manager():
+        mgr = pm_mod.PhoneManagement(
+            {'local_scope': 'source_import'},
+            'http://127.0.0.1:8081',
+            clock=lambda: now[0],
+            scopes=pm_mod.SOURCE_IMPORT_SCOPES,
+            profile_binding=binding,
+        )
+        hdrs = {'Host': '127.0.0.1:8081', 'Origin': 'http://127.0.0.1:8081'}
+        paired, cookie = mgr.handle('/manage/api/pair', hdrs, pm_mod.encode({'code': mgr.pairing_url.split('#')[1]}))
+        auth = {**hdrs, 'Cookie': cookie.split(';')[0], 'X-Bobbi-CSRF': paired['csrf']}
+        return mgr, lambda act, prm: mgr.handle('/manage/api', auth, pm_mod.encode({'action': act, 'params': prm}))[0]
+
+    # Constructing PhoneManagement(source_import) sweeps crashed orphan .part immediately!
+    mgr1, rpc1 = make_manager()
+    assert not orphan_part.exists() and not staging_dir.exists()
+
+    # Idle timeout (> 60s) aborts upload and cleans up .part
+    payload = json.dumps(valid_doc).encode('utf-8')
+    sha = hashlib.sha256(payload).hexdigest()
+    uid_idle = '1' * 32
+    rpc1('source_import_begin', {'upload_id': uid_idle, 'file_name': 'a.json', 'total_bytes': len(payload), 'sha256': sha})
+    assert (staging_dir / f'{uid_idle}.part').is_file()
+    now[0] += 61.0
+    with pytest.raises(pm_mod.PhoneError, match='UPLOAD_TIMEOUT') as e_idle:
+        rpc1('source_import_chunk', {'upload_id': uid_idle, 'offset': 0, 'data_b64': base64.b64encode(payload).decode('ascii')})
+    assert e_idle.value.status == 408
+    assert not (staging_dir / f'{uid_idle}.part').exists()
+
+    # Total deadline (> 300s across slow trickle) aborts upload and cleans up .part
+    uid_tot = '2' * 32
+    two_part = payload + b' '
+    rpc1('source_import_begin', {
+        'upload_id': uid_tot,
+        'file_name': 'b.json',
+        'total_bytes': len(two_part),
+        'sha256': hashlib.sha256(two_part).hexdigest(),
+    })
+    for _ in range(6):
+        now[0] += 51.0  # each step < 60s idle, but 6 * 51 = 306s > 300s total!
+    with pytest.raises(pm_mod.PhoneError, match='UPLOAD_TIMEOUT'):
+        rpc1('source_import_chunk', {'upload_id': uid_tot, 'offset': 0, 'data_b64': base64.b64encode(payload).decode('ascii')})
+    assert not (staging_dir / f'{uid_tot}.part').exists()
+
+    # Valid upload -> commit once (second commit rejected!) -> revoke() retains handoff -> consume saves once & clears!
+    mgr2, rpc2 = make_manager()
+    uid_ok = '3' * 32
+    rpc2('source_import_begin', {'upload_id': uid_ok, 'file_name': 'ok.json', 'total_bytes': len(payload), 'sha256': sha})
+    rpc2('source_import_chunk', {'upload_id': uid_ok, 'offset': 0, 'data_b64': base64.b64encode(payload).decode('ascii')})
+    committed_reply = rpc2('source_import_commit', {'upload_id': uid_ok})
+    assert committed_reply['awaiting_tv_confirm'] is True
+    with pytest.raises(pm_mod.PhoneError, match='UPLOAD_NOT_FOUND'):
+        rpc2('source_import_commit', {'upload_id': uid_ok})
+
+    mgr2.revoke()
+    with pytest.raises(pm_mod.PhoneError, match='SESSION_EXPIRED'):
+        rpc2('source_import_status', {})
+    assert mgr2.committed_import is not None and mgr2.committed_import['raw_bytes'] == payload
+
+    consumed = mgr2.consume_committed_import()
+    assert consumed is not None and consumed['raw_bytes'] == payload
+    assert mgr2.committed_import is None
+
+    reg = Registry(plat_dir / 'libraries.sqlite3')
+    try:
+        reg.save(t4.preview(consumed['raw_bytes']).source(''))
+        assert len(reg.sources()) == 1
+    finally:
+        reg.close()
+
+    # TV rejection destroys handoff; profile switch destroys handoff!
+    mgr3, rpc3 = make_manager()
+    uid_rej = '4' * 32
+    rpc3('source_import_begin', {'upload_id': uid_rej, 'file_name': 'r.json', 'total_bytes': len(payload), 'sha256': sha})
+    rpc3('source_import_chunk', {'upload_id': uid_rej, 'offset': 0, 'data_b64': base64.b64encode(payload).decode('ascii')})
+    rpc3('source_import_commit', {'upload_id': uid_rej})
+    mgr3.revoke()
+    assert mgr3.committed_import is not None
+    mgr3.reject_committed_import()
+    assert mgr3.committed_import is None
+
+    mgr4, rpc4 = make_manager()
+    uid_prof = '5' * 32
+    rpc4('source_import_begin', {'upload_id': uid_prof, 'file_name': 'p.json', 'total_bytes': len(payload), 'sha256': sha})
+    rpc4('source_import_chunk', {'upload_id': uid_prof, 'offset': 0, 'data_b64': base64.b64encode(payload).decode('ascii')})
+    rpc4('source_import_commit', {'upload_id': uid_prof})
+    mgr4.revoke()
+    assert mgr4.committed_import is not None
+    profile_current[0] = False
+    assert mgr4.committed_import is None

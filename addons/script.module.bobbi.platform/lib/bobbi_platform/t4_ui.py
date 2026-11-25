@@ -150,6 +150,22 @@ def offer_lives_export(dialog, raw_bytes: bytes, diag: dict, export_dir, *, oper
     return exported
 
 
+def classify_t4_url_input(raw_location: str) -> str:
+    """Validate URL input while explicitly distinguishing unreachable phone-local paths (R19-02)."""
+    if not isinstance(raw_location, str) or not raw_location.strip():
+        raise LibraryError('T4_URL')
+    trimmed = raw_location.strip()
+    lower = trimmed.lower()
+    if (
+        lower.startswith(('content://', 'file://', 'intent://', 'android.resource://'))
+        or lower.startswith(('/storage/', '/sdcard/', '/mnt/user/', '/data/user/', '/data/data/', '/var/mobile/'))
+        or re.match(r'^[a-zA-Z]:[/\\]', trimmed)
+        or trimmed.startswith('/')
+    ):
+        raise LibraryError('T4_PHONE_LOCAL_PATH')
+    return t4.endpoint(trimmed)
+
+
 def add(dialog, vfs, store, previous=None):
     from .paths import ProfileBinding
     from .source_library_ui import operation
@@ -190,7 +206,7 @@ def add(dialog, vfs, store, previous=None):
         location = dialog.input('输入 T4 配置网址（仅本机保存）')
         if not location:
             return False
-        location = t4.endpoint(location.strip())
+        location = classify_t4_url_input(location)
         if previous is None:
             previous = next((s for s in store.sources() if s.kind == 't4' and s.location == location), None)
             if previous:

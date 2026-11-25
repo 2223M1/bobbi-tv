@@ -22,6 +22,8 @@ MAX_BODY = 8192
 MAX_REPLY = 16384
 MAX_IMPORT_BYTES = 2 * 1024 * 1024
 MAX_IMPORT_CHUNK = 4096
+UPLOAD_IDLE_SECONDS = 60
+UPLOAD_TOTAL_SECONDS = 300
 SESSION_SECONDS = 900
 COOKIE = 'bobbi_management'
 SCOPES = frozenset(('catalog_read', 'catalog_review', 'catalog_tasks'))
@@ -504,7 +506,7 @@ class PhoneManagement:
         self.revoked = Event()
         self.previews = {}
         self._staged_import = None
-        self.committed_import = None
+        self._committed_import = None
         self._staged_subtitle = None
         self.committed_subtitle = None
         self._staging_dir = (
@@ -512,6 +514,8 @@ class PhoneManagement:
             if self.profile_binding is not None
             else None
         )
+        if self.local_scope == 'source_import':
+            self._sweep_orphan_import_parts()
         self._subtitle_dir = (
             Path(self.profile_binding.root('plugin.video.bobbi')) / 'Subtitles' / 'uploads'
             if self.profile_binding is not None
@@ -550,6 +554,7 @@ class PhoneManagement:
             if self.profile_binding is not None:
                 self.profile_binding.require_current()
         except (OSError, ValueError, RuntimeError):
+            self._committed_import = None
             self.revoke()
             raise PhoneError('ACCOUNT_OR_SERVICE_CHANGED', 401) from None
 
@@ -863,6 +868,67 @@ class PhoneManagement:
             raise PhoneError('REPLY_TOO_LARGE', 502)
         return projected, None
 
+    @property
+    def committed_import(self):
+        with self.lock:
+            ci = getattr(self, '_committed_import', None)
+            if ci is None:
+                return None
+            if self.profile_binding is not None:
+                try:
+                    if not self.profile_binding.is_current():
+                        self._committed_import = None
+                        return None
+                except Exception:
+                    self._committed_import = None
+                    return None
+            return ci
+
+    @committed_import.setter
+    def committed_import(self, value):
+        with self.lock:
+            self._committed_import = value
+
+    def consume_committed_import(self) -> dict | None:
+        """Atomically hand off and clear the verified committed import for the current profile."""
+        with self.lock:
+            ci = self.committed_import
+            self._committed_import = None
+            return ci
+
+    def reject_committed_import(self) -> None:
+        """Destroy a pending committed import handoff when TV confirmation is declined."""
+        with self.lock:
+            self._committed_import = None
+
+    def _sweep_orphan_import_parts(self):
+        sdir = getattr(self, '_staging_dir', None)
+        if sdir is None or not sdir.is_dir():
+            return
+        try:
+            for child in list(sdir.iterdir()):
+                if child.is_file() and child.name.endswith('.part'):
+                    try:
+                        child.unlink(missing_ok=True)
+                    except OSError:
+                        pass
+            if not any(sdir.iterdir()):
+                sdir.rmdir()
+        except OSError:
+            pass
+
+    def _check_staged_import_timeouts(self):
+        staged = getattr(self, '_staged_import', None)
+        if staged is None:
+            return
+        now = self.clock()
+        if (
+            now - staged['updated_at'] > UPLOAD_IDLE_SECONDS
+            or now - staged['started_at'] > UPLOAD_TOTAL_SECONDS
+        ):
+            self._cleanup_staged_import()
+            raise PhoneError('UPLOAD_TIMEOUT', 408)
+
     def _cleanup_staged_import(self):
         staged = getattr(self, '_staged_import', None)
         self._staged_import = None
@@ -902,6 +968,9 @@ class PhoneManagement:
         if self._staging_dir is None:
             raise PhoneError('MANAGEMENT_UNAVAILABLE', 503)
 
+        if action in ('source_import_status', 'source_import_chunk', 'source_import_commit'):
+            self._check_staged_import_timeouts()
+
         if action == 'source_import_status':
             if self._staged_import is not None:
                 st = self._staged_import
@@ -934,6 +1003,7 @@ class PhoneManagement:
                 os.close(fd)
             except OSError:
                 raise PhoneError('MANAGEMENT_UNAVAILABLE', 503) from None
+            now_ts = self.clock()
             self._staged_import = {
                 'upload_id': args['upload_id'],
                 'file_name': args['file_name'],
@@ -942,6 +1012,8 @@ class PhoneManagement:
                 'base_url': args['base_url'],
                 'offset': 0,
                 'path': part_path,
+                'started_at': now_ts,
+                'updated_at': now_ts,
             }
             res = {
                 'state': 'receiving',
@@ -990,6 +1062,7 @@ class PhoneManagement:
             else:
                 self._cleanup_staged_import()
                 raise PhoneError('CHUNK_OFFSET_MISMATCH', 409)
+            staged['updated_at'] = self.clock()
             res = {
                 'state': 'receiving',
                 'upload_id': staged['upload_id'],

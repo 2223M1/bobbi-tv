@@ -38,6 +38,7 @@ MESSAGES = {
 
     'T4_AUTH': '站点拒绝了授权，请检查订阅是否过期。',
     'T4_URL': '地址不受支持。远程请用 HTTPS；家庭网络可用局域网 IP 的 HTTP 地址。',
+    'T4_PHONE_LOCAL_PATH': '这是手机本机私有路径，电视无法直接读取；请改用“手机扫码上传配置文件”。',
     'T4_DUPLICATE': '配置中有重复站点标识，未保存。',
     'T4_NO_SITES': '没有可用的 type 4 站点。传统 Spider 需要服务端 T4 接口。',
     'T4_CONFIG': '这不是包含 sites 的 T4 配置；不支持递归订阅。',
@@ -187,7 +188,8 @@ class Session:
         visited = {cur_url}
 
         for hop in range(allowed_hops + 1):
-            endpoint(cur_url, 'SOURCE_HTTP_URL')
+            if connection is _DEFAULT_CONNECTION:
+                endpoint(cur_url, 'SOURCE_HTTP_URL')
             if active_origin_policy is not None:
                 active_origin_policy(cur_url)
             hop_conn = None
