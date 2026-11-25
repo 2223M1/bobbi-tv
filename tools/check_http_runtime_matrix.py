@@ -33,6 +33,24 @@ SUITES = (
 )
 
 
+def source_identity(suites):
+    def git(*args):
+        return subprocess.check_output(['git', '-C', str(ROOT), *args], text=True).strip()
+    return {'commit': git('rev-parse', 'HEAD'), 'tree': git('rev-parse', 'HEAD^{tree}'),
+        'dirty': bool(git('status', '--porcelain')), 'python': sys.version,
+        'diff_sha256': hashlib.sha256(subprocess.check_output(
+            ['git', '-C', str(ROOT), 'diff', '--binary', 'HEAD'])).hexdigest(),
+        'policy_sha256': hashlib.sha256(POLICY.read_bytes()).hexdigest(),
+        'suite_sha256': {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in suites}}
+
+
+def require_frozen_source(before, after=None):
+    if before['dirty']:
+        raise ValueError('Commit candidate changes before freezing the runtime matrix')
+    if after is not None and before != after:
+        raise ValueError('Source changed while the runtime matrix was running')
+
+
 def prepare_floor(policy, output, archives=None):
     destination = output / 'floor-addons'
     destination.mkdir()
@@ -65,6 +83,8 @@ def prepare_floor(policy, output, archives=None):
 
 
 def run_matrix(output, archives=None, extra_suites=()):
+    before = source_identity((*SUITES, *extra_suites))
+    require_frozen_source(before)
     output = Path(output).resolve()
     if output.exists():
         raise ValueError('Output must be a new directory')
@@ -75,14 +95,7 @@ def run_matrix(output, archives=None, extra_suites=()):
     policy = json.loads(policy_bytes)
     report = {'schema': 1, 'policy_sha256': hashlib.sha256(policy_bytes).hexdigest(),
               'passed': False, 'device_verified': False, 'runtimes': {}}
-    def git(*args):
-        return subprocess.check_output(['git', '-C', str(ROOT), *args], text=True).strip()
-    report['source'] = {'commit': git('rev-parse', 'HEAD'), 'tree': git('rev-parse', 'HEAD^{tree}'),
-        'dirty': bool(git('status', '--porcelain')), 'python': sys.version,
-        'diff_sha256': hashlib.sha256(subprocess.check_output(
-            ['git', '-C', str(ROOT), 'diff', '--binary', 'HEAD'])).hexdigest(),
-        'suite_sha256': {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest()
-                         for name in (*SUITES, *extra_suites)}}
+    report['source'] = before
     try:
         floor = prepare_floor(policy, output, archives)
         for label, addons, expected in (
@@ -124,6 +137,8 @@ def run_matrix(output, archives=None, extra_suites=()):
                 'log_sha256': hashlib.sha256(logfile.read_bytes()).hexdigest()}
             if completed.returncode != 0 or not counts['tests'] or counts['failures'] or counts['errors'] or counts['skipped']:
                 raise ValueError('HTTP consumer matrix did not fully pass: ' + label)
+        report['source_after'] = source_identity((*SUITES, *extra_suites))
+        require_frozen_source(before, report['source_after'])
         report['passed'] = True
         return report
     finally:
