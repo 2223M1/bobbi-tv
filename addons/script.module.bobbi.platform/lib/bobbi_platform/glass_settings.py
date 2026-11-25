@@ -7,6 +7,13 @@ import tempfile
 
 from . import ce_glass_boot as boot
 from .ce_update_notice import coreelec
+from .home_rails_meta import (
+    HOME_RAIL_CONTROL_IDS,
+    HOME_RAIL_KEYS,
+    HOME_RAIL_SPECS,
+    HOME_RAIL_TITLES,
+    HOME_RAILS,
+)
 from .paths import ProfileBinding
 
 SETTING = 'BobbiLiquidGlassEnabled'
@@ -199,50 +206,49 @@ def show(dialog):
            lambda on: xbmc.executebuiltin(('Skin.SetBool(' if on else 'Skin.Reset(') + SETTING + ')', True), current)
 
 
-HOME_RAILS = (
-    ('continue_watching', '继续观看'),
-    ('emby_resume', 'Emby 继续观看'),
-    ('emby_recent', 'Emby 最近新增'),
-    ('popular_tv', '热门剧集'),
-    ('popular_movies', '热门电影'),
-    ('current_anime', '当季新番'),
-    ('anime_movies', '动漫电影'),
-    ('personal_library', '我的片库'),
-)
-HOME_RAIL_KEYS = tuple(key for key, _ in HOME_RAILS)
-HOME_RAIL_TITLES = dict(HOME_RAILS)
+# --- Pure Home rail preference logic (decoupled from HostOptics renderer setup) ---
 
 
-def normalize_rail_order(raw_slots: list[str] | tuple[str, ...]) -> list[str]:
-    """Normalize arbitrary/partial slot values into an exact permutation of HOME_RAIL_KEYS."""
+def _spec_index(rail_specs=HOME_RAIL_SPECS):
+    keys = tuple(spec[0] for spec in rail_specs)
+    titles = {spec[0]: spec[2] for spec in rail_specs}
+    return keys, titles
+
+
+def normalize_rail_order(raw_slots: list[str] | tuple[str, ...], *, rail_specs=HOME_RAIL_SPECS) -> list[str]:
+    """Normalize arbitrary/partial slot values into an exact permutation of declared rail keys."""
+    keys, titles = _spec_index(rail_specs)
     seen: list[str] = []
     for key in raw_slots:
-        if isinstance(key, str) and key in HOME_RAIL_TITLES and key not in seen:
+        if isinstance(key, str) and key in titles and key not in seen:
             seen.append(key)
-    for key in HOME_RAIL_KEYS:
+    for key in keys:
         if key not in seen:
             seen.append(key)
     return seen
 
 
-def read_home_rail_prefs(get_bool, get_string) -> tuple[list[str], set[str]]:
-    raw_slots = [get_string(f'BobbiRailSlot{slot}') for slot in range(1, len(HOME_RAIL_KEYS) + 1)]
-    order = normalize_rail_order(raw_slots)
-    hidden = {key for key in HOME_RAIL_KEYS if get_bool(f'BobbiHideRail_{key}')}
+def read_home_rail_prefs(get_bool, get_string, *, rail_specs=HOME_RAIL_SPECS) -> tuple[list[str], set[str]]:
+    keys, _ = _spec_index(rail_specs)
+    raw_slots = [get_string(f'BobbiRailSlot{slot}') for slot in range(1, len(keys) + 1)]
+    order = normalize_rail_order(raw_slots, rail_specs=rail_specs)
+    hidden = {key for key in keys if get_bool(f'BobbiHideRail_{key}')}
     return order, hidden
 
 
-def apply_home_rail_prefs(order: list[str], hidden: set[str], set_bool, set_string, reset_setting) -> None:
+def apply_home_rail_prefs(order: list[str], hidden: set[str], set_bool, set_string, reset_setting,
+                          *, rail_specs=HOME_RAIL_SPECS) -> None:
     """Persist validated slot order and hide flags to Skin settings only (zero XML writes)."""
-    clean_order = normalize_rail_order(order)
-    is_default_order = tuple(clean_order) == HOME_RAIL_KEYS
+    keys, _ = _spec_index(rail_specs)
+    clean_order = normalize_rail_order(order, rail_specs=rail_specs)
+    is_default_order = tuple(clean_order) == keys
     for idx, key in enumerate(clean_order, start=1):
         slot_name = f'BobbiRailSlot{idx}'
         if is_default_order:
             reset_setting(slot_name)
         else:
             set_string(slot_name, key)
-    for key in HOME_RAIL_KEYS:
+    for key in keys:
         hide_name = f'BobbiHideRail_{key}'
         if key in hidden:
             set_bool(hide_name, True)
@@ -250,24 +256,26 @@ def apply_home_rail_prefs(order: list[str], hidden: set[str], set_bool, set_stri
             reset_setting(hide_name)
 
 
-def manage_home_rails(dialog, get_bool, get_string, set_bool, set_string, reset_setting, is_current=lambda: True) -> bool:
+def manage_home_rails(dialog, get_bool, get_string, set_bool, set_string, reset_setting,
+                      is_current=lambda: True, *, rail_specs=HOME_RAIL_SPECS) -> bool:
     if not is_current():
         return False
-    order, hidden = read_home_rail_prefs(get_bool, get_string)
+    keys, titles = _spec_index(rail_specs)
+    order, hidden = read_home_rail_prefs(get_bool, get_string, rail_specs=rail_specs)
     dirty = False
     save_requested = False
     while is_current():
         rows = []
         for idx, key in enumerate(order, start=1):
             state_lbl = '已隐藏' if key in hidden else '显示中'
-            rows.append(f'{idx}. {HOME_RAIL_TITLES[key]}  ·  {state_lbl}')
+            rows.append(f'{idx}. {titles[key]}  ·  {state_lbl}')
         rows.append('恢复默认顺序与全部显示')
         rows.append('完成并保存')
         pick = dialog.select('首页栏目显隐与顺序', rows)
         if pick < 0:
             break
         if pick == len(order):
-            order = list(HOME_RAIL_KEYS)
+            order = list(keys)
             hidden = set()
             dirty = True
             continue
@@ -276,7 +284,7 @@ def manage_home_rails(dialog, get_bool, get_string, set_bool, set_string, reset_
             break
         if 0 <= pick < len(order):
             chosen_key = order[pick]
-            chosen_title = HOME_RAIL_TITLES[chosen_key]
+            chosen_title = titles[chosen_key]
             vis_action = '设为显示' if chosen_key in hidden else '设为隐藏'
             ops = [(vis_action, 'toggle')]
             if pick > 0:
@@ -300,7 +308,7 @@ def manage_home_rails(dialog, get_bool, get_string, set_bool, set_string, reset_
                     order[pick + 1], order[pick] = order[pick], order[pick + 1]
                     dirty = True
     if save_requested and dirty and is_current():
-        apply_home_rail_prefs(order, hidden, set_bool, set_string, reset_setting)
+        apply_home_rail_prefs(order, hidden, set_bool, set_string, reset_setting, rail_specs=rail_specs)
         return True
     return False
 

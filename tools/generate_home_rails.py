@@ -20,6 +20,7 @@ SKIN = Path('addons/skin.bobbi.cinema/1080p')
 SPEC = Path('ui/rails/home_rails.json')
 OUTPUT = SKIN / 'Includes_HomeRails.generated.xml'
 HERO_OUTPUT = SKIN / 'Includes_HomeHero.generated.xml'
+META_OUTPUT = Path('addons/script.module.bobbi.platform/lib/bobbi_platform/home_rails_meta.py')
 TITLES = ('TitlePrimary', 'TitleSecondary', 'SeasonLabel', 'EpisodeLabel',
           'EpisodeTitle', 'EpisodeTitleSep')
 FIELDS = {'key', 'control_id', 'title', 'layout', 'route', 'params', 'limit', 'preloaditems'}
@@ -171,113 +172,81 @@ def render(spec, title_source):
         for index, i in enumerate(ids):
             for following in rails[index + 1:]:
                 _value(next_title, following['title'], _focus(i) + ' + ' + _has(following['control_id']))
-        for name in ('StageArt', 'StageMeta', 'StagePlot'):
-            variable = ET.SubElement(root, 'variable', {'name': name})
-            for remembered in (True, False):
-                for i in ids:
-                    condition = (_remembered(i) + ' + ' if remembered else '') + _has(i)
-                    item = f'Container({i}).ListItem'
-                    if name == 'StageArt':
-                        for field in ('fanart', 'tvshow.fanart'):
-                            _value(variable, f'$INFO[{item}.Art({field})]', condition + f' + !String.IsEmpty({item}.Art({field}))')
-                        _value(variable, f'$INFO[{item}.Art(thumb)]', condition)
-                    elif name == 'StageMeta':
-                        _value(variable, f'$INFO[{item}.Year]$INFO[{item}.Genre,   ·   ]$INFO[{item}.Rating,   ·   ★ ]', condition)
-                    else:
-                        _value(variable, f'$INFO[{item}.Plot]', condition)
-        progress = ET.SubElement(root, 'variable', {'name': 'StageProgress'})
-        for rail in rails:
-            if _is_resume_rail(rail):
-                i = rail['control_id']
-                for field in ('Property(PercentPlayed)', 'PercentPlayed'):
-                    _value(progress, f'已看 $INFO[Container({i}).ListItem.{field}]%',
-                           _remembered(i) + f' + Integer.IsGreater(Container({i}).ListItem.{field},0)')
-        for i in ids:
-            for name in TITLES:
-                source = title_source.find(f"variable[@name='{name}']")
-                if source is None:
-                    raise ValueError('Missing handwritten title fallback: ' + name)
-                variable = copy.deepcopy(source)
-                variable.set('name', f'{name}_{i}')
-                for node in variable.iter():
-                    node.attrib = {key: value.replace('ListItem.', f'Container({i}).ListItem.') for key, value in node.attrib.items()}
-                    if node.text:
-                        node.text = node.text.replace('ListItem.', f'Container({i}).ListItem.')
-                root.append(variable)
-        for name in TITLES[:-1]:
-            variable = ET.SubElement(root, 'variable', {'name': 'Stage' + name})
-            for remembered in (True, False):
-                for i in ids:
-                    condition = (_remembered(i) + ' + ' if remembered else '') + _has(i)
-                    _value(variable, f'$VAR[{name}_{i}]', condition)
-        ET.indent(root, space='  ')
-        return b'<?xml version="1.0" encoding="utf-8"?>\n' + ET.tostring(root, encoding='utf-8') + b'\n'
 
-    n_slots = len(rails)
-    ET.SubElement(root, 'expression', {'name': 'BobbiHomeAnyRailHidden'}).text = ' | '.join(
-        f"Skin.HasSetting(BobbiHideRail_{r['key']})" for r in rails
-    )
-    ET.SubElement(root, 'expression', {'name': 'BobbiHomeHasItems'}).text = ' | '.join(
-        f"[!Skin.HasSetting(BobbiHideRail_{r['key']}) + {_has(r['control_id'])}]" for r in rails
-    )
-    ET.SubElement(root, 'expression', {'name': 'BobbiHomeUpdating'}).text = ' | '.join(
-        f"[!Skin.HasSetting(BobbiHideRail_{r['key']}) + Container({r['control_id']}).IsUpdating]" for r in rails
-    )
-    for slot in range(1, n_slots + 1):
-        default_r = rails[slot - 1]
-        others = [
-            f"String.IsEqual(Skin.String(BobbiRailSlot{slot}),{o['key']})"
-            for o in rails if o['key'] != default_r['key']
-        ]
-        ET.SubElement(root, 'expression', {'name': f'BobbiSlotDefault_{slot}'}).text = (
-            '![' + ' | '.join(others) + ']' if others else 'true'
+        def _stage_targets(remembered):
+            return [(i, (_remembered(i) + ' + ' if remembered else '') + _has(i)) for i in ids]
+
+        def _progress_guard(rail):
+            return _remembered(rail['control_id'])
+    else:
+        n_slots = len(rails)
+        ET.SubElement(root, 'expression', {'name': 'BobbiHomeAnyRailHidden'}).text = ' | '.join(
+            f"Skin.HasSetting(BobbiHideRail_{r['key']})" for r in rails
         )
-        for r in rails:
-            at_ref = _slot_at_ref(slot, r, default_r)
-            ET.SubElement(root, 'expression', {'name': f"BobbiSlot_{slot}_{r['key']}"}).text = (
-                f"{at_ref} + !Skin.HasSetting(BobbiHideRail_{r['key']}) + {_has(r['control_id'])}"
+        ET.SubElement(root, 'expression', {'name': 'BobbiHomeHasItems'}).text = ' | '.join(
+            f"[!Skin.HasSetting(BobbiHideRail_{r['key']}) + {_has(r['control_id'])}]" for r in rails
+        )
+        ET.SubElement(root, 'expression', {'name': 'BobbiHomeUpdating'}).text = ' | '.join(
+            f"[!Skin.HasSetting(BobbiHideRail_{r['key']}) + Container({r['control_id']}).IsUpdating]" for r in rails
+        )
+        for slot in range(1, n_slots + 1):
+            default_r = rails[slot - 1]
+            others = [
+                f"String.IsEqual(Skin.String(BobbiRailSlot{slot}),{o['key']})"
+                for o in rails if o['key'] != default_r['key']
+            ]
+            ET.SubElement(root, 'expression', {'name': f'BobbiSlotDefault_{slot}'}).text = (
+                '![' + ' | '.join(others) + ']' if others else 'true'
             )
-        ET.SubElement(root, 'expression', {'name': f'BobbiSlot{slot}Focused'}).text = ' | '.join(
-            f"[{_focus(r['control_id'])} + {_slot_at_ref(slot, r, default_r)}]" for r in rails
-        )
-
-    focus = ET.SubElement(root, 'variable', {'name': 'HomeContentFocus'})
-    for r in rails:
-        _value(focus, r['control_id'], f"{_remembered(r['control_id'])} + !Skin.HasSetting(BobbiHideRail_{r['key']}) + {_has(r['control_id'])}")
-    for slot in range(1, n_slots + 1):
-        for r in rails:
-            _value(focus, r['control_id'], f"$EXP[BobbiSlot_{slot}_{r['key']}]")
-    _value(focus, 9701, '$EXP[BobbiHomeUpdating]')
-    _value(focus, 9870)
-
-    up = ET.SubElement(root, 'variable', {'name': 'HomeRailUp'})
-    for target_slot in range(n_slots - 1, 0, -1):
-        below_terms = [f'$EXP[BobbiSlot{s}Focused]' for s in range(target_slot + 1, n_slots + 1)]
-        below = below_terms[0] if len(below_terms) == 1 else '[' + ' | '.join(below_terms) + ']'
-        for r in rails:
-            _value(up, r['control_id'], f"{below} + $EXP[BobbiSlot_{target_slot}_{r['key']}]")
-    _value(up, 9701)
-
-    down = ET.SubElement(root, 'variable', {'name': 'HomeRailDown'})
-    for target_slot in range(2, n_slots + 1):
-        above_terms = [f'$EXP[BobbiSlot{s}Focused]' for s in range(1, target_slot)]
-        above = above_terms[0] if len(above_terms) == 1 else '[' + ' | '.join(above_terms) + ']'
-        for r in rails:
-            _value(down, r['control_id'], f"{above} + $EXP[BobbiSlot_{target_slot}_{r['key']}]")
-    for r in rails:
-        _value(down, r['control_id'], _focus(r['control_id']))
-    _value(down, 9701)
-
-    next_title = ET.SubElement(root, 'variable', {'name': 'NextRailTitle'})
-    for cur_slot in range(1, n_slots):
-        for after_slot in range(cur_slot + 1, n_slots + 1):
             for r in rails:
-                _value(next_title, r['title'], f"$EXP[BobbiSlot{cur_slot}Focused] + $EXP[BobbiSlot_{after_slot}_{r['key']}]")
+                at_ref = _slot_at_ref(slot, r, default_r)
+                ET.SubElement(root, 'expression', {'name': f"BobbiSlot_{slot}_{r['key']}"}).text = (
+                    f"{at_ref} + !Skin.HasSetting(BobbiHideRail_{r['key']}) + {_has(r['control_id'])}"
+                )
+            ET.SubElement(root, 'expression', {'name': f'BobbiSlot{slot}Focused'}).text = ' | '.join(
+                f"[{_focus(r['control_id'])} + {_slot_at_ref(slot, r, default_r)}]" for r in rails
+            )
 
-    def _stage_targets(remembered):
-        if remembered:
-            return [(r['control_id'], f"{_remembered(r['control_id'])} + !Skin.HasSetting(BobbiHideRail_{r['key']}) + {_has(r['control_id'])}") for r in rails]
-        return [(r['control_id'], f"$EXP[BobbiSlot_{slot}_{r['key']}]") for slot in range(1, n_slots + 1) for r in rails]
+        focus = ET.SubElement(root, 'variable', {'name': 'HomeContentFocus'})
+        for r in rails:
+            _value(focus, r['control_id'], f"{_remembered(r['control_id'])} + !Skin.HasSetting(BobbiHideRail_{r['key']}) + {_has(r['control_id'])}")
+        for slot in range(1, n_slots + 1):
+            for r in rails:
+                _value(focus, r['control_id'], f"$EXP[BobbiSlot_{slot}_{r['key']}]")
+        _value(focus, 9701, '$EXP[BobbiHomeUpdating]')
+        _value(focus, 9870)
+
+        up = ET.SubElement(root, 'variable', {'name': 'HomeRailUp'})
+        for target_slot in range(n_slots - 1, 0, -1):
+            below_terms = [f'$EXP[BobbiSlot{s}Focused]' for s in range(target_slot + 1, n_slots + 1)]
+            below = below_terms[0] if len(below_terms) == 1 else '[' + ' | '.join(below_terms) + ']'
+            for r in rails:
+                _value(up, r['control_id'], f"{below} + $EXP[BobbiSlot_{target_slot}_{r['key']}]")
+        _value(up, 9701)
+
+        down = ET.SubElement(root, 'variable', {'name': 'HomeRailDown'})
+        for target_slot in range(2, n_slots + 1):
+            above_terms = [f'$EXP[BobbiSlot{s}Focused]' for s in range(1, target_slot)]
+            above = above_terms[0] if len(above_terms) == 1 else '[' + ' | '.join(above_terms) + ']'
+            for r in rails:
+                _value(down, r['control_id'], f"{above} + $EXP[BobbiSlot_{target_slot}_{r['key']}]")
+        for r in rails:
+            _value(down, r['control_id'], _focus(r['control_id']))
+        _value(down, 9701)
+
+        next_title = ET.SubElement(root, 'variable', {'name': 'NextRailTitle'})
+        for cur_slot in range(1, n_slots):
+            for after_slot in range(cur_slot + 1, n_slots + 1):
+                for r in rails:
+                    _value(next_title, r['title'], f"$EXP[BobbiSlot{cur_slot}Focused] + $EXP[BobbiSlot_{after_slot}_{r['key']}]")
+
+        def _stage_targets(remembered):
+            if remembered:
+                return [(r['control_id'], f"{_remembered(r['control_id'])} + !Skin.HasSetting(BobbiHideRail_{r['key']}) + {_has(r['control_id'])}") for r in rails]
+            return [(r['control_id'], f"$EXP[BobbiSlot_{slot}_{r['key']}]") for slot in range(1, n_slots + 1) for r in rails]
+
+        def _progress_guard(rail):
+            return f"{_remembered(rail['control_id'])} + !Skin.HasSetting(BobbiHideRail_{rail['key']})"
 
     for name in ('StageArt', 'StageMeta', 'StagePlot'):
         variable = ET.SubElement(root, 'variable', {'name': name})
@@ -297,9 +266,10 @@ def render(spec, title_source):
     for rail in rails:
         if _is_resume_rail(rail):
             i = rail['control_id']
+            guard = _progress_guard(rail)
             for field in ('Property(PercentPlayed)', 'PercentPlayed'):
                 _value(progress, f'已看 $INFO[Container({i}).ListItem.{field}]%',
-                       f"{_remembered(i)} + !Skin.HasSetting(BobbiHideRail_{rail['key']}) + Integer.IsGreater(Container({i}).ListItem.{field},0)")
+                       f'{guard} + Integer.IsGreater(Container({i}).ListItem.{field},0)')
 
     for i in ids:
         for name in TITLES:
@@ -611,12 +581,41 @@ def expanded_home(root, generated, hero=None):
     return expanded_default
 
 
-def outputs(root=ROOT):
+def render_python(spec):
+    """Compile pure constants-only Python projection from home_rails.json."""
+    validated = validate(spec)
+    lines = [
+        '"""Generated by tools/generate_home_rails.py; edit ui/rails/home_rails.json."""',
+        '',
+        'HOME_RAIL_SPECS = (',
+    ]
+    for rail in validated['rails']:
+        lines.append(
+            f"    ({rail['key']!r}, {rail['control_id']}, {rail['title']!r}, {rail['layout']!r}),"
+        )
+    lines.extend([
+        ')',
+        'HOME_RAILS = tuple((key, title) for key, _, title, _ in HOME_RAIL_SPECS)',
+        'HOME_RAIL_KEYS = tuple(key for key, _, _, _ in HOME_RAIL_SPECS)',
+        'HOME_RAIL_TITLES = {key: title for key, _, title, _ in HOME_RAIL_SPECS}',
+        'HOME_RAIL_CONTROL_IDS = {key: control_id for key, control_id, _, _ in HOME_RAIL_SPECS}',
+        '',
+    ])
+    return '\n'.join(lines).encode('utf-8')
+
+
+def all_outputs(root=ROOT):
     root = Path(root)
     spec = load_spec(root / SPEC)
     raw = render(spec, ET.parse(root / SKIN / 'Includes_Titles.xml').getroot())
     hero = render_hero(spec)
+    py_raw = render_python(spec)
     expanded_home(root, raw, hero)
+    return raw, hero, py_raw
+
+
+def outputs(root=ROOT):
+    raw, hero, _ = all_outputs(root)
     return raw, hero
 
 
@@ -626,18 +625,44 @@ def expected(root=ROOT):
 
 def check_generated(root=ROOT):
     root = Path(root)
-    raw, hero = outputs(root)
+    raw, hero, py_raw = all_outputs(root)
     path = root / OUTPUT
     if not path.is_file() or path.read_bytes() != raw:
         raise ValueError('Home rail XML is stale; run tools/generate_home_rails.py explicitly')
     hero_path = root / HERO_OUTPUT
     if not hero_path.is_file() or hero_path.read_bytes() != hero:
         raise ValueError('Home hero XML is stale; run tools/generate_home_rails.py explicitly')
+    py_path = root / META_OUTPUT
+    if not py_path.is_file() or py_path.read_bytes() != py_raw:
+        raise ValueError('Home rail Python metadata is stale; run tools/generate_home_rails.py explicitly')
     inputs = (SPEC, Path('tools/generate_home_rails.py'), SKIN / 'Includes_Titles.xml')
-    return {'schema': 1, 'inputs': {path.as_posix(): hashlib.sha256((root / path).read_bytes()).hexdigest()
-                                  for path in inputs},
-            'output': OUTPUT.as_posix(), 'sha256': hashlib.sha256(raw).hexdigest(),
-            'hero_output': HERO_OUTPUT.as_posix(), 'hero_sha256': hashlib.sha256(hero).hexdigest()}
+    return {
+        'schema': 1,
+        'inputs': {
+            inp.as_posix(): hashlib.sha256((root / inp).read_bytes()).hexdigest()
+            for inp in inputs
+        },
+        'output': OUTPUT.as_posix(),
+        'sha256': hashlib.sha256(raw).hexdigest(),
+        'hero_output': HERO_OUTPUT.as_posix(),
+        'hero_sha256': hashlib.sha256(hero).hexdigest(),
+        'python_output': META_OUTPUT.as_posix(),
+        'python_sha256': hashlib.sha256(py_raw).hexdigest(),
+    }
+
+
+def _safe_target(root, rel_output):
+    base = Path(root).resolve()
+    cur = Path(root)
+    for part in rel_output.parts[:-1]:
+        cur = cur / part
+        if cur.is_symlink():
+            raise ValueError('Unsafe generated output target')
+    cur.mkdir(parents=True, exist_ok=True)
+    target = cur / rel_output.parts[-1]
+    if target.is_symlink() or not target.parent.resolve().is_relative_to(base):
+        raise ValueError('Unsafe generated output target')
+    return target
 
 
 def main():
@@ -647,11 +672,9 @@ def main():
     if args.check:
         print(json.dumps(check_generated(), ensure_ascii=False, sort_keys=True))
     else:
-        raw, hero = outputs()
-        for output, data in ((OUTPUT, raw), (HERO_OUTPUT, hero)):
-            target = ROOT / output
-            if target.is_symlink() or target.parent.resolve() != (ROOT / SKIN).resolve():
-                raise ValueError('Unsafe generated output target')
+        raw, hero, py_raw = all_outputs()
+        for output, data in ((OUTPUT, raw), (HERO_OUTPUT, hero), (META_OUTPUT, py_raw)):
+            target = _safe_target(ROOT, output)
             target.write_bytes(data)
             print('Generated ' + output.as_posix())
 

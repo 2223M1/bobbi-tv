@@ -113,17 +113,11 @@ def execute(handle, params, store, item):
     mark = action == 'emby_mark'
     from .optimization import observe
     started, outcome = time.monotonic(), None
-    # Terminal callbacks are single-shot, including uncertain Kodi submissions.
+    # Terminal callbacks are single-shot in finally; failures stay succeeded=False.
     submitted = False
-
-    def finish(ok=False):
-        nonlocal submitted
-        if not submitted:
-            submitted = True
-            if play:
-                xbmcplugin.setResolvedUrl(handle, False, xbmcgui.ListItem())
-            elif not mark and handle >= 0:
-                xbmcplugin.endOfDirectory(handle, succeeded=ok, cacheToDisc=False)
+    succeeded = False
+    confirm_sync = False
+    root = None
 
     try:
         root = binding.root()
@@ -416,18 +410,11 @@ def execute(handle, params, store, item):
                 fields['term'] = term
             rows.append(item('下一页', route('emby_page', **fields), properties={'Bobbi.NextPage': 'true'}))
         current()
-        try:
-            runtime.bind_call(root / 'runtime.json')(
-                'emby_invalidation_status',
-                {'source_id': source.id, 'generation': rev, 'confirm': True},
-                1.0,
-            )
-        except Exception:
-            pass
         xbmcplugin.setPluginCategory(handle, source.name + ' · Emby')
         xbmcplugin.setContent(handle, 'videos' if parent == 'root' else _content_type(media_types))
         xbmcplugin.addDirectoryItems(handle, rows, len(rows))
-        finish(True)
+        succeeded = True
+        confirm_sync = True
         outcome = 'ok'
     except SelectionChanged:
         outcome = 'changed'
@@ -440,13 +427,32 @@ def execute(handle, params, store, item):
         else:
             dialog.ok('Emby', '连接、账号或所选内容已变化，请返回片库重试。')
     finally:
-        finish()
+        if play:
+            if not submitted:
+                submitted = True
+                xbmcplugin.setResolvedUrl(handle, False, xbmcgui.ListItem())
+        elif not mark and handle >= 0 and not submitted:
+            submitted = True
+            xbmcplugin.endOfDirectory(handle, succeeded=succeeded, cacheToDisc=False)
+            if succeeded and confirm_sync and root is not None:
+                try:
+                    runtime.bind_call(root / 'runtime.json')(
+                        'emby_invalidation_status',
+                        {'source_id': source.id, 'generation': rev, 'confirm': True},
+                        1.0,
+                    )
+                except Exception:
+                    pass
         if outcome is not None:
-            observe(binding.root(), 'emby_play' if play else ('emby_mark' if mark else 'emby_browse'), outcome, started)
+            try:
+                observe(root if root is not None else binding.root(),
+                        'emby_play' if play else ('emby_mark' if mark else 'emby_browse'), outcome, started)
+            except (OSError, ValueError, RuntimeError):
+                pass
 
 
 def execute_home_rail(handle: int, params: dict, *, registry_factory=None) -> None:
-    """Populate Home Emby rails (`emby_resume` / `emby_recent`) with zero network calls when unconfigured."""
+    """Populate Home Emby rails (`emby_resume` / `emby_recent`) with a single directory exit."""
     import xbmc
     import xbmcgui
     import xbmcplugin
@@ -456,32 +462,31 @@ def execute_home_rail(handle: int, params: dict, *, registry_factory=None) -> No
 
     started = time.monotonic()
     outcome = 'ok'
-    section = params.get('section', '')
-    if section not in ('resume', 'recent'):
-        if handle >= 0:
-            xbmcplugin.endOfDirectory(handle, succeeded=False, cacheToDisc=False)
-        return
-
-    binding = ProfileBinding()
-    try:
-        root = binding.root()
-    except (OSError, ValueError, RuntimeError):
-        if handle >= 0:
-            xbmcplugin.endOfDirectory(handle, succeeded=False, cacheToDisc=False)
-        return
-
-    reg_path = root / 'libraries.sqlite3'
-    if not reg_path.is_file() and registry_factory is None:
-        if handle >= 0:
-            xbmcplugin.addDirectoryItems(handle, [], 0)
-            xbmcplugin.endOfDirectory(handle, succeeded=True, cacheToDisc=False)
-        return
-
+    succeeded = False
+    root = None
     store = None
     rows = []
     media_types = []
     had_emby_source = False
+    binding = ProfileBinding()
+
+    def _aborted() -> bool:
+        return bool(hasattr(xbmc, 'Monitor') and xbmc.Monitor().abortRequested())
+
     try:
+        section = params.get('section', '')
+        if section not in ('resume', 'recent'):
+            return
+        try:
+            root = binding.root()
+        except (OSError, ValueError, RuntimeError):
+            return
+
+        reg_path = root / 'libraries.sqlite3'
+        if not reg_path.is_file() and registry_factory is None:
+            succeeded = True
+            return
+
         store = registry_factory() if registry_factory is not None else Registry(reg_path, read_only=True, timeout=0.05)
         emby_sources = []
         for src in store.sources():
@@ -492,9 +497,7 @@ def execute_home_rail(handle: int, params: dict, *, registry_factory=None) -> No
                 except LibraryError:
                     continue
         if not emby_sources:
-            if handle >= 0:
-                xbmcplugin.addDirectoryItems(handle, [], 0)
-                xbmcplugin.endOfDirectory(handle, succeeded=True, cacheToDisc=False)
+            succeeded = True
             return
 
         had_emby_source = True
@@ -503,7 +506,12 @@ def execute_home_rail(handle: int, params: dict, *, registry_factory=None) -> No
         per_source_limit = min(PAGE, max(4, PAGE // len(emby_sources)))
 
         for source, rev in emby_sources:
-            if len(rows) >= PAGE or xbmc.Monitor().abortRequested() or not binding.is_current():
+            if len(rows) >= PAGE:
+                break
+            if _aborted() or not binding.is_current():
+                rows = []
+                media_types = []
+                outcome = 'changed'
                 break
             saved = {
                 'provider': 'emby',
@@ -521,8 +529,10 @@ def execute_home_rail(handle: int, params: dict, *, registry_factory=None) -> No
                 outcome = 'unavailable'
                 continue
 
-            if xbmc.Monitor().abortRequested() or not binding.is_current():
+            if _aborted() or not binding.is_current():
                 rows = []
+                media_types = []
+                outcome = 'changed'
                 break
             try:
                 if store.source_snapshot(source.id) != (source, rev):
@@ -597,13 +607,16 @@ def execute_home_rail(handle: int, params: dict, *, registry_factory=None) -> No
                     li.setArt({'icon': 'DefaultFolder.png' if folder else 'DefaultVideo.png'})
                 rows.append((target, li, folder))
                 added_for_source += 1
+        if outcome != 'changed':
+            succeeded = True
     finally:
         if store is not None and registry_factory is None:
             store.close()
         if handle >= 0:
-            if media_types:
-                xbmcplugin.setContent(handle, _content_type(media_types))
-            xbmcplugin.addDirectoryItems(handle, rows, len(rows))
-            xbmcplugin.endOfDirectory(handle, succeeded=True, cacheToDisc=False)
-        if had_emby_source:
+            if succeeded:
+                if media_types:
+                    xbmcplugin.setContent(handle, _content_type(media_types))
+                xbmcplugin.addDirectoryItems(handle, rows, len(rows))
+            xbmcplugin.endOfDirectory(handle, succeeded=succeeded, cacheToDisc=False)
+        if had_emby_source and root is not None:
             observe(root, 'emby_browse', outcome, started)

@@ -19,7 +19,54 @@ class WidgetRefreshService:
         self.catalog_views_revision = ''
         self._emby_seen_revisions = {}
         self._emby_sources_cache = (0.0, ())
-        self._pending_container_source = None
+        self._active_emby_sources = None
+        self._pending_container = None
+        self._last_refreshed_container = None
+
+    @staticmethod
+    def _parse_library_folder(folder):
+        if not isinstance(folder, str) or 'plugin.video.bobbi.library' not in folder:
+            return False, '', ''
+        from urllib.parse import parse_qs, urlsplit
+        parsed = urlsplit(folder)
+        qs = parse_qs(parsed.query)
+        return True, qs.get('source', [''])[0], qs.get('revision', [''])[0]
+
+    def _profile_identity(self):
+        return (getattr(self.host, 'root', None), getattr(self.host, 'plugin_root', None))
+
+    @property
+    def _pending_container_source(self):
+        return None if self._pending_container is None else self._pending_container['source_id']
+
+    @_pending_container_source.setter
+    def _pending_container_source(self, value):
+        if value is None:
+            self._pending_container = None
+            return
+        folder = xbmc.getInfoLabel('Container.FolderPath') if hasattr(xbmc, 'getInfoLabel') else ''
+        in_lib, sid, gen = self._parse_library_folder(folder)
+        matched = folder if (in_lib and (sid == value or (not sid and value in folder))) else None
+        self._pending_container = {
+            'profile': self._profile_identity(),
+            'source_id': value,
+            'generation': gen if matched is not None else '',
+            'revision': None,
+            'container': matched,
+        }
+
+    def _schedule_container_refresh(self, source_id, generation, revision, container):
+        profile_id = self._profile_identity()
+        dedup = (profile_id, source_id, generation, revision, container)
+        if revision is not None and self._last_refreshed_container == dedup:
+            return
+        self._pending_container = {
+            'profile': profile_id,
+            'source_id': source_id,
+            'generation': generation,
+            'revision': revision,
+            'container': container,
+        }
 
     def start(self):
         if self.worker is None and not self.stop.is_set():
@@ -29,14 +76,17 @@ class WidgetRefreshService:
 
     def close(self):
         self.stop.set()
-        if self.worker is not None:
+        worker = self.worker
+        if worker is not None:
             # The Host lease is released only after local IO actually returns.
-            self.worker.join()
+            if worker.is_alive():
+                worker.join()
+            self.worker = None
 
     def _offer(self, values):
         if self.stop.is_set() or not values or not self._profile_current():
             return
-        self.observed.update(values)  # worker-owned snapshot, at most two keys
+        self.observed.update(values)  # worker-owned snapshot, bounded keys
         try:
             self.mailbox.put_nowait(dict(self.observed))
         except Full:
@@ -46,33 +96,74 @@ class WidgetRefreshService:
                 pass
             self.mailbox.put_nowait(dict(self.observed))
 
+    def _flush_pending_container_refresh(self):
+        rec = self._pending_container
+        if rec is None or self.stop.is_set():
+            return
+        if rec['profile'] != self._profile_identity():
+            self._pending_container = None
+            return
+        if rec['revision'] is None and 'emby_server' in self.revisions:
+            rec['revision'] = self.revisions['emby_server']
+        if (
+            rec['generation']
+            and self._active_emby_sources is not None
+            and (rec['source_id'], rec['generation']) not in self._active_emby_sources
+        ):
+            self._pending_container = None
+            return
+        folder = xbmc.getInfoLabel('Container.FolderPath') if hasattr(xbmc, 'getInfoLabel') else ''
+        in_lib, folder_sid, folder_gen = self._parse_library_folder(folder)
+        source_matches = folder_sid == rec['source_id'] if folder_sid else rec['source_id'] in folder
+        if not in_lib or not source_matches:
+            self._pending_container = None
+            return
+        if rec['generation'] and folder_gen and folder_gen != rec['generation']:
+            self._pending_container = None
+            return
+        if rec['container'] is not None and folder != rec['container']:
+            self._pending_container = None
+            return
+        if rec['container'] is None:
+            rec['container'] = folder
+            if not rec['generation'] and folder_gen:
+                rec['generation'] = folder_gen
+        modal = bool(xbmc.getCondVisibility('System.HasModalDialog')) if hasattr(xbmc, 'getCondVisibility') else False
+        if modal:
+            return
+        dedup = (rec['profile'], rec['source_id'], rec['generation'], rec['revision'], folder)
+        if rec['revision'] is not None and self._last_refreshed_container == dedup:
+            self._pending_container = None
+            return
+        try:
+            xbmc.executebuiltin('Container.Refresh')
+        except Exception:
+            return  # Retain pending state for retry if builtin dispatch fails.
+        if rec['revision'] is not None:
+            self._last_refreshed_container = dedup
+        self._pending_container = None
+
     def tick(self):
-        """Owner thread: one bounded mailbox read and at most two Window writes."""
+        """Owner thread: one bounded mailbox read and Window revision updates."""
         if not self._profile_current():
             self.pending = None
+            self._pending_container = None
+            self._last_refreshed_container = None
             return
         try:
             self.pending = self.mailbox.get_nowait()
         except Empty:
             pass
-        if self.pending is None or self.stop.is_set():
+        if self.stop.is_set():
             return
-        from lib.cinema.focus_anchor import bump
-        for key, value in self.pending.items():
-            if self.revisions.get(key) != value:
-                bump(self.window, key)
-                self.revisions[key] = value
-        self.pending = None  # Failed writes stay pending for the next owner tick.
-        refresh_src = self._pending_container_source
-        if refresh_src is not None:
-            self._pending_container_source = None
-            try:
-                folder = xbmc.getInfoLabel('Container.FolderPath') if hasattr(xbmc, 'getInfoLabel') else ''
-                modal = xbmc.getCondVisibility('System.HasModalDialog') if hasattr(xbmc, 'getCondVisibility') else False
-                if refresh_src in folder and 'plugin.video.bobbi.library' in folder and not modal:
-                    xbmc.executebuiltin('Container.Refresh')
-            except Exception:
-                pass
+        if self.pending is not None:
+            from lib.cinema.focus_anchor import bump
+            for key, value in self.pending.items():
+                if self.revisions.get(key) != value:
+                    bump(self.window, key)
+                    self.revisions[key] = value
+            self.pending = None  # Failed writes stay pending for the next owner tick.
+        self._flush_pending_container_refresh()
 
     def refresh_dependencies(self):
         """Worker only: local reads may be slow; never run on the playback owner."""
@@ -131,6 +222,7 @@ class WidgetRefreshService:
             return
         reg_path = root / 'libraries.sqlite3'
         if not reg_path.is_file():
+            self._active_emby_sources = set()
             return
         now = monotonic()
         cached_at, emby_sources = self._emby_sources_cache
@@ -150,11 +242,12 @@ class WidgetRefreshService:
                 self._emby_sources_cache = (now, emby_sources)
             except Exception:
                 return
+        self._active_emby_sources = set(emby_sources)
         if not emby_sources:
             return
         on_home = xbmc.getCondVisibility('Window.IsActive(home)') if hasattr(xbmc, 'getCondVisibility') else False
         folder = xbmc.getInfoLabel('Container.FolderPath') if hasattr(xbmc, 'getInfoLabel') else ''
-        in_lib = 'plugin.video.bobbi.library' in folder
+        in_lib, folder_sid, folder_gen = self._parse_library_folder(folder)
         if not on_home and not in_lib:
             return
         hub, _ = emby_rt()
@@ -168,9 +261,10 @@ class WidgetRefreshService:
             prev_rev = self._emby_seen_revisions.get((sid, gen))
             self._emby_seen_revisions[(sid, gen)] = snap['revision']
             if prev_rev is not None and snap['revision'] != prev_rev:
-                if in_lib and sid in folder:
-                    self._pending_container_source = sid
-                    hub.mark_confirmed(sid, gen, offline=False)
+                source_matches = folder_sid == sid if folder_sid else sid in folder
+                if in_lib and source_matches and (not folder_gen or folder_gen == gen):
+                    # Synced confirmation happens in emby_dynamic only after directory readback succeeds.
+                    self._schedule_container_refresh(sid, gen, snap['revision'], folder)
         if revs:
             joined = ','.join(revs)
             self._offer({

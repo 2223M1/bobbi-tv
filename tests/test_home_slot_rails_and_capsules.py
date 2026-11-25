@@ -108,11 +108,17 @@ def _eval_var(tree: ET.Element, name: str, expressions: dict[str, str], state: d
 
 def test_home_rails_spec_aligns_with_glass_settings_and_compiles_emby_routes():
     from bobbi_platform import glass_settings as gs
+    from bobbi_platform import home_rails_meta as meta
 
     loaded = generator.load_spec(ROOT / generator.SPEC)
     assert loaded['slot_preferences'] is True
     pairs = tuple((r['key'], r['title']) for r in loaded['rails'])
-    assert pairs == gs.HOME_RAILS
+    assert pairs == meta.HOME_RAILS == gs.HOME_RAILS
+    assert gs.HOME_RAIL_SPECS is meta.HOME_RAIL_SPECS
+    assert gs.HOME_RAIL_CONTROL_IDS == {r['key']: r['control_id'] for r in loaded['rails']}
+    # Confirm glass_settings.py has no second handwritten rail declaration
+    gs_text = (ROOT / 'addons/script.module.bobbi.platform/lib/bobbi_platform/glass_settings.py').read_text(encoding='utf-8')
+    assert "('continue_watching'" not in gs_text and "('emby_resume'" not in gs_text
     by_key = {r['key']: r for r in loaded['rails']}
     assert by_key['emby_resume']['control_id'] == 9815
     assert by_key['emby_resume']['layout'] == 'wide'
