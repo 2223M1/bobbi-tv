@@ -87,9 +87,17 @@
     return [h0,h1,h2,h3,h4,h5,h6,h7].map(v=>v.toString(16).padStart(8,'0')).join('');
   }
   function bytesToBase64(slice) {
-    let bin='';
-    for(let i=0;i<slice.length;i++)bin+=String.fromCharCode(slice[i]);
-    return btoa(bin);
+    const alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+    let out='', i=0;
+    for(;i+2<slice.length;i+=3) {
+      const n=(slice[i]<<16)|(slice[i+1]<<8)|slice[i+2];
+      out+=alphabet[(n>>>18)&63]+alphabet[(n>>>12)&63]+alphabet[(n>>>6)&63]+alphabet[n&63];
+    }
+    if(i<slice.length) {
+      const rem=slice.length-i, n=(slice[i]<<16)|(rem>1?(slice[i+1]<<8):0);
+      out+=alphabet[(n>>>18)&63]+alphabet[(n>>>12)&63]+(rem>1?alphabet[(n>>>6)&63]:'=')+'=';
+    }
+    return out;
   }
   function frozen(value) {
     if (value && typeof value==='object') {Object.values(value).forEach(frozen);Object.freeze(value);}
@@ -634,8 +642,17 @@
     } else if(addon.logo&&isAllowedRenderedLogo(addon.logo)) {
       const img=node('img');img.src=addon.logo;img.alt=addon.name||'';img.loading='lazy';img.referrerPolicy='no-referrer';img.width=48;card.append(img);
     }
-    if(addon.description)card.append(node('p',addon.description,'muted'));
+    const descNode=addon.description?node('p',addon.description,'muted'):null;
+    if(descNode)card.append(descNode);
     const caps=addon.capabilities||{}, selected=addon.selected||{}, row=node('div',undefined,'row');
+    if(addon.description_truncated===true&&descNode) {
+      row.append(button('查看完整简介',async()=>{
+        const detail=await rpc('stremio_detail',{id:addonId});
+        if(detail&&detail.addon&&typeof detail.addon.description==='string') {
+          descNode.textContent=detail.addon.description;
+        }
+      }));
+    }
     [['stream','视频源'],['catalog','目录'],['tv','直播']].forEach(([catKey,catLabel])=>{
       if(!caps[catKey])return;
       const enabled=Boolean(selected[catKey]);
@@ -653,9 +670,20 @@
     return card;
   }
   async function loadStremio() {
-    const page=viewGeneration, value=await rpc('stremio_list',{});
+    const page=viewGeneration;
+    let value=await rpc('stremio_list',offset>0?{offset}:{});
     if(page!==viewGeneration)return;
-    byId('previous').disabled=true;byId('next').disabled=true;
+    let items=value.items||[];
+    if(!items.length&&offset>0) {
+      pageIndex=Math.max(0,pageIndex-1);
+      offset=pageStarts[pageIndex]||0;
+      value=await rpc('stremio_list',offset>0?{offset}:{});
+      if(page!==viewGeneration)return;
+      items=value.items||[];
+    }
+    nextOffset=value.next_offset==null?null:value.next_offset;
+    byId('previous').disabled=offset===0;
+    byId('next').disabled=nextOffset==null;
     const addCard=node('section',undefined,'card');
     addCard.append(node('h2','添加自定义 Stremio 插件源'),
       node('p','仅向当前配置添加自定义 Manifest，页面不回显已保存地址中的凭据参数。','muted'));
@@ -678,9 +706,9 @@
       status('已添加自定义插件源。');
     }));
     addCard.append(actions,previewBox);
-    const items=value.items||[];
+    const totalCount=Number.isInteger(value.total)?value.total:items.length;
     byId('rows').replaceChildren(addCard,...(items.length?items.map(stremioCard):[node('p','当前暂无自定义 Stremio 插件源。')]));
-    status('已读取 Stremio 插件源（共 '+items.length+' 项）。');
+    status('已读取 Stremio 插件源 · 第 '+(pageIndex+1)+' 页（本页 '+items.length+' 项，共 '+totalCount+' 项）。');
   }
   function renderImportDiagnosis(box, diag, awaitingTv) {
     box.replaceChildren();
@@ -758,6 +786,56 @@
     byId('rows').replaceChildren(uploadCard,resultBox);
     status('手机配置分片导入已就绪。');
   }
+  async function loadSubtitleUpload() {
+    const page=viewGeneration, cur=await rpc('subtitle_upload_status',{});
+    if(page!==viewGeneration)return;
+    byId('previous').disabled=true;byId('next').disabled=true;
+    const card=node('section',undefined,'card');
+    card.append(node('h2','上传外挂字幕（仅绑定当前所选片源）'),
+      node('p','支持 .srt / .ass / .ssa / .sub / .vtt / .txt（最大 2 MB），保留中文文件名与 UTF-8 / BOM。关闭电视二维码或切换片源立即撤销。','muted'));
+    if(cur.title)card.append(node('p','当前绑定片源：'+cur.title));
+    const fileLabel=node('label','选择本地字幕文件'), fileInput=node('input');
+    fileInput.type='file';fileInput.accept='.srt,.ass,.ssa,.sub,.vtt,.txt';
+    fileLabel.append(fileInput);card.append(fileLabel);
+    const progressText=node('small',cur.state==='committed'&&cur.file_name?'已上传字幕：'+cur.file_name:'尚未选择字幕文件。');
+    const actions=node('div',undefined,'row');
+    let activeSubUploadId=cur.upload_id||null;
+    actions.append(button('上传并应用字幕',async()=>{
+      const chosen=fileInput.files&&fileInput.files[0];
+      if(!chosen)throw new Error('请先选择一份字幕文件。');
+      if(chosen.size<1||chosen.size>2097152)throw new Error('字幕大小须在 1 B 到 2 MB 之间。');
+      const rawBuf=new Uint8Array(await chosen.arrayBuffer());
+      const digest=sha256Hex(rawBuf), uploadId=id();
+      activeSubUploadId=uploadId;
+      progressText.textContent='正在初始化字幕上传（共 '+rawBuf.length+' 字节）…';
+      await rpc('subtitle_upload_begin',{
+        upload_id:uploadId,
+        file_name:(chosen.name||'subtitle.srt').slice(0,180),
+        total_bytes:rawBuf.length,
+        sha256:digest,
+        target_id:cur.target_id||undefined
+      });
+      const CHUNK=4096;
+      for(let pos=0;pos<rawBuf.length;pos+=CHUNK) {
+        if(authClosed||page!==viewGeneration)return;
+        const slice=rawBuf.subarray(pos,Math.min(pos+CHUNK,rawBuf.length));
+        await rpc('subtitle_upload_chunk',{upload_id:uploadId,offset:pos,data_b64:bytesToBase64(slice)});
+        progressText.textContent='已上传 '+Math.min(pos+CHUNK,rawBuf.length)+' / '+rawBuf.length+' 字节…';
+      }
+      const committed=await rpc('subtitle_upload_commit',{upload_id:uploadId});
+      activeSubUploadId=null;
+      progressText.textContent='字幕已接收：'+(committed.file_name||chosen.name)+'（电视正在自动挂载播放）。';
+      status('字幕上传完成，电视将对当前片源起播。');
+    }),button('取消上传',async()=>{
+      if(!activeSubUploadId){progressText.textContent='当前无进行中的字幕上传。';return;}
+      await rpc('subtitle_upload_cancel',{upload_id:activeSubUploadId});
+      activeSubUploadId=null;progressText.textContent='已取消并清理暂存字幕。';
+      status('已取消字幕上传。');
+    }));
+    card.append(progressText,actions);
+    byId('rows').replaceChildren(card);
+    status('手机配对字幕上传已就绪。');
+  }
   function scheduleJobs(reset=false,failed=false) {
     clearTimeout(pollTimer);pollTimer=null;
     if(reset){pollUntil=Date.now()+120000;pollDelay=5000;}
@@ -780,6 +858,7 @@
     if(tab==='playback'){await loadPlayback();return;}
     if(tab==='stremio'){await loadStremio();return;}
     if(tab==='sourceImport'){await loadSourceImport();return;}
+    if(tab==='subtitleUpload'){await loadSubtitleUpload();return;}
     if(tab==='items') {
       const filters={...query,text:byId('keyword').value.trim(),review_state:byId('state').value||null,
         media_kind:byId('mediaKind').value||null,availability:byId('availability').value||null,
@@ -815,7 +894,7 @@
     status('已读取当前状态 · 第 '+(pageIndex+1)+' 页。关闭浏览器不会取消后台任务。');
     if(currentTab==='jobs') {updateJobCapsule(rows);jobsActive=rows.some(row=>['queued','running'].includes(row.state));pollDelay=5000;scheduleJobs(!automatic);}
   }
-  ['items','sources','jobs','history','playback','stremio','sourceImport'].forEach(name=>byId(name+'Tab').addEventListener('click',()=>guarded(async()=>{tab=name;resetPage();await load();})));
+  ['items','sources','jobs','history','playback','stremio','sourceImport','subtitleUpload'].forEach(name=>byId(name+'Tab').addEventListener('click',()=>guarded(async()=>{tab=name;resetPage();await load();})));
   byId('refresh').addEventListener('click',()=>guarded(load));
   for(const control of ['state','mediaKind'])byId(control).addEventListener('change',()=>guarded(async()=>{resetQuery();await load();}));
   for(const control of ['availability','sort'])byId(control).addEventListener('change',()=>guarded(async()=>{resetQueryPage();await load();}));
@@ -1030,10 +1109,12 @@
     byId('playbackTab').classList.toggle('hidden',!grantedScopes.includes('playback_read'));
     byId('stremioTab').classList.toggle('hidden',!grantedScopes.includes('stremio_addons'));
     byId('sourceImportTab').classList.toggle('hidden',!grantedScopes.includes('source_import'));
+    byId('subtitleUploadTab').classList.toggle('hidden',!grantedScopes.includes('subtitle_upload'));
     if(!hasCatalog&&grantedScopes.includes('stremio_addons'))tab='stremio';
     if(!hasCatalog&&grantedScopes.includes('source_import'))tab='sourceImport';
+    if(!hasCatalog&&grantedScopes.includes('subtitle_upload'))tab='subtitleUpload';
     if(mountedSource){byId('clearSource').disabled=true;byId('clearSource').textContent='当前授权已固定来源';}
-    byId('historyTab').classList.toggle('hidden',!hasCatalog||['mounted','local','network','stremio','source_import'].includes(session.catalog_kind));
+    byId('historyTab').classList.toggle('hidden',!hasCatalog||['mounted','local','network','stremio','source_import','subtitle_upload'].includes(session.catalog_kind));
     byId('workspace').classList.remove('hidden');await load();
   });
 })();

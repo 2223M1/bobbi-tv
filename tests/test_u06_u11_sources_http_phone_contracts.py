@@ -1934,3 +1934,412 @@ def test_u09_emby_http_gateway_subset_and_strm_finite_boundaries(tmp_path, monke
         (strm_root / bad_name).write_bytes(bad_raw)
         with pytest.raises(LibraryError, match=exp_err):
             source_pointers.read(vfs, bad_name)
+def _setup_plugin_test_env(monkeypatch, profile_dir=None):
+    import runpy
+    prev_mods = dict(sys.modules)
+    prev_path = list(sys.path)
+    runpy.run_path(str(REPO_ROOT / 'tests/private_baseline/conftest.py'))
+    for k, v in list(sys.modules.items()):
+        if k not in prev_mods:
+            monkeypatch.setitem(sys.modules, k, v)
+    for p in reversed(sys.path):
+        if p not in prev_path:
+            monkeypatch.syspath_prepend(p)
+    for mod_clear in [
+        'lib.utils.kodi.utils',
+        'lib.services.subtitle_server',
+        'lib.services.webserver',
+        'lib.services.phone_management',
+    ]:
+        sys.modules.pop(mod_clear, None)
+
+
+# ==============================================================================
+# U10 · Paired Phone Stremio Byte-Budget Paging & Scoped Subtitle Upload
+# ==============================================================================
+
+
+def test_u10_src05_stremio_list_utf8_byte_budget_12_chinese_and_65_addons_crud(tmp_path, monkeypatch):
+    """Inverted witness test_stremio_list_budget_has_no_paging_recovery + CT-PHONE-LIST (F-SRC-05-1..4):
+    - 12 addons with 600-Chinese-char descriptions, 28 addons with 600-Chinese-char descriptions,
+      and 65 short addons are 100% reachable across pages without REPLY_TOO_LARGE or 64-item truncation.
+    - Every reply is strictly <= 16,384 UTF-8 bytes.
+    - Full addon IDs (including item #65) remain intact for stremio_detail, stremio_toggle, and stremio_remove.
+    - Pairing, Origin, CSRF, and ProfileBinding boundaries remain enforced.
+    """
+    import importlib
+    from bobbi_platform.paths import ProfileBinding
+
+    _setup_plugin_test_env(monkeypatch, tmp_path)
+    ws_mod = importlib.import_module('lib.services.webserver')
+    pm_mod = importlib.import_module('lib.services.phone_management')
+
+    kv_store = {}
+    monkeypatch.setattr(
+        ws_mod,
+        'cache',
+        SimpleNamespace(
+            get=lambda k: kv_store.get(k),
+            set=lambda k, v, *a: kv_store.__setitem__(k, v),
+        ),
+    )
+
+    profile_live = [True]
+    binding = ProfileBinding(lambda addon='plugin.video.bobbi': tmp_path)
+    monkeypatch.setattr(binding, 'is_current', lambda: profile_live[0])
+
+    manager = pm_mod.PhoneManagement(
+        {'local_scope': 'stremio_addons'},
+        'http://127.0.0.1:8081',
+        scopes=pm_mod.STREMIO_SCOPES,
+        profile_binding=binding,
+    )
+    hdrs = {'Host': '127.0.0.1:8081', 'Origin': 'http://127.0.0.1:8081'}
+
+    # Unpaired / bad Origin / bad CSRF checks (CT-PHONE-AUTH / F-SRC-05-4)
+    with pytest.raises(pm_mod.PhoneError, match='PAIRING_REQUIRED'):
+        manager.handle('/manage/api', hdrs, pm_mod.encode({'action': 'stremio_list', 'params': {}}))
+
+    paired, cookie = manager.handle(
+        '/manage/api/pair',
+        hdrs,
+        pm_mod.encode({'code': manager.pairing_url.split('#')[1]}),
+    )
+    auth_hdrs = {
+        **hdrs,
+        'Cookie': cookie.split(';')[0],
+        'X-Bobbi-CSRF': paired['csrf'],
+    }
+    with pytest.raises(pm_mod.PhoneError, match='ORIGIN_FORBIDDEN'):
+        manager.handle('/manage/api', {**auth_hdrs, 'Origin': 'http://evil.invalid'}, pm_mod.encode({'action': 'stremio_list', 'params': {}}))
+    with pytest.raises(pm_mod.PhoneError, match='CSRF_REJECTED'):
+        manager.handle('/manage/api', {**auth_hdrs, 'X-Bobbi-CSRF': 'x' * 43}, pm_mod.encode({'action': 'stremio_list', 'params': {}}))
+
+    def rpc(action, params):
+        res, _ = manager.handle('/manage/api', auth_hdrs, pm_mod.encode({'action': action, 'params': params}))
+        raw_bytes = pm_mod.encode(res)
+        assert len(raw_bytes) <= pm_mod.MAX_REPLY, f'{action} exceeded 16KB: {len(raw_bytes)}'
+        return res
+
+    def collect_all_pages():
+        collected = []
+        off = 0
+        seen_offsets = set()
+        pages = 0
+        while True:
+            assert off not in seen_offsets
+            seen_offsets.add(off)
+            reply = rpc('stremio_list', {} if off == 0 else {'offset': off})
+            pages += 1
+            collected.extend(reply['items'])
+            if reply.get('next_offset') is None:
+                break
+            assert reply['next_offset'] > off
+            off = reply['next_offset']
+        return collected, pages
+
+    # Case 1: Exact witness of 12 addons with 600 Chinese chars each
+    long_desc = '中' * 600
+    kv_store['stremio_user_addons'] = [
+        {
+            'transportName': 'custom',
+            'transportUrl': f'https://addon{i}.example.invalid/secret-token-{i}/manifest.json',
+            'manifest': {
+                'id': f'org.chinese.long.{i}',
+                'name': f'中文长简介源 {i}',
+                'version': '1.0.0',
+                'description': long_desc,
+                'resources': ['stream'],
+                'types': ['movie'],
+            },
+        }
+        for i in range(12)
+    ]
+    items_12, _ = collect_all_pages()
+    assert len(items_12) == 12
+    assert all('secret-token' not in json.dumps(it) for it in items_12)
+    # Full description readable on demand via stremio_detail
+    detail_0 = rpc('stremio_detail', {'id': items_12[0]['id']})
+    assert detail_0['addon']['description'] == long_desc
+
+    # Case 2: 28 addons with 600 Chinese chars + long names forcing multi-page UTF-8 byte-budget split
+    kv_store['stremio_user_addons'] = [
+        {
+            'transportName': 'custom',
+            'transportUrl': f'https://heavy{i}.example.invalid/manifest.json',
+            'manifest': {
+                'id': f'org.chinese.heavy.identifier.{i:03d}',
+                'name': ('超长中文名称测试插件' * 8) + f'-{i:03d}',
+                'version': '2.3.4',
+                'description': '繁' * 600,
+                'resources': ['stream', 'catalog'],
+                'types': ['movie', 'series'],
+            },
+        }
+        for i in range(28)
+    ]
+    items_28, pages_28 = collect_all_pages()
+    assert pages_28 >= 2
+    assert [it['id'] for it in items_28] == [ws_mod.build_addon_instance_key(a) for a in kv_store['stremio_user_addons']]
+
+    # Case 3: 65 custom addons (previously truncated at [:64]!) -> item #65 reachable and supports toggle & remove!
+    kv_store['stremio_user_addons'] = [
+        {
+            'transportName': 'custom',
+            'transportUrl': f'https://short{i}.example.invalid/manifest.json',
+            'manifest': {
+                'id': f'org.short.addon.{i:03d}',
+                'name': f'Short Addon {i:03d}',
+                'version': '1.0',
+                'description': f'Desc {i:03d}',
+                'resources': ['stream'],
+                'types': ['movie'],
+            },
+        }
+        for i in range(65)
+    ]
+    assert len(ws_mod.list_stremio_addons()) == 65
+    items_65, pages_65 = collect_all_pages()
+    assert pages_65 >= 2
+    assert len(items_65) == 65
+    id_65 = items_65[64]['id']
+    assert id_65.startswith('org.short.addon.064|')
+
+    assert rpc('stremio_toggle', {'id': id_65, 'category': 'stream', 'enabled': True})['success'] is True
+    assert rpc('stremio_remove', {'id': id_65})['success'] is True
+    items_after, _ = collect_all_pages()
+    assert len(items_after) == 64 and all(it['id'] != id_65 for it in items_after)
+
+    # Profile switch revokes session immediately
+    profile_live[0] = False
+    with pytest.raises(pm_mod.PhoneError, match='ACCOUNT_OR_SERVICE_CHANGED'):
+        rpc('stremio_list', {})
+
+
+def test_u10_root_subtitle_parser_bounded_malformed_and_paired_scope_a_to_b_isolation(tmp_path, monkeypatch):
+    """Inverted witness reproduce_legacy_paths.py::multipart_worker + CT-SUBTITLE-UPLOAD (F-ROOT-SUBTITLE-PARSER-1..4):
+    - Missing header terminator (with or without closing boundary), missing end boundary, negative/zero/oversized
+      Content-Length, and truncated stream all terminate in < 0.2s with bounded bytes read.
+    - Paired StremioWebServer + PhoneManagement(SUBTITLE_UPLOAD_SCOPES) rejects unpaired/bad-CSRF/bad-Origin,
+      accepts valid Chinese UTF-8/BOM subtitles after prior malformed attempts, stops cleanly, and guarantees
+      that A -> B selection/playback switch, cancel, or revoke NEVER installs A's subtitle onto B.
+    """
+    import base64
+    import hashlib
+    import importlib
+    from io import BytesIO
+    import time
+    from urllib.error import HTTPError
+    from urllib.request import Request, urlopen
+    from bobbi_platform.paths import ProfileBinding
+
+    _setup_plugin_test_env(monkeypatch, tmp_path)
+    sub_mod = importlib.import_module('lib.services.subtitle_server')
+    pm_mod = importlib.import_module('lib.services.phone_management')
+    ws_mod = importlib.import_module('lib.services.webserver')
+
+    # 1. Standalone port 8082 SubtitleUploadServer is retired; legacy witness completes in < 0.2s returning None
+    assert not hasattr(sub_mod, 'SubtitleUploadServer')
+
+    malformed_cases = [
+        # Exact witness from reproduce_legacy_paths.py (missing CRLFCRLF and end boundary)
+        (
+            {'Content-Type': 'multipart/form-data; boundary=audit-boundary', 'Content-Length': '50'},
+            b'--audit-boundary\r\nContent-Disposition: incomplete!',
+        ),
+        # Missing CRLFCRLF WITH valid end boundary present
+        (
+            {'Content-Type': 'multipart/form-data; boundary=b1', 'Content-Length': '48'},
+            b'--b1\r\nContent-Disposition: no-sep\r\n--b1--\r\n' + b' ' * 5,
+        ),
+        # Multi-part where part 1 lacks header terminator before part 2
+        (
+            {'Content-Type': 'multipart/form-data; boundary=b2', 'Content-Length': '96'},
+            (b'--b2\r\nBrokenHeaderOnly\r\n--b2\r\nContent-Disposition: form-data; filename="a.srt"\r\n\r\nhi\r\n--b2--').ljust(96, b' '),
+        ),
+        # Missing closing boundary (--b3--)
+        (
+            {'Content-Type': 'multipart/form-data; boundary=b3', 'Content-Length': '69'},
+            b'--b3\r\nContent-Disposition: form-data; filename="a.srt"\r\n\r\n1\r\nhi\r\n--b3',
+        ),
+        # Negative Content-Length
+        ({'Content-Type': 'multipart/form-data; boundary=b4', 'Content-Length': '-10'}, b''),
+        # Zero Content-Length
+        ({'Content-Type': 'multipart/form-data; boundary=b4', 'Content-Length': '0'}, b''),
+        # Oversized Content-Length (> 2 MiB)
+        ({'Content-Type': 'multipart/form-data; boundary=b4', 'Content-Length': str(5 * 1024 * 1024)}, b'x' * 1024),
+        # Truncated stream (Content-Length claims 200, EOF at 20)
+        ({'Content-Type': 'multipart/form-data; boundary=b4', 'Content-Length': '200'}, b'--b4\r\ntruncated-eof!'),
+    ]
+    t_start = time.monotonic()
+    for hdrs, raw_body in malformed_cases:
+        handler = object.__new__(sub_mod.SubtitleUploadHandler)
+        handler.headers = hdrs
+        handler.rfile = BytesIO(raw_body)
+        fname, err = handler._parse_multipart()
+        assert fname is None and isinstance(err, str) and err
+    assert time.monotonic() - t_start < 0.25
+
+    # 2. Live loopback paired StremioWebServer + PhoneManagement(SUBTITLE_UPLOAD_SCOPES)
+    binding = ProfileBinding(lambda addon='plugin.video.bobbi': tmp_path / addon)
+    target_a = 'a' * 32
+    target_b = 'b' * 32
+    active_target = [target_a]
+
+    probe_s = __import__('socket').socket()
+    probe_s.bind(('127.0.0.1', 0))
+    free_port = probe_s.getsockname()[1]
+    probe_s.close()
+
+    origin = f'http://127.0.0.1:{free_port}'
+    manager = pm_mod.PhoneManagement(
+        {
+            'local_scope': 'subtitle_upload',
+            'target_id': target_a,
+            'source_key': 'movie:A',
+            'title': '流浪地球2.2160p',
+        },
+        origin,
+        scopes=pm_mod.SUBTITLE_UPLOAD_SCOPES,
+        profile_binding=binding,
+        target_current=lambda: active_target[0] == target_a,
+    )
+    srv = ws_mod.StremioWebServer(port=free_port, phone_management=manager)
+    srv.start()
+    assert srv.is_running
+    try:
+        # Unpaired multipart POST is rejected with 401
+        bad_mp = b'--bnd\r\nContent-Disposition: form-data; name="f"; filename="a.srt"\r\n\r\n1\r\n--bnd--\r\n'
+        req_unpaired = Request(
+            f'{origin}/manage/api/subtitle-multipart',
+            data=bad_mp,
+            headers={
+                'Host': f'127.0.0.1:{free_port}',
+                'Origin': origin,
+                'Content-Type': 'multipart/form-data; boundary=bnd',
+            },
+            method='POST',
+        )
+        with pytest.raises(HTTPError) as http_err:
+            urlopen(req_unpaired, timeout=2)
+        assert http_err.value.code == 401
+
+        # Pair session
+        pair_code = manager.pairing_url.split('#')[1]
+        pair_req = Request(
+            f'{origin}/manage/api/pair',
+            data=pm_mod.encode({'code': pair_code}),
+            headers={'Host': f'127.0.0.1:{free_port}', 'Origin': origin, 'Content-Type': 'application/json'},
+            method='POST',
+        )
+        with urlopen(pair_req, timeout=2) as resp:
+            cookie_hdr = resp.headers.get('Set-Cookie', '').split(';')[0]
+            csrf_tok = json.loads(resp.read().decode('utf-8'))['csrf']
+
+        # Malformed multipart over live HTTP returns 400 promptly WITHOUT hanging the server!
+        broken_body = b'--live-bnd\r\nContent-Disposition: incomplete-header-no-crlfcrlf'
+        req_malformed = Request(
+            f'{origin}/manage/api/subtitle-multipart',
+            data=broken_body,
+            headers={
+                'Host': f'127.0.0.1:{free_port}',
+                'Origin': origin,
+                'Cookie': cookie_hdr,
+                'X-Bobbi-CSRF': csrf_tok,
+                'Content-Type': 'multipart/form-data; boundary=live-bnd',
+            },
+            method='POST',
+        )
+        with pytest.raises(HTTPError) as mal_err:
+            urlopen(req_malformed, timeout=2)
+        assert mal_err.value.code == 400
+
+        # Valid UTF-8 BOM + Chinese filename upload succeeds immediately right after malformed request!
+        bom_srt = '\ufeff1\r\n00:00:01,000 --> 00:00:03,500\r\n太空电梯启动！\r\n'.encode('utf-8')
+        uid = 'c' * 32
+        for action, params in [
+            ('subtitle_upload_begin', {
+                'upload_id': uid,
+                'file_name': '流浪地球2.简繁特效.srt',
+                'total_bytes': len(bom_srt),
+                'sha256': hashlib.sha256(bom_srt).hexdigest(),
+                'target_id': target_a,
+            }),
+            ('subtitle_upload_chunk', {
+                'upload_id': uid,
+                'offset': 0,
+                'data_b64': base64.b64encode(bom_srt).decode('ascii'),
+            }),
+            ('subtitle_upload_commit', {'upload_id': uid}),
+        ]:
+            r_post = Request(
+                f'{origin}/manage/api',
+                data=pm_mod.encode({'action': action, 'params': params}),
+                headers={
+                    'Host': f'127.0.0.1:{free_port}',
+                    'Origin': origin,
+                    'Cookie': cookie_hdr,
+                    'X-Bobbi-CSRF': csrf_tok,
+                    'Content-Type': 'application/json',
+                },
+                method='POST',
+            )
+            with urlopen(r_post, timeout=2) as r_ok:
+                assert r_ok.status == 200
+
+        assert manager.committed_subtitle is not None
+        saved_path = Path(manager.committed_subtitle['path'])
+        assert saved_path.read_bytes() == bom_srt
+        assert '流浪地球2.简繁特效.srt' in saved_path.name
+
+        # Scope check: attempting to consume A's subtitle for B (target_b / movie:B) MUST fail and delete A's file!
+        assert manager.consume_committed_subtitle(target_b, 'movie:B') is None
+        assert not saved_path.exists()
+
+        # Re-upload via paired multipart with Chinese filename, then switch active_target A -> B!
+        valid_mp = (
+            '--okbnd\r\n'
+            'Content-Disposition: form-data; name="file"; filename="中文字幕A.ass"\r\n\r\n'
+        ).encode('utf-8') + bom_srt + b'\r\n--okbnd--\r\n'
+        req_mp_ok = Request(
+            f'{origin}/manage/api/subtitle-multipart',
+            data=valid_mp,
+            headers={
+                'Host': f'127.0.0.1:{free_port}',
+                'Origin': origin,
+                'Cookie': cookie_hdr,
+                'X-Bobbi-CSRF': csrf_tok,
+                'Content-Type': 'multipart/form-data; boundary=okbnd',
+            },
+            method='POST',
+        )
+        with urlopen(req_mp_ok, timeout=2) as r_mp:
+            assert r_mp.status == 200
+        mp_path = Path(manager.committed_subtitle['path'])
+        assert mp_path.exists()
+
+        # Simulate A -> B playback switch: target_current becomes False -> B cannot consume A's subtitle,
+        # file is deleted, and further phone uploads get 409 SUBTITLE_TARGET_CHANGED!
+        active_target[0] = target_b
+        assert manager.consume_committed_subtitle(target_a, 'movie:A') is None
+        assert not mp_path.exists()
+
+        req_after_switch = Request(
+            f'{origin}/manage/api',
+            data=pm_mod.encode({'action': 'subtitle_upload_status', 'params': {}}),
+            headers={
+                'Host': f'127.0.0.1:{free_port}',
+                'Origin': origin,
+                'Cookie': cookie_hdr,
+                'X-Bobbi-CSRF': csrf_tok,
+                'Content-Type': 'application/json',
+            },
+            method='POST',
+        )
+        with pytest.raises(HTTPError) as sw_err:
+            urlopen(req_after_switch, timeout=2)
+        assert sw_err.value.code == 409
+    finally:
+        t_stop = time.monotonic()
+        srv.stop()
+        assert time.monotonic() - t_stop < 2.0

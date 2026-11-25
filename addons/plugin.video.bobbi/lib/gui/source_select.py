@@ -22,7 +22,7 @@ from lib.gui.resolver_window import ResolverWindow
 from lib.gui.resume_window import ResumeDialog
 
 # For web subtitle upload
-from lib.services.subtitle_server import SubtitleUploadServer, get_local_ip
+from lib.services.webserver import StremioWebServer, get_local_ip
 from lib.utils.debrid.debrid_utils import (
     add_source_to_debrid,
     get_source_status,
@@ -1193,100 +1193,137 @@ class SourceSelect(BaseWindow):
         self._resolve_item(selected_source, local_subtitle_path=subtitle_file)
 
     def _upload_subtitle_from_web(self, selected_source) -> None:
-        """Start web server and show QR dialog for browser-based subtitle upload."""
-        kodilog("[UPLOAD_SUBTITLE] Starting web upload server")
+        """Start paired PhoneManagement session (SUBTITLE_UPLOAD_SCOPES) for scoped subtitle upload (U10)."""
+        from bobbi_core.playback_request import source_identity
+        from bobbi_platform.paths import ProfileBinding
+        from lib.services.phone_management import PhoneManagement, SUBTITLE_UPLOAD_SCOPES
+
+        kodilog("[UPLOAD_SUBTITLE] Starting paired phone subtitle upload session")
+        binding = ProfileBinding()
+        target_id = uuid4().hex
+        try:
+            expected_source_key = json.dumps(source_identity(selected_source), sort_keys=True, separators=(",", ":"))
+        except Exception:
+            expected_source_key = str(getattr(selected_source, "title", "") or getattr(selected_source, "url", ""))[:240]
+        initial_session = get_property("bobbi_active_player_session")
+        upload_complete = threading.Event()
+        aborted_by_switch = [False]
+
+        def target_current() -> bool:
+            if getattr(self, "_selection_locked", False):
+                aborted_by_switch[0] = True
+                return False
+            if get_property("bobbi_active_player_session") != initial_session:
+                aborted_by_switch[0] = True
+                return False
+            return binding.is_current()
 
         local_ip = get_local_ip()
-        server = SubtitleUploadServer(port=8082)
-        server.start()
+        chosen_port = 8081
+        manager = None
+        server = None
+        for candidate_port in (8081, 0):
+            probe_sock = None
+            try:
+                if candidate_port == 0:
+                    import socket as _s
+                    probe_sock = _s.socket(_s.AF_INET, _s.SOCK_STREAM)
+                    probe_sock.bind(("0.0.0.0", 0))
+                    chosen_port = probe_sock.getsockname()[1]
+                    probe_sock.close()
+                    probe_sock = None
+                else:
+                    chosen_port = candidate_port
+                origin = f"http://{local_ip}:{chosen_port}"
+                manager = PhoneManagement(
+                    {
+                        "local_scope": "subtitle_upload",
+                        "target_id": target_id,
+                        "source_key": expected_source_key,
+                        "title": _plain_source_label(getattr(selected_source, "title", ""))[:160],
+                    },
+                    origin,
+                    scopes=SUBTITLE_UPLOAD_SCOPES,
+                    profile_binding=binding,
+                    target_current=target_current,
+                )
+                server = StremioWebServer(port=chosen_port, phone_management=manager)
+                server.start()
+                if server.is_running:
+                    break
+                manager.revoke()
+            except Exception:
+                if probe_sock is not None:
+                    with contextlib.suppress(Exception):
+                        probe_sock.close()
+                if manager is not None:
+                    manager.revoke()
+                server = None
 
-        if not server.is_running:
-            kodilog("[UPLOAD_SUBTITLE] Failed to start upload server")
+        if server is None or not server.is_running or manager is None:
+            kodilog("[UPLOAD_SUBTITLE] Failed to start paired subtitle upload server")
             notification(translation(90744))
             return
 
-        url = f"http://{local_ip}:{server.port}/"
-
-        subtitle_result = [None]  # Use list for mutability in nested function
         dialog = None
-        upload_complete = threading.Event()
-
+        detected_upload = [False]
         try:
-            kodilog(f"[UPLOAD_SUBTITLE] Server started at {url}")
+            pairing_url = manager.pairing_url
+            display_origin = f"http://{local_ip}:{server.port}/manage"
+            qr_path = make_qrcode(pairing_url)
 
-            # Generate QR code
-            qr_path = make_qrcode(url)
-
-            # Show QR dialog
             dialog = QRProgressDialog("qr_dialog.xml", ADDON_PATH)
             dialog.setup(
-                title=translation(90748),  # Upload subtitle from your browser
+                title=translation(90748),
                 qr_code=qr_path or "",
-                url=url,
+                url=pairing_url,
                 user_code="",
                 is_debrid=False,
-                custom_message=translation(90749) % url,
+                custom_message=translation(90749) % display_origin,
             )
 
-            # Start polling thread to detect upload completion
             def poll_for_upload():
-                kodilog("[UPLOAD_SUBTITLE] Polling thread started")
                 import time
-
                 poll_count = 0
                 while not upload_complete.is_set():
-                    time.sleep(0.5)
+                    time.sleep(0.25)
                     poll_count += 1
-
-                    # Check if file was uploaded
-                    file_path = server.get_uploaded_file()
-                    if file_path:
-                        kodilog(f"[UPLOAD_SUBTITLE] File detected via polling: {file_path}")
-                        subtitle_result[0] = file_path
-                        upload_complete.set()
-                        # Close dialog from thread
-                        try:
-                            dialog.close()
-                        except Exception as e:
-                            kodilog(f"[UPLOAD_SUBTITLE] Error closing dialog from thread: {e}")
-                        break
-
-                    # Timeout after 10 minutes
-                    if poll_count > 1200:
-                        kodilog("[UPLOAD_SUBTITLE] Polling timeout")
+                    if not target_current():
+                        manager.discard_committed_subtitle()
+                        manager.revoke()
                         upload_complete.set()
                         with contextlib.suppress(BaseException):
                             dialog.close()
                         break
-                kodilog("[UPLOAD_SUBTITLE] Polling thread ended")
+                    if manager.committed_subtitle is not None:
+                        detected_upload[0] = True
+                        upload_complete.set()
+                        with contextlib.suppress(BaseException):
+                            dialog.close()
+                        break
+                    if poll_count > 2400:
+                        upload_complete.set()
+                        with contextlib.suppress(BaseException):
+                            dialog.close()
+                        break
 
-            # Start polling thread
             poll_thread = threading.Thread(target=poll_for_upload, daemon=True)
             poll_thread.start()
-
-            # Show modal dialog (blocks until closed)
-            kodilog("[UPLOAD_SUBTITLE] Showing modal dialog...")
             dialog.doModal()
-
-            # Signal polling thread to stop
             upload_complete.set()
-
-            # Check result
-            if subtitle_result[0]:
-                kodilog(f"[UPLOAD_SUBTITLE] Upload successful: {subtitle_result[0]}")
-            elif dialog.iscanceled:
-                kodilog("[UPLOAD_SUBTITLE] User cancelled")
-            else:
-                kodilog("[UPLOAD_SUBTITLE] Dialog closed without upload")
-
         finally:
             upload_complete.set()
             server.stop()
-            kodilog("[UPLOAD_SUBTITLE] Web upload server stopped")
 
-        # If we got a file, resolve the source with it
-        if subtitle_result[0]:
-            self._resolve_item(selected_source, local_subtitle_path=subtitle_result[0])
+        if dialog is not None and getattr(dialog, "iscanceled", False) and not detected_upload[0]:
+            manager.discard_committed_subtitle()
+            return
+        if aborted_by_switch[0] or not target_current():
+            manager.discard_committed_subtitle()
+            return
+        consumed = manager.consume_committed_subtitle(target_id, expected_source_key)
+        if consumed and consumed.get("path"):
+            self._resolve_item(selected_source, local_subtitle_path=consumed["path"])
 
     def _resolve_item(
         self,

@@ -28,7 +28,9 @@ SCOPES = frozenset(('catalog_read', 'catalog_review', 'catalog_tasks'))
 PLAYBACK_SCOPES = frozenset(('playback_read', 'playback_control'))
 STREMIO_SCOPES = frozenset(('stremio_addons',))
 SOURCE_IMPORT_SCOPES = frozenset(('source_import',))
-LOCAL_SCOPES = frozenset(('stremio_addons', 'source_import'))
+SUBTITLE_UPLOAD_SCOPES = frozenset(('subtitle_upload',))
+LOCAL_SCOPES = frozenset(('stremio_addons', 'source_import', 'subtitle_upload'))
+STREMIO_LIST_BUDGET = MAX_REPLY - 512
 ACTION_SCOPE = {
     'catalog_sources': 'catalog_read', 'catalog_items': 'catalog_read', 'catalog_jobs': 'catalog_read',
     'catalog_history': 'catalog_read',
@@ -40,6 +42,7 @@ ACTION_SCOPE = {
     'playback_command': 'playback_control',
     'playback_forget': 'playback_read',
     'stremio_list': 'stremio_addons',
+    'stremio_detail': 'stremio_addons',
     'stremio_validate': 'stremio_addons',
     'stremio_add': 'stremio_addons',
     'stremio_toggle': 'stremio_addons',
@@ -49,6 +52,11 @@ ACTION_SCOPE = {
     'source_import_chunk': 'source_import',
     'source_import_commit': 'source_import',
     'source_import_cancel': 'source_import',
+    'subtitle_upload_status': 'subtitle_upload',
+    'subtitle_upload_begin': 'subtitle_upload',
+    'subtitle_upload_chunk': 'subtitle_upload',
+    'subtitle_upload_commit': 'subtitle_upload',
+    'subtitle_upload_cancel': 'subtitle_upload',
 }
 PLAYBACK_INSTANCE = ('boot_id', 'epoch', 'request_id', 'native_instance', 'file_sha256', 'selection_epoch')
 
@@ -83,11 +91,20 @@ def _page(args):
 def parameters(action, args):
     if type(args) is not dict or len(encode(args)) > MAX_BODY:
         raise PhoneError('INVALID_REQUEST', 400)
-    if action in ('stremio_list', 'stremio_validate', 'stremio_add', 'stremio_toggle', 'stremio_remove'):
+    if action in ('stremio_list', 'stremio_detail', 'stremio_validate', 'stremio_add', 'stremio_toggle', 'stremio_remove'):
         if action == 'stremio_list':
-            if args:
+            if not set(args) <= {'offset', 'limit'}:
                 raise PhoneError('INVALID_REQUEST', 400)
-            return {}
+            off = args.get('offset', 0)
+            lim = args.get('limit', 64)
+            if type(off) is not int or not 0 <= off <= 100000 or type(lim) is not int or not 1 <= lim <= 64:
+                raise PhoneError('INVALID_REQUEST', 400)
+            return {'offset': off, 'limit': lim}
+        if action == 'stremio_detail':
+            addon_id = args.get('id')
+            if set(args) != {'id'} or type(addon_id) is not str or not 0 < len(addon_id) <= 512 or '\x00' in addon_id:
+                raise PhoneError('INVALID_REQUEST', 400)
+            return {'id': addon_id}
         if action in ('stremio_validate', 'stremio_add'):
             url = args.get('url')
             if (set(args) != {'url'} or type(url) is not str or not 0 < len(url.strip()) <= 2048
@@ -155,6 +172,59 @@ def parameters(action, args):
                 raise PhoneError('INVALID_REQUEST', 400)
             return {'upload_id': uid, 'offset': off, 'chunk': raw_chunk}
         if action in ('source_import_commit', 'source_import_cancel'):
+            if set(args) != {'upload_id'}:
+                raise PhoneError('INVALID_REQUEST', 400)
+            return {'upload_id': _id(args['upload_id'], 32)}
+        raise PhoneError('ACTION_FORBIDDEN')
+    if action.startswith('subtitle_upload_'):
+        from lib.services.subtitle_server import MAX_SUBTITLE_BYTES, sanitize_subtitle_filename
+        if action == 'subtitle_upload_status':
+            if args:
+                raise PhoneError('INVALID_REQUEST', 400)
+            return {}
+        if action == 'subtitle_upload_begin':
+            if not ({'upload_id', 'file_name', 'total_bytes', 'sha256'} <= set(args) <= {
+                'upload_id', 'file_name', 'total_bytes', 'sha256', 'target_id',
+            }):
+                raise PhoneError('INVALID_REQUEST', 400)
+            uid = _id(args['upload_id'], 32)
+            total = args.get('total_bytes')
+            digest = _id(args.get('sha256'), 64)
+            target_id = args.get('target_id')
+            if target_id is not None:
+                target_id = _id(target_id, 32)
+            try:
+                clean_name = sanitize_subtitle_filename(args.get('file_name'))
+            except ValueError as exc:
+                raise PhoneError(str(exc), 400) from None
+            if type(total) is not int or type(total) is bool or not 1 <= total <= MAX_SUBTITLE_BYTES:
+                raise PhoneError('INVALID_REQUEST', 400)
+            return {
+                'upload_id': uid,
+                'file_name': clean_name,
+                'total_bytes': total,
+                'sha256': digest,
+                'target_id': target_id,
+            }
+        if action == 'subtitle_upload_chunk':
+            if set(args) != {'upload_id', 'offset', 'data_b64'}:
+                raise PhoneError('INVALID_REQUEST', 400)
+            uid = _id(args['upload_id'], 32)
+            off = args.get('offset')
+            b64 = args.get('data_b64')
+            if (
+                type(off) is not int or type(off) is bool or not 0 <= off < MAX_SUBTITLE_BYTES
+                or type(b64) is not str or not 1 <= len(b64) <= 6000 or not b64.isascii()
+            ):
+                raise PhoneError('INVALID_REQUEST', 400)
+            try:
+                raw_chunk = base64.b64decode(b64, validate=True)
+            except (ValueError, TypeError):
+                raise PhoneError('INVALID_REQUEST', 400) from None
+            if not 1 <= len(raw_chunk) <= MAX_IMPORT_CHUNK:
+                raise PhoneError('INVALID_REQUEST', 400)
+            return {'upload_id': uid, 'offset': off, 'chunk': raw_chunk}
+        if action in ('subtitle_upload_commit', 'subtitle_upload_cancel'):
             if set(args) != {'upload_id'}:
                 raise PhoneError('INVALID_REQUEST', 400)
             return {'upload_id': _id(args['upload_id'], 32)}
@@ -262,9 +332,25 @@ PLAYBACK_FIELDS = frozenset(('available', 'reason', 'expected', 'boot_id', 'epoc
     'stream_key', 'selected', 'audio_truncated', 'subtitles_truncated', 'chapters_truncated', 'command_id', 'status'))
 
 
-STREMIO_FIELDS = frozenset(('items', 'addon', 'manifest', 'valid', 'success', 'id', 'name',
-    'description', 'version', 'host', 'logo', 'logo_rejected', 'types', 'capabilities',
+STREMIO_FIELDS = frozenset(('items', 'next_offset', 'total', 'addon', 'manifest', 'valid', 'success', 'id', 'name',
+    'description', 'description_truncated', 'version', 'host', 'logo', 'logo_rejected', 'types', 'capabilities',
     'selected', 'stream', 'catalog', 'tv'))
+SUBTITLE_UPLOAD_FIELDS = frozenset((
+    'state', 'target_id', 'title', 'upload_id', 'offset', 'total_bytes',
+    'cancelled', 'committed', 'file_name', 'byte_length', 'sha256',
+))
+
+
+def public_subtitle_upload(value, depth=0):
+    if depth > 4:
+        raise PhoneError('INVALID_REPLY', 502)
+    if type(value) is dict:
+        return {k: public_subtitle_upload(v, depth + 1) for k, v in value.items() if k in SUBTITLE_UPLOAD_FIELDS}
+    if value is None or type(value) in (bool, int, float):
+        return value
+    if type(value) is str and len(value) <= 512 and '://' not in value and '\x00' not in value:
+        return value
+    raise PhoneError('INVALID_REPLY', 502)
 SOURCE_IMPORT_FIELDS = frozenset((
     'state', 'upload_id', 'offset', 'total_bytes', 'cancelled', 'committed', 'awaiting_tv_confirm',
     'diagnosis', 'ok', 'error_code', 'sha256', 'byte_length', 'can_save_t4', 'counts',
@@ -329,18 +415,49 @@ def public(value, depth=0, fields=PUBLIC_FIELDS, max_items=5):
 
 
 class PhoneManagement:
-    def __init__(self, expected, origin, rpc=None, clock=time.monotonic, scopes=SCOPES, profile_binding=None):
+    def __init__(
+        self,
+        expected,
+        origin,
+        rpc=None,
+        clock=time.monotonic,
+        scopes=SCOPES,
+        profile_binding=None,
+        target_current=None,
+    ):
         from bobbi_platform.pan_accounts import scope
         from bobbi_platform.paths import ProfileBinding
         from bobbi_platform.runtime import bind_call
+        self._target_current = target_current
         self.local_scope = (
             expected.get('local_scope')
-            if type(expected) is dict and set(expected) == {'local_scope'}
+            if type(expected) is dict and expected.get('local_scope') in LOCAL_SCOPES
             else None
         )
         if self.local_scope is not None:
-            allowed_local = STREMIO_SCOPES if self.local_scope == 'stremio_addons' else SOURCE_IMPORT_SCOPES
-            if self.local_scope not in LOCAL_SCOPES or not set(scopes) <= allowed_local:
+            if self.local_scope == 'subtitle_upload':
+                allowed_local = SUBTITLE_UPLOAD_SCOPES
+                if not ({'local_scope', 'target_id'} <= set(expected) <= {
+                    'local_scope', 'target_id', 'source_key', 'title',
+                }):
+                    raise PhoneError('INVALID_REQUEST', 400)
+                target_id = _id(expected.get('target_id'), 32)
+                source_key = str(expected.get('source_key') or '')[:512]
+                title = str(expected.get('title') or '')[:240]
+                if '\x00' in source_key or '\x00' in title:
+                    raise PhoneError('INVALID_REQUEST', 400)
+                local_expected = {
+                    'local_scope': 'subtitle_upload',
+                    'target_id': target_id,
+                    'source_key': source_key,
+                    'title': title,
+                }
+            else:
+                if set(expected) != {'local_scope'}:
+                    raise PhoneError('INVALID_REQUEST', 400)
+                allowed_local = STREMIO_SCOPES if self.local_scope == 'stremio_addons' else SOURCE_IMPORT_SCOPES
+                local_expected = dict(local_scope=self.local_scope)
+            if not set(scopes) <= allowed_local:
                 raise PhoneError('ACTION_FORBIDDEN')
             self.profile_binding = profile_binding or (ProfileBinding() if rpc is None else None)
             if self.profile_binding is not None:
@@ -348,7 +465,7 @@ class PhoneManagement:
             self.reference_kind = None
             self.path_source = False
             self.catalog_prefix = None
-            self.expected = dict(local_scope=self.local_scope)
+            self.expected = local_expected
         else:
             # An injected transport may supply its own binding in fixtures. The
             # production path always captures both Kodi roots and this exact Host.
@@ -379,7 +496,7 @@ class PhoneManagement:
         if (parts.scheme != 'http' or not (address.is_private or address.is_loopback)
                 or parts.path or parts.query or parts.fragment or parts.username or parts.password
                 or not parts.port or not 1 <= parts.port <= 65535
-                or not set(scopes) <= SCOPES | PLAYBACK_SCOPES | STREMIO_SCOPES | SOURCE_IMPORT_SCOPES
+                or not set(scopes) <= SCOPES | PLAYBACK_SCOPES | STREMIO_SCOPES | SOURCE_IMPORT_SCOPES | SUBTITLE_UPLOAD_SCOPES
                 or ('playback_control' in scopes and 'playback_read' not in scopes)):
             raise PhoneError('ORIGIN_FORBIDDEN')
         self.origin, self.host, self.rpc, self.clock = origin, parts.netloc, rpc, clock
@@ -388,8 +505,15 @@ class PhoneManagement:
         self.previews = {}
         self._staged_import = None
         self.committed_import = None
+        self._staged_subtitle = None
+        self.committed_subtitle = None
         self._staging_dir = (
             Path(self.profile_binding.root('script.module.bobbi.platform')) / 'source-import-staging'
+            if self.profile_binding is not None
+            else None
+        )
+        self._subtitle_dir = (
+            Path(self.profile_binding.root('plugin.video.bobbi')) / 'Subtitles' / 'uploads'
             if self.profile_binding is not None
             else None
         )
@@ -438,6 +562,15 @@ class PhoneManagement:
     def _account(self):
         if self.local_scope is not None:
             self._profile()
+            if self.local_scope == 'subtitle_upload' and self._target_current is not None:
+                try:
+                    still_current = bool(self._target_current())
+                except Exception:
+                    still_current = False
+                if not still_current:
+                    self.discard_committed_subtitle()
+                    self.revoke()
+                    raise PhoneError('SUBTITLE_TARGET_CHANGED', 409)
             return
         try:
             if self.path_source:
@@ -492,6 +625,7 @@ class PhoneManagement:
                     playback_operations=deepcopy(list(self.playback_operations.values())),
                     catalog_kind=('stremio' if self.local_scope == 'stremio_addons' else
                                   'source_import' if self.local_scope == 'source_import' else
+                                  'subtitle_upload' if self.local_scope == 'subtitle_upload' else
                                   'local' if self.reference_kind == 'local_path' else
                                   'network' if self.reference_kind == 'network_path' else
                                   'mounted' if self.path_source else 'native'),
@@ -600,6 +734,8 @@ class PhoneManagement:
                 return self._handle_stremio(action, args)
             if action.startswith('source_import_'):
                 return self._handle_source_import(action, args)
+            if action.startswith('subtitle_upload_'):
+                return self._handle_subtitle_upload(action, args)
             if action == 'playback_forget':
                 return self._forget_playback(args), None
             if action == 'playback_command' and not self._remember_playback(args):
@@ -662,6 +798,7 @@ class PhoneManagement:
         from lib.services.webserver import (
             commit_stremio_addon,
             format_stremio_addon,
+            get_stremio_addon,
             list_stremio_addons,
             prepare_stremio_addon,
             remove_stremio_addon,
@@ -670,7 +807,28 @@ class PhoneManagement:
         self._live()
         self._account()
         if action == 'stremio_list':
-            result = dict(items=list_stremio_addons())
+            all_items = list_stremio_addons(summary=True)
+            total = len(all_items)
+            offset = args.get('offset', 0)
+            limit = args.get('limit', 64)
+            sliced = all_items[offset : offset + limit] if offset < total else []
+            page_items = []
+            for row in sliced:
+                candidate = {
+                    'items': [*page_items, row],
+                    'total': total,
+                    'next_offset': (offset + len(page_items) + 1) if (offset + len(page_items) + 1 < total) else None,
+                }
+                if page_items and len(encode(public_stremio(candidate))) > STREMIO_LIST_BUDGET:
+                    break
+                page_items.append(row)
+            next_offset = (offset + len(page_items)) if (offset + len(page_items) < total and page_items) else None
+            result = dict(items=page_items, total=total, next_offset=next_offset)
+        elif action == 'stremio_detail':
+            detail = get_stremio_addon(args['id'])
+            if detail is None:
+                raise PhoneError('STREMIO_ADDON_NOT_FOUND', 404)
+            result = dict(addon=detail)
         elif action in ('stremio_validate', 'stremio_add'):
             self.lock.release()
             try:
@@ -871,6 +1029,234 @@ class PhoneManagement:
             raise PhoneError('REPLY_TOO_LARGE', 502)
         return projected, None
 
+    def _cleanup_staged_subtitle(self):
+        staged = getattr(self, '_staged_subtitle', None)
+        self._staged_subtitle = None
+        if staged and staged.get('path') is not None:
+            try:
+                Path(staged['path']).unlink(missing_ok=True)
+            except OSError:
+                pass
+
+    def discard_committed_subtitle(self):
+        with self.lock:
+            self._cleanup_staged_subtitle()
+            committed = self.committed_subtitle
+            self.committed_subtitle = None
+        if committed and committed.get('path'):
+            try:
+                Path(committed['path']).unlink(missing_ok=True)
+            except OSError:
+                pass
+
+    def consume_committed_subtitle(self, expected_target_id: str, expected_source_key: str | None = None) -> dict | None:
+        """Atomically consume an uploaded subtitle strictly bound to profile, target_id, and source_key."""
+        with self.lock:
+            committed = self.committed_subtitle
+            self.committed_subtitle = None
+        if not committed:
+            return None
+        ok = True
+        try:
+            if self.profile_binding is not None and not self.profile_binding.is_current():
+                ok = False
+            if self._target_current is not None and not self._target_current():
+                ok = False
+        except Exception:
+            ok = False
+        if (
+            not ok
+            or committed.get('target_id') != expected_target_id
+            or (expected_source_key is not None and committed.get('source_key') != expected_source_key)
+        ):
+            try:
+                Path(committed['path']).unlink(missing_ok=True)
+            except OSError:
+                pass
+            return None
+        return committed
+
+    def _handle_subtitle_upload(self, action, args):
+        from lib.services.subtitle_server import store_validated_subtitle
+        self._live()
+        self._account()
+        if self._subtitle_dir is None:
+            raise PhoneError('MANAGEMENT_UNAVAILABLE', 503)
+        target_id = self.expected['target_id']
+        title = self.expected.get('title', '')
+
+        if action == 'subtitle_upload_status':
+            if self._staged_subtitle is not None:
+                st = self._staged_subtitle
+                res = {
+                    'state': 'receiving',
+                    'target_id': target_id,
+                    'title': title,
+                    'upload_id': st['upload_id'],
+                    'offset': st['offset'],
+                    'total_bytes': st['total_bytes'],
+                }
+            elif self.committed_subtitle is not None:
+                cs = self.committed_subtitle
+                res = {
+                    'state': 'committed',
+                    'target_id': target_id,
+                    'title': title,
+                    'committed': True,
+                    'file_name': cs['file_name'],
+                    'byte_length': cs['byte_length'],
+                    'sha256': cs['sha256'],
+                }
+            else:
+                res = {'state': 'idle', 'target_id': target_id, 'title': title}
+            return public_subtitle_upload(res), None
+
+        if action == 'subtitle_upload_begin':
+            if args.get('target_id') is not None and args['target_id'] != target_id:
+                raise PhoneError('SUBTITLE_TARGET_CHANGED', 409)
+            self.discard_committed_subtitle()
+            self._subtitle_dir.mkdir(parents=True, exist_ok=True)
+            part_path = self._subtitle_dir / ('.part-' + args['upload_id'])
+            try:
+                part_path.unlink(missing_ok=True)
+                fd = os.open(str(part_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+                os.close(fd)
+            except OSError:
+                raise PhoneError('MANAGEMENT_UNAVAILABLE', 503) from None
+            self._staged_subtitle = {
+                'upload_id': args['upload_id'],
+                'file_name': args['file_name'],
+                'total_bytes': args['total_bytes'],
+                'sha256': args['sha256'],
+                'offset': 0,
+                'path': part_path,
+            }
+            return public_subtitle_upload({
+                'state': 'receiving',
+                'target_id': target_id,
+                'upload_id': args['upload_id'],
+                'offset': 0,
+                'total_bytes': args['total_bytes'],
+            }), None
+
+        if action == 'subtitle_upload_cancel':
+            if self._staged_subtitle and self._staged_subtitle['upload_id'] == args['upload_id']:
+                self._cleanup_staged_subtitle()
+            self.discard_committed_subtitle()
+            return public_subtitle_upload({'state': 'idle', 'target_id': target_id, 'cancelled': True}), None
+
+        staged = self._staged_subtitle
+        if staged is None or staged['upload_id'] != args['upload_id']:
+            raise PhoneError('UPLOAD_NOT_FOUND', 404)
+
+        if action == 'subtitle_upload_chunk':
+            off = args['offset']
+            chunk = args['chunk']
+            cur_off = staged['offset']
+            if off == cur_off:
+                if cur_off + len(chunk) > staged['total_bytes']:
+                    self._cleanup_staged_subtitle()
+                    raise PhoneError('CHUNK_OFFSET_MISMATCH', 409)
+                try:
+                    with open(staged['path'], 'ab') as fh:
+                        fh.write(chunk)
+                except OSError:
+                    self._cleanup_staged_subtitle()
+                    raise PhoneError('MANAGEMENT_UNAVAILABLE', 503) from None
+                staged['offset'] = cur_off + len(chunk)
+            elif off < cur_off and off + len(chunk) <= cur_off:
+                try:
+                    with open(staged['path'], 'rb') as fh:
+                        fh.seek(off)
+                        existing = fh.read(len(chunk))
+                except OSError:
+                    self._cleanup_staged_subtitle()
+                    raise PhoneError('MANAGEMENT_UNAVAILABLE', 503) from None
+                if not hmac.compare_digest(existing, chunk):
+                    self._cleanup_staged_subtitle()
+                    raise PhoneError('CHUNK_OFFSET_MISMATCH', 409)
+            else:
+                self._cleanup_staged_subtitle()
+                raise PhoneError('CHUNK_OFFSET_MISMATCH', 409)
+            return public_subtitle_upload({
+                'state': 'receiving',
+                'target_id': target_id,
+                'upload_id': staged['upload_id'],
+                'offset': staged['offset'],
+                'total_bytes': staged['total_bytes'],
+            }), None
+
+        # subtitle_upload_commit
+        if staged['offset'] != staged['total_bytes']:
+            raise PhoneError('UPLOAD_INCOMPLETE', 409)
+        try:
+            raw_bytes = Path(staged['path']).read_bytes()
+        except OSError:
+            self._cleanup_staged_subtitle()
+            raise PhoneError('MANAGEMENT_UNAVAILABLE', 503) from None
+        self._cleanup_staged_subtitle()
+        actual_sha = sha256(raw_bytes).hexdigest()
+        if not hmac.compare_digest(actual_sha, staged['sha256']) or len(raw_bytes) != staged['total_bytes']:
+            raise PhoneError('UPLOAD_HASH_MISMATCH', 400)
+        self._account()
+        self._live()
+        try:
+            stored = store_validated_subtitle(self._subtitle_dir, staged['file_name'], raw_bytes)
+        except ValueError as exc:
+            raise PhoneError(str(exc), 400) from None
+        except OSError:
+            raise PhoneError('MANAGEMENT_UNAVAILABLE', 503) from None
+        self.committed_subtitle = {
+            **stored,
+            'target_id': target_id,
+            'source_key': self.expected.get('source_key', ''),
+        }
+        return public_subtitle_upload({
+            'state': 'committed',
+            'target_id': target_id,
+            'committed': True,
+            'file_name': stored['file_name'],
+            'byte_length': stored['byte_length'],
+            'sha256': stored['sha256'],
+        }), None
+
+    def handle_subtitle_multipart(self, headers, rfile):
+        """Bounded paired multipart subtitle upload endpoint requiring session Cookie + Origin + CSRF."""
+        from lib.services.subtitle_server import parse_bounded_multipart, store_validated_subtitle
+        with self.lock:
+            self.check_origin(headers)
+            self._authorize(headers, csrf=True)
+            self._account()
+            if 'subtitle_upload' not in self.scopes or self._subtitle_dir is None:
+                raise PhoneError('ACTION_FORBIDDEN')
+            target_id = self.expected['target_id']
+        filename, content_or_err = parse_bounded_multipart(headers, rfile)
+        if filename is None:
+            raise PhoneError('INVALID_SUBTITLE_MULTIPART', 400)
+        with self.lock:
+            self._live()
+            self._account()
+            self.discard_committed_subtitle()
+            try:
+                stored = store_validated_subtitle(self._subtitle_dir, filename, content_or_err)
+            except ValueError as exc:
+                raise PhoneError(str(exc), 400) from None
+            except OSError:
+                raise PhoneError('MANAGEMENT_UNAVAILABLE', 503) from None
+            self.committed_subtitle = {
+                **stored,
+                'target_id': target_id,
+                'source_key': self.expected.get('source_key', ''),
+            }
+            return public_subtitle_upload({
+                'state': 'committed',
+                'target_id': target_id,
+                'committed': True,
+                'file_name': stored['file_name'],
+                'byte_length': stored['byte_length'],
+                'sha256': stored['sha256'],
+            }), None
+
     def revoke(self):
         # Immediate logical revocation, even while an already-admitted domain
         # call is in flight. This does not undo a committed mapping mutation.
@@ -879,3 +1265,4 @@ class PhoneManagement:
         self._session = self._csrf = self._challenge = None
         self.playback_operations.clear()
         self._cleanup_staged_import()
+        self._cleanup_staged_subtitle()

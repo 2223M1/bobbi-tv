@@ -315,9 +315,24 @@ def commit_stremio_addon(resolved_url, manifest):
     return custom_addon, None
 
 
-def list_stremio_addons():
+def list_stremio_addons(*, summary=False):
     selected = _get_selected_ids()
-    return [format_stremio_addon(a, selected=selected) for a in _get_user_addons()[:64]]
+    out = []
+    for addon in _get_user_addons():
+        item = format_stremio_addon(addon, selected=selected)
+        if summary and len(item["description"]) > 160:
+            item["description"] = item["description"][:160] + "…"
+            item["description_truncated"] = True
+        out.append(item)
+    return out
+
+
+def get_stremio_addon(addon_id):
+    selected = _get_selected_ids()
+    for addon in _get_user_addons():
+        if build_addon_instance_key(addon) == addon_id:
+            return format_stremio_addon(addon, selected=selected)
+    return None
 
 
 def remove_stremio_addon(addon_id):
@@ -470,10 +485,21 @@ class StremioRequestHandler(BaseHTTPRequestHandler):
                 with open(os.path.join(_WEB_DIR, resource[0]), "rb") as stream:
                     self._management_reply(stream.read(131072), content_type=resource[1])
                 return
-            if (
-                self.headers.get("Transfer-Encoding") is not None
-                or self.headers.get("Content-Type", "").split(";")[0] != "application/json"
-            ):
+            if self.headers.get("Transfer-Encoding") is not None:
+                raise PhoneError("INVALID_REQUEST", 400)
+            ctype = self.headers.get("Content-Type", "").split(";")[0].strip().lower()
+            if self.path == "/manage/api/subtitle-multipart" and ctype == "multipart/form-data":
+                handler = self
+
+                class _BoundedMultipartStream:
+                    def read(self, n=-1):
+                        handler._management_body_attempted = True
+                        return handler.rfile.read1(n) if hasattr(handler.rfile, "read1") else handler.rfile.read(n)
+
+                result, cookie = manager.handle_subtitle_multipart(self.headers, _BoundedMultipartStream())
+                self._management_reply(result, cookie=cookie)
+                return
+            if ctype != "application/json":
                 raise PhoneError("INVALID_REQUEST", 400)
             length = self._management_body_length()
             if length is None:
@@ -526,6 +552,7 @@ class StremioWebServer:
             return
         try:
             self._server = HTTPServer(("0.0.0.0", self.port), StremioRequestHandler)
+            self.port = self._server.server_port
             self._server.phone_management = self.phone_management
             self._thread = threading.Thread(target=self._server.serve_forever, daemon=True)
             self._thread.start()
