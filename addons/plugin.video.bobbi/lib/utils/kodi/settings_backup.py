@@ -58,6 +58,21 @@ CUSTOM_SELECTION_KEYS = {
     "tv": STREMIO_TV_ADDONS_KEY,
 }
 
+PERSISTENT_SOURCE_CONFIG_KEYS = (
+    "stremio_user_addons",
+    "stremio_addons",
+    "stremio_catalog_addons",
+    "stremio_tv_addons",
+    "stremio_subtitle_addons",
+    "stremio_bypass_addons",
+    "stremio_bypass_addon_list",
+    "stremio_addon_aliases",
+    "stremio_catalog_aliases",
+    "torrentio.providers",
+    "nuvio_user_addons",
+    "nuvio_addons",
+)
+
 SENSITIVE_SETTING_IDS = {
     "real_debrid_token",
     "alldebrid_token",
@@ -379,9 +394,15 @@ def _clear_factory_reset_database_state():
     pickle_db.commit()
 
 
+def clear_persistent_source_configs():
+    for key in PERSISTENT_SOURCE_CONFIG_KEYS:
+        cache.delete(key)
+
+
 def factory_reset(settings_xml_path=SETTINGS_XML_PATH):
     reset_all_settings(settings_xml_path=settings_xml_path)
     clear_all_cache()
+    clear_persistent_source_configs()
     clear_trakt_db_cache()
     clear_tmdb_cache()
     clear_stremio_cache()
@@ -529,7 +550,13 @@ def _restore_catalog_descriptions(payload, dialog):
 
 def export_settings_backup(params=None):
     dialog = xbmcgui.Dialog()
-    kind = dialog.select('备份内容', ['设置备份（沿用现有敏感信息选项）', '人工片库描述（不含账号凭据）'])
+    kind = dialog.select(
+        '插件配置与人工描述备份',
+        [
+            '本插件偏好备份（沿用敏感信息剥离选项，不含媒体服与 115 登录）',
+            '人工片库描述（当前 Kodi 用户与账号范围，不含账号凭据）',
+        ],
+    )
     if kind not in (0, 1):
         return
     if kind == 1:

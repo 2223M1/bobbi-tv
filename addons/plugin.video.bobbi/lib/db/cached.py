@@ -38,6 +38,21 @@ SQLITE_SETTINGS = {
     "synchronous": "normal",
 }
 
+PERSISTENT_SOURCE_CONFIG_KEYS = (
+    "stremio_user_addons",
+    "stremio_addons",
+    "stremio_catalog_addons",
+    "stremio_tv_addons",
+    "stremio_subtitle_addons",
+    "stremio_bypass_addons",
+    "stremio_bypass_addon_list",
+    "stremio_addon_aliases",
+    "stremio_catalog_aliases",
+    "torrentio.providers",
+    "nuvio_user_addons",
+    "nuvio_addons",
+)
+
 
 def utc_now():
     """Return the current UTC time in the cache's legacy naive format."""
@@ -623,11 +638,28 @@ class SQLiteCache(_BaseCache):
         return True
 
     def clean_all(self):
+        preserved = (
+            "stremio_user_addons",
+            "stremio_addons",
+            "stremio_catalog_addons",
+            "stremio_tv_addons",
+            "stremio_subtitle_addons",
+            "stremio_bypass_addons",
+            "stremio_bypass_addon_list",
+            "stremio_addon_aliases",
+            "stremio_catalog_aliases",
+            "torrentio.providers",
+            "nuvio_user_addons",
+            "nuvio_addons",
+        )
+        quoted = ", ".join(f"'{k}'" for k in preserved)
         with self._lock:
             if not self._live():
                 return
-            self._mutate("DELETE FROM cached")
-            self._object_store.clear()
+            self._mutate(f"DELETE FROM cached WHERE key NOT IN ({quoted})")
+            for key in list(self._object_store):
+                if key not in preserved:
+                    self._object_store.pop(key, None)
 
     def check_clean_up(self):
         clean_up = self.needs_cleanup

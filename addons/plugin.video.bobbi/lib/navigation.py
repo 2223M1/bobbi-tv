@@ -1411,7 +1411,12 @@ def addon_update(params):
 
 
 def show_changelog(params):
-    dialog_text(translation(90577), file=CHANGELOG_PATH)
+    try:
+        from bobbi_platform.version_notes import read_installed_notes
+        notes = read_installed_notes(CHANGELOG_PATH, ADDON_VERSION)
+        dialog_text(notes['title'], content=notes['body'])
+    except ImportError:
+        dialog_text(translation(90577), file=CHANGELOG_PATH)
 
 
 def settings(params):

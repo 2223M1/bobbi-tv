@@ -29,7 +29,7 @@ class _RegistrySourceAccounts:
             return False
         store = Registry(self.path, read_only=True, timeout=0)
         try:
-            if kind == 'emby_source':
+            if kind == 'emby_source' or (kind is None and expected.get('provider') == 'emby'):
                 source, matched_gen = store.source_session_snapshot(source_id, generation)
             else:
                 source, rev = store.source_snapshot(source_id)
@@ -48,8 +48,21 @@ class _RegistrySourceAccounts:
                 and expected.get('provider') == 'emby'
                 and source.kind == 'media_server'
                 and source.metadata.get('provider') == 'emby'
+                and bool(source.password)
                 and source.metadata.get('server_id') == expected.get('server_id')
                 and source.metadata.get('user_id') == expected.get('user_id')
+            )
+        if kind is None and expected.get('provider') == 'emby':
+            from .server_accounts import Accounts as ServerAccounts
+            try:
+                checked = scope(expected, 'emby', authenticated=True)
+            except PanError:
+                return False
+            return (
+                source.kind == 'media_server'
+                and source.metadata.get('provider') == 'emby'
+                and bool(source.password)
+                and ServerAccounts._scope(source, generation) == checked
             )
         return False
 
@@ -88,6 +101,13 @@ class PlaybackAccounts:
             return self.registry_sources
         if type(expected) is dict and 'provider' in expected:
             scope(expected, authenticated=True)
+            if expected.get('provider') == 'emby':
+                if self.registry_sources is not None:
+                    return self.registry_sources
+                owner = self.pan_owner()
+                if owner is None or getattr(owner, 'servers', None) is None:
+                    raise PanError('PAN_SERVICE_CLOSED')
+                return _RegistrySourceAccounts(owner.servers.path.parent, current=owner.servers.current)
             owner = self.pan_owner()
             if owner is None:
                 raise PanError('PAN_SERVICE_CLOSED')
