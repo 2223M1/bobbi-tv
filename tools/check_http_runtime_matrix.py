@@ -30,6 +30,7 @@ SUITES = (
     'tests/test_upstream_updates.py',
     'tests/test_http_upgrade_runtime.py',
     'tests/test_round2_http_deadlines.py',
+    'tests/test_round2_subtitle_http.py',
 )
 
 
