@@ -43,6 +43,8 @@ python tools/check_repository.py "$OUT/source-first" "$OUT/source-second"
 
 ```sh
 python tools/build_release.py --output "$OUT/components"
+python tools/build_release.py --output "$OUT/components-second"
+python tools/check_repository.py "$OUT/components" "$OUT/components-second"
 python tools/sign_private_bundle.py \
   --key "$SIGNING_KEY" --components "$OUT/components" \
   --profile coreelec --sequence "$NEXT_SEQUENCE" --track "$TRACK" \
