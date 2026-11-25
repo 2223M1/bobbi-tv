@@ -6,7 +6,13 @@ not contain a shared account, proxy, remote server address, CE device backup,
 release signing secret, or default cloud account. No CoreELEC/AMLogic/Dolby
 Vision device patches are imported into Windows or Android.
 
-## Windows
+## Target platform and Python runtime floor (PLAT-01)
+
+- **Active certified target scope**: **CoreELEC 21.x / Kodi 21 Omega (`xbmc.python >= 3.0.1`, CPython 3.11+)** only for the current release generation (`script.module.requests >= 2.34.2`, `script.module.urllib3 >= 2.8.0`).
+- **Windows (`native/windows/maintenance.cpp`, `python3.8.dll`) — UNCERTIFIED / OUT OF CURRENT CE RELEASE SCOPE**: The legacy Windows maintenance host links `python3.8.dll`, whereas the current shared component generation and `urllib3 2.8.0` (`urllib3/_collections.py` runtime generic aliases such as `tuple[str, str]`) require **Python 3.11+** at runtime. Adding `from __future__ import annotations` to first-party modules does **not** fix third-party runtime type aliases and must never be used to claim Python 3.8 compatibility. Restoring Windows delivery requires upgrading the embedded Windows host Python runtime to **Python 3.11+** (matching Kodi 21 Omega) and passing full packaged-interpreter entrypoint import and live HTTP smoke gates.
+- **Android — SEPARATE LINK & DEVICE GATES**: Android Kodi 21.3 embeds Python 3.11+, but APK delivery remains gated on clean NDK/SDK link receipts (`LINKED_NOT_DEVICE_VERIFIED`) and real hardware verification; missing build toolchains are recorded as `BLOCKED` / `NOT_TESTED`, never `PASS`.
+
+## Windows (legacy host reference — uncertified for current Python 3.11+ component generation)
 
 Launch **bobbi.exe**, never `host/kodi.exe`. The portable ZIP uses `profile/`
 beside the launcher; the user-level installer uses
@@ -32,8 +38,11 @@ This coordination is not a sandbox against malicious programs running under
 the same Windows account. A first-start short-lived lifecycle probe is only an
 exit proof for maintenance; it is not a playback test.
 
-The maintenance host loads Kodi's bundled Python 3.8 DLL, standard library and
-Cryptodome libraries. No separate Python installation is necessary. It accepts
+Historically, `native/windows/maintenance.cpp` loaded an embedded `python3.8.dll`,
+standard library and Cryptodome libraries. That Python 3.8 host is **not** compatible
+with the current Python 3.11+ (`xbmc.python 3.0.1` / `urllib3 2.8.0`) component
+generation and is **uncertified / excluded from current CE release delivery** until
+the embedded Windows Python runtime is upgraded to Python 3.11+. It accepts
 only local signed full component generations; it has no anonymous update URL
 or embedded GitHub credential. The launcher does not perform in-play updates.
 New profiles do not auto-enable upstream `service.xbmc.versioncheck`, avoiding
@@ -177,8 +186,8 @@ overriding later user disable decisions. Android staging runs after Kodi's
 bundle copy, before Gradle. APK signing is performed by `sign-host-apk.py` with
 the existing local key; secrets travel via the child process environment only.
 
-Official Cryptodome is ABI-native host content: Windows Python3.8 / 3.9.4;
-Android Python3.11 / 3.12.0. The upstream addon metadata version is 3.4.3 and is
+Official Cryptodome is ABI-native host content: Android Python3.11 / 3.12.0
+(legacy Windows Python3.8 / 3.9.4 remains uncertified and out of current CE scope until upgraded to Python 3.11+). The upstream addon metadata version is 3.4.3 and is
 not the library version. Never copy a CE ARM32 crypto binary into these hosts.
 Windows AES known-vector and P-256 DSS self-tests are part of packaging.
 

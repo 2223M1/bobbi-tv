@@ -3,7 +3,7 @@
     <import addon="script.module.bobbi.core" version="0.1.89" />
     <import addon="script.module.bobbi.mdsub" version="0.1.1" />
     <import addon="script.module.bobbi.catalog" version="0.1.5" />
-    <import addon="xbmc.python" version="3.00.0" />
+    <import addon="xbmc.python" version="3.0.1" />
     <import addon="script.module.requests" version="2.34.2" />
     <import addon="script.module.urllib3" version="2.8.0" />
     <import addon="script.module.routing" version="0.2.3" />

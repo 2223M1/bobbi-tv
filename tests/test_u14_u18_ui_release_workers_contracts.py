@@ -526,3 +526,98 @@ def test_native_staging_does_not_reopen_unverified_changed_archives(tmp_path, mo
     stage.stage(manifest, host)
     assert first_read_count[0] == 1
     assert (host / 'addons' / names[0] / 'code.py').read_text(encoding='utf-8') == 'verified code'
+
+
+# --- CT-PLATFORM-RUNTIME (U16: PLAT-01) ---
+
+
+def test_platform_python_floor_and_legacy_windows_exclusion_contract():
+    from bobbi_platform.upstream_addons import compare_versions
+
+    for addon_id in ('plugin.video.bobbi', 'script.module.bobbi.core', 'script.module.bobbi.platform'):
+        tree = ET.parse(ROOT / 'addons' / addon_id / 'addon.xml').getroot()
+        py_imports = [
+            node.get('version', '0.0.0')
+            for node in tree.findall('./requires/import')
+            if node.get('addon') == 'xbmc.python'
+        ]
+        assert len(py_imports) == 1, addon_id
+        assert compare_versions(py_imports[0], '3.0.1') >= 0, (addon_id, py_imports[0])
+
+    readme = (ROOT / 'native/README.md').read_text(encoding='utf-8')
+    assert 'CoreELEC 21.x / Kodi 21 Omega' in readme
+    assert 'Python 3.11+' in readme
+    assert 'python3.8.dll' in readme
+    assert 'UNCERTIFIED / OUT OF CURRENT CE RELEASE SCOPE' in readme
+    assert 'from __future__ import annotations' in readme
+    assert 'urllib3/_collections.py' in readme
+
+    # Verify third-party urllib3/_collections.py was NOT tampered with to fake Python 3.8 support
+    vendors = json.loads((ROOT / 'release/kodi-vendors.json').read_text(encoding='utf-8'))
+    u3_collections = ROOT / 'third_party/addons/script.module.urllib3/lib/urllib3/_collections.py'
+    assert hashlib.sha256(u3_collections.read_bytes()).hexdigest() == (
+        vendors['script.module.urllib3']['files']['lib/urllib3/_collections.py']
+    )
+
+
+def test_target_python311_runtime_entrypoint_imports_and_live_http_smoke():
+    from http.server import BaseHTTPRequestHandler, HTTPServer
+    from threading import Thread
+    import subprocess
+
+    class SmokeHandler(BaseHTTPRequestHandler):
+        def log_message(self, *_args):
+            return
+
+        def do_GET(self):
+            body = b'{"platform":"ce-py311-ok"}'
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Content-Length', str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+    httpd = HTTPServer(('127.0.0.1', 0), SmokeHandler)
+    srv = Thread(target=httpd.serve_forever, kwargs={'poll_interval': 0.01}, daemon=True)
+    srv.start()
+    try:
+        probe = (
+            'import json, sys; '
+            'repo, port = sys.argv[1], int(sys.argv[2]); '
+            'assert sys.version_info >= (3, 11), sys.version; '
+            'sys.path[:0] = ['
+            'repo + "/third_party/addons/script.module.requests/lib", '
+            'repo + "/third_party/addons/script.module.urllib3/lib", '
+            'repo + "/third_party/addons/script.module.certifi/lib", '
+            'repo + "/third_party/addons/script.module.chardet/lib", '
+            'repo + "/third_party/addons/script.module.idna/lib", '
+            'repo + "/addons/script.module.bobbi.core/lib", '
+            'repo + "/addons/script.module.bobbi.platform/lib", '
+            'repo + "/addons/plugin.video.bobbi"'
+            ']; '
+            'import urllib3._collections; '
+            'import bobbi_core.http_policy; '
+            'import bobbi_platform.glass_settings; '
+            'import bobbi_platform.online_components; '
+            'import bobbi_platform.emby_dynamic; '
+            'import requests; '
+            's = requests.Session(); s.trust_env = False; '
+            'r = s.get(f"http://127.0.0.1:{port}/smoke", timeout=5); '
+            's.close(); '
+            'print(json.dumps({"status": r.status_code, "body": r.json(), "py": list(sys.version_info[:2])}))'
+        )
+        res = subprocess.run(
+            [sys.executable, '-I', '-B', '-c', probe, str(ROOT), str(httpd.server_port)],
+            capture_output=True,
+            text=True,
+            check=True,
+            timeout=20,
+        )
+        out = json.loads(res.stdout)
+        assert out['status'] == 200
+        assert out['body'] == {'platform': 'ce-py311-ok'}
+        assert out['py'] >= [3, 11]
+    finally:
+        httpd.shutdown()
+        httpd.server_close()
+        srv.join(2)
