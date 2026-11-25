@@ -354,7 +354,7 @@
       "lib/utils/views/catalog_owned.py": "f48d1cc381872d13d525959a6bd511900efa72fda466354b8529dc4103acdb4e",
       "lib/utils/views/catalog_saved_views.py": "837bd7aadeba316faab0914709559be95e709c995b64b553857452bdf96fb7d8",
       "lib/utils/views/catalog_supplement_ui.py": "bd687ff33214cc6518eec27506d8f5ff3c86c32fdc9c36be2c6dabcded6865ad",
-      "lib/utils/views/continue_watching.py": "ccac3024467d05feb43f7990e0d931bd77edf3aee83f1b3ed9517f7439f95662",
+      "lib/utils/views/continue_watching.py": "4b08a361af261c4dee2a36376d218c31aa0d027e91fccd1a655bae8c515aa9bb",
       "lib/utils/views/last_files.py": "e90907f3b8336dbc00af3e9e123dec63c1df5784f358c05fd316a39311ceb306",
       "lib/utils/views/last_titles.py": "c0f644f6c5c356630da979ecb00653e4532abb2e431d3ea2292db16c4258bc53",
       "lib/utils/views/library.py": "cf434206b0ffb6923445ea9f91d327eac3044535050bad593475077181729911",
