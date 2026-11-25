@@ -2,24 +2,23 @@
 <window>
   <defaultcontrol always="false">50</defaultcontrol>
   <menucontrol>9701</menucontrol>
-  <views>50</views>
+  <onload>SetProperty(BobbiSection,favourites,Home)</onload>
   <include>PageOpen</include>
   <controls>
     <include>Canvas</include>
     <include>BobbiBrowseCanvas</include>
-    <control type="group">
-      <left>80</left><top>132</top>
-      <control type="label">
-        <left>0</left><top>0</top><width>1200</width><height>68</height>
-        <label>我的收藏</label>
-        <font>Hero60</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny>
-      </control>
-      <control type="label">
-        <left>2</left><top>72</top><width>1400</width><height>32</height>
-        <label>收藏夹里的影片、剧集与常用入口</label>
-        <font>HeroPlot24</font><textcolor>9CEBEBF5</textcolor><aligny>center</aligny>
-      </control>
+
+    <control type="label">
+      <left>80</left><top>124</top><width>1200</width><height>68</height>
+      <label>$LOCALIZE[32161]</label>
+      <font>Hero60</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny>
     </control>
+    <control type="label">
+      <left>82</left><top>194</top><width>1200</width><height>32</height>
+      <label>$LOCALIZE[32344]</label>
+      <font>HeroPlot24</font><textcolor>9CEBEBF5</textcolor><aligny>center</aligny>
+    </control>
+
     <include content="DirectoryToolbar">
       <param name="down" value="50" />
     </include>
@@ -35,18 +34,29 @@
         <font>Card24</font><textcolor>D9EBEBF5</textcolor><align>center</align><aligny>center</aligny>
       </control>
     </control>
-    <include>BrowserCardPanel</include>
+
+    <include>DirectoryPanel</include>
     <control type="group">
       <visible>Integer.IsEqual(Container(50).NumItems,0)</visible>
       <include content="StateBlock">
         <param name="y">400</param>
         <param name="empty">true</param>
-        <param name="emptytitle">这里还没有收藏内容</param>
-        <param name="emptyhint">在影片详情或目录上打开菜单即可加入收藏</param>
+        <param name="emptytitle">$LOCALIZE[32319]</param>
+        <param name="emptyhint">$LOCALIZE[32327]</param>
       </include>
+      <control type="button" id="9080">
+        <left>80</left><top>500</top><width>280</width><height>66</height>
+        <label>$LOCALIZE[32064]</label>
+        <font>Button24</font><textcolor>text</textcolor><focusedcolor>on_focus</focusedcolor>
+        <align>center</align><aligny>center</aligny>
+        <texturefocus colordiffuse="focus" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+        <texturenofocus colordiffuse="24FFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturenofocus>
+        <onup>9701</onup><onleft>9701</onleft><onright>noop</onright><ondown>noop</ondown>
+        <onclick>SetFocus(9701)</onclick>
+      </control>
     </control>
     <include content="TopBar">
-      <param name="down" value="50" />
+      <param name="down" value="SetFocus($VAR[VideoContentFocus])" />
     </include>
   </controls>
 </window>

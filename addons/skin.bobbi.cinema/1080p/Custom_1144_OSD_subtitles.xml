@@ -15,9 +15,9 @@
     <include content="StreamPicker">
       <param name="type">subtitle</param>
       <param name="issub">true</param>
-      <param name="title">字幕</param>
+      <param name="title">$LOCALIZE[32210]</param>
       <param name="full">OSDSubtitleSettings</param>
-      <param name="fulllabel">字幕设置</param>
+      <param name="fulllabel">$LOCALIZE[32237]</param>
       <param name="offlabel">$VAR[SubtitleToggleLabel]</param>
       <param name="window">1144</param>
       <param name="apply">set_player_subtitle</param>

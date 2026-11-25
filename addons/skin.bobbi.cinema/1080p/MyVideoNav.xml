@@ -18,13 +18,28 @@
       <include content="StateBlock">
         <param name="y">420</param>
         <param name="empty">true</param>
-        <param name="emptytitle">这里还没有内容</param>
-        <param name="emptyhint">按 返回 回到上一页，或按 左 切换栏目</param>
+        <param name="emptytitle">$LOCALIZE[32061]</param>
+        <param name="emptyhint">$LOCALIZE[32063]</param>
       </include>
+      <control type="button" id="9080">
+        <left>80</left><top>520</top><width>280</width><height>66</height>
+        <label>$LOCALIZE[32064]</label>
+        <font>Button24</font><textcolor>text</textcolor><focusedcolor>on_focus</focusedcolor>
+        <align>center</align><aligny>center</aligny>
+        <texturefocus colordiffuse="focus" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+        <texturenofocus colordiffuse="24FFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturenofocus>
+        <onup condition="Control.IsVisible(9040)">9040</onup>
+        <onup condition="!Control.IsVisible(9040) + Control.IsVisible(9050)">9050</onup>
+        <onup condition="!Control.IsVisible(9040) + !Control.IsVisible(9050)">9701</onup>
+        <onleft>9701</onleft>
+        <onright>noop</onright>
+        <ondown>noop</ondown>
+        <onclick>SetFocus(9701)</onclick>
+      </control>
     </control>
     <include>DirectoryChrome</include>
     <include content="TopBar">
-      <param name="down" value="50" />
+      <param name="down" value="SetFocus($VAR[VideoContentFocus])" />
       <param name="skip_nav_barrier" value="true" />
     </include>
   </controls>

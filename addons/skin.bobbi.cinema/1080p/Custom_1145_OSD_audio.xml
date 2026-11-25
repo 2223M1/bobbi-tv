@@ -15,9 +15,9 @@
     <include content="StreamPicker">
       <param name="type">audio</param>
       <param name="issub">false</param>
-      <param name="title">音轨</param>
+      <param name="title">$LOCALIZE[32211]</param>
       <param name="full">OSDAudioSettings</param>
-      <param name="fulllabel">音频设置</param>
+      <param name="fulllabel">$LOCALIZE[32238]</param>
       <param name="offlabel" />
       <param name="window">1145</param>
       <param name="apply">set_player_audiostream</param>

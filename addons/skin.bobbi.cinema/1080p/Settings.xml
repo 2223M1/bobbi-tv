@@ -4,121 +4,326 @@
   <onload>SetProperty(BobbiSection,settings,Home)</onload>
   <include>PageOpen</include>
   <controls>
-    <!-- on-device Settings warm-cool charcoal radial backdrop -->
+    <!-- on-device Settings warm-cool charcoal radial backdrop (zero optical shader tag) -->
     <control type="image">
       <left>0</left><top>0</top><width>1920</width><height>1080</height>
       <texture>bobbi/glass/settings-bg.png</texture>
     </control>
 
-    <!-- Top-centered muted slate title (cx=960, y=62..124, matching on-device Settings) -->
+    <!-- Top-centered muted slate title -->
     <control type="label">
       <left>0</left><top>62</top><width>1920</width><height>62</height>
-      <label>设置</label>
+      <label>$LOCALIZE[32013]</label>
       <font>SettingsTitle50</font><textcolor>FF7C8088</textcolor>
       <align>center</align><aligny>center</aligny>
     </control>
 
-    <!-- Left 540x540 continuous-corner (r=120) flat matte emblem @ (255,238) + centered description @ cx=525 -->
+    <!-- Left 6-Category Navigation Rail (id=9000, Fuse3-inspired 2-column IA) -->
+    <control type="list" id="9000">
+      <left>120</left><top>182</top><width>440</width><height>480</height>
+      <orientation>vertical</orientation>
+      <include>ListMotion</include>
+      <onup>9701</onup>
+      <ondown>noop</ondown>
+      <onleft>9701</onleft>
+      <onright>9010</onright>
+      <onclick>SetFocus(9010)</onclick>
+      <itemlayout width="440" height="78">
+        <control type="group">
+          <left>0</left><top>6</top><width>440</width><height>66</height>
+          <control type="image">
+            <left>0</left><top>0</top><width>440</width><height>66</height>
+            <texture colordiffuse="14FFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texture>
+          </control>
+          <control type="image">
+            <left>16</left><top>11</top><width>44</width><height>44</height>
+            <texture>bobbi/glass/icon-disc-44.png</texture>
+          </control>
+          <control type="image">
+            <left>26</left><top>21</top><width>24</width><height>24</height>
+            <texture colordiffuse="D6EBEBF5">$INFO[ListItem.Icon]</texture>
+          </control>
+          <control type="label">
+            <left>74</left><top>0</top><width>346</width><height>66</height>
+            <label>$INFO[ListItem.Label]</label>
+            <font>Label28</font><textcolor>D6EBEBF5</textcolor><aligny>center</aligny>
+          </control>
+        </control>
+      </itemlayout>
+      <focusedlayout width="440" height="78">
+        <control type="group">
+          <left>0</left><top>6</top><width>440</width><height>66</height>
+          <!-- Selected category pill while browsing right pane 9010 -->
+          <control type="group">
+            <visible>!Control.HasFocus(9000)</visible>
+            <control type="image">
+              <left>0</left><top>0</top><width>440</width><height>66</height>
+              <texture colordiffuse="2CFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texture>
+            </control>
+            <control type="image">
+              <left>0</left><top>0</top><width>440</width><height>66</height>
+              <texture colordiffuse="88FFFFFF" border="33,0,33,0">bobbi/glass/capsule-66-rim.png</texture>
+            </control>
+            <control type="image">
+              <left>16</left><top>11</top><width>44</width><height>44</height>
+              <texture>bobbi/glass/icon-disc-44.png</texture>
+            </control>
+            <control type="image">
+              <left>26</left><top>21</top><width>24</width><height>24</height>
+              <texture colordiffuse="FFFFFFFF">$INFO[ListItem.Icon]</texture>
+            </control>
+            <control type="label">
+              <left>74</left><top>0</top><width>346</width><height>66</height>
+              <label>$INFO[ListItem.Label]</label>
+              <font>Label28</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny>
+            </control>
+          </control>
+          <!-- Focused category pill when left rail 9000 has focus -->
+          <control type="group">
+            <visible>Control.HasFocus(9000)</visible>
+            <control type="image">
+              <left>0</left><top>0</top><width>440</width><height>66</height>
+              <texture colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texture>
+            </control>
+            <control type="image">
+              <left>16</left><top>11</top><width>44</width><height>44</height>
+              <texture>bobbi/glass/icon-disc-focus.png</texture>
+            </control>
+            <control type="image">
+              <left>26</left><top>21</top><width>24</width><height>24</height>
+              <texture colordiffuse="FFF5F5F7">$INFO[ListItem.Icon]</texture>
+            </control>
+            <control type="label">
+              <left>74</left><top>0</top><width>346</width><height>66</height>
+              <label>$INFO[ListItem.Label]</label>
+              <font>Label28</font><textcolor>FF1D1D1F</textcolor><aligny>center</aligny>
+            </control>
+          </control>
+        </control>
+      </focusedlayout>
+      <content>
+        <item>
+          <label>$LOCALIZE[32070]</label><label2>$LOCALIZE[32071]</label2><icon>bobbi/glass/icons/photo.png</icon>
+          <property name="cat">ui_lang</property>
+          <onclick>SetFocus(9010)</onclick>
+        </item>
+        <item>
+          <label>$LOCALIZE[32072]</label><label2>$LOCALIZE[32073]</label2><icon>bobbi/glass/icons/sliders.png</icon>
+          <property name="cat">home_nav</property>
+          <onclick>SetFocus(9010)</onclick>
+        </item>
+        <item>
+          <label>$LOCALIZE[32074]</label><label2>$LOCALIZE[32075]</label2><icon>bobbi/glass/icons/play.png</icon>
+          <property name="cat">playback_sub</property>
+          <onclick>SetFocus(9010)</onclick>
+        </item>
+        <item>
+          <label>$LOCALIZE[32076]</label><label2>$LOCALIZE[32077]</label2><icon>bobbi/glass/icons/film.png</icon>
+          <property name="cat">content_pref</property>
+          <onclick>SetFocus(9010)</onclick>
+        </item>
+        <item>
+          <label>$LOCALIZE[32078]</label><label2>$LOCALIZE[32079]</label2><icon>bobbi/glass/icons/cloud.png</icon>
+          <property name="cat">network_dev</property>
+          <onclick>SetFocus(9010)</onclick>
+        </item>
+        <item>
+          <label>$LOCALIZE[32080]</label><label2>$LOCALIZE[32081]</label2><icon>bobbi/glass/icons/cpu.png</icon>
+          <property name="cat">system_maint</property>
+          <onclick>SetFocus(9010)</onclick>
+        </item>
+      </content>
+    </control>
+
+    <!-- Category Summary & Version Footer below Left Rail -->
     <control type="group">
+      <left>120</left><top>700</top><width>760</width><height>240</height>
       <control type="image">
-        <left>255</left><top>238</top><width>540</width><height>540</height>
-        <texture>bobbi/glass/settings-emblem-540.png</texture>
+        <left>0</left><top>0</top><width>68</width><height>68</height>
+        <texture>bobbi/glass/icon-disc-44.png</texture>
       </control>
       <control type="image">
-        <left>441</left><top>424</top><width>168</width><height>168</height>
-        <texture colordiffuse="FF1C1F26" fallback="bobbi/glass/icons/gear.png">$INFO[Container(9000).ListItem.Icon]</texture>
+        <left>18</left><top>18</top><width>32</width><height>32</height>
+        <texture colordiffuse="E6F5F5F7" fallback="bobbi/glass/icons/gear.png">$INFO[Container(9000).ListItem.Icon]</texture>
       </control>
       <control type="label">
-        <left>125</left><top>832</top><width>800</width><height>36</height>
+        <left>88</left><top>14</top><width>660</width><height>40</height>
+        <label>$INFO[Container(9000).ListItem.Label]</label>
+        <font>Head34</font><textcolor>E6F5F5F7</textcolor><aligny>center</aligny>
+      </control>
+      <control type="textbox">
+        <left>4</left><top>88</top><width>720</width><height>72</height>
         <label>$INFO[Container(9000).ListItem.Label2]</label>
         <font>HeroPlot24</font><textcolor>FF989A9F</textcolor>
-        <align>center</align><aligny>center</aligny>
       </control>
       <control type="label">
-        <left>125</left><top>872</top><width>800</width><height>30</height>
-        <label>波比TV $INFO[System.AddonVersion(skin.bobbi.cinema)]   ·   Kodi $INFO[System.BuildVersionShort]</label>
-        <font>CardSub22</font><textcolor>FF767880</textcolor>
-        <align>center</align><aligny>center</aligny>
+        <left>4</left><top>174</top><width>720</width><height>30</height>
+        <label>$LOCALIZE[32000] $INFO[System.AddonVersion(skin.bobbi.cinema)]   ·   Kodi $INFO[System.BuildVersionShort]</label>
+        <font>CardSub22</font><textcolor>FF767880</textcolor><aligny>center</aligny>
       </control>
     </control>
 
-    <!-- Right-column on-device stadium capsule stack @ x=1060..1840 (780x66 pills, 14px gap, 80px pitch) -->
-    <control type="list" id="9000">
+    <!-- Right-column stadium capsule stack for active category (id=9010 @ x=1036..1864 -> 780x66 pills) -->
+    <control type="list" id="9010">
       <left>1036</left><top>182</top><width>828</width><height>720</height>
       <orientation>vertical</orientation>
       <include>ListMotion</include>
       <onup>9701</onup>
-      <ondown>9000</ondown>
-      <onleft>9701</onleft>
+      <ondown>noop</ondown>
+      <onleft>9000</onleft>
       <onright>noop</onright>
+      <onback>SetFocus(9000)</onback>
       <itemlayout width="828" height="80">
-        <include content="SettingsStadiumRow" />
+        <include content="SettingsStadiumRow"><param name="list" value="9010" /></include>
       </itemlayout>
       <focusedlayout width="828" height="80">
-        <include content="SettingsStadiumRow"><param name="focused" value="true" /></include>
+        <include content="SettingsStadiumRow"><param name="list" value="9010" /><param name="focused" value="true" /></include>
       </focusedlayout>
       <content>
+        <!-- Category 1: Interface & Language -->
         <item>
-          <label>影院</label><label2>片源、字幕、续播与后台准备</label2><icon>bobbi/glass/icons/film.png</icon>
-          <onclick>Addon.OpenSettings(plugin.video.bobbi)</onclick>
+          <label>$LOCALIZE[32082]</label>
+          <property name="Bobbi.Value">$INFO[System.Language]</property>
+          <onclick>RunScript(script.bobbi.setup,interface_language)</onclick>
+          <visible>String.IsEqual(Container(9000).ListItem.Property(cat),ui_lang)</visible>
         </item>
         <item>
-          <label>账号与向导</label><label2>网盘账号登录、默认偏好与向导</label2><icon>bobbi/glass/icons/person.png</icon>
-          <onclick>RunScript(script.bobbi.setup)</onclick>
+          <label>$LOCALIZE[32083]</label>
+          <property name="Bobbi.Value">$INFO[System.ScreenResolution]</property>
+          <onclick>RunScript(script.bobbi.setup,display_adaptation)</onclick>
+          <visible>String.IsEqual(Container(9000).ListItem.Property(cat),ui_lang)</visible>
         </item>
         <item>
-          <label>片库来源</label><label2>添加或修改网盘、NAS 与媒体库连接</label2><icon>bobbi/glass/icons/drive.png</icon>
-          <onclick>RunScript(script.bobbi.setup,libraries)</onclick>
-        </item>
-        <item>
-          <label>外观与交互</label><label2>动效、导航栏、液态玻璃与 HDR 转换</label2><icon>bobbi/glass/icons/sliders.png</icon>
+          <label>$LOCALIZE[32084]</label>
+          <property name="Bobbi.Value">$VAR[BobbiGlassShortState]</property>
           <onclick>ActivateWindow(SkinSettings)</onclick>
+          <visible>String.IsEqual(Container(9000).ListItem.Property(cat),ui_lang)</visible>
         </item>
         <item>
-          <label>播放器</label><label2>视频、音频、字幕的默认行为与语言</label2><icon>bobbi/glass/icons/play.png</icon>
-          <onclick>ActivateWindow(PlayerSettings)</onclick>
-        </item>
-        <item>
-          <label>找中文字幕</label><label2>播放中手动查找 · OpenSubtitles · 下载后确认加载</label2><icon>bobbi/glass/icons/subtitles.png</icon>
-          <onclick>RunScript(script.bobbi.opensubtitles)</onclick>
-          <visible>System.HasAddon(script.bobbi.opensubtitles)</visible>
-        </item>
-        <item>
-          <label>媒体</label><label2>媒体库、视频源与刮削</label2><icon>bobbi/glass/icons/stack.png</icon>
-          <onclick>ActivateWindow(MediaSettings)</onclick>
-        </item>
-        <item>
-          <label>插件</label><label2>已安装插件、更新与仓库管理</label2><icon>bobbi/glass/icons/sparkles.png</icon>
-          <onclick>ActivateWindow(AddonBrowser)</onclick>
-        </item>
-        <item>
-          <label>服务</label><label2>网页遥控、Yatse 连接与局域网共享</label2><icon>bobbi/glass/icons/cloud.png</icon>
-          <onclick>ActivateWindow(ServiceSettings)</onclick>
-        </item>
-        <item>
-          <label>界面</label><label2>语言、区域、屏保与皮肤</label2><icon>bobbi/glass/icons/photo.png</icon>
+          <label>$LOCALIZE[32085]</label>
           <onclick>ActivateWindow(InterfaceSettings)</onclick>
+          <visible>String.IsEqual(Container(9000).ListItem.Property(cat),ui_lang)</visible>
+        </item>
+
+        <!-- Category 2: Home & Navigation -->
+        <item>
+          <label>$LOCALIZE[32086]</label>
+          <onclick>RunScript(script.bobbi.setup,home_spaces)</onclick>
+          <visible>String.IsEqual(Container(9000).ListItem.Property(cat),home_nav)</visible>
         </item>
         <item>
-          <label>系统</label><label2>显示分辨率、音频输出、输入设备与电源</label2><icon>bobbi/glass/icons/cpu.png</icon>
+          <label>$LOCALIZE[32087]</label>
+          <onclick>RunScript(script.bobbi.setup,home_rails)</onclick>
+          <visible>String.IsEqual(Container(9000).ListItem.Property(cat),home_nav)</visible>
+        </item>
+        <item>
+          <label>$LOCALIZE[32088]</label>
+          <onclick>ActivateWindow(SkinSettings)</onclick>
+          <visible>String.IsEqual(Container(9000).ListItem.Property(cat),home_nav)</visible>
+        </item>
+        <item>
+          <label>$LOCALIZE[32089]</label>
+          <onclick>Addon.OpenSettings(plugin.video.bobbi)</onclick>
+          <visible>String.IsEqual(Container(9000).ListItem.Property(cat),home_nav)</visible>
+        </item>
+
+        <!-- Category 3: Playback & Subtitles -->
+        <item>
+          <label>$LOCALIZE[32090]</label>
+          <onclick>Addon.OpenSettings(plugin.video.bobbi)</onclick>
+          <visible>String.IsEqual(Container(9000).ListItem.Property(cat),playback_sub)</visible>
+        </item>
+        <item>
+          <label>$LOCALIZE[32091]</label>
+          <onclick>ActivateWindow(PlayerSettings)</onclick>
+          <visible>String.IsEqual(Container(9000).ListItem.Property(cat),playback_sub)</visible>
+        </item>
+        <item>
+          <label>$LOCALIZE[32092]</label>
+          <onclick>ActivateWindow(SkinSettings)</onclick>
+          <visible>String.IsEqual(Container(9000).ListItem.Property(cat),playback_sub)</visible>
+        </item>
+        <item>
+          <label>$LOCALIZE[32093]</label>
+          <onclick>RunScript(script.bobbi.setup,language_guide)</onclick>
+          <visible>String.IsEqual(Container(9000).ListItem.Property(cat),playback_sub)</visible>
+        </item>
+
+        <!-- Category 4: Content & Source Preferences -->
+        <item>
+          <label>$LOCALIZE[32094]</label>
+          <onclick>Addon.OpenSettings(plugin.video.bobbi)</onclick>
+          <visible>String.IsEqual(Container(9000).ListItem.Property(cat),content_pref)</visible>
+        </item>
+        <item>
+          <label>$LOCALIZE[32095]</label>
+          <onclick>ActivateWindow(MediaSettings)</onclick>
+          <visible>String.IsEqual(Container(9000).ListItem.Property(cat),content_pref)</visible>
+        </item>
+        <item>
+          <label>$LOCALIZE[32096]</label>
+          <onclick>RunScript(script.bobbi.setup,accounts)</onclick>
+          <visible>String.IsEqual(Container(9000).ListItem.Property(cat),content_pref)</visible>
+        </item>
+
+        <!-- Category 5: Network & Devices -->
+        <item>
+          <label>$LOCALIZE[32097]</label>
+          <onclick>ActivateWindow(ServiceSettings)</onclick>
+          <visible>String.IsEqual(Container(9000).ListItem.Property(cat),network_dev)</visible>
+        </item>
+        <item>
+          <label>$LOCALIZE[32098]</label>
+          <onclick>RunScript(script.bobbi.setup,bt_helper)</onclick>
+          <visible>String.IsEqual(Container(9000).ListItem.Property(cat),network_dev)</visible>
+        </item>
+        <item>
+          <label>$LOCALIZE[32099]</label>
+          <onclick>RunScript(script.bobbi.setup,transport)</onclick>
+          <visible>String.IsEqual(Container(9000).ListItem.Property(cat),network_dev)</visible>
+        </item>
+        <item>
+          <label>$LOCALIZE[32100]</label>
+          <onclick>RunScript(script.bobbi.setup,accounts,devices)</onclick>
+          <visible>String.IsEqual(Container(9000).ListItem.Property(cat),network_dev)</visible>
+        </item>
+
+        <!-- Category 6: System & Maintenance -->
+        <item>
+          <label>$LOCALIZE[32101]</label>
+          <onclick>RunScript(script.bobbi.setup,updates)</onclick>
+          <visible>String.IsEqual(Container(9000).ListItem.Property(cat),system_maint)</visible>
+        </item>
+        <item>
+          <label>$LOCALIZE[32102]</label>
+          <onclick>Addon.OpenSettings(plugin.video.bobbi)</onclick>
+          <visible>String.IsEqual(Container(9000).ListItem.Property(cat),system_maint)</visible>
+        </item>
+        <item>
+          <label>$LOCALIZE[32103]</label>
+          <onclick>RunScript(script.bobbi.setup,diagnostics)</onclick>
+          <visible>String.IsEqual(Container(9000).ListItem.Property(cat),system_maint)</visible>
+        </item>
+        <item>
+          <label>$LOCALIZE[32104]</label>
+          <onclick>ActivateWindow(AddonBrowser)</onclick>
+          <visible>String.IsEqual(Container(9000).ListItem.Property(cat),system_maint)</visible>
+        </item>
+        <item>
+          <label>$LOCALIZE[32105]</label>
           <onclick>ActivateWindow(SystemSettings)</onclick>
+          <visible>String.IsEqual(Container(9000).ListItem.Property(cat),system_maint)</visible>
         </item>
         <item>
-          <label>直播电视</label><label2>频道、节目单与录像</label2><icon>bobbi/glass/icons/tv.png</icon>
-          <onclick>ActivateWindow(PVRSettings)</onclick>
-        </item>
-        <item>
-          <label>系统信息</label><label2>版本、存储、网络与硬件诊断</label2><icon>bobbi/glass/icons/info.png</icon>
+          <label>$LOCALIZE[32106]</label>
           <property name="Bobbi.Value">$INFO[System.BuildVersionShort]</property>
           <onclick>ActivateWindow(SystemInfo)</onclick>
+          <visible>String.IsEqual(Container(9000).ListItem.Property(cat),system_maint)</visible>
         </item>
         <item>
-          <label>文件管理</label><label2>浏览与复制本地和网络文件</label2><icon>bobbi/glass/icons/folder.png</icon>
-          <onclick>ActivateWindow(FileManager)</onclick>
-        </item>
-        <item>
-          <label>电源</label><label2>重载皮肤、关闭电源或重启到安卓</label2><icon>bobbi/glass/icons/power.png</icon>
-          <onclick>ActivateWindow(ShutdownMenu)</onclick>
+          <label>$LOCALIZE[32107]</label>
+          <onclick>ActivateWindow(PVRSettings)</onclick>
+          <visible>String.IsEqual(Container(9000).ListItem.Property(cat),system_maint)</visible>
         </item>
       </content>
     </control>

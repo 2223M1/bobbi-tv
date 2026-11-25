@@ -65,7 +65,7 @@
       <include content="OSDProgress"><param name="top">842</param></include>
       <control type="label">
         <left>80</left><top>924</top><width>1760</width><height>34</height>
-        <label>[COLOR 9CEBEBF5]字幕[/COLOR]  $VAR[SubtitleLabel]      [COLOR 9CEBEBF5]音轨[/COLOR]  $VAR[AudioLabel]</label>
+        <label>[COLOR 9CEBEBF5]$LOCALIZE[32210][/COLOR]  $VAR[SubtitleLabel]      [COLOR 9CEBEBF5]$LOCALIZE[32211][/COLOR]  $VAR[AudioLabel]</label>
         <font>Card26</font><textcolor>D9EBEBF5</textcolor><aligny>center</aligny>
       </control>
     </control>

@@ -27,7 +27,7 @@
       <!-- Header -->
       <control type="label">
         <left>44</left><top>28</top><width>920</width><height>48</height>
-        <label>信号与编码</label>
+        <label>$LOCALIZE[32223]</label>
         <font>Head40</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny>
       </control>
       <control type="label">
@@ -70,49 +70,49 @@
         </control>
         <control type="label">
           <left>66</left><top>18</top><width>730</width><height>34</height>
-          <label>视频解码</label>
+          <label>$LOCALIZE[32349]</label>
           <font>Head30</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny>
         </control>
         <control type="grouplist">
           <left>28</left><top>64</top><width>776</width><height>312</height>
           <orientation>vertical</orientation><itemgap>2</itemgap><usecontrolcoords>true</usecontrolcoords>
           <include content="OSDTelemetryRow">
-            <param name="label">分辨率</param>
+            <param name="label">$LOCALIZE[31327]</param>
             <param name="value">$INFO[Player.Process(videowidth)]$INFO[Player.Process(videoheight),×,]$INFO[Player.Process(videoscantype), ,]</param>
             <param name="visible">!String.IsEmpty(Player.Process(videowidth))</param>
           </include>
           <include content="OSDTelemetryRow">
-            <param name="label">帧率</param>
+            <param name="label">$LOCALIZE[32350]</param>
             <param name="value">$INFO[Player.Process(videofps),, fps]</param>
             <param name="visible">!String.IsEmpty(Player.Process(videofps))</param>
           </include>
           <include content="OSDTelemetryRow">
-            <param name="label">编码</param>
+            <param name="label">$LOCALIZE[32351]</param>
             <param name="value">$INFO[VideoPlayer.VideoCodec]$INFO[Player.Process(video.bit.depth),  ·  , bit]</param>
             <param name="visible">!String.IsEmpty(VideoPlayer.VideoCodec)</param>
           </include>
           <include content="OSDTelemetryRow">
-            <param name="label">解码器</param>
+            <param name="label">$LOCALIZE[31012]</param>
             <param name="value">$INFO[Player.Process(videodecoder)]</param>
             <param name="visible">!String.IsEmpty(Player.Process(videodecoder))</param>
           </include>
           <include content="OSDTelemetryRow">
-            <param name="label">像素格式</param>
+            <param name="label">$LOCALIZE[32352]</param>
             <param name="value">$INFO[Player.Process(amlogic.pixformat)]</param>
             <param name="visible">!String.IsEmpty(Player.Process(amlogic.pixformat))</param>
           </include>
           <include content="OSDTelemetryRow">
-            <param name="label">画面比例</param>
+            <param name="label">$LOCALIZE[32353]</param>
             <param name="value">$INFO[Player.Process(videodar)]</param>
             <param name="visible">!String.IsEmpty(Player.Process(videodar))</param>
           </include>
           <include content="OSDTelemetryRow">
-            <param name="label">实时码率</param>
+            <param name="label">$LOCALIZE[32354]</param>
             <param name="value">$INFO[Player.Process(video.live.mibit.rate),, Mbps]</param>
             <param name="visible">!String.IsEmpty(Player.Process(video.live.mibit.rate))</param>
           </include>
           <include content="OSDTelemetryRow">
-            <param name="label">解码队列</param>
+            <param name="label">$LOCALIZE[32355]</param>
             <param name="value">$INFO[Player.Process(video.queue.level),,%]$INFO[Player.Process(video.queue.data.level),  ·  数据 ,%]</param>
             <param name="visible">!String.IsEmpty(Player.Process(video.queue.level))</param>
           </include>
@@ -136,7 +136,7 @@
         </control>
         <control type="label">
           <left>66</left><top>18</top><width>730</width><height>34</height>
-          <label>HDR 与杜比视界</label>
+          <label>$LOCALIZE[32356]</label>
           <font>Head30</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny>
         </control>
         <control type="grouplist">
@@ -144,31 +144,31 @@
           <orientation>vertical</orientation><itemgap>1</itemgap><usecontrolcoords>true</usecontrolcoords>
           <include content="OSDTelemetryRow">
             <param name="h">34</param>
-            <param name="label">片源类型</param>
+            <param name="label">$LOCALIZE[32357]</param>
             <param name="value">$VAR[BobbiSourceHDR]</param>
             <param name="visible">!String.IsEmpty(Player.Process(video.source.hdr.type))</param>
           </include>
           <include content="OSDTelemetryRow">
             <param name="h">34</param>
-            <param name="label">输出类型</param>
+            <param name="label">$LOCALIZE[32358]</param>
             <param name="value">$INFO[Player.Process(video.hdr.type)]</param>
             <param name="visible">!String.IsEmpty(Player.Process(video.hdr.type))</param>
           </include>
           <include content="OSDTelemetryRow">
             <param name="h">34</param>
-            <param name="label">杜比视界</param>
+            <param name="label">$LOCALIZE[32279]</param>
             <param name="value">Profile $INFO[Player.Process(video.dovi.profile)]$INFO[Player.Process(video.dovi.meta.version),  ·  CM ,]</param>
             <param name="visible">Integer.IsGreater(Player.Process(video.dovi.profile),0)</param>
           </include>
           <include content="OSDTelemetryRow">
             <param name="h">34</param>
-            <param name="label">L1 亮度</param>
+            <param name="label">$LOCALIZE[32359]</param>
             <param name="value">$INFO[Player.Process(video.dovi.l1.min.nits),最小 , nits]$INFO[Player.Process(video.dovi.l1.avg.nits),  ·  平均 , nits]$INFO[Player.Process(video.dovi.l1.max.nits),  ·  最大 , nits]</param>
             <param name="visible">Integer.IsGreater(Player.Process(video.dovi.profile),0)</param>
           </include>
           <include content="OSDTelemetryRow">
             <param name="h">34</param>
-            <param name="label">L5 黑边</param>
+            <param name="label">$LOCALIZE[32360]</param>
             <param name="value">$INFO[Player.Process(video.dovi.l5.top.offset),上 ,]$INFO[Player.Process(video.dovi.l5.bottom.offset),  下 ,]$INFO[Player.Process(video.dovi.l5.left.offset),  左 ,]$INFO[Player.Process(video.dovi.l5.right.offset),  右 ,]</param>
             <param name="visible">String.IsEqual(Player.Process(video.dovi.has.l5),1)</param>
           </include>
@@ -180,7 +180,7 @@
           </include>
           <include content="OSDTelemetryRow">
             <param name="h">34</param>
-            <param name="label">母版亮度</param>
+            <param name="label">$LOCALIZE[32361]</param>
             <param name="value">$INFO[Player.Process(video.hdr.min.lum),, ]$INFO[Player.Process(video.hdr.max.lum),– , nits]$INFO[Player.Process(video.hdr.colour.primaries),  ·  ,]</param>
             <param name="visible">!String.IsEqual(Player.Process(video.hdr.type),SDR) + !String.IsEmpty(Player.Process(video.hdr.max.lum))</param>
           </include>
@@ -192,7 +192,7 @@
           </include>
           <include content="OSDTelemetryRow">
             <param name="h">34</param>
-            <param name="label">EOTF / 色域</param>
+            <param name="label">$LOCALIZE[32362]</param>
             <param name="value">$INFO[Player.Process(amlogic.eoft_gamut)]</param>
             <param name="visible">!String.IsEmpty(Player.Process(amlogic.eoft_gamut))</param>
           </include>
@@ -216,7 +216,7 @@
         </control>
         <control type="label">
           <left>66</left><top>18</top><width>730</width><height>34</height>
-          <label>音频与字幕</label>
+          <label>$LOCALIZE[32363]</label>
           <font>Head30</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny>
         </control>
         <control type="grouplist">
@@ -224,31 +224,31 @@
           <orientation>vertical</orientation><itemgap>8</itemgap><usecontrolcoords>true</usecontrolcoords>
           <include content="OSDTelemetryRow">
             <param name="h">42</param>
-            <param name="label">音频编码</param>
+            <param name="label">$LOCALIZE[32364]</param>
             <param name="value">$VAR[AudioCodecLabel]$INFO[Player.Process(audiochannels),  ·  ,]</param>
             <param name="visible">!String.IsEmpty(VideoPlayer.AudioCodec)</param>
           </include>
           <include content="OSDTelemetryRow">
             <param name="h">42</param>
-            <param name="label">采样规格</param>
+            <param name="label">$LOCALIZE[32365]</param>
             <param name="value">$INFO[Player.Process(audiosamplerate),, Hz]$INFO[Player.Process(audiobitspersample),  ·  , bit]</param>
             <param name="visible">!String.IsEmpty(Player.Process(audiosamplerate))</param>
           </include>
           <include content="OSDTelemetryRow">
             <param name="h">42</param>
-            <param name="label">音频解码器</param>
+            <param name="label">$LOCALIZE[32366]</param>
             <param name="value">$INFO[Player.Process(audiodecoder)]</param>
             <param name="visible">!String.IsEmpty(Player.Process(audiodecoder))</param>
           </include>
           <include content="OSDTelemetryRow">
             <param name="h">42</param>
-            <param name="label">实时码率</param>
+            <param name="label">$LOCALIZE[32354]</param>
             <param name="value">$INFO[Player.Process(audio.live.kibit.rate),, kbps]</param>
             <param name="visible">!String.IsEmpty(Player.Process(audio.live.kibit.rate))</param>
           </include>
           <include content="OSDTelemetryRow">
             <param name="h">42</param>
-            <param name="label">当前字幕</param>
+            <param name="label">$LOCALIZE[32367]</param>
             <param name="value">$VAR[SubtitleLabel]</param>
             <param name="visible">Player.HasVideo</param>
           </include>
@@ -272,7 +272,7 @@
         </control>
         <control type="label">
           <left>66</left><top>18</top><width>730</width><height>34</height>
-          <label>输出与系统</label>
+          <label>$LOCALIZE[32368]</label>
           <font>Head30</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny>
         </control>
         <control type="grouplist">
@@ -280,19 +280,19 @@
           <orientation>vertical</orientation><itemgap>8</itemgap><usecontrolcoords>true</usecontrolcoords>
           <include content="OSDTelemetryRow">
             <param name="h">42</param>
-            <param name="label">显示模式</param>
+            <param name="label">$LOCALIZE[32369]</param>
             <param name="value">$INFO[Player.Process(amlogic.displaymode)]</param>
             <param name="visible">!String.IsEmpty(Player.Process(amlogic.displaymode))</param>
           </include>
           <include content="OSDTelemetryRow">
             <param name="h">42</param>
-            <param name="label">渲染帧率</param>
+            <param name="label">$LOCALIZE[32370]</param>
             <param name="value">$INFO[System.FPS,, fps]</param>
             <param name="visible">Player.HasVideo</param>
           </include>
           <include content="OSDTelemetryRow">
             <param name="h">42</param>
-            <param name="label">缓冲水位</param>
+            <param name="label">$LOCALIZE[32371]</param>
             <param name="value">$INFO[Player.CacheLevel,,%]</param>
             <param name="visible">Player.HasVideo</param>
           </include>

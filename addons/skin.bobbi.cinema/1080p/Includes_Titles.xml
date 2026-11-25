@@ -15,12 +15,15 @@
     <value condition="!String.IsEmpty(ListItem.Label2) + !String.IsEqual(ListItem.Label2,ListItem.Property(Bobbi.Title.zh)) + !String.IsEqual(ListItem.Label2,ListItem.TVShowTitle) + !String.IsEqual(ListItem.Label2,ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Label2,ListItem.Title) + !String.IsEqual(ListItem.Label2,ListItem.Label)">$INFO[ListItem.Label2]</value>
   </variable>
   <variable name="SeasonLabel">
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(ListItem.Property(Bobbi.SeasonName)) + !String.IsEmpty(ListItem.Season) + !String.IsEqual(ListItem.Season,0)">Season $INFO[ListItem.Season] · $INFO[ListItem.Property(Bobbi.SeasonName)]</value>
     <value condition="!String.IsEmpty(ListItem.Property(Bobbi.SeasonName)) + !String.IsEmpty(ListItem.Season) + !String.IsEqual(ListItem.Season,0)">第$INFO[ListItem.Season]季 · $INFO[ListItem.Property(Bobbi.SeasonName)]</value>
     <value condition="!String.IsEmpty(ListItem.Property(Bobbi.SeasonName))">$INFO[ListItem.Property(Bobbi.SeasonName)]</value>
-    <value condition="String.IsEqual(ListItem.Season,0)">特别篇</value>
+    <value condition="String.IsEqual(ListItem.Season,0)">$LOCALIZE[32057]</value>
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(ListItem.Season) + !String.IsEqual(ListItem.Season,-1)">Season $INFO[ListItem.Season]</value>
     <value condition="!String.IsEmpty(ListItem.Season) + !String.IsEqual(ListItem.Season,-1)">第$INFO[ListItem.Season]季</value>
   </variable>
   <variable name="EpisodeLabel">
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(ListItem.Episode) + !String.IsEqual(ListItem.Episode,-1)">Episode $INFO[ListItem.Episode]</value>
     <value condition="!String.IsEmpty(ListItem.Episode) + !String.IsEqual(ListItem.Episode,-1)">第$INFO[ListItem.Episode]集</value>
   </variable>
   <variable name="EpisodeTitle">

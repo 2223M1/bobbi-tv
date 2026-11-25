@@ -36,26 +36,34 @@
     <value condition="!Skin.HasSetting(BobbiLiquidGlassEnabled)">DCEBEBF5</value>
     <value>73EBEBF5</value>
   </variable>
-  <!-- ===== native glass navigation state ===== -->
-  <variable name="BobbiSectionLabel">
-    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),tv)">电视剧</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),movie)">电影</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),anime)">动漫</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),library)">片库</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),mine)">我的</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),settings)">设置</value>
-    <value>首页</value>
-  </variable>
-  <variable name="BobbiSectionIcon">
-    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),tv)">bobbi/glass/icons/tv.png</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),movie)">bobbi/glass/icons/film.png</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),anime)">bobbi/glass/icons/sparkles.png</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),library)">bobbi/glass/icons/stack.png</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),mine)">bobbi/glass/icons/person.png</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),settings)">bobbi/glass/icons/gear.png</value>
-    <value>bobbi/glass/icons/house.png</value>
-  </variable>
+  <!-- BobbiSectionLabel and BobbiSectionIcon are generated in Includes_HomeNav.generated.xml -->
   <expression name="BobbiSectionWide">String.IsEqual(Window(Home).Property(BobbiSection),tv)</expression>
+  <variable name="BobbiGlassShortState">
+    <value condition="Skin.HasSetting(BobbiLiquidGlassEnabled)">$LOCALIZE[32129]</value>
+    <value>$LOCALIZE[32130]</value>
+  </variable>
+  <variable name="CCPowerPrimaryLabel">
+    <value condition="System.CanPowerDown">$LOCALIZE[32140]</value>
+    <value condition="System.ShowExitButton">$LOCALIZE[32142]</value>
+    <value>$LOCALIZE[32145]</value>
+  </variable>
+  <variable name="CCReturnSubtitle">
+    <value condition="Player.HasMedia">$LOCALIZE[32147]</value>
+    <value>$LOCALIZE[32148]</value>
+  </variable>
+  <variable name="CCOrbCaption">
+    <value condition="Control.HasFocus(9021)">$LOCALIZE[32153]</value>
+    <value condition="Control.HasFocus(9022)">$LOCALIZE[32154]</value>
+    <value condition="Control.HasFocus(9023)">$LOCALIZE[32155]</value>
+    <value condition="Control.HasFocus(9024)">$LOCALIZE[32156]</value>
+  </variable>
+  <variable name="VideoContentFocus">
+    <value condition="Integer.IsGreater(Container(50).NumItems,0)">50</value>
+    <value condition="Control.IsVisible(9040)">9040</value>
+    <value condition="Control.IsVisible(9050)">9050</value>
+    <value condition="Control.IsVisible(9080)">9080</value>
+    <value>9701</value>
+  </variable>
   <variable name="BobbiTimeAMPM">
     <value condition="String.Contains(System.Time(xx),上) | String.Contains(System.Time(xx),AM) | String.Contains(System.Time(xx),am)">$INFO[System.Time(hh:mm)] AM</value>
     <value>$INFO[System.Time(hh:mm)] PM</value>
@@ -69,45 +77,36 @@
     <value>text</value>
   </variable>
   <expression name="BobbiIMECurrent">!String.IsEmpty(Window(10103).Property(BobbiIME.Ready)) + String.IsEqual(Control.GetLabel(313),Window(10103).Property(BobbiIME.Code)) + String.IsEqual(Control.GetLabel(314),Window(10103).Property(BobbiIME.Page))</expression>
-  <!-- Legacy recommendations must distinguish explicit person metadata from movie titles. -->
   <expression name="Exp_IsPersonInfo">String.IsEqual(ListItem.DBType,actor) | String.IsEqual(ListItem.DBType,person) | String.IsEqual(ListItem.Property(item.type),person) | String.IsEqual(ListItem.Property(tmdb_type),person)</expression>
-  <!-- A "next page" row from any of our plugins: the explicit flag, the Chinese label, or the
-       shared nextpage icon. Such a row gets an arrow tile instead of a blank poster. -->
   <expression name="BobbiIsMore">String.IsEqual(ListItem.Property(Bobbi.NextPage),true) | String.IsEqual(ListItem.Label,下一页) | String.StartsWith(ListItem.Label,Next Page) | String.EndsWith(ListItem.Art(icon),nextpage.png)</expression>
-  <!-- user library (网盘 / NAS / 片库) browser -->
   <expression name="BobbiInLibrary">String.StartsWith(Container.FolderPath,plugin://plugin.video.bobbi.library)</expression>
   <expression name="BobbiLibraryRoot">String.IsEqual(Container.FolderPath,plugin://plugin.video.bobbi.library/) | String.Contains(Container.FolderPath,action=root)</expression>
   <expression name="BobbiIsManage">String.Contains(ListItem.FolderPath,action=manage) | String.IsEqual(ListItem.Property(Bobbi.Library.Manage),true)</expression>
-  <!-- Library source location. Kodi's file window re-applies its %D label2 mask and clears
-       Label2, so the plugin also publishes Bobbi.Library.Location (checked on device, CE2027). -->
   <variable name="BobbiLibraryLocation">
     <value condition="!String.IsEmpty(ListItem.Property(Bobbi.Library.Location))">$INFO[ListItem.Property(Bobbi.Library.Location)]</value>
     <value>$INFO[ListItem.Label2]</value>
   </variable>
-  <!-- Plugin action progress does not register native playback context actions. -->
   <variable name="BobbiPercentPlayed">
     <value condition="!String.IsEmpty(ListItem.Property(PercentPlayed))">$INFO[ListItem.Property(PercentPlayed)]</value>
     <value>$INFO[ListItem.PercentPlayed]</value>
   </variable>
-  <!-- Kodi legacy Default*.png icon / fallback art guards & retry detection -->
   <expression name="IsKodiDefaultIcon">String.IsEmpty(ListItem.Icon) | String.StartsWith(ListItem.Icon,Default) | String.Contains(ListItem.Icon,DefaultFolder) | String.Contains(ListItem.Icon,DefaultFile) | String.Contains(ListItem.Icon,DefaultHardDisk) | String.Contains(ListItem.Icon,DefaultAddSource) | String.Contains(ListItem.Icon,DefaultAddon) | String.Contains(ListItem.Icon,DefaultVideo) | String.Contains(ListItem.Icon,DefaultPlaylist) | String.Contains(ListItem.Icon,DefaultMusic) | String.Contains(ListItem.Icon,DefaultPicture) | String.Contains(ListItem.Icon,DefaultProgram) | String.Contains(ListItem.Icon,DefaultNetwork) | String.Contains(ListItem.Icon,DefaultIcon)</expression>
-  <expression name="BobbiIsRetry">String.Contains(ListItem.Label,加载失败) | String.Contains(ListItem.Label,选择重试)</expression>
+  <expression name="BobbiIsRetry">String.Contains(ListItem.Label,加载失败) | String.Contains(ListItem.Label,选择重试) | String.Contains(ListItem.Label,Load failed) | String.Contains(ListItem.Label,Select to retry)</expression>
   <expression name="BobbiIsCategoryGrid">Container.Content(genres) | Container.Content(years) | Container.Content(studios) | Container.Content(countries) | String.Contains(Container.FolderPath,tmdb_genres) | String.Contains(Container.FolderPath,tmdb_years) | String.Contains(Container.FolderPath,tmdb_networks) | String.Contains(Container.FolderPath,tmdb_lang) | String.Contains(Container.FolderPath,Anime_Genres) | String.Contains(Container.FolderPath,Anime_Years)</expression>
 
-  <!-- native glass native glyph icon mappers replacing Kodi 2009 Default*.png icons -->
   <variable name="ATVMenuRowIcon">
     <value condition="String.Contains(ListItem.Label,播放列表) | String.Contains(ListItem.Icon,Playlist)">bobbi/glass/icons/list-bullet.png</value>
     <value condition="String.Contains(ListItem.Label,插件) | String.Contains(ListItem.Icon,Addon)">bobbi/glass/icons/puzzle.png</value>
-    <value condition="String.Contains(ListItem.Label,搜索)">bobbi/glass/icons/search.png</value>
-    <value condition="String.Contains(ListItem.Label,设置)">bobbi/glass/icons/gear.png</value>
+    <value condition="String.Contains(ListItem.Label,搜索) | String.Contains(ListItem.Label,Search)">bobbi/glass/icons/search.png</value>
+    <value condition="String.Contains(ListItem.Label,设置) | String.Contains(ListItem.Label,Settings)">bobbi/glass/icons/gear.png</value>
     <value condition="ListItem.IsFolder">bobbi/glass/icons/folder-outline.png</value>
     <value>bobbi/glass/icons/film-outline.png</value>
   </variable>
   <variable name="ATVAddonIcon">
-    <value condition="String.Contains(ListItem.Label,更新) | String.Contains(ListItem.Label,从库安装)">bobbi/glass/icons/download.png</value>
+    <value condition="String.Contains(ListItem.Label,更新) | String.Contains(ListItem.Label,从库安装) | String.Contains(ListItem.Label,Update) | String.Contains(ListItem.Label,repository)">bobbi/glass/icons/download.png</value>
     <value condition="String.Contains(ListItem.Label,zip) | String.Contains(ListItem.Label,ZIP)">bobbi/glass/icons/archive.png</value>
-    <value condition="String.Contains(ListItem.Label,搜索)">bobbi/glass/icons/search.png</value>
-    <value condition="String.Contains(ListItem.Label,游戏)">bobbi/glass/icons/sparkles.png</value>
+    <value condition="String.Contains(ListItem.Label,搜索) | String.Contains(ListItem.Label,Search)">bobbi/glass/icons/search.png</value>
+    <value condition="String.Contains(ListItem.Label,游戏) | String.Contains(ListItem.Label,Game)">bobbi/glass/icons/sparkles.png</value>
     <value>bobbi/glass/icons/puzzle.png</value>
   </variable>
   <variable name="ATVFileIcon">
@@ -122,7 +121,6 @@
     <value>bobbi/glass/icons/info.png</value>
   </variable>
 
-  <!-- art: poster for 2:3 cards, falling back to thumb, never Kodi Default*.png -->
   <variable name="PosterImage">
     <value condition="!String.IsEmpty(ListItem.Art(poster)) + !String.StartsWith(ListItem.Art(poster),Default)">$INFO[ListItem.Art(poster)]</value>
     <value condition="!String.IsEmpty(ListItem.Art(tvshow.poster)) + !String.StartsWith(ListItem.Art(tvshow.poster),Default)">$INFO[ListItem.Art(tvshow.poster)]</value>
@@ -142,8 +140,8 @@
     <value condition="!String.IsEmpty(ListItem.Art(thumb)) + !String.StartsWith(ListItem.Art(thumb),Default) + !String.Contains(ListItem.Art(thumb),DefaultFolder) + !String.Contains(ListItem.Art(thumb),DefaultAddon) + !String.Contains(ListItem.Art(thumb),DefaultVideo) + !String.Contains(ListItem.Art(thumb),nextpage.png)">$INFO[ListItem.Art(thumb)]</value>
   </variable>
 
-  <!-- Chinese title preferred; the cinema publishes AM6B.Title.zh/en/original -->
   <variable name="TitleZH">
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(ListItem.Property(AM6B.Title.en))">$INFO[ListItem.Property(AM6B.Title.en)]</value>
     <value condition="!String.IsEmpty(ListItem.Property(AM6B.Title.zh))">$INFO[ListItem.Property(AM6B.Title.zh)]</value>
     <value condition="!String.IsEmpty(ListItem.Title)">$INFO[ListItem.Title]</value>
     <value>$INFO[ListItem.Label]</value>
@@ -154,7 +152,6 @@
     <value condition="!String.IsEmpty(ListItem.OriginalTitle) + !String.IsEqual(ListItem.OriginalTitle,ListItem.Title)">$INFO[ListItem.OriginalTitle]</value>
   </variable>
 
-  <!-- source picker quality badge (read from the cinema's source list) -->
   <variable name="BobbiQualityBadge">
     <value condition="String.IsEqual(ListItem.Property(quality_plain),未知) | String.IsEqual(ListItem.Property(quality_plain),n/a) | String.IsEqual(ListItem.Property(quality_plain),N/A) | String.IsEmpty(ListItem.Property(quality_plain))" />
     <value condition="String.Contains(ListItem.Property(quality_plain),2160) | String.IsEqual(ListItem.Property(quality_plain),4k)">4K</value>
@@ -162,58 +159,60 @@
   </variable>
 
   <variable name="StreamLang">
-    <value condition="String.IsEqual(ListItem.Label,chi)">中文</value>
-    <value condition="String.IsEqual(ListItem.Label,zho)">中文</value>
-    <value condition="String.IsEqual(ListItem.Label,chs)">简体中文</value>
-    <value condition="String.IsEqual(ListItem.Label,cht)">繁体中文</value>
-    <value condition="String.IsEqual(ListItem.Label,eng)">英语</value>
-    <value condition="String.IsEqual(ListItem.Label,jpn)">日语</value>
-    <value condition="String.IsEqual(ListItem.Label,kor)">韩语</value>
-    <value condition="String.IsEqual(ListItem.Label,fre)">法语</value>
-    <value condition="String.IsEqual(ListItem.Label,fra)">法语</value>
-    <value condition="String.IsEqual(ListItem.Label,ger)">德语</value>
-    <value condition="String.IsEqual(ListItem.Label,deu)">德语</value>
-    <value condition="String.IsEqual(ListItem.Label,spa)">西班牙语</value>
-    <value condition="String.IsEqual(ListItem.Label,ita)">意大利语</value>
-    <value condition="String.IsEqual(ListItem.Label,rus)">俄语</value>
-    <value condition="String.IsEqual(ListItem.Label,tha)">泰语</value>
-    <value condition="String.IsEqual(ListItem.Label,por)">葡萄牙语</value>
-    <value condition="String.IsEqual(ListItem.Label,und)">未标注</value>
-    <value condition="String.IsEqual(ListItem.Label,UND)">未标注</value>
+    <value condition="String.IsEqual(ListItem.Label,chi)">$LOCALIZE[32250]</value>
+    <value condition="String.IsEqual(ListItem.Label,zho)">$LOCALIZE[32250]</value>
+    <value condition="String.IsEqual(ListItem.Label,chs)">$LOCALIZE[32251]</value>
+    <value condition="String.IsEqual(ListItem.Label,cht)">$LOCALIZE[32252]</value>
+    <value condition="String.IsEqual(ListItem.Label,eng)">$LOCALIZE[32253]</value>
+    <value condition="String.IsEqual(ListItem.Label,jpn)">$LOCALIZE[32254]</value>
+    <value condition="String.IsEqual(ListItem.Label,kor)">$LOCALIZE[32255]</value>
+    <value condition="String.IsEqual(ListItem.Label,fre)">$LOCALIZE[32256]</value>
+    <value condition="String.IsEqual(ListItem.Label,fra)">$LOCALIZE[32256]</value>
+    <value condition="String.IsEqual(ListItem.Label,ger)">$LOCALIZE[32257]</value>
+    <value condition="String.IsEqual(ListItem.Label,deu)">$LOCALIZE[32257]</value>
+    <value condition="String.IsEqual(ListItem.Label,spa)">$LOCALIZE[32258]</value>
+    <value condition="String.IsEqual(ListItem.Label,ita)">$LOCALIZE[32259]</value>
+    <value condition="String.IsEqual(ListItem.Label,rus)">$LOCALIZE[32260]</value>
+    <value condition="String.IsEqual(ListItem.Label,tha)">$LOCALIZE[32261]</value>
+    <value condition="String.IsEqual(ListItem.Label,por)">$LOCALIZE[32262]</value>
+    <value condition="String.IsEqual(ListItem.Label,und)">$LOCALIZE[32263]</value>
+    <value condition="String.IsEqual(ListItem.Label,UND)">$LOCALIZE[32263]</value>
     <value>$INFO[ListItem.Label]</value>
   </variable>
   <variable name="SkinSettingHint">
-    <value condition="Control.HasFocus(9105)">默认为左侧可收起液态玻璃侧栏，浏览内容时收起为左上角胶囊。开启后改为顶部居中的玻璃胶囊导航；切换后界面会重新载入。</value>
-    <value condition="Control.HasFocus(9106)">默认使用经典外观。开启时会说明本机支持实时折射，还是仅支持玻璃材质。关闭后立即恢复经典外观。</value>
-    <value condition="Control.HasFocus(9107)">自定义首页各栏目的显示、隐藏与上下顺序。设置保存在当前皮肤配置中，不修改安装目录文件；全部隐藏时仍保留“打开我的”与“恢复默认栏目”入口。</value>
-    <value condition="Control.HasFocus(9101)">关闭焦点放大、面板滑入和页面淡入。焦点胶囊、已选状态标记和正在播放标记保持不变。</value>
-    <value condition="Control.HasFocus(9102)">播放时控制栏5秒无操作后自动收起；字幕、音轨面板和设置打开时不会收起。</value>
-    <value condition="Control.HasFocus(9103)">电视不支持 HDR 时，自动对 HDR、HLG 和杜比视界片源执行 VS10 → SDR 转换。</value>
-    <value condition="Control.HasFocus(9104)">仅对配置了“返回确认”键位的遥控器生效。Yatse 与默认键位下，返回键只收起控制栏，停止请用控制栏上的停止键。</value>
+    <value condition="Control.HasFocus(9105)">$LOCALIZE[32120]</value>
+    <value condition="Control.HasFocus(9106)">$LOCALIZE[32121]</value>
+    <value condition="Control.HasFocus(9107)">$LOCALIZE[32122]</value>
+    <value condition="Control.HasFocus(9108)">$LOCALIZE[32123]</value>
+    <value condition="Control.HasFocus(9109)">$LOCALIZE[32124]</value>
+    <value condition="Control.HasFocus(9101)">$LOCALIZE[32125]</value>
+    <value condition="Control.HasFocus(9102)">$LOCALIZE[32126]</value>
+    <value condition="Control.HasFocus(9103)">$LOCALIZE[32127]</value>
+    <value condition="Control.HasFocus(9104)">$LOCALIZE[32128]</value>
   </variable>
   <variable name="SettingsSectionTitle">
-    <value condition="Window.IsActive(playersettings)">播放器</value>
-    <value condition="Window.IsActive(mediasettings)">媒体</value>
-    <value condition="Window.IsActive(pvrsettings)">直播电视</value>
-    <value condition="Window.IsActive(servicesettings)">服务</value>
-    <value condition="Window.IsActive(interfacesettings)">界面</value>
-    <value condition="Window.IsActive(systemsettings)">系统</value>
-    <value>设置</value>
+    <value condition="Window.IsActive(playersettings)">$LOCALIZE[32264]</value>
+    <value condition="Window.IsActive(mediasettings)">$LOCALIZE[32265]</value>
+    <value condition="Window.IsActive(pvrsettings)">$LOCALIZE[32266]</value>
+    <value condition="Window.IsActive(servicesettings)">$LOCALIZE[32267]</value>
+    <value condition="Window.IsActive(interfacesettings)">$LOCALIZE[32268]</value>
+    <value condition="Window.IsActive(systemsettings)">$LOCALIZE[32269]</value>
+    <value>$LOCALIZE[32013]</value>
   </variable>
   <variable name="SettingsSheetContext">
-    <value condition="Player.HasVideo + [Window.IsActive(osdaudiosettings) | Window.IsActive(osdsubtitlesettings) | Window.IsActive(osdvideosettings)]">$VAR[PlayerTitle]   ·   调整立即生效，返回 收起</value>
-    <value>↑↓ 选择   ·   ← → 调整   ·   返回 关闭</value>
+    <value condition="Player.HasVideo + [Window.IsActive(osdaudiosettings) | Window.IsActive(osdsubtitlesettings) | Window.IsActive(osdvideosettings)]">$VAR[PlayerTitle]   ·   $LOCALIZE[32270]</value>
+    <value>$LOCALIZE[32271]</value>
   </variable>
 
   <!-- detail page -->
   <variable name="DetailPrimaryLabel">
     <value condition="!String.IsEmpty(ListItem.Property(Bobbi.Catalog.ActionLabel))">$INFO[ListItem.Property(Bobbi.Catalog.ActionLabel)]</value>
-    <value condition="ListItem.IsFolder + String.IsEqual(ListItem.DBType,season)">选集</value>
-    <value condition="ListItem.IsFolder">选择季集</value>
-    <value condition="String.StartsWith(ListItem.FilenameAndPath,plugin://plugin.video.bobbi/) + [Integer.IsGreater(ListItem.Property(PercentPlayed),0) | Integer.IsGreater(ListItem.PercentPlayed,0)]">继续 · 选片源</value>
-    <value condition="String.StartsWith(ListItem.FilenameAndPath,plugin://plugin.video.bobbi/)">选择片源</value>
-    <value condition="Integer.IsGreater(ListItem.PercentPlayed,0)">继续播放</value>
-    <value>播放</value>
+    <value condition="ListItem.IsFolder + String.IsEqual(ListItem.DBType,season)">$LOCALIZE[32272]</value>
+    <value condition="ListItem.IsFolder">$LOCALIZE[32273]</value>
+    <value condition="String.StartsWith(ListItem.FilenameAndPath,plugin://plugin.video.bobbi/) + [Integer.IsGreater(ListItem.Property(PercentPlayed),0) | Integer.IsGreater(ListItem.PercentPlayed,0)]">$LOCALIZE[32274]</value>
+    <value condition="String.StartsWith(ListItem.FilenameAndPath,plugin://plugin.video.bobbi/)">$LOCALIZE[32275]</value>
+    <value condition="Integer.IsGreater(ListItem.PercentPlayed,0)">$LOCALIZE[32185]</value>
+    <value>$LOCALIZE[32051]</value>
   </variable>
   <variable name="DetailPrimaryIcon">
     <value condition="ListItem.IsFolder">bobbi/glass/icons/stack.png</value>
@@ -221,11 +220,11 @@
     <value>bobbi/glass/icons/play.png</value>
   </variable>
   <variable name="DetailKicker">
-    <value condition="String.IsEqual(ListItem.Property(Bobbi.Catalog.MediaKind),unknown)">原文件</value>
-    <value condition="String.IsEqual(ListItem.DBType,movie)">电影</value>
-    <value condition="String.IsEqual(ListItem.DBType,tvshow)">剧集</value>
-    <value condition="String.IsEqual(ListItem.DBType,season)">剧集 · 季</value>
-    <value condition="String.IsEqual(ListItem.DBType,episode)">剧集 · 单集</value>
+    <value condition="String.IsEqual(ListItem.Property(Bobbi.Catalog.MediaKind),unknown)">$LOCALIZE[32276]</value>
+    <value condition="String.IsEqual(ListItem.DBType,movie)">$LOCALIZE[32053]</value>
+    <value condition="String.IsEqual(ListItem.DBType,tvshow)">$LOCALIZE[32052]</value>
+    <value condition="String.IsEqual(ListItem.DBType,season)">$LOCALIZE[32277]</value>
+    <value condition="String.IsEqual(ListItem.DBType,episode)">$LOCALIZE[32278]</value>
   </variable>
 
   <!-- wide-card captions -->
@@ -237,13 +236,14 @@
     <value condition="!String.IsEmpty(ListItem.Season)">$VAR[SeasonLabel]$INFO[ListItem.Year,  ·  ]</value>
     <value>$VAR[TitleSecondary]</value>
   </variable>
-  <!-- meta line: year · genre · duration · rating -->
   <variable name="MetaLine">
+    <value condition="String.IsEqual($LOCALIZE[32399],en)">$INFO[ListItem.Year]$INFO[ListItem.Genre,  ·  ]$INFO[ListItem.Duration(h'h 'mm'm'),  ·  ]$INFO[ListItem.Property(TotalSeasons),  ·  , Seasons]$INFO[ListItem.Rating,  ·  ★ ]</value>
     <value>$INFO[ListItem.Year]$INFO[ListItem.Genre,  ·  ]$INFO[ListItem.Duration(h'小时'mm'分'),  ·  ]$INFO[ListItem.Property(TotalSeasons),  ·  共,季]$INFO[ListItem.Rating,  ·  ★ ]</value>
   </variable>
 
-  <!-- episode identity -->
   <variable name="EpisodeCode">
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(ListItem.Season) + !String.IsEmpty(ListItem.Episode)">S$INFO[ListItem.Season] · E$INFO[ListItem.Episode]</value>
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(ListItem.Episode)">Episode $INFO[ListItem.Episode]</value>
     <value condition="!String.IsEmpty(ListItem.Season) + !String.IsEmpty(ListItem.Episode)">第$INFO[ListItem.Season]季 · 第$INFO[ListItem.Episode]集</value>
     <value condition="!String.IsEmpty(ListItem.Episode)">第$INFO[ListItem.Episode]集</value>
   </variable>
@@ -255,12 +255,13 @@
     <value>$INFO[Player.Filename]</value>
   </variable>
   <variable name="PlayerSubtitle">
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(VideoPlayer.TVShowTitle) + !String.IsEmpty(VideoPlayer.Episode)">S$INFO[VideoPlayer.Season] E$INFO[VideoPlayer.Episode]$INFO[VideoPlayer.Title,  ·  ]</value>
     <value condition="!String.IsEmpty(VideoPlayer.TVShowTitle) + !String.IsEmpty(VideoPlayer.Episode)">第$INFO[VideoPlayer.Season]季 第$INFO[VideoPlayer.Episode]集$INFO[VideoPlayer.Title,  ·  ]</value>
     <value condition="!String.IsEmpty(VideoPlayer.OriginalTitle) + !String.IsEqual(VideoPlayer.OriginalTitle,VideoPlayer.Title)">$INFO[VideoPlayer.OriginalTitle]$INFO[VideoPlayer.Year,  ·  ]</value>
     <value>$INFO[VideoPlayer.Year]</value>
   </variable>
   <variable name="HDRLabel">
-    <value condition="String.IsEqual(Player.Process(video.source.hdr.type),dolbyvision)">杜比视界</value>
+    <value condition="String.IsEqual(Player.Process(video.source.hdr.type),dolbyvision)">$LOCALIZE[32279]</value>
     <value condition="String.IsEqual(Player.Process(video.source.hdr.type),hdr10)">HDR10</value>
     <value condition="String.StartsWith(Player.Process(video.source.hdr.type),hdr10)">HDR10+</value>
     <value condition="String.IsEqual(Player.Process(video.source.hdr.type),hlg)">HLG</value>
@@ -276,26 +277,26 @@
     <value>$INFO[VideoPlayer.AudioCodec]$INFO[VideoPlayer.AudioChannels, · ,ch]</value>
   </variable>
   <variable name="TempoLabel">
-    <value condition="Player.Paused">已暂停</value>
+    <value condition="Player.Paused">$LOCALIZE[32280]</value>
     <value condition="String.IsEmpty(Player.PlaySpeed) | String.IsEqual(Player.PlaySpeed,1.00) | String.IsEqual(Player.PlaySpeed,1)">1.0×</value>
     <value>$INFO[Player.PlaySpeed]×</value>
   </variable>
   <variable name="TempoModeLabel">
-    <value condition="Player.TempoEnabled">播放倍速</value>
-    <value>快进 / 快退</value>
+    <value condition="Player.TempoEnabled">$LOCALIZE[32281]</value>
+    <value>$LOCALIZE[32282]</value>
   </variable>
   <variable name="TempoNavigationHint">
-    <value condition="Player.Paused">已暂停   ·   按确认继续播放后再调速</value>
-    <value condition="Player.TempoEnabled">← 减速   ·   → 加速   ·   确认 恢复正常播放</value>
-    <value>← 快退   ·   → 快进   ·   确认 恢复正常播放</value>
+    <value condition="Player.Paused">$LOCALIZE[32283]</value>
+    <value condition="Player.TempoEnabled">$LOCALIZE[32284]</value>
+    <value>$LOCALIZE[32285]</value>
   </variable>
   <variable name="TempoStatusHint">
-    <value condition="Player.TempoEnabled">返回关闭菜单，保留当前速度</value>
-    <value>当前播放器不支持有声倍速[CR]快进 / 快退用于定位；返回 完成</value>
+    <value condition="Player.TempoEnabled">$LOCALIZE[32286]</value>
+    <value>$LOCALIZE[32287]</value>
   </variable>
   <variable name="VS10Label">
-    <value condition="String.IsEqual(Player.Process(video.source.hdr.type.raw),2)">不可用</value>
-    <value>片源 $INFO[Player.Process(video.source.hdr.type)]</value>
+    <value condition="String.IsEqual(Player.Process(video.source.hdr.type.raw),2) | String.IsEmpty(Player.Process(video.source.hdr.type))">$LOCALIZE[32145]</value>
+    <value>$LOCALIZE[32247] $INFO[Player.Process(video.source.hdr.type)]</value>
   </variable>
   <variable name="SeekStateIcon">
     <value condition="Player.Forwarding">bobbi/glass/icons/fastforward.png</value>
@@ -304,11 +305,12 @@
     <value>bobbi/glass/icons/play.png</value>
   </variable>
   <variable name="SeekStateLabel">
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(Player.SeekNumeric)">Jump to $INFO[Player.SeekNumeric]</value>
     <value condition="!String.IsEmpty(Player.SeekNumeric)">跳转到 $INFO[Player.SeekNumeric]</value>
-    <value condition="Player.Forwarding">快进 $INFO[Player.PlaySpeed]×</value>
-    <value condition="Player.Rewinding">快退 $INFO[Player.PlaySpeed]×</value>
+    <value condition="Player.Forwarding">$LOCALIZE[32218] $INFO[Player.PlaySpeed]×</value>
+    <value condition="Player.Rewinding">$LOCALIZE[32217] $INFO[Player.PlaySpeed]×</value>
     <value condition="Player.Seeking">$INFO[Player.SeekStepSize]</value>
-    <value condition="Player.Paused">已暂停</value>
+    <value condition="Player.Paused">$LOCALIZE[32280]</value>
     <value>$VAR[PlayerTitle]</value>
   </variable>
   <variable name="SeekTimeLabel">
@@ -320,8 +322,8 @@
     <value condition="Control.HasFocus(710)">$INFO[Container(710).ListItem.Property(hint)]</value>
   </variable>
   <variable name="PlayPauseHint">
-    <value condition="Player.Paused">继续播放</value>
-    <value>暂停</value>
+    <value condition="Player.Paused">$LOCALIZE[32185]</value>
+    <value>$LOCALIZE[32288]</value>
   </variable>
   <variable name="BobbiSeekUnavailable">
     <value condition="Player.SeekEnabled">false</value>
@@ -332,16 +334,16 @@
     <value>true</value>
   </variable>
   <variable name="BobbiSeekBackHint">
-    <value condition="Player.SeekEnabled">后退 10 秒</value>
-    <value>当前播放源不支持跳转</value>
+    <value condition="Player.SeekEnabled">$LOCALIZE[32289]</value>
+    <value>$LOCALIZE[32291]</value>
   </variable>
   <variable name="BobbiSeekForwardHint">
-    <value condition="Player.SeekEnabled">前进 30 秒</value>
-    <value>当前播放源不支持跳转</value>
+    <value condition="Player.SeekEnabled">$LOCALIZE[32290]</value>
+    <value>$LOCALIZE[32291]</value>
   </variable>
   <variable name="BobbiPauseHint">
     <value condition="Player.PauseEnabled | Player.Forwarding | Player.Rewinding">$VAR[PlayPauseHint]</value>
-    <value>当前播放源不支持暂停</value>
+    <value>$LOCALIZE[32292]</value>
   </variable>
   <variable name="BobbiNextStreamPanel">
     <value condition="!String.IsEmpty(Window(Home).Property(Bobbi.OSD.NextStreamPanel))">$INFO[Window(Home).Property(Bobbi.OSD.NextStreamPanel)]</value>
@@ -351,36 +353,34 @@
     <value condition="!String.IsEmpty(Window(Home).Property(Bobbi.OSD.StreamPanel)) + !String.StartsWith(Window(Home).Property(Bobbi.OSD.StreamPanel),opening)">$INFO[Window(Home).Property(Bobbi.OSD.StreamPanel)]</value>
   </variable>
   <variable name="BobbiStreamPlaceholder">
-    <value condition="Container(2021).IsUpdating | String.IsEmpty(Window(Home).Property(Bobbi.OSD.StreamPanel)) | !String.IsEqual(Window(Home).Property(Bobbi.OSD.StreamPanelRead),Window(Home).Property(Bobbi.OSD.StreamPanel))">正在读取轨道…</value>
-    <value condition="String.IsEqual(Window(Home).Property(Bobbi.OSD.Mode),unavailable)">暂时无法读取轨道，请重新打开</value>
-    <value>没有可选择的轨道</value>
+    <value condition="Container(2021).IsUpdating | String.IsEmpty(Window(Home).Property(Bobbi.OSD.StreamPanel)) | !String.IsEqual(Window(Home).Property(Bobbi.OSD.StreamPanelRead),Window(Home).Property(Bobbi.OSD.StreamPanel))">$LOCALIZE[32293]</value>
+    <value condition="String.IsEqual(Window(Home).Property(Bobbi.OSD.Mode),unavailable)">$LOCALIZE[32294]</value>
+    <value>$LOCALIZE[32295]</value>
   </variable>
   <variable name="PlayPauseIcon">
     <value condition="Player.Paused | Player.Forwarding | Player.Rewinding">bobbi/glass/icons/play.png</value>
     <value>bobbi/glass/icons/pause.png</value>
   </variable>
   <variable name="OSDFocusHint">
-    <value condition="Control.HasFocus(601)">上一章 / 上一集</value>
-    <value condition="Control.HasFocus(602)">后退 10 秒</value>
-    <value condition="Control.HasFocus(603) + Player.Paused">继续播放</value>
-    <value condition="Control.HasFocus(603)">暂停</value>
-    <value condition="Control.HasFocus(604)">前进 30 秒</value>
-    <value condition="Control.HasFocus(605)">下一章 / 下一集</value>
-    <value condition="Control.HasFocus(606)">停止播放并返回</value>
-    <value>返回 键收起控制栏</value>
+    <value condition="Control.HasFocus(601)">$LOCALIZE[32216]</value>
+    <value condition="Control.HasFocus(602)">$LOCALIZE[32289]</value>
+    <value condition="Control.HasFocus(603) + Player.Paused">$LOCALIZE[32185]</value>
+    <value condition="Control.HasFocus(603)">$LOCALIZE[32288]</value>
+    <value condition="Control.HasFocus(604)">$LOCALIZE[32290]</value>
+    <value condition="Control.HasFocus(605)">$LOCALIZE[32220]</value>
+    <value condition="Control.HasFocus(606)">$LOCALIZE[32222]</value>
+    <value>$LOCALIZE[32062]</value>
   </variable>
   <variable name="OSDChipHint">
-    <value condition="Control.HasFocus(701)">当前：$VAR[SubtitleLabel]</value>
-    <value condition="Control.HasFocus(702)">当前：$VAR[AudioLabel]</value>
-    <value condition="Control.HasFocus(703)">缩放、比例、色彩与去隔行</value>
-    <value condition="Control.HasFocus(704)">杜比视界 VS10 · 播放速度 · 书签 · 信号信息</value>
+    <value condition="Control.HasFocus(701)">$VAR[SubtitleLabel]</value>
+    <value condition="Control.HasFocus(702)">$VAR[AudioLabel]</value>
   </variable>
   <variable name="AudioCodecLabel">
     <value condition="String.StartsWith(VideoPlayer.AudioCodec,aac)">AAC</value>
-    <value condition="String.IsEqual(VideoPlayer.AudioCodec,eac3) + String.Contains(VideoPlayer.AudioLanguage,atmos)">杜比全景声</value>
-    <value condition="String.IsEqual(VideoPlayer.AudioCodec,eac3)">杜比数字+</value>
-    <value condition="String.IsEqual(VideoPlayer.AudioCodec,ac3)">杜比数字</value>
-    <value condition="String.StartsWith(VideoPlayer.AudioCodec,truehd)">杜比 TrueHD</value>
+    <value condition="String.IsEqual(VideoPlayer.AudioCodec,eac3) + String.Contains(VideoPlayer.AudioLanguage,atmos)">$LOCALIZE[32296]</value>
+    <value condition="String.IsEqual(VideoPlayer.AudioCodec,eac3)">$LOCALIZE[32297]</value>
+    <value condition="String.IsEqual(VideoPlayer.AudioCodec,ac3)">$LOCALIZE[32298]</value>
+    <value condition="String.StartsWith(VideoPlayer.AudioCodec,truehd)">$LOCALIZE[32299]</value>
     <value condition="String.IsEqual(VideoPlayer.AudioCodec,dtshd_ma)">DTS-HD MA</value>
     <value condition="String.IsEqual(VideoPlayer.AudioCodec,dtshd_hra)">DTS-HD HR</value>
     <value condition="String.IsEqual(VideoPlayer.AudioCodec,dtsx) | String.IsEqual(VideoPlayer.AudioCodec,dtshd_ma_x)">DTS:X</value>
@@ -392,23 +392,23 @@
     <value>$INFO[VideoPlayer.AudioCodec]</value>
   </variable>
   <variable name="AudioLangLabel">
-    <value condition="String.IsEqual(VideoPlayer.AudioLanguage,chi) | String.IsEqual(VideoPlayer.AudioLanguage,zho) | String.IsEqual(VideoPlayer.AudioLanguage,Chinese)">中文 · $VAR[AudioCodecLabel]</value>
-    <value condition="String.IsEqual(VideoPlayer.AudioLanguage,eng) | String.IsEqual(VideoPlayer.AudioLanguage,English)">英语 · $VAR[AudioCodecLabel]</value>
-    <value condition="String.IsEqual(VideoPlayer.AudioLanguage,jpn) | String.IsEqual(VideoPlayer.AudioLanguage,Japanese)">日语 · $VAR[AudioCodecLabel]</value>
-    <value condition="String.IsEqual(VideoPlayer.AudioLanguage,kor) | String.IsEqual(VideoPlayer.AudioLanguage,Korean)">韩语 · $VAR[AudioCodecLabel]</value>
+    <value condition="String.IsEqual(VideoPlayer.AudioLanguage,chi) | String.IsEqual(VideoPlayer.AudioLanguage,zho) | String.IsEqual(VideoPlayer.AudioLanguage,Chinese)">$LOCALIZE[32250] · $VAR[AudioCodecLabel]</value>
+    <value condition="String.IsEqual(VideoPlayer.AudioLanguage,eng) | String.IsEqual(VideoPlayer.AudioLanguage,English)">$LOCALIZE[32253] · $VAR[AudioCodecLabel]</value>
+    <value condition="String.IsEqual(VideoPlayer.AudioLanguage,jpn) | String.IsEqual(VideoPlayer.AudioLanguage,Japanese)">$LOCALIZE[32254] · $VAR[AudioCodecLabel]</value>
+    <value condition="String.IsEqual(VideoPlayer.AudioLanguage,kor) | String.IsEqual(VideoPlayer.AudioLanguage,Korean)">$LOCALIZE[32255] · $VAR[AudioCodecLabel]</value>
     <value condition="!String.IsEmpty(VideoPlayer.AudioLanguage)">$INFO[VideoPlayer.AudioLanguage] · $VAR[AudioCodecLabel]</value>
     <value>$VAR[AudioCodecLabel]</value>
   </variable>
   <variable name="SubtitleToggleLabel">
-    <value condition="VideoPlayer.SubtitlesEnabled">关闭字幕</value>
-    <value condition="VideoPlayer.HasSubtitles">打开字幕</value>
+    <value condition="VideoPlayer.SubtitlesEnabled">$LOCALIZE[32300]</value>
+    <value condition="VideoPlayer.HasSubtitles">$LOCALIZE[32301]</value>
   </variable>
   <variable name="SubtitleLabel">
-    <value condition="!VideoPlayer.SubtitlesEnabled">字幕已关闭</value>
+    <value condition="!VideoPlayer.SubtitlesEnabled">$LOCALIZE[32302]</value>
     <value condition="!String.IsEmpty(VideoPlayer.SubtitlesName)">$INFO[VideoPlayer.SubtitlesName]</value>
     <value condition="!String.IsEmpty(VideoPlayer.SubtitlesLanguage)">$INFO[VideoPlayer.SubtitlesLanguage]</value>
-    <value condition="VideoPlayer.HasSubtitles">字幕已开启</value>
-    <value>无字幕</value>
+    <value condition="VideoPlayer.HasSubtitles">$LOCALIZE[32303]</value>
+    <value>$LOCALIZE[32304]</value>
   </variable>
   <variable name="BobbiSourceHDR">
     <value condition="!String.IsEmpty(Player.Process(video.source.additional.hdr.type)) + !String.IsEqual(Player.Process(video.source.hdr.type),Player.Process(video.source.additional.hdr.type))">$INFO[Player.Process(video.source.hdr.type)]$INFO[Player.Process(video.source.additional.hdr.type),  +  ,]</value>
@@ -424,14 +424,16 @@
     <value>plugin://plugin.video.bobbi/?action=continue_watching_menu</value>
   </variable>
   <variable name="PersonalPosterLabel">
-    <value condition="String.IsEqual(ListItem.Label,Clear Titles)">清空观看历史</value>
+    <value condition="String.IsEqual(ListItem.Label,Clear Titles)">$LOCALIZE[32310]</value>
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(ListItem.Property(Bobbi.Title.en))">$INFO[ListItem.Property(Bobbi.Title.en)]</value>
     <value condition="!String.IsEmpty(ListItem.Property(Bobbi.Title.zh))">$INFO[ListItem.Property(Bobbi.Title.zh)]</value>
     <value condition="!String.IsEmpty(ListItem.TVShowTitle)">$INFO[ListItem.TVShowTitle]</value>
     <value condition="!String.IsEmpty(ListItem.Title)">$INFO[ListItem.Title]</value>
     <value>$INFO[ListItem.Label]</value>
   </variable>
   <variable name="PersonalPosterSub">
-    <value condition="String.IsEqual(ListItem.Label,Clear Titles)">移除全部最近观看记录</value>
+    <value condition="String.IsEqual(ListItem.Label,Clear Titles)">$LOCALIZE[32311]</value>
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(ListItem.Season) + !String.IsEmpty(ListItem.Episode)">S$INFO[ListItem.Season] · E$INFO[ListItem.Episode]</value>
     <value condition="!String.IsEmpty(ListItem.Season) + !String.IsEmpty(ListItem.Episode)">第$INFO[ListItem.Season]季 · 第$INFO[ListItem.Episode]集</value>
     <value condition="!String.IsEmpty(ListItem.Label2)">$INFO[ListItem.Label2]</value>
     <value condition="!String.IsEmpty(ListItem.Year)">$INFO[ListItem.Year]$INFO[ListItem.Genre, · ]</value>
@@ -446,26 +448,26 @@
     <value>bobbi/glass/icons/clock-outline.png</value>
   </variable>
   <variable name="PersonalEmptyTitle">
-    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),history) + Container(9201).IsUpdating">正在读取观看历史</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),history)">暂无观看历史</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),movies) + Container(9201).IsUpdating">正在读取电影片库</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),movies)">还没有加入片库的电影</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),tv) + Container(9201).IsUpdating">正在读取剧集片库</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),tv)">还没有加入片库的剧集</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),favs) + Container(9205).IsUpdating">正在读取收藏</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),favs)">还没有收藏内容</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),catalog) + Container(9201).IsUpdating">正在读取作品片库</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),catalog)">尚未索引作品片库</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),sources)">正在读取片库来源</value>
-    <value>暂无内容</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),history) + Container(9201).IsUpdating">$LOCALIZE[32312]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),history)">$LOCALIZE[32313]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),movies) + Container(9201).IsUpdating">$LOCALIZE[32314]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),movies)">$LOCALIZE[32315]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),tv) + Container(9201).IsUpdating">$LOCALIZE[32316]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),tv)">$LOCALIZE[32317]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),favs) + Container(9205).IsUpdating">$LOCALIZE[32318]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),favs)">$LOCALIZE[32319]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),catalog) + Container(9201).IsUpdating">$LOCALIZE[32320]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),catalog)">$LOCALIZE[32321]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),sources)">$LOCALIZE[32322]</value>
+    <value>$LOCALIZE[32323]</value>
   </variable>
   <variable name="PersonalEmptySub">
-    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),history)">最近播放过的影片与剧集会按时间展示在这里。</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),movies)">在影片详情页加入片库后，会以海报墙展示在这里。</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),tv)">在剧集详情页加入片库后，会以海报墙展示在这里。</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),favs)">在任意影片或目录上按菜单键即可加入收藏。</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),catalog)">连接原生网盘或媒体库后，已索引作品会展示在这里。</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),sources)">可在左侧或设置中管理网盘与 NAS 来源。</value>
-    <value>请从左侧分类浏览。</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),history)">$LOCALIZE[32324]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),movies)">$LOCALIZE[32325]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),tv)">$LOCALIZE[32326]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),favs)">$LOCALIZE[32327]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),catalog)">$LOCALIZE[32328]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiPersonalTab),sources)">$LOCALIZE[32329]</value>
+    <value>$LOCALIZE[32330]</value>
   </variable>
 </includes>

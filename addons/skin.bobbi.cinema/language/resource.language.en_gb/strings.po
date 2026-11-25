@@ -23,6 +23,10 @@ msgctxt "Addon Description"
 msgid "Browse posters, choose a source and control playback."
 msgstr ""
 
+msgctxt "#14076"
+msgid "Add to favourites"
+msgstr ""
+
 msgctxt "#31000"
 msgid "Change your"
 msgstr ""
@@ -211,8 +215,6 @@ msgctxt "#31046"
 msgid "SEEKING"
 msgstr ""
 
-#empty string with id 31047
-
 msgctxt "#31048"
 msgid "Visualisation presets"
 msgstr ""
@@ -228,8 +230,6 @@ msgstr ""
 msgctxt "#31051"
 msgid "Sort: Descending"
 msgstr ""
-
-#empty strings from id 31052 to 31054
 
 msgctxt "#31055"
 msgid "Open playlist"
@@ -251,13 +251,9 @@ msgctxt "#31059"
 msgid "Current playlist"
 msgstr ""
 
-#empty string with id 31060
-
 msgctxt "#31061"
 msgid "Current selected"
 msgstr ""
-
-#empty strings from id 31062 to 31100
 
 msgctxt "#31101"
 msgid "Home screen options"
@@ -274,8 +270,6 @@ msgstr ""
 msgctxt "#31104"
 msgid "Play trailers in a window [COLOR=grey3](Video information dialogue only)[/COLOR]"
 msgstr ""
-
-#empty string with id 31105
 
 msgctxt "#31106"
 msgid "Miscellaneous options"
@@ -325,7 +319,6 @@ msgctxt "#31117"
 msgid "Show recently added videos"
 msgstr ""
 
-#. In main language strings its used as submenu
 msgctxt "#31118"
 msgid "Home page \"Add-ons\" submenu"
 msgstr ""
@@ -334,20 +327,13 @@ msgctxt "#31119"
 msgid "Hide background fanart"
 msgstr ""
 
-#. In main language strings its used as submenu
 msgctxt "#31120"
 msgid "Home page \"Games\" submenu"
 msgstr ""
 
-#empty string with id 31121
-
-#. Boolean settings value
-#: system/settings/settings.xml
 msgctxt "#31122"
 msgid "Hide EPG if RDS is present on channel window"
 msgstr ""
-
-#empty string with id 31123
 
 msgctxt "#31124"
 msgid "Show background \"Now playing\" video"
@@ -361,8 +347,6 @@ msgctxt "#31126"
 msgid "Show posters instead of thumbs for musicvideos"
 msgstr ""
 
-#empty string with ID 31127
-
 msgctxt "#31128"
 msgid "Lyrics"
 msgstr ""
@@ -371,15 +355,10 @@ msgctxt "#31129"
 msgid "Hide fanart in full screen visualisation"
 msgstr ""
 
-#empty strings from id 31130 to 31131
-
 msgctxt "#31132"
 msgid "Lyrics add-on"
 msgstr ""
 
-#empty string with id 31133
-
-#. In main language strings its used as submenu
 msgctxt "#31134"
 msgid "Home page \"Videos\" submenu"
 msgstr ""
@@ -392,13 +371,9 @@ msgctxt "#31136"
 msgid "Home page \"Pictures\" submenu"
 msgstr ""
 
-#empty strings from id 31137 to 31139
-
 msgctxt "#31140"
 msgid "Music OSD"
 msgstr ""
-
-#empty string with id 31141
 
 msgctxt "#31142"
 msgid "Settings level"
@@ -428,25 +403,21 @@ msgctxt "#31148"
 msgid "Hide - Search"
 msgstr ""
 
-#empty strings from id 31149 to 31199
+msgctxt "#31149"
+msgid "Submenu"
+msgstr ""
 
 msgctxt "#31200"
 msgid "Shortcuts"
 msgstr ""
 
-#empty strings from id 31201 to 31202
-
 msgctxt "#31203"
 msgid "Choose your song"
 msgstr ""
 
-#empty string with id 31204
-
 msgctxt "#31205"
 msgid "Lyrics source"
 msgstr ""
-
-#empty strings from id 31206 to 31207
 
 msgctxt "#31208"
 msgid "Upcoming episodes"
@@ -456,8 +427,6 @@ msgctxt "#31209"
 msgid "Hide Master profile main menu buttons"
 msgstr ""
 
-#empty strings from id 31210 to 31299
-
 msgctxt "#31300"
 msgid "Current temperature"
 msgstr ""
@@ -466,13 +435,9 @@ msgctxt "#31301"
 msgid "Last updated"
 msgstr ""
 
-#empty string with id 31302
-
 msgctxt "#31303"
 msgid "Data provider"
 msgstr ""
-
-#empty strings from id 31304 to 31307
 
 msgctxt "#31308"
 msgid "Movie details"
@@ -482,8 +447,6 @@ msgctxt "#31309"
 msgid "Memory used:"
 msgstr ""
 
-#empty strings from id 31310 to 31318
-
 msgctxt "#31319"
 msgid "Selected profile"
 msgstr ""
@@ -492,13 +455,9 @@ msgctxt "#31320"
 msgid "Last logged in"
 msgstr ""
 
-#empty string with id 31321
-
 msgctxt "#31322"
 msgid "Aired"
 msgstr ""
-
-#empty strings from id 31323 to 31324
 
 msgctxt "#31325"
 msgid "Playlist options"
@@ -512,8 +471,6 @@ msgctxt "#31327"
 msgid "Resolution"
 msgstr ""
 
-#empty string with id 31328
-
 msgctxt "#31329"
 msgid "[B]Timer set![/B] [COLOR=grey2] - System auto shutdown in[/COLOR]"
 msgstr ""
@@ -525,8 +482,6 @@ msgstr ""
 msgctxt "#31331"
 msgid "Album details"
 msgstr ""
-
-#empty strings from id 31332 to 31350
 
 msgctxt "#31351"
 msgid "Pause"
@@ -552,9 +507,6 @@ msgctxt "#31356"
 msgid "Download subtitles"
 msgstr ""
 
-#empty strings from id 31357 to 31359
-
-# Stereoscopic labels
 msgctxt "#31360"
 msgid "Watch as 2D"
 msgstr ""
@@ -567,19 +519,89 @@ msgctxt "#31362"
 msgid "Enabled"
 msgstr ""
 
-#empty strings from id 31363 to 31389
-
 msgctxt "#31390"
 msgid "Skin default"
 msgstr ""
 
-#empty string with id 31391
+msgctxt "#31391"
+msgid "UI window transparency"
+msgstr ""
 
 msgctxt "#31392"
 msgid "Arial based"
 msgstr ""
 
-#empty strings from id 31393 to 31410
+msgctxt "#31393"
+msgid "90% transparency"
+msgstr ""
+
+msgctxt "#31394"
+msgid "80% transparency"
+msgstr ""
+
+msgctxt "#31395"
+msgid "70% transparency"
+msgstr ""
+
+msgctxt "#31396"
+msgid "Custom icon only"
+msgstr ""
+
+msgctxt "#31397"
+msgid "Custom background only"
+msgstr ""
+
+msgctxt "#31398"
+msgid "Custom icon and background"
+msgstr ""
+
+msgctxt "#31399"
+msgid "Custom icon and wallpaper"
+msgstr ""
+
+msgctxt "#31400"
+msgid "Display method of sub-library"
+msgstr ""
+
+msgctxt "#31401"
+msgid "Big thumb"
+msgstr ""
+
+msgctxt "#31402"
+msgid "Small thumb"
+msgstr ""
+
+msgctxt "#31403"
+msgid "Text title"
+msgstr ""
+
+msgctxt "#31404"
+msgid "Poster display mode"
+msgstr ""
+
+msgctxt "#31405"
+msgid "Center poster focus"
+msgstr ""
+
+msgctxt "#31406"
+msgid "3D posters type-1"
+msgstr ""
+
+msgctxt "#31407"
+msgid "3D posters type-2"
+msgstr ""
+
+msgctxt "#31408"
+msgid "Remote profile"
+msgstr ""
+
+msgctxt "#31409"
+msgid "China Mobile Bluetooth Remote"
+msgstr ""
+
+msgctxt "#31410"
+msgid "AM6B+ UR02 Remote"
+msgstr ""
 
 msgctxt "#31411"
 msgid "First run help..."
@@ -593,7 +615,29 @@ msgctxt "#31413"
 msgid "Local subtitle available"
 msgstr ""
 
-#empty strings from id 31414 to 31419
+msgctxt "#31414"
+msgid "Resume prompt formats"
+msgstr ""
+
+msgctxt "#31415"
+msgid "All formats"
+msgstr ""
+
+msgctxt "#31416"
+msgid "ISO disc images only"
+msgstr ""
+
+msgctxt "#31417"
+msgid "Turn off resume prompt"
+msgstr ""
+
+msgctxt "#31418"
+msgid "Left poster focus"
+msgstr ""
+
+msgctxt "#31419"
+msgid "Zidoo V12 Remote"
+msgstr ""
 
 msgctxt "#31420"
 msgid "Login"
@@ -610,8 +654,6 @@ msgstr ""
 msgctxt "#31423"
 msgid "Select the profile that will be used at startup when the login screen is disabled."
 msgstr ""
-
-#empty strings from id 31424 to 31429
 
 msgctxt "#31430"
 msgid "[B]PLAYER SETTINGS[/B][CR][CR]Configure actions that can be used during playback · Configure how media content is played"
@@ -641,13 +683,9 @@ msgctxt "#31436"
 msgid "[B]INTERFACE SETTINGS[/B][CR][CR]Configure skin · Configure region · Configure control · Configure screensaver · Configure master lock"
 msgstr ""
 
-#empty strings from id 31437 to 31500
-
 msgctxt "#31501"
 msgid "Scheduled time"
 msgstr ""
-
-#empty string with id 31502
 
 msgctxt "#31503"
 msgid "Add group"
@@ -665,8 +703,6 @@ msgctxt "#31506"
 msgid "Available[CR]Groups"
 msgstr ""
 
-#empty strings from id 31507 to 31508
-
 msgctxt "#31509"
 msgid "Channel group"
 msgstr ""
@@ -678,8 +714,6 @@ msgstr ""
 msgctxt "#31511"
 msgid "Channel options"
 msgstr ""
-
-#empty strings from id 31512 to 31900
 
 msgctxt "#31901"
 msgid "36-hour forecast"
@@ -701,13 +735,9 @@ msgctxt "#31905"
 msgid "Forecast"
 msgstr ""
 
-#empty strings from id 31906 to 31909
-
 msgctxt "#31910"
 msgid "Maps"
 msgstr ""
-
-#empty strings from id 31911 to 31949
 
 msgctxt "#31950"
 msgid "WEATHER"
@@ -757,35 +787,1362 @@ msgctxt "#31961"
 msgid "Timeshift"
 msgstr ""
 
-#. Choose profile identifier
-#: /720p/SkinSettings.xml
 msgctxt "#31962"
 msgid "Choose kind of profile identification"
 msgstr ""
 
-#. Label for the kind of profile identification
-#: /720p/SkinSettings.xml
 msgctxt "#31963"
 msgid "Profile name"
 msgstr ""
 
-#. Label for the kind of profile identification
-#: /720p/SkinSettings.xml
 msgctxt "#31964"
 msgid "Profile avatar"
 msgstr ""
 
-#: /720p/SkinSettings.xml
 msgctxt "#31965"
 msgid "Show big AV logos in the Video OSD"
 msgstr ""
 
-#: /720p/SkinSettings.xml
 msgctxt "#31966"
 msgid "Show HDR logos, in the start of the movie"
 msgstr ""
 
-#: /720p/SkinSettings.xml
 msgctxt "#31967"
 msgid "Settings / VS10"
+msgstr ""
+
+msgctxt "#32000"
+msgid "Bobbi TV"
+msgstr ""
+
+msgctxt "#32001"
+msgid "Home"
+msgstr ""
+
+msgctxt "#32002"
+msgid "TV Shows"
+msgstr ""
+
+msgctxt "#32003"
+msgid "Movies"
+msgstr ""
+
+msgctxt "#32004"
+msgid "Anime"
+msgstr ""
+
+msgctxt "#32005"
+msgid "My Library"
+msgstr ""
+
+msgctxt "#32006"
+msgid "Continue Watching"
+msgstr ""
+
+msgctxt "#32007"
+msgid "Poster Catalog"
+msgstr ""
+
+msgctxt "#32008"
+msgid "Saved Views"
+msgstr ""
+
+msgctxt "#32009"
+msgid "Cloud & Shares"
+msgstr ""
+
+msgctxt "#32010"
+msgid "Media Servers"
+msgstr ""
+
+msgctxt "#32011"
+msgid "Favourites"
+msgstr ""
+
+msgctxt "#32012"
+msgid "Search"
+msgstr ""
+
+msgctxt "#32013"
+msgid "Settings"
+msgstr ""
+
+msgctxt "#32014"
+msgid "Tools & Power"
+msgstr ""
+
+msgctxt "#32015"
+msgid "Tools"
+msgstr ""
+
+msgctxt "#32030"
+msgid "Continue Watching"
+msgstr ""
+
+msgctxt "#32031"
+msgid "Emby Continue Watching"
+msgstr ""
+
+msgctxt "#32032"
+msgid "Emby Recently Added"
+msgstr ""
+
+msgctxt "#32033"
+msgid "Popular TV Shows"
+msgstr ""
+
+msgctxt "#32034"
+msgid "Popular Movies"
+msgstr ""
+
+msgctxt "#32035"
+msgid "Seasonal Anime"
+msgstr ""
+
+msgctxt "#32036"
+msgid "Anime Movies"
+msgstr ""
+
+msgctxt "#32037"
+msgid "My Library"
+msgstr ""
+
+msgctxt "#32040"
+msgid "Loading catalog…"
+msgstr ""
+
+msgctxt "#32041"
+msgid "Catalog temporarily unavailable"
+msgstr ""
+
+msgctxt "#32042"
+msgid "Open My Library or Tools to configure accounts, cloud shares, or spaces"
+msgstr ""
+
+msgctxt "#32043"
+msgid "Open My Library"
+msgstr ""
+
+msgctxt "#32044"
+msgid "Reset Default Rails"
+msgstr ""
+
+msgctxt "#32045"
+msgid "Select to open  ·  Add or manage cloud & NAS in My Library"
+msgstr ""
+
+msgctxt "#32046"
+msgid "Select to resume"
+msgstr ""
+
+msgctxt "#32047"
+msgid "Select to view"
+msgstr ""
+
+msgctxt "#32048"
+msgid "Watched"
+msgstr ""
+
+msgctxt "#32049"
+msgid "Resume"
+msgstr ""
+
+msgctxt "#32050"
+msgid "Open"
+msgstr ""
+
+msgctxt "#32051"
+msgid "Play"
+msgstr ""
+
+msgctxt "#32052"
+msgid "Series"
+msgstr ""
+
+msgctxt "#32053"
+msgid "Movie"
+msgstr ""
+
+msgctxt "#32054"
+msgid "Showing cached list · Browse normally"
+msgstr ""
+
+msgctxt "#32055"
+msgid "Loading watch history…"
+msgstr ""
+
+msgctxt "#32056"
+msgid "View More"
+msgstr ""
+
+msgctxt "#32057"
+msgid "Specials"
+msgstr ""
+
+msgctxt "#32058"
+msgid "Load Failed"
+msgstr ""
+
+msgctxt "#32059"
+msgid "Press OK to reload"
+msgstr ""
+
+msgctxt "#32060"
+msgid "Loading…"
+msgstr ""
+
+msgctxt "#32061"
+msgid "Nothing here yet"
+msgstr ""
+
+msgctxt "#32062"
+msgid "Press Back to return"
+msgstr ""
+
+msgctxt "#32063"
+msgid "Press Back to return, or Left to switch spaces"
+msgstr ""
+
+msgctxt "#32064"
+msgid "Switch Space / Back"
+msgstr ""
+
+msgctxt "#32070"
+msgid "Interface & Language"
+msgstr ""
+
+msgctxt "#32071"
+msgid "UI language, display fit, motion & Liquid Glass"
+msgstr ""
+
+msgctxt "#32072"
+msgid "Home & Navigation"
+msgstr ""
+
+msgctxt "#32073"
+msgid "Sidebar spaces, home rails & navigation bar"
+msgstr ""
+
+msgctxt "#32074"
+msgid "Playback & Subtitles"
+msgstr ""
+
+msgctxt "#32075"
+msgid "Playback defaults, audio/subtitle preferences & HDR/SDR"
+msgstr ""
+
+msgctxt "#32076"
+msgid "Content & Source Preferences"
+msgstr ""
+
+msgctxt "#32077"
+msgid "Metadata language, poster/rating display & source filters"
+msgstr ""
+
+msgctxt "#32078"
+msgid "Network & Devices"
+msgstr ""
+
+msgctxt "#32079"
+msgid "Remote control services, LAN shares, backends & pairing"
+msgstr ""
+
+msgctxt "#32080"
+msgid "System & Maintenance"
+msgstr ""
+
+msgctxt "#32081"
+msgid "Updates & recovery, cache & backup, add-ons, diagnostics & system"
+msgstr ""
+
+msgctxt "#32082"
+msgid "UI Language & Region"
+msgstr ""
+
+msgctxt "#32083"
+msgid "Display Fit & Overscan Check"
+msgstr ""
+
+msgctxt "#32084"
+msgid "Appearance & Liquid Glass"
+msgstr ""
+
+msgctxt "#32085"
+msgid "Skin, Fonts & Screensaver"
+msgstr ""
+
+msgctxt "#32086"
+msgid "Manage Sidebar Spaces"
+msgstr ""
+
+msgctxt "#32087"
+msgid "Manage Home Rails"
+msgstr ""
+
+msgctxt "#32088"
+msgid "Navigation Bar & Motion"
+msgstr ""
+
+msgctxt "#32089"
+msgid "Cinema Home & Widget Preferences"
+msgstr ""
+
+msgctxt "#32090"
+msgid "Cinema Playback & Subtitles"
+msgstr ""
+
+msgctxt "#32091"
+msgid "Kodi Player & Track Defaults"
+msgstr ""
+
+msgctxt "#32092"
+msgid "OSD & Dolby Vision VS10"
+msgstr ""
+
+msgctxt "#32093"
+msgid "Original Audio & Chinese Subtitle Guide"
+msgstr ""
+
+msgctxt "#32094"
+msgid "Metadata, Artwork & Source Filters"
+msgstr ""
+
+msgctxt "#32095"
+msgid "Kodi Media & Scraper Preferences"
+msgstr ""
+
+msgctxt "#32096"
+msgid "Open Accounts & Sources Hub"
+msgstr ""
+
+msgctxt "#32097"
+msgid "Remote Control, Yatse & LAN Services"
+msgstr ""
+
+msgctxt "#32098"
+msgid "BT Playback Engine & Helper Pairing"
+msgstr ""
+
+msgctxt "#32099"
+msgid "Cloud Direct & Transport Parameters"
+msgstr ""
+
+msgctxt "#32100"
+msgid "Devices & Phone Sessions"
+msgstr ""
+
+msgctxt "#32101"
+msgid "Updates, Recovery & Storage Cleanup"
+msgstr ""
+
+msgctxt "#32102"
+msgid "Cache, Backup & Release Notes"
+msgstr ""
+
+msgctxt "#32103"
+msgid "Diagnostics & Player Check"
+msgstr ""
+
+msgctxt "#32104"
+msgid "Installed Add-ons & Repositories"
+msgstr ""
+
+msgctxt "#32105"
+msgid "System Display, Audio Output & Input"
+msgstr ""
+
+msgctxt "#32106"
+msgid "System Information"
+msgstr ""
+
+msgctxt "#32107"
+msgid "Live TV & PVR Settings"
+msgstr ""
+
+msgctxt "#32110"
+msgid "Appearance & Interaction"
+msgstr ""
+
+msgctxt "#32111"
+msgid "Reduce Motion"
+msgstr ""
+
+msgctxt "#32112"
+msgid "Navigation & Liquid Glass"
+msgstr ""
+
+msgctxt "#32113"
+msgid "Top Capsule Navigation"
+msgstr ""
+
+msgctxt "#32114"
+msgid "Liquid Glass"
+msgstr ""
+
+msgctxt "#32115"
+msgid "Spaces & Home Rails"
+msgstr ""
+
+msgctxt "#32116"
+msgid "Playback & OSD"
+msgstr ""
+
+msgctxt "#32117"
+msgid "Auto-Hide OSD Controls"
+msgstr ""
+
+msgctxt "#32118"
+msgid "Auto HDR/DV to SDR on SDR TVs"
+msgstr ""
+
+msgctxt "#32119"
+msgid "Back Key Stops Playback Directly"
+msgstr ""
+
+msgctxt "#32120"
+msgid "Default is a collapsible left Liquid Glass sidebar. Turning this on switches to a centered top glass capsule and reloads the skin."
+msgstr ""
+
+msgctxt "#32121"
+msgid "Classic matte finish by default. Turning on explains real-time refraction vs static glass material for this host. Turning off restores classic immediately."
+msgstr ""
+
+msgctxt "#32122"
+msgid "Reorder or show/hide the 8 Home rails. Saved in current profile skin settings without rewriting skin XML; recovery actions stay reachable if all rails are hidden."
+msgstr ""
+
+msgctxt "#32123"
+msgid "Add, hide, or reorder navigation spaces across both SideNav and TopNav. Home stays fixed first, and Tools & Power remains reachable even if all optional spaces are hidden."
+msgstr ""
+
+msgctxt "#32124"
+msgid "Inspect live GUI resolution, HDMI output mode, Skin Zoom, and TV Just Scan overscan guidance without automatically modifying calibration."
+msgstr ""
+
+msgctxt "#32125"
+msgid "Disable focus zoom, panel slide-in, and page fade transitions while keeping focus capsules and active state badges intact."
+msgstr ""
+
+msgctxt "#32126"
+msgid "Hide OSD after 5 seconds of inactivity during playback; stays open while subtitle, audio, or settings sheets are visible."
+msgstr ""
+
+msgctxt "#32127"
+msgid "Automatically apply VS10 to SDR conversion for HDR, HLG, and Dolby Vision media when connected to an SDR display."
+msgstr ""
+
+msgctxt "#32128"
+msgid "Applies only to remotes mapped to the confirm-stop bridge. On Yatse and standard keymaps, Back dismisses the OSD while Stop ends playback."
+msgstr ""
+
+msgctxt "#32129"
+msgid "On"
+msgstr ""
+
+msgctxt "#32130"
+msgid "Classic"
+msgstr ""
+
+msgctxt "#32140"
+msgid "Shut Down"
+msgstr ""
+
+msgctxt "#32141"
+msgid "Restart"
+msgstr ""
+
+msgctxt "#32142"
+msgid "Quit Kodi"
+msgstr ""
+
+msgctxt "#32143"
+msgid "Reload UI"
+msgstr ""
+
+msgctxt "#32144"
+msgid "Edit Spaces"
+msgstr ""
+
+msgctxt "#32145"
+msgid "Unavailable"
+msgstr ""
+
+msgctxt "#32146"
+msgid "Return"
+msgstr ""
+
+msgctxt "#32147"
+msgid "Back to Video"
+msgstr ""
+
+msgctxt "#32148"
+msgid "Close Panel"
+msgstr ""
+
+msgctxt "#32149"
+msgid "Host System"
+msgstr ""
+
+msgctxt "#32150"
+msgid "Hardware & Net"
+msgstr ""
+
+msgctxt "#32151"
+msgid "Add / Reorder"
+msgstr ""
+
+msgctxt "#32152"
+msgid "Exit App"
+msgstr ""
+
+msgctxt "#32153"
+msgid "Appearance & Liquid Glass"
+msgstr ""
+
+msgctxt "#32154"
+msgid "Accounts & Sources Hub"
+msgstr ""
+
+msgctxt "#32155"
+msgid "Settings"
+msgstr ""
+
+msgctxt "#32156"
+msgid "Search"
+msgstr ""
+
+msgctxt "#32160"
+msgid "Recently Watched"
+msgstr ""
+
+msgctxt "#32161"
+msgid "My Favourites"
+msgstr ""
+
+msgctxt "#32162"
+msgid "Cloud & Libraries"
+msgstr ""
+
+msgctxt "#32163"
+msgid "Accounts & Tools"
+msgstr ""
+
+msgctxt "#32164"
+msgid "Accounts & Sources"
+msgstr ""
+
+msgctxt "#32165"
+msgid "Library"
+msgstr ""
+
+msgctxt "#32166"
+msgid "System File Manager"
+msgstr ""
+
+msgctxt "#32167"
+msgid "Setup Guide & Check"
+msgstr ""
+
+msgctxt "#32168"
+msgid "Enter title to search movies, shows, anime & cast"
+msgstr ""
+
+msgctxt "#32169"
+msgid "All Titles"
+msgstr ""
+
+msgctxt "#32170"
+msgid "Trending Now"
+msgstr ""
+
+msgctxt "#32171"
+msgid "Select File Version"
+msgstr ""
+
+msgctxt "#32172"
+msgid "Series & Cast Works"
+msgstr ""
+
+msgctxt "#32173"
+msgid "Trailer"
+msgstr ""
+
+msgctxt "#32174"
+msgid "My Rating"
+msgstr ""
+
+msgctxt "#32175"
+msgid "Versions"
+msgstr ""
+
+msgctxt "#32176"
+msgid "Refresh Info"
+msgstr ""
+
+msgctxt "#32177"
+msgid "Cast & Crew"
+msgstr ""
+
+msgctxt "#32178"
+msgid "Director"
+msgstr ""
+
+msgctxt "#32179"
+msgid "Cast"
+msgstr ""
+
+msgctxt "#32180"
+msgid "Add & Manage Sources"
+msgstr ""
+
+msgctxt "#32181"
+msgid "Personal Cloud"
+msgstr ""
+
+msgctxt "#32182"
+msgid "Cloud accounts · CD2 mounts · LAN shares"
+msgstr ""
+
+msgctxt "#32183"
+msgid "Browse cloud files"
+msgstr ""
+
+msgctxt "#32184"
+msgid "Open media folder"
+msgstr ""
+
+msgctxt "#32185"
+msgid "Resume Playback"
+msgstr ""
+
+msgctxt "#32186"
+msgid "+ Add Source"
+msgstr ""
+
+msgctxt "#32187"
+msgid "Filter"
+msgstr ""
+
+msgctxt "#32188"
+msgid "Check Updates"
+msgstr ""
+
+msgctxt "#32189"
+msgid "Years"
+msgstr ""
+
+msgctxt "#32190"
+msgid "Genres"
+msgstr ""
+
+msgctxt "#32191"
+msgid "Regions & Languages"
+msgstr ""
+
+msgctxt "#32192"
+msgid "Collections"
+msgstr ""
+
+msgctxt "#32193"
+msgid "Networks"
+msgstr ""
+
+msgctxt "#32194"
+msgid "Trending"
+msgstr ""
+
+msgctxt "#32195"
+msgid "Airing Today"
+msgstr ""
+
+msgctxt "#32196"
+msgid "Popular"
+msgstr ""
+
+msgctxt "#32197"
+msgid "Next 7 Days"
+msgstr ""
+
+msgctxt "#32198"
+msgid "Popular Anime"
+msgstr ""
+
+msgctxt "#32199"
+msgid "Top Rated Anime"
+msgstr ""
+
+msgctxt "#32200"
+msgid "Anime Archive"
+msgstr ""
+
+msgctxt "#32201"
+msgid "Media & Libraries"
+msgstr ""
+
+msgctxt "#32202"
+msgid "Seasons"
+msgstr ""
+
+msgctxt "#32203"
+msgid "Episodes"
+msgstr ""
+
+msgctxt "#32204"
+msgid "Poster Catalog   ·   Personal Cloud   ·   Local Mounts & LAN Shares"
+msgstr ""
+
+msgctxt "#32205"
+msgid "Catalog temporarily failed to load — select a card below to retry"
+msgstr ""
+
+msgctxt "#32210"
+msgid "Subtitles"
+msgstr ""
+
+msgctxt "#32211"
+msgid "Audio"
+msgstr ""
+
+msgctxt "#32212"
+msgid "Video"
+msgstr ""
+
+msgctxt "#32213"
+msgid "More"
+msgstr ""
+
+msgctxt "#32214"
+msgid "OK Enter jump time   ·   ↓ Controls"
+msgstr ""
+
+msgctxt "#32215"
+msgid "Previous"
+msgstr ""
+
+msgctxt "#32216"
+msgid "Previous chapter / previous queue item"
+msgstr ""
+
+msgctxt "#32217"
+msgid "Rewind"
+msgstr ""
+
+msgctxt "#32218"
+msgid "Forward"
+msgstr ""
+
+msgctxt "#32219"
+msgid "Next"
+msgstr ""
+
+msgctxt "#32220"
+msgid "Next chapter / next queue item (not next episode)"
+msgstr ""
+
+msgctxt "#32221"
+msgid "Stop"
+msgstr ""
+
+msgctxt "#32222"
+msgid "Stop playback and return"
+msgstr ""
+
+msgctxt "#32223"
+msgid "Signal & Codec"
+msgstr ""
+
+msgctxt "#32224"
+msgid "Chapters & Bookmarks"
+msgstr ""
+
+msgctxt "#32225"
+msgid "Dolby Vision VS10"
+msgstr ""
+
+msgctxt "#32226"
+msgid "Play Speed"
+msgstr ""
+
+msgctxt "#32227"
+msgid "Find Subtitles"
+msgstr ""
+
+msgctxt "#32228"
+msgid "Chapter selection & bookmarks"
+msgstr ""
+
+msgctxt "#32229"
+msgid "Signal Info"
+msgstr ""
+
+msgctxt "#32230"
+msgid "Color Management"
+msgstr ""
+
+msgctxt "#32231"
+msgid "Disc Menu"
+msgstr ""
+
+msgctxt "#32232"
+msgid "Blu-ray / DVD disc menu"
+msgstr ""
+
+msgctxt "#32233"
+msgid "3D Mode"
+msgstr ""
+
+msgctxt "#32234"
+msgid "Debug Overlay"
+msgstr ""
+
+msgctxt "#32235"
+msgid "Live decoder, frame drops & A/V sync"
+msgstr ""
+
+msgctxt "#32236"
+msgid "Control Center · Settings · Spaces · Power"
+msgstr ""
+
+msgctxt "#32237"
+msgid "Subtitle Settings"
+msgstr ""
+
+msgctxt "#32238"
+msgid "Audio Settings"
+msgstr ""
+
+msgctxt "#32239"
+msgid "[COLOR ok]✓[/COLOR] Current track   ·   ↑↓ Select   ·   OK Apply"
+msgstr ""
+
+msgctxt "#32240"
+msgid "Keep Original Format"
+msgstr ""
+
+msgctxt "#32241"
+msgid "No conversion"
+msgstr ""
+
+msgctxt "#32242"
+msgid "Convert to SDR"
+msgstr ""
+
+msgctxt "#32243"
+msgid "Convert to HDR10"
+msgstr ""
+
+msgctxt "#32244"
+msgid "Convert to Dolby Vision"
+msgstr ""
+
+msgctxt "#32245"
+msgid "VS10 conversion is unavailable for the current player or source"
+msgstr ""
+
+msgctxt "#32246"
+msgid "Return to Playback"
+msgstr ""
+
+msgctxt "#32247"
+msgid "Source"
+msgstr ""
+
+msgctxt "#32248"
+msgid "Select output format"
+msgstr ""
+
+msgctxt "#32250"
+msgid "Chinese"
+msgstr ""
+
+msgctxt "#32251"
+msgid "Simplified Chinese"
+msgstr ""
+
+msgctxt "#32252"
+msgid "Traditional Chinese"
+msgstr ""
+
+msgctxt "#32253"
+msgid "English"
+msgstr ""
+
+msgctxt "#32254"
+msgid "Japanese"
+msgstr ""
+
+msgctxt "#32255"
+msgid "Korean"
+msgstr ""
+
+msgctxt "#32256"
+msgid "French"
+msgstr ""
+
+msgctxt "#32257"
+msgid "German"
+msgstr ""
+
+msgctxt "#32258"
+msgid "Spanish"
+msgstr ""
+
+msgctxt "#32259"
+msgid "Italian"
+msgstr ""
+
+msgctxt "#32260"
+msgid "Russian"
+msgstr ""
+
+msgctxt "#32261"
+msgid "Thai"
+msgstr ""
+
+msgctxt "#32262"
+msgid "Portuguese"
+msgstr ""
+
+msgctxt "#32263"
+msgid "Unlabeled"
+msgstr ""
+
+msgctxt "#32264"
+msgid "Player"
+msgstr ""
+
+msgctxt "#32265"
+msgid "Media"
+msgstr ""
+
+msgctxt "#32266"
+msgid "Live TV"
+msgstr ""
+
+msgctxt "#32267"
+msgid "Services"
+msgstr ""
+
+msgctxt "#32268"
+msgid "Interface"
+msgstr ""
+
+msgctxt "#32269"
+msgid "System"
+msgstr ""
+
+msgctxt "#32270"
+msgid "Changes apply immediately · Back to close"
+msgstr ""
+
+msgctxt "#32271"
+msgid "↑↓ Select   ·   ← → Adjust   ·   Back to close"
+msgstr ""
+
+msgctxt "#32272"
+msgid "Select Episode"
+msgstr ""
+
+msgctxt "#32273"
+msgid "Seasons & Episodes"
+msgstr ""
+
+msgctxt "#32274"
+msgid "Resume · Pick Source"
+msgstr ""
+
+msgctxt "#32275"
+msgid "Pick Source"
+msgstr ""
+
+msgctxt "#32276"
+msgid "Raw File"
+msgstr ""
+
+msgctxt "#32277"
+msgid "Series · Season"
+msgstr ""
+
+msgctxt "#32278"
+msgid "Series · Episode"
+msgstr ""
+
+msgctxt "#32279"
+msgid "Dolby Vision"
+msgstr ""
+
+msgctxt "#32280"
+msgid "Paused"
+msgstr ""
+
+msgctxt "#32281"
+msgid "Playback Speed"
+msgstr ""
+
+msgctxt "#32282"
+msgid "Fast Forward / Rewind"
+msgstr ""
+
+msgctxt "#32283"
+msgid "Paused   ·   Press OK to resume before changing speed"
+msgstr ""
+
+msgctxt "#32284"
+msgid "← Slower   ·   → Faster   ·   OK Normal speed"
+msgstr ""
+
+msgctxt "#32285"
+msgid "← Rewind   ·   → Fast Forward   ·   OK Normal speed"
+msgstr ""
+
+msgctxt "#32286"
+msgid "Back closes panel and keeps current speed"
+msgstr ""
+
+msgctxt "#32287"
+msgid "Audible tempo is unsupported by current player[CR]Use FF / Rewind to seek; Back when done"
+msgstr ""
+
+msgctxt "#32288"
+msgid "Pause"
+msgstr ""
+
+msgctxt "#32289"
+msgid "Back 10s"
+msgstr ""
+
+msgctxt "#32290"
+msgid "Forward 30s"
+msgstr ""
+
+msgctxt "#32291"
+msgid "Seeking unavailable for current stream"
+msgstr ""
+
+msgctxt "#32292"
+msgid "Pause unavailable for current stream"
+msgstr ""
+
+msgctxt "#32293"
+msgid "Reading tracks…"
+msgstr ""
+
+msgctxt "#32294"
+msgid "Tracks temporarily unavailable — reopen panel to retry"
+msgstr ""
+
+msgctxt "#32295"
+msgid "No selectable tracks"
+msgstr ""
+
+msgctxt "#32296"
+msgid "Dolby Atmos"
+msgstr ""
+
+msgctxt "#32297"
+msgid "Dolby Digital+"
+msgstr ""
+
+msgctxt "#32298"
+msgid "Dolby Digital"
+msgstr ""
+
+msgctxt "#32299"
+msgid "Dolby TrueHD"
+msgstr ""
+
+msgctxt "#32300"
+msgid "Hide Subtitles"
+msgstr ""
+
+msgctxt "#32301"
+msgid "Show Subtitles"
+msgstr ""
+
+msgctxt "#32302"
+msgid "Subtitles Off"
+msgstr ""
+
+msgctxt "#32303"
+msgid "Subtitles On"
+msgstr ""
+
+msgctxt "#32304"
+msgid "No Subtitles"
+msgstr ""
+
+msgctxt "#32310"
+msgid "Clear Watch History"
+msgstr ""
+
+msgctxt "#32311"
+msgid "Remove all recent watch history entries"
+msgstr ""
+
+msgctxt "#32312"
+msgid "Loading watch history"
+msgstr ""
+
+msgctxt "#32313"
+msgid "No watch history yet"
+msgstr ""
+
+msgctxt "#32314"
+msgid "Loading movie library"
+msgstr ""
+
+msgctxt "#32315"
+msgid "No movies in library yet"
+msgstr ""
+
+msgctxt "#32316"
+msgid "Loading TV library"
+msgstr ""
+
+msgctxt "#32317"
+msgid "No TV shows in library yet"
+msgstr ""
+
+msgctxt "#32318"
+msgid "Loading favourites"
+msgstr ""
+
+msgctxt "#32319"
+msgid "No favourites yet"
+msgstr ""
+
+msgctxt "#32320"
+msgid "Loading poster catalog"
+msgstr ""
+
+msgctxt "#32321"
+msgid "Poster catalog not indexed yet"
+msgstr ""
+
+msgctxt "#32322"
+msgid "Loading library sources"
+msgstr ""
+
+msgctxt "#32323"
+msgid "No items"
+msgstr ""
+
+msgctxt "#32324"
+msgid "Recently watched movies and episodes appear here in chronological order."
+msgstr ""
+
+msgctxt "#32325"
+msgid "Movies added from the detail page appear here as a poster wall."
+msgstr ""
+
+msgctxt "#32326"
+msgid "TV shows added from the detail page appear here as a poster wall."
+msgstr ""
+
+msgctxt "#32327"
+msgid "Open the context menu on any title or folder to add it to Favourites."
+msgstr ""
+
+msgctxt "#32328"
+msgid "Connect cloud drives or media libraries to browse indexed works here."
+msgstr ""
+
+msgctxt "#32329"
+msgid "Manage cloud drives, NAS shares, and media servers from Accounts & Sources."
+msgstr ""
+
+msgctxt "#32330"
+msgid "Select a category on the left to browse."
+msgstr ""
+
+msgctxt "#32331"
+msgid "Watch History"
+msgstr ""
+
+msgctxt "#32332"
+msgid "Up Next"
+msgstr ""
+
+msgctxt "#32333"
+msgid "History entry · Play from start only"
+msgstr ""
+
+msgctxt "#32334"
+msgid "Nothing in progress yet"
+msgstr ""
+
+msgctxt "#32335"
+msgid "Watch history temporarily unavailable"
+msgstr ""
+
+msgctxt "#32336"
+msgid "Syncing with Home; you can use the left menu anytime."
+msgstr ""
+
+msgctxt "#32337"
+msgid "Pick a title from Home to start; unfinished titles stay here."
+msgstr ""
+
+msgctxt "#32338"
+msgid "History was not cleared; retry from Continue Watching on the left."
+msgstr ""
+
+msgctxt "#32339"
+msgid "Open Continue Watching on the left to view or retry."
+msgstr ""
+
+msgctxt "#32340"
+msgid "Done"
+msgstr ""
+
+msgctxt "#32341"
+msgid "Backspace"
+msgstr ""
+
+msgctxt "#32342"
+msgid "Add-ons"
+msgstr ""
+
+msgctxt "#32343"
+msgid "Installed add-ons, tools & repositories"
+msgstr ""
+
+msgctxt "#32344"
+msgid "Saved titles, shows & shortcuts"
+msgstr ""
+
+msgctxt "#32345"
+msgid "File Manager"
+msgstr ""
+
+msgctxt "#32346"
+msgid "Web Management URL"
+msgstr ""
+
+msgctxt "#32347"
+msgid "CPU"
+msgstr ""
+
+msgctxt "#32348"
+msgid "Memory"
+msgstr ""
+
+msgctxt "#32349"
+msgid "Video Decoding"
+msgstr ""
+
+msgctxt "#32350"
+msgid "Frame Rate"
+msgstr ""
+
+msgctxt "#32351"
+msgid "Codec"
+msgstr ""
+
+msgctxt "#32352"
+msgid "Pixel Format"
+msgstr ""
+
+msgctxt "#32353"
+msgid "Aspect Ratio"
+msgstr ""
+
+msgctxt "#32354"
+msgid "Live Bitrate"
+msgstr ""
+
+msgctxt "#32355"
+msgid "Decode Queue"
+msgstr ""
+
+msgctxt "#32356"
+msgid "HDR & Dolby Vision"
+msgstr ""
+
+msgctxt "#32357"
+msgid "Source Format"
+msgstr ""
+
+msgctxt "#32358"
+msgid "Output Format"
+msgstr ""
+
+msgctxt "#32359"
+msgid "L1 Luminance"
+msgstr ""
+
+msgctxt "#32360"
+msgid "L5 Active Area"
+msgstr ""
+
+msgctxt "#32361"
+msgid "Mastering Luminance"
+msgstr ""
+
+msgctxt "#32362"
+msgid "EOTF / Gamut"
+msgstr ""
+
+msgctxt "#32363"
+msgid "Audio & Subtitles"
+msgstr ""
+
+msgctxt "#32364"
+msgid "Audio Codec"
+msgstr ""
+
+msgctxt "#32365"
+msgid "Sample Format"
+msgstr ""
+
+msgctxt "#32366"
+msgid "Audio Decoder"
+msgstr ""
+
+msgctxt "#32367"
+msgid "Current Subtitle"
+msgstr ""
+
+msgctxt "#32368"
+msgid "Output & System"
+msgstr ""
+
+msgctxt "#32369"
+msgid "Display Mode"
+msgstr ""
+
+msgctxt "#32370"
+msgid "Render FPS"
+msgstr ""
+
+msgctxt "#32371"
+msgid "Buffer Level"
+msgstr ""
+
+msgctxt "#32372"
+msgid "Add Bookmark"
+msgstr ""
+
+msgctxt "#32373"
+msgid "Clear Bookmarks"
+msgstr ""
+
+msgctxt "#32374"
+msgid "Episode Bookmarks"
+msgstr ""
+
+msgctxt "#32375"
+msgid "No bookmarks yet — select Add Bookmark below to save the current timestamp"
+msgstr ""
+
+msgctxt "#32399"
+msgid "en"
+msgstr ""
+
+msgctxt "#31085"
+msgid "Channel Group"
+msgstr ""
+
+msgctxt "#31299"
+msgid "Refreshing"
 msgstr ""

@@ -5,7 +5,7 @@
     <include content="HomeRailWide">
       <param name="id" value="9810" />
       <param name="key" value="continue_watching" />
-      <param name="title" value="继续观看" />
+      <param name="title" value="$LOCALIZE[32030]" />
       <param name="content" value="plugin://plugin.video.bobbi/?action=continue_watching_menu" />
       <param name="limit" value="20" />
       <param name="preloaditems" value="2" />
@@ -13,7 +13,7 @@
     <include content="HomeRailWide">
       <param name="id" value="9815" />
       <param name="key" value="emby_resume" />
-      <param name="title" value="Emby 继续观看" />
+      <param name="title" value="$LOCALIZE[32031]" />
       <param name="content" value="plugin://plugin.video.bobbi/?action=emby_rail&amp;section=resume" />
       <param name="limit" value="20" />
       <param name="preloaditems" value="2" />
@@ -21,7 +21,7 @@
     <include content="HomeRail">
       <param name="id" value="9825" />
       <param name="key" value="emby_recent" />
-      <param name="title" value="Emby 最近新增" />
+      <param name="title" value="$LOCALIZE[32032]" />
       <param name="content" value="plugin://plugin.video.bobbi/?action=emby_rail&amp;section=recent" />
       <param name="limit" value="20" />
       <param name="preloaditems" value="2" />
@@ -29,7 +29,7 @@
     <include content="HomeRail">
       <param name="id" value="9830" />
       <param name="key" value="popular_tv" />
-      <param name="title" value="热门剧集" />
+      <param name="title" value="$LOCALIZE[32033]" />
       <param name="content" value="plugin://plugin.video.bobbi/?action=am6b_streaming_catalog&amp;section=tv&amp;page=1" />
       <param name="limit" value="20" />
       <param name="preloaditems" value="2" />
@@ -37,7 +37,7 @@
     <include content="HomeRail">
       <param name="id" value="9840" />
       <param name="key" value="popular_movies" />
-      <param name="title" value="热门电影" />
+      <param name="title" value="$LOCALIZE[32034]" />
       <param name="content" value="plugin://plugin.video.bobbi/?action=am6b_streaming_catalog&amp;section=movie&amp;page=1" />
       <param name="limit" value="20" />
       <param name="preloaditems" value="2" />
@@ -45,7 +45,7 @@
     <include content="HomeRail">
       <param name="id" value="9850" />
       <param name="key" value="current_anime" />
-      <param name="title" value="当季新番" />
+      <param name="title" value="$LOCALIZE[32035]" />
       <param name="content" value="plugin://plugin.video.bobbi/?action=search_item&amp;api=tmdb&amp;mode=anime&amp;submode=tv&amp;category=Anime_Current_Quarter" />
       <param name="limit" value="20" />
       <param name="preloaditems" value="2" />
@@ -53,7 +53,7 @@
     <include content="HomeRail">
       <param name="id" value="9860" />
       <param name="key" value="anime_movies" />
-      <param name="title" value="动漫电影" />
+      <param name="title" value="$LOCALIZE[32036]" />
       <param name="content" value="plugin://plugin.video.bobbi/?action=search_item&amp;api=tmdb&amp;mode=anime&amp;submode=movies&amp;category=Anime_Movies_New" />
       <param name="limit" value="20" />
       <param name="preloaditems" value="2" />
@@ -61,7 +61,7 @@
     <include content="HomeRailWide">
       <param name="id" value="9820" />
       <param name="key" value="personal_library" />
-      <param name="title" value="我的片库" />
+      <param name="title" value="$LOCALIZE[32037]" />
       <param name="content" value="plugin://plugin.video.bobbi/?action=personal_catalog&amp;mode=rail" />
       <param name="limit" value="20" />
       <param name="preloaditems" value="2" />
@@ -353,230 +353,230 @@
     <value>9701</value>
   </variable>
   <variable name="NextRailTitle">
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_2_continue_watching]">继续观看</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_2_emby_resume]">Emby 继续观看</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_2_emby_recent]">Emby 最近新增</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_2_popular_tv]">热门剧集</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_2_popular_movies]">热门电影</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_2_current_anime]">当季新番</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_2_anime_movies]">动漫电影</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_2_personal_library]">我的片库</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_3_continue_watching]">继续观看</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_3_emby_resume]">Emby 继续观看</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_3_emby_recent]">Emby 最近新增</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_3_popular_tv]">热门剧集</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_3_popular_movies]">热门电影</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_3_current_anime]">当季新番</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_3_anime_movies]">动漫电影</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_3_personal_library]">我的片库</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_4_continue_watching]">继续观看</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_4_emby_resume]">Emby 继续观看</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_4_emby_recent]">Emby 最近新增</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_4_popular_tv]">热门剧集</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_4_popular_movies]">热门电影</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_4_current_anime]">当季新番</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_4_anime_movies]">动漫电影</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_4_personal_library]">我的片库</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_5_continue_watching]">继续观看</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_5_emby_resume]">Emby 继续观看</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_5_emby_recent]">Emby 最近新增</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_5_popular_tv]">热门剧集</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_5_popular_movies]">热门电影</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_5_current_anime]">当季新番</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_5_anime_movies]">动漫电影</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_5_personal_library]">我的片库</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_6_continue_watching]">继续观看</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_6_emby_resume]">Emby 继续观看</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_6_emby_recent]">Emby 最近新增</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_6_popular_tv]">热门剧集</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_6_popular_movies]">热门电影</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_6_current_anime]">当季新番</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_6_anime_movies]">动漫电影</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_6_personal_library]">我的片库</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_7_continue_watching]">继续观看</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_7_emby_resume]">Emby 继续观看</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_7_emby_recent]">Emby 最近新增</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_7_popular_tv]">热门剧集</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_7_popular_movies]">热门电影</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_7_current_anime]">当季新番</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_7_anime_movies]">动漫电影</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_7_personal_library]">我的片库</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_8_continue_watching]">继续观看</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_8_emby_resume]">Emby 继续观看</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_8_emby_recent]">Emby 最近新增</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_8_popular_tv]">热门剧集</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_8_popular_movies]">热门电影</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_8_current_anime]">当季新番</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_8_anime_movies]">动漫电影</value>
-    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_8_personal_library]">我的片库</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_3_continue_watching]">继续观看</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_3_emby_resume]">Emby 继续观看</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_3_emby_recent]">Emby 最近新增</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_3_popular_tv]">热门剧集</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_3_popular_movies]">热门电影</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_3_current_anime]">当季新番</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_3_anime_movies]">动漫电影</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_3_personal_library]">我的片库</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_4_continue_watching]">继续观看</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_4_emby_resume]">Emby 继续观看</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_4_emby_recent]">Emby 最近新增</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_4_popular_tv]">热门剧集</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_4_popular_movies]">热门电影</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_4_current_anime]">当季新番</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_4_anime_movies]">动漫电影</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_4_personal_library]">我的片库</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_5_continue_watching]">继续观看</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_5_emby_resume]">Emby 继续观看</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_5_emby_recent]">Emby 最近新增</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_5_popular_tv]">热门剧集</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_5_popular_movies]">热门电影</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_5_current_anime]">当季新番</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_5_anime_movies]">动漫电影</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_5_personal_library]">我的片库</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_6_continue_watching]">继续观看</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_6_emby_resume]">Emby 继续观看</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_6_emby_recent]">Emby 最近新增</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_6_popular_tv]">热门剧集</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_6_popular_movies]">热门电影</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_6_current_anime]">当季新番</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_6_anime_movies]">动漫电影</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_6_personal_library]">我的片库</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_7_continue_watching]">继续观看</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_7_emby_resume]">Emby 继续观看</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_7_emby_recent]">Emby 最近新增</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_7_popular_tv]">热门剧集</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_7_popular_movies]">热门电影</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_7_current_anime]">当季新番</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_7_anime_movies]">动漫电影</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_7_personal_library]">我的片库</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_8_continue_watching]">继续观看</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_8_emby_resume]">Emby 继续观看</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_8_emby_recent]">Emby 最近新增</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_8_popular_tv]">热门剧集</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_8_popular_movies]">热门电影</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_8_current_anime]">当季新番</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_8_anime_movies]">动漫电影</value>
-    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_8_personal_library]">我的片库</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_4_continue_watching]">继续观看</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_4_emby_resume]">Emby 继续观看</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_4_emby_recent]">Emby 最近新增</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_4_popular_tv]">热门剧集</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_4_popular_movies]">热门电影</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_4_current_anime]">当季新番</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_4_anime_movies]">动漫电影</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_4_personal_library]">我的片库</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_5_continue_watching]">继续观看</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_5_emby_resume]">Emby 继续观看</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_5_emby_recent]">Emby 最近新增</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_5_popular_tv]">热门剧集</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_5_popular_movies]">热门电影</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_5_current_anime]">当季新番</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_5_anime_movies]">动漫电影</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_5_personal_library]">我的片库</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_6_continue_watching]">继续观看</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_6_emby_resume]">Emby 继续观看</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_6_emby_recent]">Emby 最近新增</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_6_popular_tv]">热门剧集</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_6_popular_movies]">热门电影</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_6_current_anime]">当季新番</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_6_anime_movies]">动漫电影</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_6_personal_library]">我的片库</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_7_continue_watching]">继续观看</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_7_emby_resume]">Emby 继续观看</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_7_emby_recent]">Emby 最近新增</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_7_popular_tv]">热门剧集</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_7_popular_movies]">热门电影</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_7_current_anime]">当季新番</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_7_anime_movies]">动漫电影</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_7_personal_library]">我的片库</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_8_continue_watching]">继续观看</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_8_emby_resume]">Emby 继续观看</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_8_emby_recent]">Emby 最近新增</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_8_popular_tv]">热门剧集</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_8_popular_movies]">热门电影</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_8_current_anime]">当季新番</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_8_anime_movies]">动漫电影</value>
-    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_8_personal_library]">我的片库</value>
-    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_5_continue_watching]">继续观看</value>
-    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_5_emby_resume]">Emby 继续观看</value>
-    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_5_emby_recent]">Emby 最近新增</value>
-    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_5_popular_tv]">热门剧集</value>
-    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_5_popular_movies]">热门电影</value>
-    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_5_current_anime]">当季新番</value>
-    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_5_anime_movies]">动漫电影</value>
-    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_5_personal_library]">我的片库</value>
-    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_6_continue_watching]">继续观看</value>
-    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_6_emby_resume]">Emby 继续观看</value>
-    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_6_emby_recent]">Emby 最近新增</value>
-    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_6_popular_tv]">热门剧集</value>
-    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_6_popular_movies]">热门电影</value>
-    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_6_current_anime]">当季新番</value>
-    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_6_anime_movies]">动漫电影</value>
-    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_6_personal_library]">我的片库</value>
-    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_7_continue_watching]">继续观看</value>
-    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_7_emby_resume]">Emby 继续观看</value>
-    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_7_emby_recent]">Emby 最近新增</value>
-    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_7_popular_tv]">热门剧集</value>
-    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_7_popular_movies]">热门电影</value>
-    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_7_current_anime]">当季新番</value>
-    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_7_anime_movies]">动漫电影</value>
-    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_7_personal_library]">我的片库</value>
-    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_8_continue_watching]">继续观看</value>
-    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_8_emby_resume]">Emby 继续观看</value>
-    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_8_emby_recent]">Emby 最近新增</value>
-    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_8_popular_tv]">热门剧集</value>
-    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_8_popular_movies]">热门电影</value>
-    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_8_current_anime]">当季新番</value>
-    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_8_anime_movies]">动漫电影</value>
-    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_8_personal_library]">我的片库</value>
-    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_6_continue_watching]">继续观看</value>
-    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_6_emby_resume]">Emby 继续观看</value>
-    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_6_emby_recent]">Emby 最近新增</value>
-    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_6_popular_tv]">热门剧集</value>
-    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_6_popular_movies]">热门电影</value>
-    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_6_current_anime]">当季新番</value>
-    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_6_anime_movies]">动漫电影</value>
-    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_6_personal_library]">我的片库</value>
-    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_7_continue_watching]">继续观看</value>
-    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_7_emby_resume]">Emby 继续观看</value>
-    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_7_emby_recent]">Emby 最近新增</value>
-    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_7_popular_tv]">热门剧集</value>
-    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_7_popular_movies]">热门电影</value>
-    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_7_current_anime]">当季新番</value>
-    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_7_anime_movies]">动漫电影</value>
-    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_7_personal_library]">我的片库</value>
-    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_8_continue_watching]">继续观看</value>
-    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_8_emby_resume]">Emby 继续观看</value>
-    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_8_emby_recent]">Emby 最近新增</value>
-    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_8_popular_tv]">热门剧集</value>
-    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_8_popular_movies]">热门电影</value>
-    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_8_current_anime]">当季新番</value>
-    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_8_anime_movies]">动漫电影</value>
-    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_8_personal_library]">我的片库</value>
-    <value condition="$EXP[BobbiSlot6Focused] + $EXP[BobbiSlot_7_continue_watching]">继续观看</value>
-    <value condition="$EXP[BobbiSlot6Focused] + $EXP[BobbiSlot_7_emby_resume]">Emby 继续观看</value>
-    <value condition="$EXP[BobbiSlot6Focused] + $EXP[BobbiSlot_7_emby_recent]">Emby 最近新增</value>
-    <value condition="$EXP[BobbiSlot6Focused] + $EXP[BobbiSlot_7_popular_tv]">热门剧集</value>
-    <value condition="$EXP[BobbiSlot6Focused] + $EXP[BobbiSlot_7_popular_movies]">热门电影</value>
-    <value condition="$EXP[BobbiSlot6Focused] + $EXP[BobbiSlot_7_current_anime]">当季新番</value>
-    <value condition="$EXP[BobbiSlot6Focused] + $EXP[BobbiSlot_7_anime_movies]">动漫电影</value>
-    <value condition="$EXP[BobbiSlot6Focused] + $EXP[BobbiSlot_7_personal_library]">我的片库</value>
-    <value condition="$EXP[BobbiSlot6Focused] + $EXP[BobbiSlot_8_continue_watching]">继续观看</value>
-    <value condition="$EXP[BobbiSlot6Focused] + $EXP[BobbiSlot_8_emby_resume]">Emby 继续观看</value>
-    <value condition="$EXP[BobbiSlot6Focused] + $EXP[BobbiSlot_8_emby_recent]">Emby 最近新增</value>
-    <value condition="$EXP[BobbiSlot6Focused] + $EXP[BobbiSlot_8_popular_tv]">热门剧集</value>
-    <value condition="$EXP[BobbiSlot6Focused] + $EXP[BobbiSlot_8_popular_movies]">热门电影</value>
-    <value condition="$EXP[BobbiSlot6Focused] + $EXP[BobbiSlot_8_current_anime]">当季新番</value>
-    <value condition="$EXP[BobbiSlot6Focused] + $EXP[BobbiSlot_8_anime_movies]">动漫电影</value>
-    <value condition="$EXP[BobbiSlot6Focused] + $EXP[BobbiSlot_8_personal_library]">我的片库</value>
-    <value condition="$EXP[BobbiSlot7Focused] + $EXP[BobbiSlot_8_continue_watching]">继续观看</value>
-    <value condition="$EXP[BobbiSlot7Focused] + $EXP[BobbiSlot_8_emby_resume]">Emby 继续观看</value>
-    <value condition="$EXP[BobbiSlot7Focused] + $EXP[BobbiSlot_8_emby_recent]">Emby 最近新增</value>
-    <value condition="$EXP[BobbiSlot7Focused] + $EXP[BobbiSlot_8_popular_tv]">热门剧集</value>
-    <value condition="$EXP[BobbiSlot7Focused] + $EXP[BobbiSlot_8_popular_movies]">热门电影</value>
-    <value condition="$EXP[BobbiSlot7Focused] + $EXP[BobbiSlot_8_current_anime]">当季新番</value>
-    <value condition="$EXP[BobbiSlot7Focused] + $EXP[BobbiSlot_8_anime_movies]">动漫电影</value>
-    <value condition="$EXP[BobbiSlot7Focused] + $EXP[BobbiSlot_8_personal_library]">我的片库</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_2_continue_watching]">$LOCALIZE[32030]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_2_emby_resume]">$LOCALIZE[32031]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_2_emby_recent]">$LOCALIZE[32032]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_2_popular_tv]">$LOCALIZE[32033]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_2_popular_movies]">$LOCALIZE[32034]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_2_current_anime]">$LOCALIZE[32035]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_2_anime_movies]">$LOCALIZE[32036]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_2_personal_library]">$LOCALIZE[32037]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_3_continue_watching]">$LOCALIZE[32030]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_3_emby_resume]">$LOCALIZE[32031]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_3_emby_recent]">$LOCALIZE[32032]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_3_popular_tv]">$LOCALIZE[32033]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_3_popular_movies]">$LOCALIZE[32034]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_3_current_anime]">$LOCALIZE[32035]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_3_anime_movies]">$LOCALIZE[32036]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_3_personal_library]">$LOCALIZE[32037]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_4_continue_watching]">$LOCALIZE[32030]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_4_emby_resume]">$LOCALIZE[32031]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_4_emby_recent]">$LOCALIZE[32032]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_4_popular_tv]">$LOCALIZE[32033]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_4_popular_movies]">$LOCALIZE[32034]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_4_current_anime]">$LOCALIZE[32035]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_4_anime_movies]">$LOCALIZE[32036]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_4_personal_library]">$LOCALIZE[32037]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_5_continue_watching]">$LOCALIZE[32030]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_5_emby_resume]">$LOCALIZE[32031]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_5_emby_recent]">$LOCALIZE[32032]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_5_popular_tv]">$LOCALIZE[32033]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_5_popular_movies]">$LOCALIZE[32034]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_5_current_anime]">$LOCALIZE[32035]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_5_anime_movies]">$LOCALIZE[32036]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_5_personal_library]">$LOCALIZE[32037]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_6_continue_watching]">$LOCALIZE[32030]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_6_emby_resume]">$LOCALIZE[32031]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_6_emby_recent]">$LOCALIZE[32032]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_6_popular_tv]">$LOCALIZE[32033]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_6_popular_movies]">$LOCALIZE[32034]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_6_current_anime]">$LOCALIZE[32035]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_6_anime_movies]">$LOCALIZE[32036]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_6_personal_library]">$LOCALIZE[32037]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_7_continue_watching]">$LOCALIZE[32030]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_7_emby_resume]">$LOCALIZE[32031]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_7_emby_recent]">$LOCALIZE[32032]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_7_popular_tv]">$LOCALIZE[32033]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_7_popular_movies]">$LOCALIZE[32034]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_7_current_anime]">$LOCALIZE[32035]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_7_anime_movies]">$LOCALIZE[32036]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_7_personal_library]">$LOCALIZE[32037]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_8_continue_watching]">$LOCALIZE[32030]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_8_emby_resume]">$LOCALIZE[32031]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_8_emby_recent]">$LOCALIZE[32032]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_8_popular_tv]">$LOCALIZE[32033]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_8_popular_movies]">$LOCALIZE[32034]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_8_current_anime]">$LOCALIZE[32035]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_8_anime_movies]">$LOCALIZE[32036]</value>
+    <value condition="$EXP[BobbiSlot1Focused] + $EXP[BobbiSlot_8_personal_library]">$LOCALIZE[32037]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_3_continue_watching]">$LOCALIZE[32030]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_3_emby_resume]">$LOCALIZE[32031]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_3_emby_recent]">$LOCALIZE[32032]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_3_popular_tv]">$LOCALIZE[32033]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_3_popular_movies]">$LOCALIZE[32034]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_3_current_anime]">$LOCALIZE[32035]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_3_anime_movies]">$LOCALIZE[32036]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_3_personal_library]">$LOCALIZE[32037]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_4_continue_watching]">$LOCALIZE[32030]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_4_emby_resume]">$LOCALIZE[32031]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_4_emby_recent]">$LOCALIZE[32032]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_4_popular_tv]">$LOCALIZE[32033]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_4_popular_movies]">$LOCALIZE[32034]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_4_current_anime]">$LOCALIZE[32035]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_4_anime_movies]">$LOCALIZE[32036]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_4_personal_library]">$LOCALIZE[32037]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_5_continue_watching]">$LOCALIZE[32030]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_5_emby_resume]">$LOCALIZE[32031]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_5_emby_recent]">$LOCALIZE[32032]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_5_popular_tv]">$LOCALIZE[32033]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_5_popular_movies]">$LOCALIZE[32034]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_5_current_anime]">$LOCALIZE[32035]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_5_anime_movies]">$LOCALIZE[32036]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_5_personal_library]">$LOCALIZE[32037]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_6_continue_watching]">$LOCALIZE[32030]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_6_emby_resume]">$LOCALIZE[32031]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_6_emby_recent]">$LOCALIZE[32032]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_6_popular_tv]">$LOCALIZE[32033]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_6_popular_movies]">$LOCALIZE[32034]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_6_current_anime]">$LOCALIZE[32035]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_6_anime_movies]">$LOCALIZE[32036]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_6_personal_library]">$LOCALIZE[32037]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_7_continue_watching]">$LOCALIZE[32030]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_7_emby_resume]">$LOCALIZE[32031]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_7_emby_recent]">$LOCALIZE[32032]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_7_popular_tv]">$LOCALIZE[32033]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_7_popular_movies]">$LOCALIZE[32034]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_7_current_anime]">$LOCALIZE[32035]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_7_anime_movies]">$LOCALIZE[32036]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_7_personal_library]">$LOCALIZE[32037]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_8_continue_watching]">$LOCALIZE[32030]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_8_emby_resume]">$LOCALIZE[32031]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_8_emby_recent]">$LOCALIZE[32032]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_8_popular_tv]">$LOCALIZE[32033]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_8_popular_movies]">$LOCALIZE[32034]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_8_current_anime]">$LOCALIZE[32035]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_8_anime_movies]">$LOCALIZE[32036]</value>
+    <value condition="$EXP[BobbiSlot2Focused] + $EXP[BobbiSlot_8_personal_library]">$LOCALIZE[32037]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_4_continue_watching]">$LOCALIZE[32030]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_4_emby_resume]">$LOCALIZE[32031]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_4_emby_recent]">$LOCALIZE[32032]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_4_popular_tv]">$LOCALIZE[32033]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_4_popular_movies]">$LOCALIZE[32034]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_4_current_anime]">$LOCALIZE[32035]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_4_anime_movies]">$LOCALIZE[32036]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_4_personal_library]">$LOCALIZE[32037]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_5_continue_watching]">$LOCALIZE[32030]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_5_emby_resume]">$LOCALIZE[32031]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_5_emby_recent]">$LOCALIZE[32032]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_5_popular_tv]">$LOCALIZE[32033]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_5_popular_movies]">$LOCALIZE[32034]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_5_current_anime]">$LOCALIZE[32035]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_5_anime_movies]">$LOCALIZE[32036]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_5_personal_library]">$LOCALIZE[32037]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_6_continue_watching]">$LOCALIZE[32030]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_6_emby_resume]">$LOCALIZE[32031]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_6_emby_recent]">$LOCALIZE[32032]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_6_popular_tv]">$LOCALIZE[32033]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_6_popular_movies]">$LOCALIZE[32034]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_6_current_anime]">$LOCALIZE[32035]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_6_anime_movies]">$LOCALIZE[32036]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_6_personal_library]">$LOCALIZE[32037]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_7_continue_watching]">$LOCALIZE[32030]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_7_emby_resume]">$LOCALIZE[32031]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_7_emby_recent]">$LOCALIZE[32032]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_7_popular_tv]">$LOCALIZE[32033]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_7_popular_movies]">$LOCALIZE[32034]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_7_current_anime]">$LOCALIZE[32035]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_7_anime_movies]">$LOCALIZE[32036]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_7_personal_library]">$LOCALIZE[32037]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_8_continue_watching]">$LOCALIZE[32030]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_8_emby_resume]">$LOCALIZE[32031]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_8_emby_recent]">$LOCALIZE[32032]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_8_popular_tv]">$LOCALIZE[32033]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_8_popular_movies]">$LOCALIZE[32034]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_8_current_anime]">$LOCALIZE[32035]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_8_anime_movies]">$LOCALIZE[32036]</value>
+    <value condition="$EXP[BobbiSlot3Focused] + $EXP[BobbiSlot_8_personal_library]">$LOCALIZE[32037]</value>
+    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_5_continue_watching]">$LOCALIZE[32030]</value>
+    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_5_emby_resume]">$LOCALIZE[32031]</value>
+    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_5_emby_recent]">$LOCALIZE[32032]</value>
+    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_5_popular_tv]">$LOCALIZE[32033]</value>
+    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_5_popular_movies]">$LOCALIZE[32034]</value>
+    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_5_current_anime]">$LOCALIZE[32035]</value>
+    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_5_anime_movies]">$LOCALIZE[32036]</value>
+    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_5_personal_library]">$LOCALIZE[32037]</value>
+    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_6_continue_watching]">$LOCALIZE[32030]</value>
+    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_6_emby_resume]">$LOCALIZE[32031]</value>
+    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_6_emby_recent]">$LOCALIZE[32032]</value>
+    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_6_popular_tv]">$LOCALIZE[32033]</value>
+    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_6_popular_movies]">$LOCALIZE[32034]</value>
+    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_6_current_anime]">$LOCALIZE[32035]</value>
+    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_6_anime_movies]">$LOCALIZE[32036]</value>
+    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_6_personal_library]">$LOCALIZE[32037]</value>
+    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_7_continue_watching]">$LOCALIZE[32030]</value>
+    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_7_emby_resume]">$LOCALIZE[32031]</value>
+    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_7_emby_recent]">$LOCALIZE[32032]</value>
+    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_7_popular_tv]">$LOCALIZE[32033]</value>
+    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_7_popular_movies]">$LOCALIZE[32034]</value>
+    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_7_current_anime]">$LOCALIZE[32035]</value>
+    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_7_anime_movies]">$LOCALIZE[32036]</value>
+    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_7_personal_library]">$LOCALIZE[32037]</value>
+    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_8_continue_watching]">$LOCALIZE[32030]</value>
+    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_8_emby_resume]">$LOCALIZE[32031]</value>
+    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_8_emby_recent]">$LOCALIZE[32032]</value>
+    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_8_popular_tv]">$LOCALIZE[32033]</value>
+    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_8_popular_movies]">$LOCALIZE[32034]</value>
+    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_8_current_anime]">$LOCALIZE[32035]</value>
+    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_8_anime_movies]">$LOCALIZE[32036]</value>
+    <value condition="$EXP[BobbiSlot4Focused] + $EXP[BobbiSlot_8_personal_library]">$LOCALIZE[32037]</value>
+    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_6_continue_watching]">$LOCALIZE[32030]</value>
+    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_6_emby_resume]">$LOCALIZE[32031]</value>
+    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_6_emby_recent]">$LOCALIZE[32032]</value>
+    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_6_popular_tv]">$LOCALIZE[32033]</value>
+    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_6_popular_movies]">$LOCALIZE[32034]</value>
+    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_6_current_anime]">$LOCALIZE[32035]</value>
+    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_6_anime_movies]">$LOCALIZE[32036]</value>
+    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_6_personal_library]">$LOCALIZE[32037]</value>
+    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_7_continue_watching]">$LOCALIZE[32030]</value>
+    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_7_emby_resume]">$LOCALIZE[32031]</value>
+    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_7_emby_recent]">$LOCALIZE[32032]</value>
+    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_7_popular_tv]">$LOCALIZE[32033]</value>
+    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_7_popular_movies]">$LOCALIZE[32034]</value>
+    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_7_current_anime]">$LOCALIZE[32035]</value>
+    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_7_anime_movies]">$LOCALIZE[32036]</value>
+    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_7_personal_library]">$LOCALIZE[32037]</value>
+    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_8_continue_watching]">$LOCALIZE[32030]</value>
+    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_8_emby_resume]">$LOCALIZE[32031]</value>
+    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_8_emby_recent]">$LOCALIZE[32032]</value>
+    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_8_popular_tv]">$LOCALIZE[32033]</value>
+    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_8_popular_movies]">$LOCALIZE[32034]</value>
+    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_8_current_anime]">$LOCALIZE[32035]</value>
+    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_8_anime_movies]">$LOCALIZE[32036]</value>
+    <value condition="$EXP[BobbiSlot5Focused] + $EXP[BobbiSlot_8_personal_library]">$LOCALIZE[32037]</value>
+    <value condition="$EXP[BobbiSlot6Focused] + $EXP[BobbiSlot_7_continue_watching]">$LOCALIZE[32030]</value>
+    <value condition="$EXP[BobbiSlot6Focused] + $EXP[BobbiSlot_7_emby_resume]">$LOCALIZE[32031]</value>
+    <value condition="$EXP[BobbiSlot6Focused] + $EXP[BobbiSlot_7_emby_recent]">$LOCALIZE[32032]</value>
+    <value condition="$EXP[BobbiSlot6Focused] + $EXP[BobbiSlot_7_popular_tv]">$LOCALIZE[32033]</value>
+    <value condition="$EXP[BobbiSlot6Focused] + $EXP[BobbiSlot_7_popular_movies]">$LOCALIZE[32034]</value>
+    <value condition="$EXP[BobbiSlot6Focused] + $EXP[BobbiSlot_7_current_anime]">$LOCALIZE[32035]</value>
+    <value condition="$EXP[BobbiSlot6Focused] + $EXP[BobbiSlot_7_anime_movies]">$LOCALIZE[32036]</value>
+    <value condition="$EXP[BobbiSlot6Focused] + $EXP[BobbiSlot_7_personal_library]">$LOCALIZE[32037]</value>
+    <value condition="$EXP[BobbiSlot6Focused] + $EXP[BobbiSlot_8_continue_watching]">$LOCALIZE[32030]</value>
+    <value condition="$EXP[BobbiSlot6Focused] + $EXP[BobbiSlot_8_emby_resume]">$LOCALIZE[32031]</value>
+    <value condition="$EXP[BobbiSlot6Focused] + $EXP[BobbiSlot_8_emby_recent]">$LOCALIZE[32032]</value>
+    <value condition="$EXP[BobbiSlot6Focused] + $EXP[BobbiSlot_8_popular_tv]">$LOCALIZE[32033]</value>
+    <value condition="$EXP[BobbiSlot6Focused] + $EXP[BobbiSlot_8_popular_movies]">$LOCALIZE[32034]</value>
+    <value condition="$EXP[BobbiSlot6Focused] + $EXP[BobbiSlot_8_current_anime]">$LOCALIZE[32035]</value>
+    <value condition="$EXP[BobbiSlot6Focused] + $EXP[BobbiSlot_8_anime_movies]">$LOCALIZE[32036]</value>
+    <value condition="$EXP[BobbiSlot6Focused] + $EXP[BobbiSlot_8_personal_library]">$LOCALIZE[32037]</value>
+    <value condition="$EXP[BobbiSlot7Focused] + $EXP[BobbiSlot_8_continue_watching]">$LOCALIZE[32030]</value>
+    <value condition="$EXP[BobbiSlot7Focused] + $EXP[BobbiSlot_8_emby_resume]">$LOCALIZE[32031]</value>
+    <value condition="$EXP[BobbiSlot7Focused] + $EXP[BobbiSlot_8_emby_recent]">$LOCALIZE[32032]</value>
+    <value condition="$EXP[BobbiSlot7Focused] + $EXP[BobbiSlot_8_popular_tv]">$LOCALIZE[32033]</value>
+    <value condition="$EXP[BobbiSlot7Focused] + $EXP[BobbiSlot_8_popular_movies]">$LOCALIZE[32034]</value>
+    <value condition="$EXP[BobbiSlot7Focused] + $EXP[BobbiSlot_8_current_anime]">$LOCALIZE[32035]</value>
+    <value condition="$EXP[BobbiSlot7Focused] + $EXP[BobbiSlot_8_anime_movies]">$LOCALIZE[32036]</value>
+    <value condition="$EXP[BobbiSlot7Focused] + $EXP[BobbiSlot_8_personal_library]">$LOCALIZE[32037]</value>
   </variable>
   <variable name="StageArt">
     <value condition="String.IsEqual(Window(Home).Property(BobbiRail),9810) + !Skin.HasSetting(BobbiHideRail_continue_watching) + Integer.IsGreater(Container(9810).NumItems,0) + !String.IsEmpty(Container(9810).ListItem.Art(fanart))">$INFO[Container(9810).ListItem.Art(fanart)]</value>
@@ -945,10 +945,14 @@
     <value condition="$EXP[BobbiSlot_8_personal_library]">$INFO[Container(9820).ListItem.Plot]</value>
   </variable>
   <variable name="StageProgress">
-    <value condition="String.IsEqual(Window(Home).Property(BobbiRail),9810) + !Skin.HasSetting(BobbiHideRail_continue_watching) + Integer.IsGreater(Container(9810).ListItem.Property(PercentPlayed),0)">已看 $INFO[Container(9810).ListItem.Property(PercentPlayed)]%</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiRail),9810) + !Skin.HasSetting(BobbiHideRail_continue_watching) + Integer.IsGreater(Container(9810).ListItem.PercentPlayed,0)">已看 $INFO[Container(9810).ListItem.PercentPlayed]%</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiRail),9815) + !Skin.HasSetting(BobbiHideRail_emby_resume) + Integer.IsGreater(Container(9815).ListItem.Property(PercentPlayed),0)">已看 $INFO[Container(9815).ListItem.Property(PercentPlayed)]%</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiRail),9815) + !Skin.HasSetting(BobbiHideRail_emby_resume) + Integer.IsGreater(Container(9815).ListItem.PercentPlayed,0)">已看 $INFO[Container(9815).ListItem.PercentPlayed]%</value>
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + String.IsEqual(Window(Home).Property(BobbiRail),9810) + !Skin.HasSetting(BobbiHideRail_continue_watching) + Integer.IsGreater(Container(9810).ListItem.Property(PercentPlayed),0)">$INFO[Container(9810).ListItem.Property(PercentPlayed)]% $LOCALIZE[32048]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiRail),9810) + !Skin.HasSetting(BobbiHideRail_continue_watching) + Integer.IsGreater(Container(9810).ListItem.Property(PercentPlayed),0)">$LOCALIZE[32048] $INFO[Container(9810).ListItem.Property(PercentPlayed)]%</value>
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + String.IsEqual(Window(Home).Property(BobbiRail),9810) + !Skin.HasSetting(BobbiHideRail_continue_watching) + Integer.IsGreater(Container(9810).ListItem.PercentPlayed,0)">$INFO[Container(9810).ListItem.PercentPlayed]% $LOCALIZE[32048]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiRail),9810) + !Skin.HasSetting(BobbiHideRail_continue_watching) + Integer.IsGreater(Container(9810).ListItem.PercentPlayed,0)">$LOCALIZE[32048] $INFO[Container(9810).ListItem.PercentPlayed]%</value>
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + String.IsEqual(Window(Home).Property(BobbiRail),9815) + !Skin.HasSetting(BobbiHideRail_emby_resume) + Integer.IsGreater(Container(9815).ListItem.Property(PercentPlayed),0)">$INFO[Container(9815).ListItem.Property(PercentPlayed)]% $LOCALIZE[32048]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiRail),9815) + !Skin.HasSetting(BobbiHideRail_emby_resume) + Integer.IsGreater(Container(9815).ListItem.Property(PercentPlayed),0)">$LOCALIZE[32048] $INFO[Container(9815).ListItem.Property(PercentPlayed)]%</value>
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + String.IsEqual(Window(Home).Property(BobbiRail),9815) + !Skin.HasSetting(BobbiHideRail_emby_resume) + Integer.IsGreater(Container(9815).ListItem.PercentPlayed,0)">$INFO[Container(9815).ListItem.PercentPlayed]% $LOCALIZE[32048]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiRail),9815) + !Skin.HasSetting(BobbiHideRail_emby_resume) + Integer.IsGreater(Container(9815).ListItem.PercentPlayed,0)">$LOCALIZE[32048] $INFO[Container(9815).ListItem.PercentPlayed]%</value>
   </variable>
   <variable name="TitlePrimary_9810">
     <value condition="!String.IsEmpty(Container(9810).ListItem.Property(Bobbi.Title.zh))">$INFO[Container(9810).ListItem.Property(Bobbi.Title.zh)]</value>
@@ -965,12 +969,15 @@
     <value condition="!String.IsEmpty(Container(9810).ListItem.Label2) + !String.IsEqual(Container(9810).ListItem.Label2,Container(9810).ListItem.Property(Bobbi.Title.zh)) + !String.IsEqual(Container(9810).ListItem.Label2,Container(9810).ListItem.TVShowTitle) + !String.IsEqual(Container(9810).ListItem.Label2,Container(9810).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9810).ListItem.Label2,Container(9810).ListItem.Title) + !String.IsEqual(Container(9810).ListItem.Label2,Container(9810).ListItem.Label)">$INFO[Container(9810).ListItem.Label2]</value>
   </variable>
   <variable name="SeasonLabel_9810">
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(Container(9810).ListItem.Property(Bobbi.SeasonName)) + !String.IsEmpty(Container(9810).ListItem.Season) + !String.IsEqual(Container(9810).ListItem.Season,0)">Season $INFO[Container(9810).ListItem.Season] · $INFO[Container(9810).ListItem.Property(Bobbi.SeasonName)]</value>
     <value condition="!String.IsEmpty(Container(9810).ListItem.Property(Bobbi.SeasonName)) + !String.IsEmpty(Container(9810).ListItem.Season) + !String.IsEqual(Container(9810).ListItem.Season,0)">第$INFO[Container(9810).ListItem.Season]季 · $INFO[Container(9810).ListItem.Property(Bobbi.SeasonName)]</value>
     <value condition="!String.IsEmpty(Container(9810).ListItem.Property(Bobbi.SeasonName))">$INFO[Container(9810).ListItem.Property(Bobbi.SeasonName)]</value>
-    <value condition="String.IsEqual(Container(9810).ListItem.Season,0)">特别篇</value>
+    <value condition="String.IsEqual(Container(9810).ListItem.Season,0)">$LOCALIZE[32057]</value>
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(Container(9810).ListItem.Season) + !String.IsEqual(Container(9810).ListItem.Season,-1)">Season $INFO[Container(9810).ListItem.Season]</value>
     <value condition="!String.IsEmpty(Container(9810).ListItem.Season) + !String.IsEqual(Container(9810).ListItem.Season,-1)">第$INFO[Container(9810).ListItem.Season]季</value>
   </variable>
   <variable name="EpisodeLabel_9810">
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(Container(9810).ListItem.Episode) + !String.IsEqual(Container(9810).ListItem.Episode,-1)">Episode $INFO[Container(9810).ListItem.Episode]</value>
     <value condition="!String.IsEmpty(Container(9810).ListItem.Episode) + !String.IsEqual(Container(9810).ListItem.Episode,-1)">第$INFO[Container(9810).ListItem.Episode]集</value>
   </variable>
   <variable name="EpisodeTitle_9810">
@@ -994,12 +1001,15 @@
     <value condition="!String.IsEmpty(Container(9815).ListItem.Label2) + !String.IsEqual(Container(9815).ListItem.Label2,Container(9815).ListItem.Property(Bobbi.Title.zh)) + !String.IsEqual(Container(9815).ListItem.Label2,Container(9815).ListItem.TVShowTitle) + !String.IsEqual(Container(9815).ListItem.Label2,Container(9815).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9815).ListItem.Label2,Container(9815).ListItem.Title) + !String.IsEqual(Container(9815).ListItem.Label2,Container(9815).ListItem.Label)">$INFO[Container(9815).ListItem.Label2]</value>
   </variable>
   <variable name="SeasonLabel_9815">
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(Container(9815).ListItem.Property(Bobbi.SeasonName)) + !String.IsEmpty(Container(9815).ListItem.Season) + !String.IsEqual(Container(9815).ListItem.Season,0)">Season $INFO[Container(9815).ListItem.Season] · $INFO[Container(9815).ListItem.Property(Bobbi.SeasonName)]</value>
     <value condition="!String.IsEmpty(Container(9815).ListItem.Property(Bobbi.SeasonName)) + !String.IsEmpty(Container(9815).ListItem.Season) + !String.IsEqual(Container(9815).ListItem.Season,0)">第$INFO[Container(9815).ListItem.Season]季 · $INFO[Container(9815).ListItem.Property(Bobbi.SeasonName)]</value>
     <value condition="!String.IsEmpty(Container(9815).ListItem.Property(Bobbi.SeasonName))">$INFO[Container(9815).ListItem.Property(Bobbi.SeasonName)]</value>
-    <value condition="String.IsEqual(Container(9815).ListItem.Season,0)">特别篇</value>
+    <value condition="String.IsEqual(Container(9815).ListItem.Season,0)">$LOCALIZE[32057]</value>
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(Container(9815).ListItem.Season) + !String.IsEqual(Container(9815).ListItem.Season,-1)">Season $INFO[Container(9815).ListItem.Season]</value>
     <value condition="!String.IsEmpty(Container(9815).ListItem.Season) + !String.IsEqual(Container(9815).ListItem.Season,-1)">第$INFO[Container(9815).ListItem.Season]季</value>
   </variable>
   <variable name="EpisodeLabel_9815">
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(Container(9815).ListItem.Episode) + !String.IsEqual(Container(9815).ListItem.Episode,-1)">Episode $INFO[Container(9815).ListItem.Episode]</value>
     <value condition="!String.IsEmpty(Container(9815).ListItem.Episode) + !String.IsEqual(Container(9815).ListItem.Episode,-1)">第$INFO[Container(9815).ListItem.Episode]集</value>
   </variable>
   <variable name="EpisodeTitle_9815">
@@ -1023,12 +1033,15 @@
     <value condition="!String.IsEmpty(Container(9825).ListItem.Label2) + !String.IsEqual(Container(9825).ListItem.Label2,Container(9825).ListItem.Property(Bobbi.Title.zh)) + !String.IsEqual(Container(9825).ListItem.Label2,Container(9825).ListItem.TVShowTitle) + !String.IsEqual(Container(9825).ListItem.Label2,Container(9825).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9825).ListItem.Label2,Container(9825).ListItem.Title) + !String.IsEqual(Container(9825).ListItem.Label2,Container(9825).ListItem.Label)">$INFO[Container(9825).ListItem.Label2]</value>
   </variable>
   <variable name="SeasonLabel_9825">
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(Container(9825).ListItem.Property(Bobbi.SeasonName)) + !String.IsEmpty(Container(9825).ListItem.Season) + !String.IsEqual(Container(9825).ListItem.Season,0)">Season $INFO[Container(9825).ListItem.Season] · $INFO[Container(9825).ListItem.Property(Bobbi.SeasonName)]</value>
     <value condition="!String.IsEmpty(Container(9825).ListItem.Property(Bobbi.SeasonName)) + !String.IsEmpty(Container(9825).ListItem.Season) + !String.IsEqual(Container(9825).ListItem.Season,0)">第$INFO[Container(9825).ListItem.Season]季 · $INFO[Container(9825).ListItem.Property(Bobbi.SeasonName)]</value>
     <value condition="!String.IsEmpty(Container(9825).ListItem.Property(Bobbi.SeasonName))">$INFO[Container(9825).ListItem.Property(Bobbi.SeasonName)]</value>
-    <value condition="String.IsEqual(Container(9825).ListItem.Season,0)">特别篇</value>
+    <value condition="String.IsEqual(Container(9825).ListItem.Season,0)">$LOCALIZE[32057]</value>
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(Container(9825).ListItem.Season) + !String.IsEqual(Container(9825).ListItem.Season,-1)">Season $INFO[Container(9825).ListItem.Season]</value>
     <value condition="!String.IsEmpty(Container(9825).ListItem.Season) + !String.IsEqual(Container(9825).ListItem.Season,-1)">第$INFO[Container(9825).ListItem.Season]季</value>
   </variable>
   <variable name="EpisodeLabel_9825">
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(Container(9825).ListItem.Episode) + !String.IsEqual(Container(9825).ListItem.Episode,-1)">Episode $INFO[Container(9825).ListItem.Episode]</value>
     <value condition="!String.IsEmpty(Container(9825).ListItem.Episode) + !String.IsEqual(Container(9825).ListItem.Episode,-1)">第$INFO[Container(9825).ListItem.Episode]集</value>
   </variable>
   <variable name="EpisodeTitle_9825">
@@ -1052,12 +1065,15 @@
     <value condition="!String.IsEmpty(Container(9830).ListItem.Label2) + !String.IsEqual(Container(9830).ListItem.Label2,Container(9830).ListItem.Property(Bobbi.Title.zh)) + !String.IsEqual(Container(9830).ListItem.Label2,Container(9830).ListItem.TVShowTitle) + !String.IsEqual(Container(9830).ListItem.Label2,Container(9830).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9830).ListItem.Label2,Container(9830).ListItem.Title) + !String.IsEqual(Container(9830).ListItem.Label2,Container(9830).ListItem.Label)">$INFO[Container(9830).ListItem.Label2]</value>
   </variable>
   <variable name="SeasonLabel_9830">
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(Container(9830).ListItem.Property(Bobbi.SeasonName)) + !String.IsEmpty(Container(9830).ListItem.Season) + !String.IsEqual(Container(9830).ListItem.Season,0)">Season $INFO[Container(9830).ListItem.Season] · $INFO[Container(9830).ListItem.Property(Bobbi.SeasonName)]</value>
     <value condition="!String.IsEmpty(Container(9830).ListItem.Property(Bobbi.SeasonName)) + !String.IsEmpty(Container(9830).ListItem.Season) + !String.IsEqual(Container(9830).ListItem.Season,0)">第$INFO[Container(9830).ListItem.Season]季 · $INFO[Container(9830).ListItem.Property(Bobbi.SeasonName)]</value>
     <value condition="!String.IsEmpty(Container(9830).ListItem.Property(Bobbi.SeasonName))">$INFO[Container(9830).ListItem.Property(Bobbi.SeasonName)]</value>
-    <value condition="String.IsEqual(Container(9830).ListItem.Season,0)">特别篇</value>
+    <value condition="String.IsEqual(Container(9830).ListItem.Season,0)">$LOCALIZE[32057]</value>
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(Container(9830).ListItem.Season) + !String.IsEqual(Container(9830).ListItem.Season,-1)">Season $INFO[Container(9830).ListItem.Season]</value>
     <value condition="!String.IsEmpty(Container(9830).ListItem.Season) + !String.IsEqual(Container(9830).ListItem.Season,-1)">第$INFO[Container(9830).ListItem.Season]季</value>
   </variable>
   <variable name="EpisodeLabel_9830">
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(Container(9830).ListItem.Episode) + !String.IsEqual(Container(9830).ListItem.Episode,-1)">Episode $INFO[Container(9830).ListItem.Episode]</value>
     <value condition="!String.IsEmpty(Container(9830).ListItem.Episode) + !String.IsEqual(Container(9830).ListItem.Episode,-1)">第$INFO[Container(9830).ListItem.Episode]集</value>
   </variable>
   <variable name="EpisodeTitle_9830">
@@ -1081,12 +1097,15 @@
     <value condition="!String.IsEmpty(Container(9840).ListItem.Label2) + !String.IsEqual(Container(9840).ListItem.Label2,Container(9840).ListItem.Property(Bobbi.Title.zh)) + !String.IsEqual(Container(9840).ListItem.Label2,Container(9840).ListItem.TVShowTitle) + !String.IsEqual(Container(9840).ListItem.Label2,Container(9840).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9840).ListItem.Label2,Container(9840).ListItem.Title) + !String.IsEqual(Container(9840).ListItem.Label2,Container(9840).ListItem.Label)">$INFO[Container(9840).ListItem.Label2]</value>
   </variable>
   <variable name="SeasonLabel_9840">
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(Container(9840).ListItem.Property(Bobbi.SeasonName)) + !String.IsEmpty(Container(9840).ListItem.Season) + !String.IsEqual(Container(9840).ListItem.Season,0)">Season $INFO[Container(9840).ListItem.Season] · $INFO[Container(9840).ListItem.Property(Bobbi.SeasonName)]</value>
     <value condition="!String.IsEmpty(Container(9840).ListItem.Property(Bobbi.SeasonName)) + !String.IsEmpty(Container(9840).ListItem.Season) + !String.IsEqual(Container(9840).ListItem.Season,0)">第$INFO[Container(9840).ListItem.Season]季 · $INFO[Container(9840).ListItem.Property(Bobbi.SeasonName)]</value>
     <value condition="!String.IsEmpty(Container(9840).ListItem.Property(Bobbi.SeasonName))">$INFO[Container(9840).ListItem.Property(Bobbi.SeasonName)]</value>
-    <value condition="String.IsEqual(Container(9840).ListItem.Season,0)">特别篇</value>
+    <value condition="String.IsEqual(Container(9840).ListItem.Season,0)">$LOCALIZE[32057]</value>
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(Container(9840).ListItem.Season) + !String.IsEqual(Container(9840).ListItem.Season,-1)">Season $INFO[Container(9840).ListItem.Season]</value>
     <value condition="!String.IsEmpty(Container(9840).ListItem.Season) + !String.IsEqual(Container(9840).ListItem.Season,-1)">第$INFO[Container(9840).ListItem.Season]季</value>
   </variable>
   <variable name="EpisodeLabel_9840">
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(Container(9840).ListItem.Episode) + !String.IsEqual(Container(9840).ListItem.Episode,-1)">Episode $INFO[Container(9840).ListItem.Episode]</value>
     <value condition="!String.IsEmpty(Container(9840).ListItem.Episode) + !String.IsEqual(Container(9840).ListItem.Episode,-1)">第$INFO[Container(9840).ListItem.Episode]集</value>
   </variable>
   <variable name="EpisodeTitle_9840">
@@ -1110,12 +1129,15 @@
     <value condition="!String.IsEmpty(Container(9850).ListItem.Label2) + !String.IsEqual(Container(9850).ListItem.Label2,Container(9850).ListItem.Property(Bobbi.Title.zh)) + !String.IsEqual(Container(9850).ListItem.Label2,Container(9850).ListItem.TVShowTitle) + !String.IsEqual(Container(9850).ListItem.Label2,Container(9850).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9850).ListItem.Label2,Container(9850).ListItem.Title) + !String.IsEqual(Container(9850).ListItem.Label2,Container(9850).ListItem.Label)">$INFO[Container(9850).ListItem.Label2]</value>
   </variable>
   <variable name="SeasonLabel_9850">
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(Container(9850).ListItem.Property(Bobbi.SeasonName)) + !String.IsEmpty(Container(9850).ListItem.Season) + !String.IsEqual(Container(9850).ListItem.Season,0)">Season $INFO[Container(9850).ListItem.Season] · $INFO[Container(9850).ListItem.Property(Bobbi.SeasonName)]</value>
     <value condition="!String.IsEmpty(Container(9850).ListItem.Property(Bobbi.SeasonName)) + !String.IsEmpty(Container(9850).ListItem.Season) + !String.IsEqual(Container(9850).ListItem.Season,0)">第$INFO[Container(9850).ListItem.Season]季 · $INFO[Container(9850).ListItem.Property(Bobbi.SeasonName)]</value>
     <value condition="!String.IsEmpty(Container(9850).ListItem.Property(Bobbi.SeasonName))">$INFO[Container(9850).ListItem.Property(Bobbi.SeasonName)]</value>
-    <value condition="String.IsEqual(Container(9850).ListItem.Season,0)">特别篇</value>
+    <value condition="String.IsEqual(Container(9850).ListItem.Season,0)">$LOCALIZE[32057]</value>
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(Container(9850).ListItem.Season) + !String.IsEqual(Container(9850).ListItem.Season,-1)">Season $INFO[Container(9850).ListItem.Season]</value>
     <value condition="!String.IsEmpty(Container(9850).ListItem.Season) + !String.IsEqual(Container(9850).ListItem.Season,-1)">第$INFO[Container(9850).ListItem.Season]季</value>
   </variable>
   <variable name="EpisodeLabel_9850">
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(Container(9850).ListItem.Episode) + !String.IsEqual(Container(9850).ListItem.Episode,-1)">Episode $INFO[Container(9850).ListItem.Episode]</value>
     <value condition="!String.IsEmpty(Container(9850).ListItem.Episode) + !String.IsEqual(Container(9850).ListItem.Episode,-1)">第$INFO[Container(9850).ListItem.Episode]集</value>
   </variable>
   <variable name="EpisodeTitle_9850">
@@ -1139,12 +1161,15 @@
     <value condition="!String.IsEmpty(Container(9860).ListItem.Label2) + !String.IsEqual(Container(9860).ListItem.Label2,Container(9860).ListItem.Property(Bobbi.Title.zh)) + !String.IsEqual(Container(9860).ListItem.Label2,Container(9860).ListItem.TVShowTitle) + !String.IsEqual(Container(9860).ListItem.Label2,Container(9860).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9860).ListItem.Label2,Container(9860).ListItem.Title) + !String.IsEqual(Container(9860).ListItem.Label2,Container(9860).ListItem.Label)">$INFO[Container(9860).ListItem.Label2]</value>
   </variable>
   <variable name="SeasonLabel_9860">
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(Container(9860).ListItem.Property(Bobbi.SeasonName)) + !String.IsEmpty(Container(9860).ListItem.Season) + !String.IsEqual(Container(9860).ListItem.Season,0)">Season $INFO[Container(9860).ListItem.Season] · $INFO[Container(9860).ListItem.Property(Bobbi.SeasonName)]</value>
     <value condition="!String.IsEmpty(Container(9860).ListItem.Property(Bobbi.SeasonName)) + !String.IsEmpty(Container(9860).ListItem.Season) + !String.IsEqual(Container(9860).ListItem.Season,0)">第$INFO[Container(9860).ListItem.Season]季 · $INFO[Container(9860).ListItem.Property(Bobbi.SeasonName)]</value>
     <value condition="!String.IsEmpty(Container(9860).ListItem.Property(Bobbi.SeasonName))">$INFO[Container(9860).ListItem.Property(Bobbi.SeasonName)]</value>
-    <value condition="String.IsEqual(Container(9860).ListItem.Season,0)">特别篇</value>
+    <value condition="String.IsEqual(Container(9860).ListItem.Season,0)">$LOCALIZE[32057]</value>
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(Container(9860).ListItem.Season) + !String.IsEqual(Container(9860).ListItem.Season,-1)">Season $INFO[Container(9860).ListItem.Season]</value>
     <value condition="!String.IsEmpty(Container(9860).ListItem.Season) + !String.IsEqual(Container(9860).ListItem.Season,-1)">第$INFO[Container(9860).ListItem.Season]季</value>
   </variable>
   <variable name="EpisodeLabel_9860">
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(Container(9860).ListItem.Episode) + !String.IsEqual(Container(9860).ListItem.Episode,-1)">Episode $INFO[Container(9860).ListItem.Episode]</value>
     <value condition="!String.IsEmpty(Container(9860).ListItem.Episode) + !String.IsEqual(Container(9860).ListItem.Episode,-1)">第$INFO[Container(9860).ListItem.Episode]集</value>
   </variable>
   <variable name="EpisodeTitle_9860">
@@ -1168,12 +1193,15 @@
     <value condition="!String.IsEmpty(Container(9820).ListItem.Label2) + !String.IsEqual(Container(9820).ListItem.Label2,Container(9820).ListItem.Property(Bobbi.Title.zh)) + !String.IsEqual(Container(9820).ListItem.Label2,Container(9820).ListItem.TVShowTitle) + !String.IsEqual(Container(9820).ListItem.Label2,Container(9820).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9820).ListItem.Label2,Container(9820).ListItem.Title) + !String.IsEqual(Container(9820).ListItem.Label2,Container(9820).ListItem.Label)">$INFO[Container(9820).ListItem.Label2]</value>
   </variable>
   <variable name="SeasonLabel_9820">
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(Container(9820).ListItem.Property(Bobbi.SeasonName)) + !String.IsEmpty(Container(9820).ListItem.Season) + !String.IsEqual(Container(9820).ListItem.Season,0)">Season $INFO[Container(9820).ListItem.Season] · $INFO[Container(9820).ListItem.Property(Bobbi.SeasonName)]</value>
     <value condition="!String.IsEmpty(Container(9820).ListItem.Property(Bobbi.SeasonName)) + !String.IsEmpty(Container(9820).ListItem.Season) + !String.IsEqual(Container(9820).ListItem.Season,0)">第$INFO[Container(9820).ListItem.Season]季 · $INFO[Container(9820).ListItem.Property(Bobbi.SeasonName)]</value>
     <value condition="!String.IsEmpty(Container(9820).ListItem.Property(Bobbi.SeasonName))">$INFO[Container(9820).ListItem.Property(Bobbi.SeasonName)]</value>
-    <value condition="String.IsEqual(Container(9820).ListItem.Season,0)">特别篇</value>
+    <value condition="String.IsEqual(Container(9820).ListItem.Season,0)">$LOCALIZE[32057]</value>
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(Container(9820).ListItem.Season) + !String.IsEqual(Container(9820).ListItem.Season,-1)">Season $INFO[Container(9820).ListItem.Season]</value>
     <value condition="!String.IsEmpty(Container(9820).ListItem.Season) + !String.IsEqual(Container(9820).ListItem.Season,-1)">第$INFO[Container(9820).ListItem.Season]季</value>
   </variable>
   <variable name="EpisodeLabel_9820">
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(Container(9820).ListItem.Episode) + !String.IsEqual(Container(9820).ListItem.Episode,-1)">Episode $INFO[Container(9820).ListItem.Episode]</value>
     <value condition="!String.IsEmpty(Container(9820).ListItem.Episode) + !String.IsEqual(Container(9820).ListItem.Episode,-1)">第$INFO[Container(9820).ListItem.Episode]集</value>
   </variable>
   <variable name="EpisodeTitle_9820">

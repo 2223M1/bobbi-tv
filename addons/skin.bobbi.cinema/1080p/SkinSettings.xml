@@ -3,16 +3,16 @@
   <defaultcontrol always="true">9000</defaultcontrol>
   <include>PageOpen</include>
   <controls>
-    <!-- on-device Settings warm-cool charcoal radial backdrop -->
+    <!-- on-device Settings warm-cool charcoal radial backdrop (zero optical shader tag) -->
     <control type="image">
       <left>0</left><top>0</top><width>1920</width><height>1080</height>
       <texture>bobbi/glass/settings-bg.png</texture>
     </control>
 
-    <!-- Top-centered muted slate title (1:1 on-device Settings sub-page) -->
+    <!-- Top-centered muted slate title -->
     <control type="label">
       <left>0</left><top>62</top><width>1920</width><height>62</height>
-      <label>外观与交互</label>
+      <label>$LOCALIZE[32110]</label>
       <font>SettingsTitle50</font><textcolor>FF7C8088</textcolor>
       <align>center</align><aligny>center</aligny>
     </control>
@@ -28,36 +28,37 @@
         <texture colordiffuse="FF1C1F26">bobbi/glass/icons/sliders.png</texture>
       </control>
       <control type="textbox">
-        <left>125</left><top>832</top><width>800</width><height>132</height>
+        <left>125</left><top>832</top><width>800</width><height>148</height>
         <label>$VAR[SkinSettingHint]</label>
         <font>HeroPlot24</font><textcolor>FF989A9F</textcolor>
         <align>center</align>
       </control>
     </control>
 
-    <!-- Right-column on-device stadium capsule stack @ x=1060..1840 (780x66 pills + 66px section header slot = 52px top / 21px bottom gap) -->
+    <!-- Right-column on-device stadium capsule stack @ x=1060..1840 -->
     <control type="grouplist" id="9000">
       <left>1060</left><top>189</top><width>780</width><height>840</height>
       <orientation>vertical</orientation><itemgap>14</itemgap>
+      <include>ListMotion</include>
       <onup>9701</onup>
       <onleft>9701</onleft><onright>noop</onright>
       <include content="SkinToggle">
         <param name="id">9101</param><param name="setting">BobbiReduceMotion</param>
         <param name="reload">true</param>
-        <param name="label">减少动效</param>
-        <param name="hint">关闭焦点放大、面板滑入；焦点框和状态标记保持不变</param>
+        <param name="label">$LOCALIZE[32111]</param>
+        <param name="hint">$LOCALIZE[32125]</param>
       </include>
       <control type="group" id="9192">
-        <width>780</width><height>66</height>
+        <width>780</width><height>56</height>
         <control type="label">
-          <left>35</left><top>34</top><width>710</width><height>28</height>
-          <label>导航与液态玻璃</label>
+          <left>35</left><top>24</top><width>710</width><height>28</height>
+          <label>$LOCALIZE[32112]</label>
           <font>SettingsSubhead25</font><textcolor>FF80848D</textcolor><aligny>center</aligny>
         </control>
       </control>
       <control type="radiobutton" id="9105">
         <left>0</left><top>0</top><width>780</width><height>66</height>
-        <label>顶部胶囊导航</label>
+        <label>$LOCALIZE[32113]</label>
         <font>Label28</font><textcolor>FFF5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
         <textoffsetx>32</textoffsetx><aligny>center</aligny>
         <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
@@ -75,20 +76,38 @@
       <include content="SkinToggle">
         <param name="id">9106</param><param name="setting">BobbiLiquidGlassEnabled</param>
         <param name="glass">true</param>
-        <param name="label">液态玻璃</param>
-        <param name="hint">默认关闭；开启前会说明此设备支持的效果</param>
+        <param name="label">$LOCALIZE[32114]</param>
+        <param name="hint">$LOCALIZE[32121]</param>
       </include>
+      <control type="button" id="9109">
+        <left>0</left><top>0</top><width>780</width><height>66</height>
+        <label>$LOCALIZE[32083]</label>
+        <font>Label28</font><textcolor>FFF5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
+        <textoffsetx>32</textoffsetx><aligny>center</aligny>
+        <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+        <texturenofocus colordiffuse="1CFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturenofocus>
+        <onclick>RunScript(script.bobbi.setup,display_adaptation)</onclick>
+      </control>
       <control type="group" id="9193">
-        <width>780</width><height>66</height>
+        <width>780</width><height>56</height>
         <control type="label">
-          <left>35</left><top>34</top><width>710</width><height>28</height>
-          <label>首页栏目</label>
+          <left>35</left><top>24</top><width>710</width><height>28</height>
+          <label>$LOCALIZE[32115]</label>
           <font>SettingsSubhead25</font><textcolor>FF80848D</textcolor><aligny>center</aligny>
         </control>
       </control>
+      <control type="button" id="9108">
+        <left>0</left><top>0</top><width>780</width><height>66</height>
+        <label>$LOCALIZE[32086]</label>
+        <font>Label28</font><textcolor>FFF5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
+        <textoffsetx>32</textoffsetx><aligny>center</aligny>
+        <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+        <texturenofocus colordiffuse="1CFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturenofocus>
+        <onclick>RunScript(script.bobbi.setup,home_spaces)</onclick>
+      </control>
       <control type="button" id="9107">
         <left>0</left><top>0</top><width>780</width><height>66</height>
-        <label>首页栏目显隐与顺序</label>
+        <label>$LOCALIZE[32087]</label>
         <font>Label28</font><textcolor>FFF5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
         <textoffsetx>32</textoffsetx><aligny>center</aligny>
         <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
@@ -96,27 +115,27 @@
         <onclick>RunScript(script.bobbi.setup,home_rails)</onclick>
       </control>
       <control type="group" id="9191">
-        <width>780</width><height>66</height>
+        <width>780</width><height>56</height>
         <control type="label">
-          <left>35</left><top>34</top><width>710</width><height>28</height>
-          <label>播放</label>
+          <left>35</left><top>24</top><width>710</width><height>28</height>
+          <label>$LOCALIZE[32116]</label>
           <font>SettingsSubhead25</font><textcolor>FF80848D</textcolor><aligny>center</aligny>
         </control>
       </control>
       <include content="SkinToggle">
         <param name="id">9102</param><param name="setting">OSDAutoClose</param>
-        <param name="label">控制栏自动隐藏</param>
-        <param name="hint">字幕、音轨面板打开时不会隐藏</param>
+        <param name="label">$LOCALIZE[32117]</param>
+        <param name="hint">$LOCALIZE[32126]</param>
       </include>
       <include content="SkinToggle">
         <param name="id">9103</param><param name="setting">autovideotosdr</param><param name="invert">true</param>
-        <param name="label">非 HDR 电视自动转 SDR</param>
-        <param name="hint">电视不支持 HDR 时，自动对 HDR / 杜比视界片源执行 VS10 → SDR</param>
+        <param name="label">$LOCALIZE[32118]</param>
+        <param name="hint">$LOCALIZE[32127]</param>
       </include>
       <include content="SkinToggle">
         <param name="id">9104</param><param name="setting">backstopplay</param>
-        <param name="label">返回键直接停止播放</param>
-        <param name="hint">仅对使用“返回确认”键位的遥控器生效；Yatse 和默认键位中返回键只收起控制栏</param>
+        <param name="label">$LOCALIZE[32119]</param>
+        <param name="hint">$LOCALIZE[32128]</param>
       </include>
     </control>
 

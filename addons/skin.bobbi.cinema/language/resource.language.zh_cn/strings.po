@@ -116,7 +116,6 @@ msgctxt "#31021"
 msgid "Movie title format"
 msgstr "影片标题格式"
 
-# empty strings from id 31018 to 31021
 msgctxt "#31022"
 msgid "Play speed"
 msgstr "播放速度"
@@ -321,7 +320,6 @@ msgctxt "#31117"
 msgid "Show recently added videos"
 msgstr "显示最新加入视频"
 
-#. In main language strings its used as submenu
 msgctxt "#31118"
 msgid "Home page \"Add-ons\" submenu"
 msgstr "主界面插件子菜单"
@@ -330,12 +328,10 @@ msgctxt "#31119"
 msgid "Hide background fanart"
 msgstr "隐藏同人画背景"
 
-#. In main language strings its used as submenu
 msgctxt "#31120"
 msgid "Home page \"Games\" submenu"
 msgstr "主界面游戏子菜单"
 
-#. Boolean settings value
 msgctxt "#31122"
 msgid "Hide EPG if RDS is present on channel window"
 msgstr "频道窗口使用 RDS 时隐藏电子节目单"
@@ -364,7 +360,6 @@ msgctxt "#31132"
 msgid "Lyrics add-on"
 msgstr "歌词插件"
 
-#. In main language strings its used as submenu
 msgctxt "#31134"
 msgid "Home page \"Videos\" submenu"
 msgstr "主界面视频子菜单"
@@ -530,7 +525,7 @@ msgid "Skin default"
 msgstr "皮肤默认"
 
 msgctxt "#31391"
-msgid "Skin default"
+msgid "UI window transparency"
 msgstr "UI视窗透明度选择"
 
 msgctxt "#31392"
@@ -550,19 +545,19 @@ msgid "70% transparency"
 msgstr "70%透明度"
 
 msgctxt "#31396"
-msgid "custom icon"
+msgid "Custom icon only"
 msgstr "只自定义图标"
 
 msgctxt "#31397"
-msgid "custom background"
+msgid "Custom background only"
 msgstr "只自定义壁纸"
 
 msgctxt "#31398"
-msgid "custom icon and custom background"
+msgid "Custom icon and background"
 msgstr "图标和壁纸全部自定义"
 
 msgctxt "#31399"
-msgid "Skin default"
+msgid "Custom icon and wallpaper"
 msgstr "自定义图标和壁纸选择"
 
 msgctxt "#31400"
@@ -570,23 +565,23 @@ msgid "Display method of sub-library"
 msgstr "影视分库展示方式"
 
 msgctxt "#31401"
-msgid "big thumb"
+msgid "Big thumb"
 msgstr "大缩略图"
 
 msgctxt "#31402"
-msgid "small thumb"
+msgid "Small thumb"
 msgstr "小缩略图"
 
 msgctxt "#31403"
-msgid "Text Title"
+msgid "Text title"
 msgstr "文字标题"
 
 msgctxt "#31404"
-msgid "posters method select"
+msgid "Poster display mode"
 msgstr "海报展示模式选择"
 
 msgctxt "#31405"
-msgid "use middle position"
+msgid "Center poster focus"
 msgstr "中央海报焦点"
 
 msgctxt "#31406"
@@ -598,7 +593,7 @@ msgid "3D posters type-2"
 msgstr "3D效果-Ⅱ"
 
 msgctxt "#31408"
-msgid "remote select"
+msgid "Remote profile"
 msgstr "适配遥控器选择"
 
 msgctxt "#31409"
@@ -606,12 +601,8 @@ msgid "China Mobile Bluetooth Remote"
 msgstr "中国移动蓝牙遥控器"
 
 msgctxt "#31410"
-msgid "am6b plus UR02 Remote"
+msgid "AM6B+ UR02 Remote"
 msgstr "am6b plus UR02遥控器"
-
-msgctxt "#31419"
-msgid "ZIDOO v12 Remote"
-msgstr "芝杜V12遥控器"
 
 msgctxt "#31411"
 msgid "First run help..."
@@ -626,24 +617,28 @@ msgid "Local subtitle available"
 msgstr "本地字幕可用"
 
 msgctxt "#31414"
-msgid "Format Range Selected"
+msgid "Resume prompt formats"
 msgstr "续播弹窗格式选择"
 
 msgctxt "#31415"
-msgid "All Formats"
+msgid "All formats"
 msgstr "开启"
 
 msgctxt "#31416"
-msgid "only ISO"
+msgid "ISO disc images only"
 msgstr "只包括ISO原盘"
 
 msgctxt "#31417"
-msgid "turn off resume play"
+msgid "Turn off resume prompt"
 msgstr "关闭"
 
 msgctxt "#31418"
-msgid "use middle position"
+msgid "Left poster focus"
 msgstr "左侧海报焦点"
+
+msgctxt "#31419"
+msgid "Zidoo V12 Remote"
+msgstr "芝杜V12遥控器"
 
 msgctxt "#31420"
 msgid "Login"
@@ -793,17 +788,14 @@ msgctxt "#31961"
 msgid "Timeshift"
 msgstr "时光平移"
 
-#. Choose profile identifier
 msgctxt "#31962"
 msgid "Choose kind of profile identification"
 msgstr "选择用户配置标识种类"
 
-#. Label for the kind of profile identification
 msgctxt "#31963"
 msgid "Profile name"
 msgstr "用户配置名称"
 
-#. Label for the kind of profile identification
 msgctxt "#31964"
 msgid "Profile avatar"
 msgstr "用户配置头像"
@@ -816,32 +808,1342 @@ msgctxt "#31966"
 msgid "Show HDR logos, in the start of the movie"
 msgstr "影片开始时，显示HDR LOGO"
 
+msgctxt "#31967"
+msgid "Settings / VS10"
+msgstr "设置 / VS10"
 
+msgctxt "#32000"
+msgid "Bobbi TV"
+msgstr "波比TV"
 
-#~ msgctxt "#31206"
-#~ msgid "Found"
-#~ msgstr "找到"
+msgctxt "#32001"
+msgid "Home"
+msgstr "首页"
 
-#~ msgctxt "#31207"
-#~ msgid "Find more items"
-#~ msgstr "查找更多项目"
+msgctxt "#32002"
+msgid "TV Shows"
+msgstr "电视剧"
 
-#~ msgctxt "#31310"
-#~ msgid "Track number"
-#~ msgstr "音轨号"
+msgctxt "#32003"
+msgid "Movies"
+msgstr "电影"
 
-#~ msgctxt "#31328"
-#~ msgid "Recently added"
-#~ msgstr "最近加入"
+msgctxt "#32004"
+msgid "Anime"
+msgstr "动漫"
 
-#~ msgctxt "#31391"
-#~ msgid "Skin default with no caps"
-#~ msgstr "皮肤默认无 Caps"
+msgctxt "#32005"
+msgid "My Library"
+msgstr "我的"
 
-#~ msgctxt "#31502"
-#~ msgid "TV"
-#~ msgstr "电视"
+msgctxt "#32006"
+msgid "Continue Watching"
+msgstr "最近观看"
 
-#~ msgctxt "#31909"
-#~ msgid "Fetching forecast info..."
-#~ msgstr "获取天气信息..."
+msgctxt "#32007"
+msgid "Poster Catalog"
+msgstr "影视海报库"
+
+msgctxt "#32008"
+msgid "Saved Views"
+msgstr "常用视图"
+
+msgctxt "#32009"
+msgid "Cloud & Shares"
+msgstr "云盘与共享源"
+
+msgctxt "#32010"
+msgid "Media Servers"
+msgstr "媒体服务器"
+
+msgctxt "#32011"
+msgid "Favourites"
+msgstr "Kodi 收藏"
+
+msgctxt "#32012"
+msgid "Search"
+msgstr "搜索"
+
+msgctxt "#32013"
+msgid "Settings"
+msgstr "设置"
+
+msgctxt "#32014"
+msgid "Tools & Power"
+msgstr "工具与电源"
+
+msgctxt "#32015"
+msgid "Tools"
+msgstr "工具"
+
+msgctxt "#32030"
+msgid "Continue Watching"
+msgstr "继续观看"
+
+msgctxt "#32031"
+msgid "Emby Continue Watching"
+msgstr "Emby 继续观看"
+
+msgctxt "#32032"
+msgid "Emby Recently Added"
+msgstr "Emby 最近新增"
+
+msgctxt "#32033"
+msgid "Popular TV Shows"
+msgstr "热门剧集"
+
+msgctxt "#32034"
+msgid "Popular Movies"
+msgstr "热门电影"
+
+msgctxt "#32035"
+msgid "Seasonal Anime"
+msgstr "当季新番"
+
+msgctxt "#32036"
+msgid "Anime Movies"
+msgstr "动漫电影"
+
+msgctxt "#32037"
+msgid "My Library"
+msgstr "我的片库"
+
+msgctxt "#32040"
+msgid "Loading catalog…"
+msgstr "正在加载片单…"
+
+msgctxt "#32041"
+msgid "Catalog temporarily unavailable"
+msgstr "片单暂时无法加载"
+
+msgctxt "#32042"
+msgid "Open My Library or Tools to configure accounts, cloud shares, or spaces"
+msgstr "首次使用请到「我的」配置影院；网盘与 NAS 也在「我的」里添加"
+
+msgctxt "#32043"
+msgid "Open My Library"
+msgstr "打开我的"
+
+msgctxt "#32044"
+msgid "Reset Default Rails"
+msgstr "恢复默认栏目"
+
+msgctxt "#32045"
+msgid "Select to open  ·  Add or manage cloud & NAS in My Library"
+msgstr "按确定打开  ·  网盘与 NAS 在「我的」里添加或管理"
+
+msgctxt "#32046"
+msgid "Select to resume"
+msgstr "按确定继续播放"
+
+msgctxt "#32047"
+msgid "Select to view"
+msgstr "按确定查看"
+
+msgctxt "#32048"
+msgid "Watched"
+msgstr "已看"
+
+msgctxt "#32049"
+msgid "Resume"
+msgstr "继续"
+
+msgctxt "#32050"
+msgid "Open"
+msgstr "打开"
+
+msgctxt "#32051"
+msgid "Play"
+msgstr "播放"
+
+msgctxt "#32052"
+msgid "Series"
+msgstr "剧集"
+
+msgctxt "#32053"
+msgid "Movie"
+msgstr "电影"
+
+msgctxt "#32054"
+msgid "Showing cached list · Browse normally"
+msgstr "保留上次片单 · 可继续浏览"
+
+msgctxt "#32055"
+msgid "Loading watch history…"
+msgstr "正在读取观看记录…"
+
+msgctxt "#32056"
+msgid "View More"
+msgstr "查看更多"
+
+msgctxt "#32057"
+msgid "Specials"
+msgstr "特别篇"
+
+msgctxt "#32058"
+msgid "Load Failed"
+msgstr "加载失败"
+
+msgctxt "#32059"
+msgid "Press OK to reload"
+msgstr "按确认重新加载"
+
+msgctxt "#32060"
+msgid "Loading…"
+msgstr "正在加载…"
+
+msgctxt "#32061"
+msgid "Nothing here yet"
+msgstr "这里还没有内容"
+
+msgctxt "#32062"
+msgid "Press Back to return"
+msgstr "按 返回 键回到上一页"
+
+msgctxt "#32063"
+msgid "Press Back to return, or Left to switch spaces"
+msgstr "按 返回 回到上一页，或按 左 切换栏目"
+
+msgctxt "#32064"
+msgid "Switch Space / Back"
+msgstr "切换空间 / 返回"
+
+msgctxt "#32070"
+msgid "Interface & Language"
+msgstr "界面与语言"
+
+msgctxt "#32071"
+msgid "UI language, display fit, motion & Liquid Glass"
+msgstr "界面语言、显示适配、动效与液态玻璃外观"
+
+msgctxt "#32072"
+msgid "Home & Navigation"
+msgstr "首页与导航"
+
+msgctxt "#32073"
+msgid "Sidebar spaces, home rails & navigation bar"
+msgstr "主页空间管理、首页栏目顺序与导航形态"
+
+msgctxt "#32074"
+msgid "Playback & Subtitles"
+msgstr "播放与字幕"
+
+msgctxt "#32075"
+msgid "Playback defaults, audio/subtitle preferences & HDR/SDR"
+msgstr "默认播放行为、音轨字幕偏好与 HDR/SDR 输出"
+
+msgctxt "#32076"
+msgid "Content & Source Preferences"
+msgstr "内容与来源偏好"
+
+msgctxt "#32077"
+msgid "Metadata language, poster/rating display & source filters"
+msgstr "元数据语言、海报评分展示与选源筛选策略"
+
+msgctxt "#32078"
+msgid "Network & Devices"
+msgstr "网络与设备"
+
+msgctxt "#32079"
+msgid "Remote control services, LAN shares, backends & pairing"
+msgstr "Kodi 遥控服务、局域网共享、播放后台与设备连接"
+
+msgctxt "#32080"
+msgid "System & Maintenance"
+msgstr "系统维护"
+
+msgctxt "#32081"
+msgid "Updates & recovery, cache & backup, add-ons, diagnostics & system"
+msgstr "检查更新与恢复、缓存与备份、插件管理、诊断与系统"
+
+msgctxt "#32082"
+msgid "UI Language & Region"
+msgstr "界面语言与区域"
+
+msgctxt "#32083"
+msgid "Display Fit & Overscan Check"
+msgstr "显示适配与过扫描检查"
+
+msgctxt "#32084"
+msgid "Appearance & Liquid Glass"
+msgstr "外观与液态玻璃"
+
+msgctxt "#32085"
+msgid "Skin, Fonts & Screensaver"
+msgstr "界面、字体与屏保"
+
+msgctxt "#32086"
+msgid "Manage Sidebar Spaces"
+msgstr "主页空间管理"
+
+msgctxt "#32087"
+msgid "Manage Home Rails"
+msgstr "首页栏目显隐与顺序"
+
+msgctxt "#32088"
+msgid "Navigation Bar & Motion"
+msgstr "导航样式与动效"
+
+msgctxt "#32089"
+msgid "Cinema Home & Widget Preferences"
+msgstr "影院首页与列表偏好"
+
+msgctxt "#32090"
+msgid "Cinema Playback & Subtitles"
+msgstr "影院播放与字幕偏好"
+
+msgctxt "#32091"
+msgid "Kodi Player & Track Defaults"
+msgstr "播放器、音轨与字幕默认语言"
+
+msgctxt "#32092"
+msgid "OSD & Dolby Vision VS10"
+msgstr "控制栏与杜比视界 VS10 偏好"
+
+msgctxt "#32093"
+msgid "Original Audio & Chinese Subtitle Guide"
+msgstr "原声与中文字幕快速设置引导"
+
+msgctxt "#32094"
+msgid "Metadata, Artwork & Source Filters"
+msgstr "元数据语言、海报与选源筛选偏好"
+
+msgctxt "#32095"
+msgid "Kodi Media & Scraper Preferences"
+msgstr "媒体库与刮削偏好"
+
+msgctxt "#32096"
+msgid "Open Accounts & Sources Hub"
+msgstr "前往账号与来源中心"
+
+msgctxt "#32097"
+msgid "Remote Control, Yatse & LAN Services"
+msgstr "网页遥控、Yatse 与局域网服务"
+
+msgctxt "#32098"
+msgid "BT Playback Engine & Helper Pairing"
+msgstr "BT 播放后台与助手配对"
+
+msgctxt "#32099"
+msgid "Cloud Direct & Transport Parameters"
+msgstr "网盘直连与传输参数"
+
+msgctxt "#32100"
+msgid "Devices & Phone Sessions"
+msgstr "设备与手机会话管理"
+
+msgctxt "#32101"
+msgid "Updates, Recovery & Storage Cleanup"
+msgstr "检查更新、版本恢复与存储清理"
+
+msgctxt "#32102"
+msgid "Cache, Backup & Release Notes"
+msgstr "缓存管理、配置备份与版本说明"
+
+msgctxt "#32103"
+msgid "Diagnostics & Player Check"
+msgstr "运行诊断与播放器检查"
+
+msgctxt "#32104"
+msgid "Installed Add-ons & Repositories"
+msgstr "已安装插件与仓库管理"
+
+msgctxt "#32105"
+msgid "System Display, Audio Output & Input"
+msgstr "系统显示、音频输出与输入设备"
+
+msgctxt "#32106"
+msgid "System Information"
+msgstr "系统信息"
+
+msgctxt "#32107"
+msgid "Live TV & PVR Settings"
+msgstr "直播电视 / PVR 设置"
+
+msgctxt "#32110"
+msgid "Appearance & Interaction"
+msgstr "外观与交互"
+
+msgctxt "#32111"
+msgid "Reduce Motion"
+msgstr "减少动效"
+
+msgctxt "#32112"
+msgid "Navigation & Liquid Glass"
+msgstr "导航与液态玻璃"
+
+msgctxt "#32113"
+msgid "Top Capsule Navigation"
+msgstr "顶部胶囊导航"
+
+msgctxt "#32114"
+msgid "Liquid Glass"
+msgstr "液态玻璃"
+
+msgctxt "#32115"
+msgid "Spaces & Home Rails"
+msgstr "主页空间与栏目"
+
+msgctxt "#32116"
+msgid "Playback & OSD"
+msgstr "播放与控制栏"
+
+msgctxt "#32117"
+msgid "Auto-Hide OSD Controls"
+msgstr "控制栏自动隐藏"
+
+msgctxt "#32118"
+msgid "Auto HDR/DV to SDR on SDR TVs"
+msgstr "非 HDR 电视自动转 SDR"
+
+msgctxt "#32119"
+msgid "Back Key Stops Playback Directly"
+msgstr "返回键直接停止播放"
+
+msgctxt "#32120"
+msgid "Default is a collapsible left Liquid Glass sidebar. Turning this on switches to a centered top glass capsule and reloads the skin."
+msgstr "默认为左侧可收起液态玻璃侧栏，浏览内容时收起为左上角胶囊。开启后改为顶部居中的玻璃胶囊导航；切换后界面会重新载入。"
+
+msgctxt "#32121"
+msgid "Classic matte finish by default. Turning on explains real-time refraction vs static glass material for this host. Turning off restores classic immediately."
+msgstr "默认使用经典外观。开启时会说明本机支持实时折射，还是仅支持玻璃材质。关闭后立即恢复经典外观。"
+
+msgctxt "#32122"
+msgid "Reorder or show/hide the 8 Home rails. Saved in current profile skin settings without rewriting skin XML; recovery actions stay reachable if all rails are hidden."
+msgstr "自定义首页各栏目的显示、隐藏与上下顺序。设置保存在当前皮肤配置中，不修改安装目录文件；全部隐藏时仍保留恢复入口。"
+
+msgctxt "#32123"
+msgid "Add, hide, or reorder navigation spaces across both SideNav and TopNav. Home stays fixed first, and Tools & Power remains reachable even if all optional spaces are hidden."
+msgstr "自定义左侧栏与顶栏的空间增减与顺序。首页固定在第一位；即使隐藏全部可选空间，工具与电源仍始终可达。"
+
+msgctxt "#32124"
+msgid "Inspect live GUI resolution, HDMI output mode, Skin Zoom, and TV Just Scan overscan guidance without automatically modifying calibration."
+msgstr "查看当前界面分辨率、HDMI 输出、缩放与电视「点对点 / Just Scan」过扫描排查说明，不自动改动系统校准。"
+
+msgctxt "#32125"
+msgid "Disable focus zoom, panel slide-in, and page fade transitions while keeping focus capsules and active state badges intact."
+msgstr "关闭焦点放大、面板滑入和页面淡入。焦点胶囊、已选状态标记和正在播放标记保持不变。"
+
+msgctxt "#32126"
+msgid "Hide OSD after 5 seconds of inactivity during playback; stays open while subtitle, audio, or settings sheets are visible."
+msgstr "播放时控制栏5秒无操作后自动收起；字幕、音轨面板和设置打开时不会收起。"
+
+msgctxt "#32127"
+msgid "Automatically apply VS10 to SDR conversion for HDR, HLG, and Dolby Vision media when connected to an SDR display."
+msgstr "电视不支持 HDR 时，自动对 HDR、HLG 和杜比视界片源执行 VS10 → SDR 转换。"
+
+msgctxt "#32128"
+msgid "Applies only to remotes mapped to the confirm-stop bridge. On Yatse and standard keymaps, Back dismisses the OSD while Stop ends playback."
+msgstr "仅对配置了“返回确认”键位的遥控器生效。Yatse 与默认键位下，返回键只收起控制栏，停止请用控制栏上的停止键。"
+
+msgctxt "#32129"
+msgid "On"
+msgstr "开启"
+
+msgctxt "#32130"
+msgid "Classic"
+msgstr "经典"
+
+msgctxt "#32140"
+msgid "Shut Down"
+msgstr "关闭主机"
+
+msgctxt "#32141"
+msgid "Restart"
+msgstr "重启主机"
+
+msgctxt "#32142"
+msgid "Quit Kodi"
+msgstr "退出 Kodi"
+
+msgctxt "#32143"
+msgid "Reload UI"
+msgstr "重载界面"
+
+msgctxt "#32144"
+msgid "Edit Spaces"
+msgstr "编辑空间"
+
+msgctxt "#32145"
+msgid "Unavailable"
+msgstr "不可用"
+
+msgctxt "#32146"
+msgid "Return"
+msgstr "返回"
+
+msgctxt "#32147"
+msgid "Back to Video"
+msgstr "返回播放"
+
+msgctxt "#32148"
+msgid "Close Panel"
+msgstr "关闭面板"
+
+msgctxt "#32149"
+msgid "Host System"
+msgstr "主机系统"
+
+msgctxt "#32150"
+msgid "Hardware & Net"
+msgstr "硬件与网络"
+
+msgctxt "#32151"
+msgid "Add / Reorder"
+msgstr "增减与排序"
+
+msgctxt "#32152"
+msgid "Exit App"
+msgstr "退出应用"
+
+msgctxt "#32153"
+msgid "Appearance & Liquid Glass"
+msgstr "外观与液态玻璃"
+
+msgctxt "#32154"
+msgid "Accounts & Sources Hub"
+msgstr "账号与来源中心"
+
+msgctxt "#32155"
+msgid "Settings"
+msgstr "设置"
+
+msgctxt "#32156"
+msgid "Search"
+msgstr "搜索"
+
+msgctxt "#32160"
+msgid "Recently Watched"
+msgstr "最近观看"
+
+msgctxt "#32161"
+msgid "My Favourites"
+msgstr "我的收藏"
+
+msgctxt "#32162"
+msgid "Cloud & Libraries"
+msgstr "云盘与媒体库"
+
+msgctxt "#32163"
+msgid "Accounts & Tools"
+msgstr "管理与工具"
+
+msgctxt "#32164"
+msgid "Accounts & Sources"
+msgstr "账号与来源中心"
+
+msgctxt "#32165"
+msgid "Library"
+msgstr "片库"
+
+msgctxt "#32166"
+msgid "System File Manager"
+msgstr "系统文件管理"
+
+msgctxt "#32167"
+msgid "Setup Guide & Check"
+msgstr "向导与诊断"
+
+msgctxt "#32168"
+msgid "Enter title to search movies, shows, anime & cast"
+msgstr "输入片名，搜索电影、剧集、动漫与演员"
+
+msgctxt "#32169"
+msgid "All Titles"
+msgstr "全部影视"
+
+msgctxt "#32170"
+msgid "Trending Now"
+msgstr "热门浏览"
+
+msgctxt "#32171"
+msgid "Select File Version"
+msgstr "选择文件版本"
+
+msgctxt "#32172"
+msgid "Series & Cast Works"
+msgstr "系列与演职作品"
+
+msgctxt "#32173"
+msgid "Trailer"
+msgstr "预告片"
+
+msgctxt "#32174"
+msgid "My Rating"
+msgstr "我的评分"
+
+msgctxt "#32175"
+msgid "Versions"
+msgstr "版本"
+
+msgctxt "#32176"
+msgid "Refresh Info"
+msgstr "刷新资料"
+
+msgctxt "#32177"
+msgid "Cast & Crew"
+msgstr "演职人员"
+
+msgctxt "#32178"
+msgid "Director"
+msgstr "导演"
+
+msgctxt "#32179"
+msgid "Cast"
+msgstr "主演"
+
+msgctxt "#32180"
+msgid "Add & Manage Sources"
+msgstr "添加与管理来源"
+
+msgctxt "#32181"
+msgid "Personal Cloud"
+msgstr "个人云盘"
+
+msgctxt "#32182"
+msgid "Cloud accounts · CD2 mounts · LAN shares"
+msgstr "连接云盘账号 · CD2 挂载 · 局域网共享"
+
+msgctxt "#32183"
+msgid "Browse cloud files"
+msgstr "浏览网盘文件"
+
+msgctxt "#32184"
+msgid "Open media folder"
+msgstr "打开媒体目录"
+
+msgctxt "#32185"
+msgid "Resume Playback"
+msgstr "继续播放"
+
+msgctxt "#32186"
+msgid "+ Add Source"
+msgstr "+ 添加来源"
+
+msgctxt "#32187"
+msgid "Filter"
+msgstr "筛选"
+
+msgctxt "#32188"
+msgid "Check Updates"
+msgstr "检查更新"
+
+msgctxt "#32189"
+msgid "Years"
+msgstr "年代"
+
+msgctxt "#32190"
+msgid "Genres"
+msgstr "类型"
+
+msgctxt "#32191"
+msgid "Regions & Languages"
+msgstr "地区与语言"
+
+msgctxt "#32192"
+msgid "Collections"
+msgstr "系列合集"
+
+msgctxt "#32193"
+msgid "Networks"
+msgstr "播出平台"
+
+msgctxt "#32194"
+msgid "Trending"
+msgstr "近期热门"
+
+msgctxt "#32195"
+msgid "Airing Today"
+msgstr "今日播出"
+
+msgctxt "#32196"
+msgid "Popular"
+msgstr "院线热映"
+
+msgctxt "#32197"
+msgid "Next 7 Days"
+msgstr "未来七日播出"
+
+msgctxt "#32198"
+msgid "Popular Anime"
+msgstr "热门番剧"
+
+msgctxt "#32199"
+msgid "Top Rated Anime"
+msgstr "高分动漫"
+
+msgctxt "#32200"
+msgid "Anime Archive"
+msgstr "往季动画"
+
+msgctxt "#32201"
+msgid "Media & Libraries"
+msgstr "媒体与片库"
+
+msgctxt "#32202"
+msgid "Seasons"
+msgstr "剧集   ·   选择季"
+
+msgctxt "#32203"
+msgid "Episodes"
+msgstr "剧集列表"
+
+msgctxt "#32204"
+msgid "Poster Catalog   ·   Personal Cloud   ·   Local Mounts & LAN Shares"
+msgstr "影视海报库   ·   个人云盘   ·   本地挂载与局域网共享"
+
+msgctxt "#32205"
+msgid "Catalog temporarily failed to load — select a card below to retry"
+msgstr "片单暂时未能读取，选中下方卡片按确认即可重新加载"
+
+msgctxt "#32210"
+msgid "Subtitles"
+msgstr "字幕"
+
+msgctxt "#32211"
+msgid "Audio"
+msgstr "音轨"
+
+msgctxt "#32212"
+msgid "Video"
+msgstr "画面"
+
+msgctxt "#32213"
+msgid "More"
+msgstr "更多"
+
+msgctxt "#32214"
+msgid "OK Enter jump time   ·   ↓ Controls"
+msgstr "确认 输入时间跳转   ·   ↓ 控制栏"
+
+msgctxt "#32215"
+msgid "Previous"
+msgstr "上一个"
+
+msgctxt "#32216"
+msgid "Previous chapter / previous queue item"
+msgstr "上一章 / 播放队列上一项"
+
+msgctxt "#32217"
+msgid "Rewind"
+msgstr "后退"
+
+msgctxt "#32218"
+msgid "Forward"
+msgstr "前进"
+
+msgctxt "#32219"
+msgid "Next"
+msgstr "下一个"
+
+msgctxt "#32220"
+msgid "Next chapter / next queue item (not next episode)"
+msgstr "下一章 / 播放队列下一项（不代表同版下一集）"
+
+msgctxt "#32221"
+msgid "Stop"
+msgstr "停止"
+
+msgctxt "#32222"
+msgid "Stop playback and return"
+msgstr "停止播放并返回"
+
+msgctxt "#32223"
+msgid "Signal & Codec"
+msgstr "信号与编码"
+
+msgctxt "#32224"
+msgid "Chapters & Bookmarks"
+msgstr "章节书签"
+
+msgctxt "#32225"
+msgid "Dolby Vision VS10"
+msgstr "杜比视界 VS10"
+
+msgctxt "#32226"
+msgid "Play Speed"
+msgstr "播放速度"
+
+msgctxt "#32227"
+msgid "Find Subtitles"
+msgstr "找中文字幕"
+
+msgctxt "#32228"
+msgid "Chapter selection & bookmarks"
+msgstr "章节选择与播放书签"
+
+msgctxt "#32229"
+msgid "Signal Info"
+msgstr "信号信息"
+
+msgctxt "#32230"
+msgid "Color Management"
+msgstr "色彩管理"
+
+msgctxt "#32231"
+msgid "Disc Menu"
+msgstr "光盘菜单"
+
+msgctxt "#32232"
+msgid "Blu-ray / DVD disc menu"
+msgstr "蓝光 / DVD 原盘"
+
+msgctxt "#32233"
+msgid "3D Mode"
+msgstr "3D 模式"
+
+msgctxt "#32234"
+msgid "Debug Overlay"
+msgstr "调试叠加层"
+
+msgctxt "#32235"
+msgid "Live decoder, frame drops & A/V sync"
+msgstr "实时解码、丢帧与音视频同步"
+
+msgctxt "#32236"
+msgid "Control Center · Settings · Spaces · Power"
+msgstr "控制中心 · 设置 · 空间 · 电源"
+
+msgctxt "#32237"
+msgid "Subtitle Settings"
+msgstr "字幕设置"
+
+msgctxt "#32238"
+msgid "Audio Settings"
+msgstr "音频设置"
+
+msgctxt "#32239"
+msgid "[COLOR ok]✓[/COLOR] Current track   ·   ↑↓ Select   ·   OK Apply"
+msgstr "[COLOR ok]✓[/COLOR] 当前轨道   ·   ↑↓ 选择   ·   确认 应用"
+
+msgctxt "#32240"
+msgid "Keep Original Format"
+msgstr "保持片源格式"
+
+msgctxt "#32241"
+msgid "No conversion"
+msgstr "不做转换"
+
+msgctxt "#32242"
+msgid "Convert to SDR"
+msgstr "转为 SDR"
+
+msgctxt "#32243"
+msgid "Convert to HDR10"
+msgstr "转为 HDR10"
+
+msgctxt "#32244"
+msgid "Convert to Dolby Vision"
+msgstr "转为杜比视界"
+
+msgctxt "#32245"
+msgid "VS10 conversion is unavailable for the current player or source"
+msgstr "当前环境或片源不支持 VS10 转换"
+
+msgctxt "#32246"
+msgid "Return to Playback"
+msgstr "返回播放"
+
+msgctxt "#32247"
+msgid "Source"
+msgstr "片源"
+
+msgctxt "#32248"
+msgid "Select output format"
+msgstr "选择输出格式"
+
+msgctxt "#32250"
+msgid "Chinese"
+msgstr "中文"
+
+msgctxt "#32251"
+msgid "Simplified Chinese"
+msgstr "简体中文"
+
+msgctxt "#32252"
+msgid "Traditional Chinese"
+msgstr "繁体中文"
+
+msgctxt "#32253"
+msgid "English"
+msgstr "英语"
+
+msgctxt "#32254"
+msgid "Japanese"
+msgstr "日语"
+
+msgctxt "#32255"
+msgid "Korean"
+msgstr "韩语"
+
+msgctxt "#32256"
+msgid "French"
+msgstr "法语"
+
+msgctxt "#32257"
+msgid "German"
+msgstr "德语"
+
+msgctxt "#32258"
+msgid "Spanish"
+msgstr "西班牙语"
+
+msgctxt "#32259"
+msgid "Italian"
+msgstr "意大利语"
+
+msgctxt "#32260"
+msgid "Russian"
+msgstr "俄语"
+
+msgctxt "#32261"
+msgid "Thai"
+msgstr "泰语"
+
+msgctxt "#32262"
+msgid "Portuguese"
+msgstr "葡萄牙语"
+
+msgctxt "#32263"
+msgid "Unlabeled"
+msgstr "未标注"
+
+msgctxt "#32264"
+msgid "Player"
+msgstr "播放器"
+
+msgctxt "#32265"
+msgid "Media"
+msgstr "媒体"
+
+msgctxt "#32266"
+msgid "Live TV"
+msgstr "直播电视"
+
+msgctxt "#32267"
+msgid "Services"
+msgstr "服务"
+
+msgctxt "#32268"
+msgid "Interface"
+msgstr "界面"
+
+msgctxt "#32269"
+msgid "System"
+msgstr "系统"
+
+msgctxt "#32270"
+msgid "Changes apply immediately · Back to close"
+msgstr "调整立即生效，返回 收起"
+
+msgctxt "#32271"
+msgid "↑↓ Select   ·   ← → Adjust   ·   Back to close"
+msgstr "↑↓ 选择   ·   ← → 调整   ·   返回 关闭"
+
+msgctxt "#32272"
+msgid "Select Episode"
+msgstr "选集"
+
+msgctxt "#32273"
+msgid "Seasons & Episodes"
+msgstr "选择季集"
+
+msgctxt "#32274"
+msgid "Resume · Pick Source"
+msgstr "继续 · 选片源"
+
+msgctxt "#32275"
+msgid "Pick Source"
+msgstr "选择片源"
+
+msgctxt "#32276"
+msgid "Raw File"
+msgstr "原文件"
+
+msgctxt "#32277"
+msgid "Series · Season"
+msgstr "剧集 · 季"
+
+msgctxt "#32278"
+msgid "Series · Episode"
+msgstr "剧集 · 单集"
+
+msgctxt "#32279"
+msgid "Dolby Vision"
+msgstr "杜比视界"
+
+msgctxt "#32280"
+msgid "Paused"
+msgstr "已暂停"
+
+msgctxt "#32281"
+msgid "Playback Speed"
+msgstr "播放倍速"
+
+msgctxt "#32282"
+msgid "Fast Forward / Rewind"
+msgstr "快进 / 快退"
+
+msgctxt "#32283"
+msgid "Paused   ·   Press OK to resume before changing speed"
+msgstr "已暂停   ·   按确认继续播放后再调速"
+
+msgctxt "#32284"
+msgid "← Slower   ·   → Faster   ·   OK Normal speed"
+msgstr "← 减速   ·   → 加速   ·   确认 恢复正常播放"
+
+msgctxt "#32285"
+msgid "← Rewind   ·   → Fast Forward   ·   OK Normal speed"
+msgstr "← 快退   ·   → 快进   ·   确认 恢复正常播放"
+
+msgctxt "#32286"
+msgid "Back closes panel and keeps current speed"
+msgstr "返回关闭菜单，保留当前速度"
+
+msgctxt "#32287"
+msgid "Audible tempo is unsupported by current player[CR]Use FF / Rewind to seek; Back when done"
+msgstr "当前播放器不支持有声倍速[CR]快进 / 快退用于定位；返回 完成"
+
+msgctxt "#32288"
+msgid "Pause"
+msgstr "暂停"
+
+msgctxt "#32289"
+msgid "Back 10s"
+msgstr "后退 10 秒"
+
+msgctxt "#32290"
+msgid "Forward 30s"
+msgstr "前进 30 秒"
+
+msgctxt "#32291"
+msgid "Seeking unavailable for current stream"
+msgstr "当前播放源不支持跳转"
+
+msgctxt "#32292"
+msgid "Pause unavailable for current stream"
+msgstr "当前播放源不支持暂停"
+
+msgctxt "#32293"
+msgid "Reading tracks…"
+msgstr "正在读取轨道…"
+
+msgctxt "#32294"
+msgid "Tracks temporarily unavailable — reopen panel to retry"
+msgstr "暂时无法读取轨道，请重新打开"
+
+msgctxt "#32295"
+msgid "No selectable tracks"
+msgstr "没有可选择的轨道"
+
+msgctxt "#32296"
+msgid "Dolby Atmos"
+msgstr "杜比全景声"
+
+msgctxt "#32297"
+msgid "Dolby Digital+"
+msgstr "杜比数字+"
+
+msgctxt "#32298"
+msgid "Dolby Digital"
+msgstr "杜比数字"
+
+msgctxt "#32299"
+msgid "Dolby TrueHD"
+msgstr "杜比 TrueHD"
+
+msgctxt "#32300"
+msgid "Hide Subtitles"
+msgstr "关闭字幕"
+
+msgctxt "#32301"
+msgid "Show Subtitles"
+msgstr "打开字幕"
+
+msgctxt "#32302"
+msgid "Subtitles Off"
+msgstr "字幕已关闭"
+
+msgctxt "#32303"
+msgid "Subtitles On"
+msgstr "字幕已开启"
+
+msgctxt "#32304"
+msgid "No Subtitles"
+msgstr "无字幕"
+
+msgctxt "#32310"
+msgid "Clear Watch History"
+msgstr "清空观看历史"
+
+msgctxt "#32311"
+msgid "Remove all recent watch history entries"
+msgstr "移除全部最近观看记录"
+
+msgctxt "#32312"
+msgid "Loading watch history"
+msgstr "正在读取观看历史"
+
+msgctxt "#32313"
+msgid "No watch history yet"
+msgstr "暂无观看历史"
+
+msgctxt "#32314"
+msgid "Loading movie library"
+msgstr "正在读取电影片库"
+
+msgctxt "#32315"
+msgid "No movies in library yet"
+msgstr "还没有加入片库的电影"
+
+msgctxt "#32316"
+msgid "Loading TV library"
+msgstr "正在读取剧集片库"
+
+msgctxt "#32317"
+msgid "No TV shows in library yet"
+msgstr "还没有加入片库的剧集"
+
+msgctxt "#32318"
+msgid "Loading favourites"
+msgstr "正在读取收藏"
+
+msgctxt "#32319"
+msgid "No favourites yet"
+msgstr "还没有收藏内容"
+
+msgctxt "#32320"
+msgid "Loading poster catalog"
+msgstr "正在读取作品片库"
+
+msgctxt "#32321"
+msgid "Poster catalog not indexed yet"
+msgstr "尚未索引作品片库"
+
+msgctxt "#32322"
+msgid "Loading library sources"
+msgstr "正在读取片库来源"
+
+msgctxt "#32323"
+msgid "No items"
+msgstr "暂无内容"
+
+msgctxt "#32324"
+msgid "Recently watched movies and episodes appear here in chronological order."
+msgstr "最近播放过的影片与剧集会按时间展示在这里。"
+
+msgctxt "#32325"
+msgid "Movies added from the detail page appear here as a poster wall."
+msgstr "在影片详情页加入片库后，会以海报墙展示在这里。"
+
+msgctxt "#32326"
+msgid "TV shows added from the detail page appear here as a poster wall."
+msgstr "在剧集详情页加入片库后，会以海报墙展示在这里。"
+
+msgctxt "#32327"
+msgid "Open the context menu on any title or folder to add it to Favourites."
+msgstr "在任意影片或目录上按菜单键即可加入收藏。"
+
+msgctxt "#32328"
+msgid "Connect cloud drives or media libraries to browse indexed works here."
+msgstr "连接原生网盘或媒体库后，已索引作品会展示在这里。"
+
+msgctxt "#32329"
+msgid "Manage cloud drives, NAS shares, and media servers from Accounts & Sources."
+msgstr "可在左侧或账号与来源中心管理网盘、NAS 与媒体服务器。"
+
+msgctxt "#32330"
+msgid "Select a category on the left to browse."
+msgstr "请从左侧分类浏览。"
+
+msgctxt "#32331"
+msgid "Watch History"
+msgstr "观看记录"
+
+msgctxt "#32332"
+msgid "Up Next"
+msgstr "接着看"
+
+msgctxt "#32333"
+msgid "History entry · Play from start only"
+msgstr "历史进度 · 仅从头播放"
+
+msgctxt "#32334"
+msgid "Nothing in progress yet"
+msgstr "还没有在看的影片"
+
+msgctxt "#32335"
+msgid "Watch history temporarily unavailable"
+msgstr "暂时无法读取观看记录"
+
+msgctxt "#32336"
+msgid "Syncing with Home; you can use the left menu anytime."
+msgstr "正在与首页同步；你可以先使用左侧菜单。"
+
+msgctxt "#32337"
+msgid "Pick a title from Home to start; unfinished titles stay here."
+msgstr "从首页片单选一部开始；未看完的影院影片会留在这里。"
+
+msgctxt "#32338"
+msgid "History was not cleared; retry from Continue Watching on the left."
+msgstr "观看记录未被清除；请从左侧“最近观看”重试。"
+
+msgctxt "#32339"
+msgid "Open Continue Watching on the left to view or retry."
+msgstr "你可以从左侧“最近观看”查看或重试。"
+
+msgctxt "#32340"
+msgid "Done"
+msgstr "完成"
+
+msgctxt "#32341"
+msgid "Backspace"
+msgstr "退格"
+
+msgctxt "#32342"
+msgid "Add-ons"
+msgstr "插件"
+
+msgctxt "#32343"
+msgid "Installed add-ons, tools & repositories"
+msgstr "已安装插件、扩展工具与仓库管理"
+
+msgctxt "#32344"
+msgid "Saved titles, shows & shortcuts"
+msgstr "收藏夹里的影片、剧集与常用入口"
+
+msgctxt "#32345"
+msgid "File Manager"
+msgstr "文件管理"
+
+msgctxt "#32346"
+msgid "Web Management URL"
+msgstr "手机网页管理地址"
+
+msgctxt "#32347"
+msgid "CPU"
+msgstr "处理器"
+
+msgctxt "#32348"
+msgid "Memory"
+msgstr "内存"
+
+msgctxt "#32349"
+msgid "Video Decoding"
+msgstr "视频解码"
+
+msgctxt "#32350"
+msgid "Frame Rate"
+msgstr "帧率"
+
+msgctxt "#32351"
+msgid "Codec"
+msgstr "编码"
+
+msgctxt "#32352"
+msgid "Pixel Format"
+msgstr "像素格式"
+
+msgctxt "#32353"
+msgid "Aspect Ratio"
+msgstr "画面比例"
+
+msgctxt "#32354"
+msgid "Live Bitrate"
+msgstr "实时码率"
+
+msgctxt "#32355"
+msgid "Decode Queue"
+msgstr "解码队列"
+
+msgctxt "#32356"
+msgid "HDR & Dolby Vision"
+msgstr "HDR 与杜比视界"
+
+msgctxt "#32357"
+msgid "Source Format"
+msgstr "片源类型"
+
+msgctxt "#32358"
+msgid "Output Format"
+msgstr "输出类型"
+
+msgctxt "#32359"
+msgid "L1 Luminance"
+msgstr "L1 亮度"
+
+msgctxt "#32360"
+msgid "L5 Active Area"
+msgstr "L5 黑边"
+
+msgctxt "#32361"
+msgid "Mastering Luminance"
+msgstr "母版亮度"
+
+msgctxt "#32362"
+msgid "EOTF / Gamut"
+msgstr "EOTF / 色域"
+
+msgctxt "#32363"
+msgid "Audio & Subtitles"
+msgstr "音频与字幕"
+
+msgctxt "#32364"
+msgid "Audio Codec"
+msgstr "音频编码"
+
+msgctxt "#32365"
+msgid "Sample Format"
+msgstr "采样规格"
+
+msgctxt "#32366"
+msgid "Audio Decoder"
+msgstr "音频解码器"
+
+msgctxt "#32367"
+msgid "Current Subtitle"
+msgstr "当前字幕"
+
+msgctxt "#32368"
+msgid "Output & System"
+msgstr "输出与系统"
+
+msgctxt "#32369"
+msgid "Display Mode"
+msgstr "显示模式"
+
+msgctxt "#32370"
+msgid "Render FPS"
+msgstr "渲染帧率"
+
+msgctxt "#32371"
+msgid "Buffer Level"
+msgstr "缓冲水位"
+
+msgctxt "#32372"
+msgid "Add Bookmark"
+msgstr "添加书签"
+
+msgctxt "#32373"
+msgid "Clear Bookmarks"
+msgstr "清空书签"
+
+msgctxt "#32374"
+msgid "Episode Bookmarks"
+msgstr "剧集书签"
+
+msgctxt "#32375"
+msgid "No bookmarks yet — select Add Bookmark below to save the current timestamp"
+msgstr "暂无书签 — 选择下方「添加书签」记录当前画面时间点"
+
+msgctxt "#32399"
+msgid "en"
+msgstr "zh"
+
+msgctxt "#31085"
+msgid "Channel Group"
+msgstr "频道分组"
+
+msgctxt "#31299"
+msgid "Refreshing"
+msgstr "正在刷新"

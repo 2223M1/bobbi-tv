@@ -12,7 +12,7 @@
     <!-- Top-Centered on-device Settings Title (matching sref_5_0.jpg) -->
     <control type="label">
       <left>360</left><top>48</top><width>1200</width><height>64</height>
-      <label>文件管理</label>
+      <label>$LOCALIZE[32345]</label>
       <font>SettingsTitle50</font><textcolor>FF7C8088</textcolor>
       <align>center</align><aligny>center</aligny>
     </control>

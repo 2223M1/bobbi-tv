@@ -11,12 +11,12 @@
       <left>80</left><top>132</top>
       <control type="label">
         <left>0</left><top>0</top><width>1200</width><height>68</height>
-        <label>插件</label>
+        <label>$LOCALIZE[32342]</label>
         <font>Hero60</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny>
       </control>
       <control type="label">
         <left>2</left><top>72</top><width>1400</width><height>32</height>
-        <label>已安装插件、扩展工具与仓库管理</label>
+        <label>$LOCALIZE[32343]</label>
         <font>HeroPlot24</font><textcolor>9CEBEBF5</textcolor><aligny>center</aligny>
       </control>
     </control>
@@ -42,8 +42,8 @@
       <include content="StateBlock">
         <param name="y">400</param>
         <param name="empty">true</param>
-        <param name="emptytitle">这里还没有内容</param>
-        <param name="emptyhint">按 返回 回到上一页，或按 左 打开导航侧栏</param>
+        <param name="emptytitle">$LOCALIZE[32061]</param>
+        <param name="emptyhint">$LOCALIZE[32063]</param>
       </include>
     </control>
     <include content="TopBar">

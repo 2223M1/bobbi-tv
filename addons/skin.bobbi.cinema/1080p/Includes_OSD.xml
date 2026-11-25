@@ -316,7 +316,7 @@
         </control>
         <control type="label">
           <left>36</left><top>74</top><width>628</width><height>26</height>
-          <label>[COLOR ok]✓[/COLOR] 当前轨道   ·   ↑↓ 选择   ·   确认 应用$INFO[Window(Home).Property(Bobbi.OSD.Truncated),   ·   ]</label>
+          <label>$LOCALIZE[32239]$INFO[Window(Home).Property(Bobbi.OSD.Truncated),   ·   ]</label>
           <font>CardSub22</font><textcolor>$VAR[BobbiPanelCaption]</textcolor><aligny>center</aligny>
         </control>
         <control type="label">
@@ -377,7 +377,7 @@
             <param name="onclick2">RunScript(plugin.video.bobbi,bobbi_osd=$PARAM[type]_settings)</param>
           </include>
           <include content="TextPill">
-            <param name="id">20223</param><param name="label">找中文字幕</param><param name="width">224</param>
+            <param name="id">20223</param><param name="label">$LOCALIZE[32227]</param><param name="width">224</param>
             <param name="visible">$PARAM[issub] + System.HasAddon(script.bobbi.opensubtitles)</param>
             <param name="onclick">Dialog.Close($PARAM[window])</param>
             <param name="onclick2">RunScript(script.bobbi.opensubtitles)</param>

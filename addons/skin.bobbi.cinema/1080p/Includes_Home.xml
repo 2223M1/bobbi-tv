@@ -54,24 +54,25 @@
   <!-- Home rail declarations and shared selectors are statically generated. -->
   <!-- 我的 hub: the newest resume item, read from the hidden 继续观看 list (container 9130) -->
   <variable name="HubResumeHeading">
-    <value condition="String.IsEqual(Container(9130).ListItem.Property(Bobbi.File.State),start_only)">观看记录</value>
-    <value>接着看</value>
+    <value condition="String.IsEqual(Container(9130).ListItem.Property(Bobbi.File.State),start_only)">$LOCALIZE[32331]</value>
+    <value>$LOCALIZE[32332]</value>
   </variable>
   <variable name="HubResumeAction">
-    <value condition="String.IsEqual(Container(9130).ListItem.Property(Bobbi.File.State),start_only)">历史进度 · 仅从头播放</value>
-    <value>已看 $INFO[Container(9130).ListItem.Property(PercentPlayed)]%   ·   按 确认 继续</value>
+    <value condition="String.IsEqual(Container(9130).ListItem.Property(Bobbi.File.State),start_only)">$LOCALIZE[32333]</value>
+    <value condition="String.IsEqual($LOCALIZE[32399],en)">$INFO[Container(9130).ListItem.Property(PercentPlayed)]% $LOCALIZE[32048]   ·   $LOCALIZE[32046]</value>
+    <value>$LOCALIZE[32048] $INFO[Container(9130).ListItem.Property(PercentPlayed)]%   ·   $LOCALIZE[32046]</value>
   </variable>
   <variable name="HubResumeStateTitle">
-    <value condition="Container(9130).IsUpdating">正在读取观看记录</value>
-    <value condition="String.IsEqual(Container(9130).ListItem.Property(Bobbi.Resume.State),empty)">还没有在看的影片</value>
-    <value condition="String.IsEqual(Container(9130).ListItem.Property(Bobbi.Resume.State),error)">暂时无法读取观看记录</value>
-    <value>正在读取观看记录</value>
+    <value condition="Container(9130).IsUpdating">$LOCALIZE[32312]</value>
+    <value condition="String.IsEqual(Container(9130).ListItem.Property(Bobbi.Resume.State),empty)">$LOCALIZE[32334]</value>
+    <value condition="String.IsEqual(Container(9130).ListItem.Property(Bobbi.Resume.State),error)">$LOCALIZE[32335]</value>
+    <value>$LOCALIZE[32312]</value>
   </variable>
   <variable name="HubResumeStateDescription">
-    <value condition="Container(9130).IsUpdating">正在与首页同步；你可以先使用左侧菜单。</value>
-    <value condition="String.IsEqual(Container(9130).ListItem.Property(Bobbi.Resume.State),empty)">从首页片单选一部开始；未看完的影院影片会留在这里。</value>
-    <value condition="String.IsEqual(Container(9130).ListItem.Property(Bobbi.Resume.State),error)">观看记录未被清除；请从左侧“继续观看”重试。</value>
-    <value>你可以从左侧“继续观看”查看或重试。</value>
+    <value condition="Container(9130).IsUpdating">$LOCALIZE[32336]</value>
+    <value condition="String.IsEqual(Container(9130).ListItem.Property(Bobbi.Resume.State),empty)">$LOCALIZE[32337]</value>
+    <value condition="String.IsEqual(Container(9130).ListItem.Property(Bobbi.Resume.State),error)">$LOCALIZE[32338]</value>
+    <value>$LOCALIZE[32339]</value>
   </variable>
   <variable name="HubResumeArt">
     <value condition="!String.IsEmpty(Container(9130).ListItem.Art(thumb))">$INFO[Container(9130).ListItem.Art(thumb)]</value>
@@ -79,12 +80,14 @@
     <value>$INFO[Container(9130).ListItem.Art(landscape)]</value>
   </variable>
   <variable name="HubResumeTitle">
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(Container(9130).ListItem.Property(Bobbi.Title.en))">$INFO[Container(9130).ListItem.Property(Bobbi.Title.en)]</value>
     <value condition="!String.IsEmpty(Container(9130).ListItem.Property(Bobbi.Title.zh))">$INFO[Container(9130).ListItem.Property(Bobbi.Title.zh)]</value>
     <value condition="!String.IsEmpty(Container(9130).ListItem.TVShowTitle)">$INFO[Container(9130).ListItem.TVShowTitle]</value>
     <value condition="!String.IsEmpty(Container(9130).ListItem.Title)">$INFO[Container(9130).ListItem.Title]</value>
     <value>$INFO[Container(9130).ListItem.Label]</value>
   </variable>
   <variable name="HubResumeSubline">
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + !String.IsEmpty(Container(9130).ListItem.Season) + !String.IsEmpty(Container(9130).ListItem.Episode)">S$INFO[Container(9130).ListItem.Season] · E$INFO[Container(9130).ListItem.Episode]$INFO[Container(9130).ListItem.Year,   ·   ]</value>
     <value condition="!String.IsEmpty(Container(9130).ListItem.Season) + !String.IsEmpty(Container(9130).ListItem.Episode)">第$INFO[Container(9130).ListItem.Season]季 · 第$INFO[Container(9130).ListItem.Episode]集$INFO[Container(9130).ListItem.Year,   ·   ]</value>
     <value condition="!String.IsEmpty(Container(9130).ListItem.Year)">$INFO[Container(9130).ListItem.Year]$INFO[Container(9130).ListItem.Genre,   ·   ]</value>
     <value>$INFO[Container(9130).ListItem.Label2]</value>
@@ -131,7 +134,7 @@
           <include content="HomeRailMotion"><param name="id" value="$PARAM[id]" /></include>
           <control type="label">
             <left>1240</left><top>144</top><width>600</width><height>34</height>
-            <label>保留上次片单 · 可继续浏览</label><font>CardSub22</font><textcolor>text3</textcolor>
+            <label>$LOCALIZE[32054]</label><font>CardSub22</font><textcolor>text3</textcolor>
             <align>right</align><aligny>center</aligny>
             <visible>String.IsEqual(Container($PARAM[id]).ListItem.Property(Bobbi.Rail.State),stale) | [Container($PARAM[id]).IsUpdating + String.IsEqual(Container($PARAM[id]).ListItem.Property(Bobbi.Rail.State),ready)]</visible>
           </control>
@@ -225,7 +228,7 @@
         </control>
         <control type="label">
           <left>80</left><top>240</top><width>1600</width><height>48</height>
-          <label>正在读取观看记录…</label>
+          <label>$LOCALIZE[32055]</label>
           <font>Card26</font><textcolor>text3</textcolor><aligny>center</aligny>
           <visible>Container($PARAM[id]).IsUpdating + Integer.IsEqual(Container($PARAM[id]).NumItems,0)</visible>
           <include content="HomeRailMotion"><param name="id" value="$PARAM[id]" /></include>
@@ -456,7 +459,7 @@
     <value condition="$EXP[BobbiNoArt]">$VAR[LibraryTileHint]</value>
     <value condition="!String.IsEmpty(ListItem.Episode)">$VAR[SeasonLabel] · $VAR[EpisodeLabel]</value>
     <value condition="!String.IsEmpty(ListItem.Season)">$VAR[SeasonLabel]$INFO[ListItem.Year,  ·  ]</value>
-    <value condition="Integer.IsGreater(ListItem.Property(PercentPlayed),0) | Integer.IsGreater(ListItem.PercentPlayed,0)">继续播放</value>
+    <value condition="Integer.IsGreater(ListItem.Property(PercentPlayed),0) | Integer.IsGreater(ListItem.PercentPlayed,0)">$LOCALIZE[32185]</value>
     <value condition="!String.IsEmpty(ListItem.Year)">$INFO[ListItem.Year]$INFO[ListItem.Genre, · ]</value>
     <value>$VAR[CardSubline]</value>
   </variable>
@@ -565,13 +568,13 @@
         </control>
         <control type="label">
           <left>0</left><top>$PARAM[label_y]</top><width>$PARAM[w]</width><height>32</height>
-          <label>查看更多</label>
+          <label>$LOCALIZE[32056]</label>
           <font>Card24</font><textcolor>BFEBEBF5</textcolor><align>center</align><aligny>center</aligny>
           <visible>!$PARAM[focused]</visible>
         </control>
         <control type="label">
           <left>0</left><top>$PARAM[label_y]</top><width>$PARAM[w]</width><height>32</height>
-          <label>查看更多</label>
+          <label>$LOCALIZE[32056]</label>
           <font>Card24</font><textcolor>FFFFFFFF</textcolor><align>center</align><aligny>center</aligny>
           <visible>$PARAM[focused]</visible>
         </control>
@@ -589,18 +592,18 @@
     <value>bobbi/glass/icons/film-outline.png</value>
   </variable>
   <variable name="LibraryTileTitle">
-    <value condition="$EXP[BobbiIsManage]">添加与管理来源</value>
-    <value condition="String.IsEqual(ListItem.Property(Bobbi.Library.Kind),native_pan) | String.Contains(ListItem.Label,原生网盘)">个人云盘</value>
-    <value condition="String.IsEqual(ListItem.Property(Bobbi.Library.Kind),personal_catalog) | String.Contains(ListItem.Label,作品片库)">影视海报库</value>
+    <value condition="$EXP[BobbiIsManage]">$LOCALIZE[32180]</value>
+    <value condition="String.IsEqual(ListItem.Property(Bobbi.Library.Kind),native_pan) | String.Contains(ListItem.Label,原生网盘)">$LOCALIZE[32181]</value>
+    <value condition="String.IsEqual(ListItem.Property(Bobbi.Library.Kind),personal_catalog) | String.Contains(ListItem.Label,作品片库)">$LOCALIZE[32007]</value>
     <value>$INFO[ListItem.Label]</value>
   </variable>
   <variable name="LibraryTileHint">
-    <value condition="$EXP[BobbiIsManage]">连接云盘账号 · CD2 挂载 · 局域网共享</value>
+    <value condition="$EXP[BobbiIsManage]">$LOCALIZE[32182]</value>
     <value condition="!String.IsEmpty(ListItem.Property(Bobbi.Library.Location)) | !String.IsEmpty(ListItem.Label2)">$VAR[BobbiLibraryLocation]</value>
-    <value condition="String.IsEqual(ListItem.Property(Bobbi.Library.Kind),native_pan)">浏览网盘文件</value>
-    <value condition="ListItem.IsFolder">打开媒体目录</value>
-    <value condition="Integer.IsGreater(ListItem.Property(PercentPlayed),0) | Integer.IsGreater(ListItem.PercentPlayed,0)">继续播放</value>
-    <value>播放</value>
+    <value condition="String.IsEqual(ListItem.Property(Bobbi.Library.Kind),native_pan)">$LOCALIZE[32183]</value>
+    <value condition="ListItem.IsFolder">$LOCALIZE[32184]</value>
+    <value condition="Integer.IsGreater(ListItem.Property(PercentPlayed),0) | Integer.IsGreater(ListItem.PercentPlayed,0)">$LOCALIZE[32185]</value>
+    <value>$LOCALIZE[32051]</value>
   </variable>
   <!-- on-device [TV-MA]-style outlined metadata badge (shared with detail page) -->
   <include name="StageChip">

@@ -10,7 +10,52 @@ HOME_RAIL_SPECS = (
     ('anime_movies', 9860, '动漫电影', 'poster'),
     ('personal_library', 9820, '我的片库', 'wide'),
 )
+HOME_RAIL_I18N_SPECS = (
+    ('continue_watching', '继续观看', 'Continue Watching', 32030),
+    ('emby_resume', 'Emby 继续观看', 'Emby Continue Watching', 32031),
+    ('emby_recent', 'Emby 最近新增', 'Emby Recently Added', 32032),
+    ('popular_tv', '热门剧集', 'Popular TV Shows', 32033),
+    ('popular_movies', '热门电影', 'Popular Movies', 32034),
+    ('current_anime', '当季新番', 'Seasonal Anime', 32035),
+    ('anime_movies', '动漫电影', 'Anime Movies', 32036),
+    ('personal_library', '我的片库', 'My Library', 32037),
+)
 HOME_RAILS = tuple((key, title) for key, _, title, _ in HOME_RAIL_SPECS)
 HOME_RAIL_KEYS = tuple(key for key, _, _, _ in HOME_RAIL_SPECS)
 HOME_RAIL_TITLES = {key: title for key, _, title, _ in HOME_RAIL_SPECS}
+HOME_RAIL_TITLES_EN = {key: title_en for key, _, title_en, _ in HOME_RAIL_I18N_SPECS}
+HOME_RAIL_LABEL_IDS = {key: label_id for key, _, _, label_id in HOME_RAIL_I18N_SPECS}
 HOME_RAIL_CONTROL_IDS = {key: control_id for key, control_id, _, _ in HOME_RAIL_SPECS}
+
+HOME_SPACE_SPECS = (
+    ('home', 32001, '首页', 'Home', 'house', True, True, 'window', 'ActivateWindow(Home)'),
+    ('tv', 32002, '电视剧', 'TV Shows', 'tv', False, True, 'directory', 'plugin://plugin.video.bobbi/?action=am6b_streaming_catalog&section=tv&page=1'),
+    ('movie', 32003, '电影', 'Movies', 'film', False, True, 'directory', 'plugin://plugin.video.bobbi/?action=am6b_streaming_catalog&section=movie&page=1'),
+    ('anime', 32004, '动漫', 'Anime', 'sparkles', False, True, 'directory', 'plugin://plugin.video.bobbi/?action=search_item&api=tmdb&mode=anime&submode=tv&category=Anime_Current_Quarter'),
+    ('mine', 32005, '我的', 'My Library', 'stack', False, True, 'window', 'ActivateWindow(1197)'),
+    ('continue_watching', 32006, '最近观看', 'Continue Watching', 'clock-outline', False, False, 'directory', 'plugin://plugin.video.bobbi/?action=continue_watching_menu'),
+    ('personal_catalog', 32007, '影视海报库', 'Poster Catalog', 'stack-outline', False, False, 'directory', 'plugin://plugin.video.bobbi/?action=personal_catalog'),
+    ('saved_views', 32008, '常用视图', 'Saved Views', 'bookmark', False, False, 'directory', 'plugin://plugin.video.bobbi/?action=personal_catalog&mode=views'),
+    ('sources', 32009, '云盘与共享源', 'Cloud & Shares', 'cloud-outline', False, False, 'directory', 'plugin://plugin.video.bobbi.library/'),
+    ('media_servers', 32010, '媒体服务器', 'Media Servers', 'drive-outline', False, False, 'directory', 'plugin://plugin.video.bobbi.library/?action=root&kind=media_server'),
+    ('favourites', 32011, 'Kodi 收藏', 'Favourites', 'heart-outline', False, False, 'window', 'ActivateWindow(favouritesbrowser)'),
+    ('search', 32012, '搜索', 'Search', 'search', False, True, 'plugin', 'RunPlugin("plugin://plugin.video.bobbi/?action=bobbi_search_prompt&section=multi")'),
+    ('settings', 32013, '设置', 'Settings', 'gear', False, True, 'window', 'ActivateWindow(Settings)'),
+)
+HOME_SPACES = tuple((key, title) for key, _, title, _, _, _, _, _, _ in HOME_SPACE_SPECS)
+HOME_SPACE_KEYS = tuple(key for key, _, _, _, _, _, _, _, _ in HOME_SPACE_SPECS)
+HOME_OPTIONAL_SPACE_KEYS = tuple(key for key, _, _, _, _, fixed, _, _, _ in HOME_SPACE_SPECS if not fixed)
+HOME_DEFAULT_VISIBLE_SPACE_KEYS = frozenset(key for key, _, _, _, _, _, def_vis, _, _ in HOME_SPACE_SPECS if def_vis)
+HOME_SPACE_TITLES = {key: title for key, _, title, _, _, _, _, _, _ in HOME_SPACE_SPECS}
+HOME_SPACE_TITLES_EN = {key: title_en for key, _, _, title_en, _, _, _, _, _ in HOME_SPACE_SPECS}
+HOME_SPACE_LABEL_IDS = {key: label_id for key, label_id, _, _, _, _, _, _, _ in HOME_SPACE_SPECS}
+
+
+def rail_title(key: str, *, english: bool = False) -> str:
+    table = HOME_RAIL_TITLES_EN if english else HOME_RAIL_TITLES
+    return table.get(key) or HOME_RAIL_TITLES.get(key, key)
+
+
+def space_title(key: str, *, english: bool = False) -> str:
+    table = HOME_SPACE_TITLES_EN if english else HOME_SPACE_TITLES
+    return table.get(key) or HOME_SPACE_TITLES.get(key, key)

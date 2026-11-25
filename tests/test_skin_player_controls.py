@@ -68,8 +68,8 @@ def test_mode_and_limit_are_explained_instead_of_claiming_audible_tempo():
     variables = document('Variables.xml')
     mode = variables.find("variable[@name='TempoModeLabel']")
     assert mode.find('value').get('condition') == 'Player.TempoEnabled'
-    assert mode.findall('value')[-1].text == '快进 / 快退'
-    assert '不支持有声倍速' in variables.find("variable[@name='TempoStatusHint']").findall('value')[-1].text
+    assert mode.findall('value')[-1].text == '$LOCALIZE[32282]'
+    assert variables.find("variable[@name='TempoStatusHint']").findall('value')[-1].text == '$LOCALIZE[32287]'
     assert variables.find("variable[@name='TempoLabel']/value").get('condition') == 'Player.Paused'
     # Kodi may bind static OSD items before the decoder publishes its capability.
     # Never advertise the fallback from that stale snapshot; the opened button
@@ -77,7 +77,7 @@ def test_mode_and_limit_are_explained_instead_of_claiming_audible_tempo():
     for window in ('VideoOSD.xml', 'custom_OptionsDialog.xml'):
         option, = [item for item in document(window).iter('item')
                    if item.findtext('onclick') == 'ActivateWindow(1115)']
-        assert option.findtext('label') == '播放速度'
+        assert option.findtext('label') == '$LOCALIZE[32226]'
     assert '$VAR[TempoModeLabel]' in speed_button().findtext('label')
 
 

@@ -5,8 +5,8 @@
   <controls>
     <include>DialogScrim</include>
     <include content="SideSheet">
-      <param name="title">杜比视界 VS10</param>
-      <param name="subtitle">片源：$INFO[Player.Process(video.source.hdr.type)]   ·   选择输出格式</param>
+      <param name="title">$LOCALIZE[32225]</param>
+      <param name="subtitle">$LOCALIZE[32247]：$INFO[Player.Process(video.source.hdr.type)]   ·   $LOCALIZE[32248]</param>
     </include>
     <control type="list" id="11100">
       <right>48</right><top>184</top><width>624</width><height>820</height>
@@ -21,36 +21,42 @@
       </focusedlayout>
       <content>
         <item>
-          <label>保持片源格式</label><label2>不做转换</label2><icon>bobbi/glass/icons/film.png</icon>
+          <label>$LOCALIZE[32240]</label><label2>$LOCALIZE[32241]</label2><icon>bobbi/glass/icons/film.png</icon>
           <onclick>Action(vs10.original)</onclick>
-          <onclick>Dialog.Close(all)</onclick>
-          <visible>!String.IsEqual(Player.Process(video.source.hdr.type.raw),2)</visible>
+          <onclick>Dialog.Close(1116)</onclick>
+          <visible>!String.IsEmpty(Player.Process(video.source.hdr.type)) + !String.IsEqual(Player.Process(video.source.hdr.type.raw),2)</visible>
         </item>
         <item>
-          <label>转为 SDR</label><label2>$INFO[Player.Process(video.source.hdr.type)] → SDR</label2><icon>bobbi/glass/icons/photo.png</icon>
+          <label>$LOCALIZE[32242]</label><label2>$INFO[Player.Process(video.source.hdr.type)] → SDR</label2><icon>bobbi/glass/icons/photo.png</icon>
           <onclick>Action(vs10.sdr)</onclick>
-          <onclick>Dialog.Close(all)</onclick>
-          <visible>!String.IsEqual(Player.Process(video.source.hdr.type.raw),2) + [String.Contains(Player.Process(video.source.hdr.type),HDR10) | String.Contains(Player.Process(video.source.hdr.type),Dolby Vision) | String.Contains(Player.Process(video.source.hdr.type),HLG)]</visible>
+          <onclick>Dialog.Close(1116)</onclick>
+          <visible>!String.IsEmpty(Player.Process(video.source.hdr.type)) + !String.IsEqual(Player.Process(video.source.hdr.type.raw),2) + [String.Contains(Player.Process(video.source.hdr.type),HDR10) | String.Contains(Player.Process(video.source.hdr.type),Dolby Vision) | String.Contains(Player.Process(video.source.hdr.type),HLG)]</visible>
         </item>
         <item>
-          <label>转为 HDR10</label><label2>$INFO[Player.Process(video.source.hdr.type)] → HDR10</label2><icon>bobbi/glass/icons/tv.png</icon>
+          <label>$LOCALIZE[32243]</label><label2>$INFO[Player.Process(video.source.hdr.type)] → HDR10</label2><icon>bobbi/glass/icons/tv.png</icon>
           <onclick>Action(vs10.hdr10)</onclick>
-          <onclick>Dialog.Close(all)</onclick>
-          <visible>!String.IsEqual(Player.Process(video.source.hdr.type.raw),2) + [String.Contains(Player.Process(video.source.hdr.type),SDR) | String.Contains(Player.Process(video.source.hdr.type),Dolby Vision)]</visible>
+          <onclick>Dialog.Close(1116)</onclick>
+          <visible>!String.IsEmpty(Player.Process(video.source.hdr.type)) + !String.IsEqual(Player.Process(video.source.hdr.type.raw),2) + [String.Contains(Player.Process(video.source.hdr.type),SDR) | String.Contains(Player.Process(video.source.hdr.type),Dolby Vision)]</visible>
         </item>
         <item>
-          <label>转为杜比视界</label><label2>$INFO[Player.Process(video.source.hdr.type)] → Dolby Vision</label2><icon>bobbi/glass/icons/sparkles.png</icon>
+          <label>$LOCALIZE[32244]</label><label2>$INFO[Player.Process(video.source.hdr.type)] → Dolby Vision</label2><icon>bobbi/glass/icons/sparkles.png</icon>
           <onclick>Action(vs10.dv)</onclick>
-          <onclick>Dialog.Close(all)</onclick>
-          <visible>!String.IsEqual(Player.Process(video.source.hdr.type.raw),2) + [String.Contains(Player.Process(video.source.hdr.type),SDR) | String.Contains(Player.Process(video.source.hdr.type),HDR10) | String.Contains(Player.Process(video.source.hdr.type),HLG)]</visible>
+          <onclick>Dialog.Close(1116)</onclick>
+          <visible>!String.IsEmpty(Player.Process(video.source.hdr.type)) + !String.IsEqual(Player.Process(video.source.hdr.type.raw),2) + [String.Contains(Player.Process(video.source.hdr.type),SDR) | String.Contains(Player.Process(video.source.hdr.type),HDR10) | String.Contains(Player.Process(video.source.hdr.type),HLG)]</visible>
+        </item>
+        <!-- Focusable safe return when VS10 capability is unavailable or source HDR type is unsupported -->
+        <item>
+          <label>$LOCALIZE[32246]</label><label2>$LOCALIZE[32145]</label2><icon>bobbi/glass/icons/chevron-left.png</icon>
+          <onclick>Dialog.Close(1116)</onclick>
+          <visible>String.IsEmpty(Player.Process(video.source.hdr.type)) | String.IsEqual(Player.Process(video.source.hdr.type.raw),2)</visible>
         </item>
       </content>
     </control>
     <control type="label">
-      <right>48</right><top>220</top><width>624</width><height>80</height>
-      <label>当前片源不支持 VS10 转换</label>
+      <right>48</right><top>280</top><width>624</width><height>80</height>
+      <label>$LOCALIZE[32245]</label>
       <font>Card26</font><textcolor>9CEBEBF5</textcolor><aligny>center</aligny>
-      <visible>String.IsEqual(Player.Process(video.source.hdr.type.raw),2)</visible>
+      <visible>String.IsEmpty(Player.Process(video.source.hdr.type)) | String.IsEqual(Player.Process(video.source.hdr.type.raw),2)</visible>
     </control>
   </controls>
 </window>

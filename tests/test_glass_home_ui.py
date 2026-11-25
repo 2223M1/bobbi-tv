@@ -15,8 +15,9 @@ GLASS = SKIN / 'media/bobbi/glass'
 SPEC = importlib.util.spec_from_file_location('home_rails_generator_atv', ROOT / 'tools/generate_home_rails.py')
 generator = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(generator)
-PROTECTED = {'9000', '9700', '9701', '9711', '9712', '9713', '9714', '9715', '9721', '9722',
-             '9790', '9791', '9810', '9820', '9830', '9840', '9850', '9860', '9870'}
+PROTECTED = {'9000', '9700', '9701', '9730', '9790', '9791',
+             '9810', '9815', '9820', '9825', '9830', '9840', '9850', '9860',
+             '9870', '9871', '9872'}
 
 
 def test_generated_textures_are_manifested_and_mirrored_byte_for_byte():
@@ -50,31 +51,44 @@ def test_composite_fonts_exist_and_existing_fonts_are_untouched():
 def test_home_and_navigation_carry_no_brand_artwork(name):
     assert 'logo-bobbi' not in (SKIN / '1080p' / name).read_text(encoding='utf-8')
     includes = ET.parse(SKIN / '1080p/Includes.xml').getroot()
-    for include in ('TopBar', 'SideNav', 'TopNav', 'NavRow', 'GlassCapsule'):
+    for include in ('TopBar', 'SideNav', 'TopNav', 'SideNavSpaceRow', 'TopNavSpaceTab', 'GlassCapsule'):
         node = includes.find(f"include[@name='{include}']")
         assert node is not None
         text = ET.tostring(node, encoding='unicode')
         assert 'logo-bobbi' not in text and 'Kodi' not in text
     sidenav = ET.tostring(includes.find("include[@name='SideNav']"), encoding='unicode')
-    assert '<label>波比TV</label>' in sidenav
+    assert '<label>$LOCALIZE[32000]</label>' in sidenav
     assert '$VAR[BobbiTimeAMPM]' in sidenav
     assert 'bobbi/glass/avatar-disc.png' in sidenav
-    assert 'bobbi/glass/icon-disc-44.png' in ET.tostring(includes.find("include[@name='NavGlyph']"), encoding='unicode')
+    assert 'bobbi/glass/icon-disc-44.png' in ET.tostring(includes.find("include[@name='SideNavSpaceRow']"), encoding='unicode')
 
 
 @pytest.mark.parametrize('topbar', [False, True])
 def test_both_navigation_forms_keep_every_bound_home_id(topbar):
-    raw, hero = generator.outputs(ROOT)
+    raw, hero, nav, _ = generator.full_outputs(ROOT)
     # expanded_home expands every include-condition configuration and rejects
     # duplicates or missing focus targets in each; the default form is returned.
-    expanded = generator.expanded_home(ROOT, raw, hero)
+    expanded = generator.expanded_home(ROOT, raw, hero, nav)
     ids = {node.get('id') for node in expanded.iter('control') if node.get('id')}
     assert PROTECTED <= ids
+    # Confirm zero legacy hidden child tab buttons remain
+    assert not ({'9711', '9712', '9713', '9714', '9715', '9721', '9722', '9723'} & ids)
     includes = ET.parse(ROOT / generator.SKIN / 'Includes.xml').getroot()
     name = 'TopNav' if topbar else 'SideNav'
     body = ET.tostring(includes.find(f"include[@name='{name}']"), encoding='unicode')
-    for control_id in ('9700', '9701', '9711', '9712', '9713', '9714', '9715', '9721', '9722'):
+    for control_id in ('9700', '9701', '9730'):
         assert f'"{control_id}"' in body, (name, control_id)
+    assert 'HomeSpaceItems' in body
+    nav_tree = ET.fromstring(nav)
+    space_keys = {
+        node.findtext("property[@name='space_key']")
+        for node in nav_tree.findall("include[@name='HomeSpaceItems']/content/item")
+    }
+    assert space_keys == {
+        'home', 'tv', 'movie', 'anime', 'mine', 'continue_watching',
+        'personal_catalog', 'saved_views', 'sources', 'media_servers',
+        'favourites', 'search', 'settings',
+    }
 
 
 def test_motion_is_gpu_only_reversible_and_reduce_motion_gated():
@@ -118,17 +132,18 @@ def test_sidebar_hides_by_motion_not_visibility_so_focus_can_enter():
     root = ET.parse(SKIN / '1080p/Includes.xml').getroot()
     group = root.find("include[@name='SideNav']//control[@id='9700']")
     assert group.find('visible') is None
-    grouplist = group.find("control[@id='9701']")
-    assert grouplist.get('type') == 'grouplist' and grouplist.findtext('onright') == '$PARAM[down]'
-    # A decorative direct child with ID zero breaks both Kodi directions.
-    # It should occupy space but never become a stop on a remote.
-    assert all(c.get('id') for c in grouplist.findall('control'))
-    raw, hero = generator.outputs(ROOT)
-    home = generator.expanded_home(ROOT, raw, hero)
-    children = home.find(".//control[@id='9701']").findall('control')
-    assert len({c.get('id') for c in children}) == len(children)
-    assert [c.get('id') for c in children if c.get('type') == 'togglebutton'] == [
-        '9721', '9711', '9712', '9713', '9714', '9715', '9722']
+    nav_list = group.find("control[@id='9701']")
+    assert nav_list.get('type') == 'list' and nav_list.findtext('onright') == '$PARAM[down]'
+    assert nav_list.findtext('ondown') == '9730'
+    tools_btn = group.find("control[@id='9730']")
+    assert tools_btn is not None and tools_btn.get('type') == 'button'
+    assert tools_btn.findtext('onup') == '9701' and tools_btn.findtext('onright') == '$PARAM[down]'
+    assert tools_btn.findtext('onclick') == 'ActivateWindow(ShutdownMenu)'
+    raw, hero, nav, _ = generator.full_outputs(ROOT)
+    home = generator.expanded_home(ROOT, raw, hero, nav)
+    items = home.find(".//control[@id='9701']/content").findall('item')
+    assert items[0].findtext("property[@name='space_key']") == 'home'
+    assert items[0].find('visible') is None
 
 
 def test_page_geometry_from_expanded_ui_covers_every_absolute_selection():
@@ -237,9 +252,10 @@ def test_glass26_concentric_corners_and_liquid_glass_translucency():
                 fill.findtext('width'), fill.findtext('height')) == ('35', '35', '340', '1010')
     grouplist = sidenav.find("control[@id='9700']/control[@id='9701']")
     assert (grouplist.findtext('left'), grouplist.findtext('width')) == ('45', '320')
-    row = includes.find("include[@name='NavRow']/definition/control[@type='togglebutton']")
-    assert (row.findtext('width'), row.findtext('height')) == ('320', '72')
-    assert row.findtext('texturefocus') == 'bobbi/glass/pill-320x72.png'
+    row = includes.find("include[@name='SideNavSpaceRow']/definition/control[@type='group']")
+    assert (row.findtext('width'), row.findtext('height')) == ('320', '76')
+    pill = next(c for c in row.findall("control[@type='image']") if c.findtext('texture') == 'bobbi/glass/pill-320x72.png')
+    assert (pill.findtext('width'), pill.findtext('height')) == ('320', '72')
     # The GPU now samples the actual scene. No duplicate background image job.
     timers = ET.parse(SKIN / '1080p/Timers.xml').getroot()
     assert timers.find("timer[name='BobbiStageBlurSync']") is None
@@ -352,13 +368,17 @@ def test_secondary_pages_align_with_glass26_design_system():
         assert not re.search(r'FF(?:8A3D|B27F|D9601A|E50914|E50924)', raw, re.I), name
         assert 'bobbi/glass/' in raw, name
 
-    # Verify x=80..1840 symmetric grid on DirectoryPanel (7-up 256=1792, 4-up 448=1792) & Settings (4-up 448=1792)
+    # Verify x=80..1840 symmetric grid on DirectoryPanel (7-up 256=1792, 4-up 448=1792) & 2-column 6-category Settings Hub
     views = ET.parse(SKIN / '1080p/Includes_Views.xml').getroot()
     panel = views.find("include[@name='DirectoryPanel']/control[@id='50']")
     assert (panel.findtext('left'), panel.findtext('width')) == ('64', '1792')
     settings = ET.parse(SKIN / '1080p/Settings.xml').getroot()
-    s_panel = settings.find(".//control[@id='9000']")
-    assert (s_panel.findtext('left'), s_panel.findtext('width')) == ('1036', '828')
+    s_cats = settings.find(".//control[@id='9000']")
+    s_items = settings.find(".//control[@id='9010']")
+    assert (s_cats.findtext('left'), s_cats.findtext('width')) == ('120', '440')
+    assert len(s_cats.findall('content/item')) == 6 and s_cats.findtext('onright') == '9010'
+    assert (s_items.findtext('left'), s_items.findtext('width')) == ('1036', '828')
+    assert s_items.findtext('onleft') == '9000'
     skin_settings = ET.parse(SKIN / '1080p/SkinSettings.xml').getroot()
     ss_list = skin_settings.find(".//control[@id='9000']")
     assert (ss_list.findtext('left'), ss_list.findtext('top'), ss_list.findtext('width')) == ('1060', '189', '780')
@@ -376,12 +396,14 @@ def test_personal_page_replicates_glass_library_1to1_and_migrates_settings_out()
     assert p_panel.find('itemlayout').attrib == {'width': '240', 'height': '364'}
     # Top-left Library capsule enabled (< [stack 我的])
     assert personal.find(".//include[@content='TopBar']/param[@name='library_pill']").get('value') == 'true'
-    # System/admin items migrated out of Personal into Settings.xml
-    for migrated in ('SkinSettings', 'SystemInfo', 'FileManager', 'shutdownmenu', 'bobbi_setup'):
+    # System/skin/power modals stay out of Personal; Accounts Center, FileManager & Wizard live in Personal per SETTINGS_IA.md
+    for migrated in ('SkinSettings', 'SystemInfo', 'shutdownmenu'):
         assert migrated not in raw
+    for expected_business in ('RunScript(script.bobbi.setup,accounts)', 'ActivateWindow(FileManager)', 'RunScript(script.bobbi.setup,wizard)'):
+        assert expected_business in raw
     settings_raw = (SKIN / '1080p/Settings.xml').read_text(encoding='utf-8')
-    assert 'RunScript(script.bobbi.setup)' in settings_raw
-    assert 'RunScript(script.bobbi.setup,libraries)' in settings_raw
+    assert 'Addon.OpenSettings(plugin.video.bobbi)' in settings_raw
+    assert 'RunScript(script.bobbi.setup,accounts)' in settings_raw
 
 
 def _decode_png_rgba(raw_png: bytes) -> tuple[int, int, list[tuple[int, int, int, int]]]:
@@ -541,7 +563,7 @@ def test_control_center_reference_geometry_and_isolated_materials():
     avatar, = (n for n in group.findall('control') if n.findtext('texture','')=='bobbi/glass/cc-avatar-34.png')
     assert (avatar.findtext('left'), avatar.findtext('top'), avatar.findtext('width'), avatar.findtext('height')) == ('403','11','34','34')
     assert not any('glass-pill-' in (t.text or '') for t in group.findall('control/texture'))
-    power_labels = [c for c in cc.iter('control') if c.findtext('label')=='关机']
+    power_labels = [c for c in cc.iter('control') if c.findtext('label')=='$VAR[CCPowerPrimaryLabel]']
     assert len(power_labels)==2 and all(c.findtext('font')=='CCLabel24' for c in power_labels)
     idle = inc.find("include[@name='CCIdleFace']/definition")
     matte, optic = idle.findall('control')
@@ -549,9 +571,9 @@ def test_control_center_reference_geometry_and_isolated_materials():
     assert '+ !Skin.HasSetting(BobbiLiquidGlassEnabled)' in matte.findtext('visible')
     assert '+ Skin.HasSetting(BobbiLiquidGlassEnabled)' in optic.findtext('visible')
     faces = cc.findall(".//include[@content='CCIdleFace']")
-    assert len(faces)==len(cc.findall(".//control[@type='button']"))==9
+    assert len(faces)==len(cc.findall(".//control[@type='button']"))==11
     moving = [c for c in cc.iter('control') if c.find("include[@content='Lift']") is not None]
-    assert len(moving)==9
+    assert len(moving)==11
     for c in moving:
         x,y,w,h=(int(c.findtext(k)) for k in ('left','top','width','height'))
         assert c.findtext("include[@content='Lift']/param[@name='center']")==f'{x+w//2},{y+h//2}'
@@ -561,7 +583,7 @@ def test_control_center_reference_geometry_and_isolated_materials():
         assert b.findtext('texturefocus')==v['face'].replace('.png','-focus.png')
         assert (b.findtext('width'),b.findtext('height'))==(v['width'],v['height'])
         assert not b.find('texturenofocus').get('diffuse')
-        if v['id'] in ('9010','9012','9013','9011','9014'):
+        if v['id'] in ('9010','9012','9013','9011','9014','9015','9016'):
             w,h,pixels = _decode_png_rgba((GLASS/Path(v['face']).name).read_bytes())
             assert (w,h)==(int(v['width']),int(v['height']))
             assert w==208 and h==(208 if v['id']=='9010' else 96)
@@ -593,8 +615,14 @@ def test_control_center_action_label_pairs_share_weight_in_both_focus_states():
         cx=int(args['x'])+(max(xx)+1+min(xx))*size/(2*w)
         cy=int(args['y'])+(max(yy)+1+min(yy))*size/(2*h)
         assert abs(cx-48)<=1 and abs(cy-48)<=1 and abs(bh-34)<=1 and bw<=48
-    assert rows == {'9012':('返回影院','继续观看'), '9013':('重启系统','CoreELEC'),
-                    '9011':('重载界面','波比TV'), '9014':('系统信息','硬件与网络')}
+    assert rows == {
+        '9012': ('$LOCALIZE[32146]', '$VAR[CCReturnSubtitle]'),
+        '9013': ('$LOCALIZE[32141]', '$LOCALIZE[32149]'),
+        '9011': ('$LOCALIZE[32143]', '$LOCALIZE[32000]'),
+        '9014': ('$LOCALIZE[32106]', '$LOCALIZE[32150]'),
+        '9015': ('$LOCALIZE[32144]', '$LOCALIZE[32151]'),
+        '9016': ('$LOCALIZE[32142]', '$LOCALIZE[32152]'),
+    }
     labels = template.findall("control[@type='label']")
     assert len(labels)==4
     icons=template.findall("control[@type='image']")

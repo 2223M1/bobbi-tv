@@ -1,14 +1,29 @@
 {
-  "schema": 1,
+  "schema": 2,
   "slot_preferences": true,
   "rails": [
-    {"key": "continue_watching", "control_id": 9810, "title": "继续观看", "layout": "wide", "route": "continue_watching", "params": {}, "limit": 20, "preloaditems": 2},
-    {"key": "emby_resume", "control_id": 9815, "title": "Emby 继续观看", "layout": "wide", "route": "emby_rail", "params": {"section": "resume"}, "limit": 20, "preloaditems": 2},
-    {"key": "emby_recent", "control_id": 9825, "title": "Emby 最近新增", "layout": "poster", "route": "emby_rail", "params": {"section": "recent"}, "limit": 20, "preloaditems": 2},
-    {"key": "popular_tv", "control_id": 9830, "title": "热门剧集", "layout": "poster", "route": "catalog", "params": {"section": "tv", "page": 1}, "limit": 20, "preloaditems": 2},
-    {"key": "popular_movies", "control_id": 9840, "title": "热门电影", "layout": "poster", "route": "catalog", "params": {"section": "movie", "page": 1}, "limit": 20, "preloaditems": 2},
-    {"key": "current_anime", "control_id": 9850, "title": "当季新番", "layout": "poster", "route": "anime_catalog", "params": {"category": "current_quarter"}, "limit": 20, "preloaditems": 2},
-    {"key": "anime_movies", "control_id": 9860, "title": "动漫电影", "layout": "poster", "route": "anime_catalog", "params": {"category": "movies_new"}, "limit": 20, "preloaditems": 2},
-    {"key": "personal_library", "control_id": 9820, "title": "我的片库", "layout": "wide", "route": "personal_catalog", "params": {"mode": "rail"}, "limit": 20, "preloaditems": 2}
+    {"key": "continue_watching", "control_id": 9810, "label_id": 32030, "title": "继续观看", "title_en": "Continue Watching", "layout": "wide", "route": "continue_watching", "params": {}, "limit": 20, "preloaditems": 2},
+    {"key": "emby_resume", "control_id": 9815, "label_id": 32031, "title": "Emby 继续观看", "title_en": "Emby Continue Watching", "layout": "wide", "route": "emby_rail", "params": {"section": "resume"}, "limit": 20, "preloaditems": 2},
+    {"key": "emby_recent", "control_id": 9825, "label_id": 32032, "title": "Emby 最近新增", "title_en": "Emby Recently Added", "layout": "poster", "route": "emby_rail", "params": {"section": "recent"}, "limit": 20, "preloaditems": 2},
+    {"key": "popular_tv", "control_id": 9830, "label_id": 32033, "title": "热门剧集", "title_en": "Popular TV Shows", "layout": "poster", "route": "catalog", "params": {"section": "tv", "page": 1}, "limit": 20, "preloaditems": 2},
+    {"key": "popular_movies", "control_id": 9840, "label_id": 32034, "title": "热门电影", "title_en": "Popular Movies", "layout": "poster", "route": "catalog", "params": {"section": "movie", "page": 1}, "limit": 20, "preloaditems": 2},
+    {"key": "current_anime", "control_id": 9850, "label_id": 32035, "title": "当季新番", "title_en": "Seasonal Anime", "layout": "poster", "route": "anime_catalog", "params": {"category": "current_quarter"}, "limit": 20, "preloaditems": 2},
+    {"key": "anime_movies", "control_id": 9860, "label_id": 32036, "title": "动漫电影", "title_en": "Anime Movies", "layout": "poster", "route": "anime_catalog", "params": {"category": "movies_new"}, "limit": 20, "preloaditems": 2},
+    {"key": "personal_library", "control_id": 9820, "label_id": 32037, "title": "我的片库", "title_en": "My Library", "layout": "wide", "route": "personal_catalog", "params": {"mode": "rail"}, "limit": 20, "preloaditems": 2}
+  ],
+  "spaces": [
+    {"key": "home", "label_id": 32001, "title": "首页", "title_en": "Home", "icon": "house", "disc": "focus", "fixed": true, "default_visible": true, "route": "window_home", "params": {}},
+    {"key": "tv", "label_id": 32002, "title": "电视剧", "title_en": "TV Shows", "icon": "tv", "disc": "focus", "fixed": false, "default_visible": true, "route": "catalog", "params": {"section": "tv", "page": 1}},
+    {"key": "movie", "label_id": 32003, "title": "电影", "title_en": "Movies", "icon": "film", "disc": "focus", "fixed": false, "default_visible": true, "route": "catalog", "params": {"section": "movie", "page": 1}},
+    {"key": "anime", "label_id": 32004, "title": "动漫", "title_en": "Anime", "icon": "sparkles", "disc": "focus", "fixed": false, "default_visible": true, "route": "anime_catalog", "params": {"category": "current_quarter"}},
+    {"key": "mine", "label_id": 32005, "title": "我的", "title_en": "My Library", "icon": "stack", "disc": "focus", "fixed": false, "default_visible": true, "route": "window_personal", "params": {}},
+    {"key": "continue_watching", "label_id": 32006, "title": "最近观看", "title_en": "Continue Watching", "icon": "clock-outline", "disc": "focus", "fixed": false, "default_visible": false, "route": "continue_watching", "params": {}},
+    {"key": "personal_catalog", "label_id": 32007, "title": "影视海报库", "title_en": "Poster Catalog", "icon": "stack-outline", "disc": "focus", "fixed": false, "default_visible": false, "route": "personal_catalog_root", "params": {}},
+    {"key": "saved_views", "label_id": 32008, "title": "常用视图", "title_en": "Saved Views", "icon": "bookmark", "disc": "focus", "fixed": false, "default_visible": false, "route": "saved_views", "params": {}},
+    {"key": "sources", "label_id": 32009, "title": "云盘与共享源", "title_en": "Cloud & Shares", "icon": "cloud-outline", "disc": "focus", "fixed": false, "default_visible": false, "route": "library_root", "params": {}},
+    {"key": "media_servers", "label_id": 32010, "title": "媒体服务器", "title_en": "Media Servers", "icon": "drive-outline", "disc": "focus", "fixed": false, "default_visible": false, "route": "media_servers", "params": {}},
+    {"key": "favourites", "label_id": 32011, "title": "Kodi 收藏", "title_en": "Favourites", "icon": "heart-outline", "disc": "focus", "fixed": false, "default_visible": false, "route": "window_favourites", "params": {}},
+    {"key": "search", "label_id": 32012, "title": "搜索", "title_en": "Search", "icon": "search", "disc": "none", "fixed": false, "default_visible": true, "route": "search_prompt", "params": {"section": "multi"}},
+    {"key": "settings", "label_id": 32013, "title": "设置", "title_en": "Settings", "icon": "gear", "disc": "always", "fixed": false, "default_visible": true, "route": "window_settings", "params": {}}
   ]
 }

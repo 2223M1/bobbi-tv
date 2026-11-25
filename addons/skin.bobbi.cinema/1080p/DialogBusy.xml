@@ -23,7 +23,7 @@
     </control>
     <control type="label">
       <left>76</left><top>0</top><width>152</width><height>72</height>
-      <label>加载中…</label>
+      <label>$LOCALIZE[32060]</label>
       <font>Card26</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
     </control>
   </controls>

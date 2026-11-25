@@ -4,51 +4,58 @@
     <value condition="Container.Content(episodes) + !String.IsEmpty(ListItem.TVShowTitle)">$INFO[ListItem.TVShowTitle]</value>
     <value condition="Container.Content(seasons) + !String.IsEmpty(ListItem.TVShowTitle)">$INFO[ListItem.TVShowTitle]</value>
     <value condition="[Container.Content(seasons) | Container.Content(episodes)] + !String.IsEmpty(Container.FolderName)">$INFO[Container.FolderName]</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),tv) + String.Contains(Container.FolderPath,am6b_streaming_catalog)">电视剧</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),movie) + String.Contains(Container.FolderPath,am6b_streaming_catalog)">电影</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),anime) + String.Contains(Container.FolderPath,Anime_Current_Quarter)">动漫</value>
-    <value condition="String.Contains(Container.FolderPath,tmdb_years) | String.Contains(Container.FolderPath,Anime_Years) | String.IsEqual(Container.PluginCategory,Years)">年代</value>
-    <value condition="String.Contains(Container.FolderPath,tmdb_genres) | String.Contains(Container.FolderPath,Anime_Genres) | String.IsEqual(Container.PluginCategory,Genres)">类型</value>
-    <value condition="String.Contains(Container.FolderPath,tmdb_lang) | String.IsEqual(Container.PluginCategory,Languages)">地区与语言</value>
-    <value condition="String.Contains(Container.FolderPath,tmdb_collections) | String.IsEqual(Container.PluginCategory,Collections)">系列合集</value>
-    <value condition="String.Contains(Container.FolderPath,tmdb_networks) | String.IsEqual(Container.PluginCategory,Networks)">播出平台</value>
-    <value condition="String.Contains(Container.FolderPath,tmdb_trending) | String.IsEqual(Container.PluginCategory,Trending)">近期热门</value>
-    <value condition="String.Contains(Container.FolderPath,tmdb_airing_today)">今日播出</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),movie) + String.Contains(Container.FolderPath,tmdb_popular)">院线热映</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),tv) + String.Contains(Container.FolderPath,tmdb_popular)">热门剧集</value>
-    <value condition="String.Contains(Container.FolderPath,continue_watching) | String.IsEqual(Container.PluginCategory,Continue Watching)">继续观看</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),tv) + String.Contains(Container.FolderPath,am6b_streaming_catalog)">$LOCALIZE[32002]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),movie) + String.Contains(Container.FolderPath,am6b_streaming_catalog)">$LOCALIZE[32003]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),anime) + String.Contains(Container.FolderPath,Anime_Current_Quarter)">$LOCALIZE[32004]</value>
+    <value condition="String.Contains(Container.FolderPath,tmdb_years) | String.Contains(Container.FolderPath,Anime_Years) | String.IsEqual(Container.PluginCategory,Years)">$LOCALIZE[32189]</value>
+    <value condition="String.Contains(Container.FolderPath,tmdb_genres) | String.Contains(Container.FolderPath,Anime_Genres) | String.IsEqual(Container.PluginCategory,Genres)">$LOCALIZE[32190]</value>
+    <value condition="String.Contains(Container.FolderPath,tmdb_lang) | String.IsEqual(Container.PluginCategory,Languages)">$LOCALIZE[32191]</value>
+    <value condition="String.Contains(Container.FolderPath,tmdb_collections) | String.IsEqual(Container.PluginCategory,Collections)">$LOCALIZE[32192]</value>
+    <value condition="String.Contains(Container.FolderPath,tmdb_networks) | String.IsEqual(Container.PluginCategory,Networks)">$LOCALIZE[32193]</value>
+    <value condition="String.Contains(Container.FolderPath,tmdb_trending) | String.Contains(Container.PluginCategory,Trending)">$LOCALIZE[32194]</value>
+    <value condition="String.Contains(Container.FolderPath,tmdb_airing_today)">$LOCALIZE[32195]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),movie) + String.Contains(Container.FolderPath,tmdb_popular)">$LOCALIZE[32196]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),tv) + String.Contains(Container.FolderPath,tmdb_popular)">$LOCALIZE[32033]</value>
+    <value condition="String.Contains(Container.FolderPath,continue_watching) | String.IsEqual(Container.PluginCategory,Continue Watching)">$LOCALIZE[32030]</value>
     <value condition="!String.IsEmpty(Container.PluginCategory)">$INFO[Container.PluginCategory]</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),tv)">电视剧</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),movie)">电影</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),anime)">动漫</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),mine)">我的</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),tv)">$LOCALIZE[32002]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),movie)">$LOCALIZE[32003]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),anime)">$LOCALIZE[32004]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),mine)">$LOCALIZE[32005]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),continue_watching)">$LOCALIZE[32006]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),personal_catalog)">$LOCALIZE[32007]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),saved_views)">$LOCALIZE[32008]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),sources)">$LOCALIZE[32009]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobbiSection),media_servers)">$LOCALIZE[32010]</value>
     <value>$INFO[Container.FolderName]</value>
   </variable>
   <variable name="DirKicker">
-    <value condition="$EXP[BobbiInLibrary] + $EXP[BobbiLibraryRoot]">媒体与片库</value>
-    <value condition="$EXP[BobbiInLibrary]">云盘与片库   ·   $INFO[Container.NumItems,, 项]</value>
-    <value condition="Container.Content(seasons)">剧集   ·   选择季</value>
-    <value condition="Container.Content(episodes) + String.IsEqual(ListItem.DBType,episode)">$VAR[SeasonLabel]   ·   剧集列表</value>
-    <value condition="Container.Content(episodes)">剧集列表</value>
+    <value condition="$EXP[BobbiInLibrary] + $EXP[BobbiLibraryRoot]">$LOCALIZE[32201]</value>
+    <value condition="String.IsEqual($LOCALIZE[32399],en) + $EXP[BobbiInLibrary]">$LOCALIZE[32009]   ·   $INFO[Container.NumItems,, items]</value>
+    <value condition="$EXP[BobbiInLibrary]">$LOCALIZE[32009]   ·   $INFO[Container.NumItems,, 项]</value>
+    <value condition="Container.Content(seasons)">$LOCALIZE[32202]</value>
+    <value condition="Container.Content(episodes) + String.IsEqual(ListItem.DBType,episode)">$VAR[SeasonLabel]   ·   $LOCALIZE[32203]</value>
+    <value condition="Container.Content(episodes)">$LOCALIZE[32203]</value>
   </variable>
   <variable name="EpisodeRowTitle">
     <value condition="String.IsEqual(ListItem.DBType,episode)">$VAR[EpisodeLabel]$VAR[EpisodeTitleSep]</value>
     <value>$INFO[ListItem.Label]</value>
   </variable>
   <variable name="LibraryHeading">
-    <value condition="$EXP[BobbiLibraryRoot]">云盘与片库</value>
+    <value condition="String.Contains(Container.FolderPath,kind=media_server)">$LOCALIZE[32010]</value>
+    <value condition="$EXP[BobbiLibraryRoot]">$LOCALIZE[32009]</value>
     <value condition="!String.IsEmpty(Container.FolderName)">$INFO[Container.FolderName]</value>
     <value>$INFO[Container.PluginCategory]</value>
   </variable>
   <variable name="LibraryPath">
-    <value condition="$EXP[BobbiLibraryRoot]">影视海报库   ·   个人云盘   ·   本地挂载与局域网共享</value>
+    <value condition="$EXP[BobbiLibraryRoot]">$LOCALIZE[32204]</value>
     <value>$INFO[Container.PluginCategory]</value>
   </variable>
   <variable name="WallSubline">
     <value condition="Container.Content(seasons)">$INFO[ListItem.Year]$INFO[ListItem.Property(Bobbi.EpisodeCount),  ·  共 , 集]</value>
     <value condition="!String.IsEmpty(ListItem.Season) + !String.IsEmpty(ListItem.Episode)">第$INFO[ListItem.Season]季 · 第$INFO[ListItem.Episode]集</value>
     <value condition="!String.IsEmpty(ListItem.Season) + Container.Content(tvshows)">$INFO[ListItem.Year]  ·  第$INFO[ListItem.Season]季</value>
-    <value condition="Integer.IsGreater(ListItem.Property(PercentPlayed),0) | Integer.IsGreater(ListItem.PercentPlayed,0)">继续播放</value>
+    <value condition="Integer.IsGreater(ListItem.Property(PercentPlayed),0) | Integer.IsGreater(ListItem.PercentPlayed,0)">$LOCALIZE[32185]</value>
     <value>$INFO[ListItem.Year]$INFO[ListItem.Genre,  ·  ]</value>
   </variable>
   <variable name="WallTitle">
@@ -154,7 +161,7 @@
         </control>
         <control type="label">
           <left>2</left><top>92</top><width>1360</width><height>32</height>
-          <label>片单暂时未能读取，选中下方卡片按确认即可重新加载</label>
+          <label>$LOCALIZE[32205]</label>
           <font>HeroPlot24</font><textcolor>9CEBEBF5</textcolor><aligny>center</aligny>
           <visible>$EXP[BobbiIsRetry]</visible>
         </control>
@@ -249,49 +256,49 @@
       <visible>$EXP[BobbiShowStorePills]</visible>
       <!-- Movie Storefront Tabs (aligned to ShareLib & LiquidTiles & premium TV Chinese) -->
       <include content="StoreCategoryPill">
-        <param name="id" value="9041" /><param name="label" value="热门电影" />
+        <param name="id" value="9041" /><param name="label" value="$LOCALIZE[32034]" />
         <param name="path" value="plugin://plugin.video.bobbi/?action=am6b_streaming_catalog&amp;section=movie&amp;page=1" />
         <param name="active" value="String.Contains(Container.FolderPath,section=movie)" />
         <param name="visible" value="String.IsEqual(Window(Home).Property(BobbiSection),movie)" />
       </include>
       <include content="StoreCategoryPill">
-        <param name="id" value="9042" /><param name="label" value="近期热门" />
+        <param name="id" value="9042" /><param name="label" value="$LOCALIZE[32194]" />
         <param name="path" value="plugin://plugin.video.bobbi/?action=search_item&amp;mode=movies&amp;query=tmdb_trending&amp;api=tmdb" />
         <param name="active" value="String.Contains(Container.FolderPath,tmdb_trending)" />
         <param name="visible" value="String.IsEqual(Window(Home).Property(BobbiSection),movie)" />
       </include>
       <include content="StoreCategoryPill">
-        <param name="id" value="9043" /><param name="label" value="院线热映" />
+        <param name="id" value="9043" /><param name="label" value="$LOCALIZE[32196]" />
         <param name="path" value="plugin://plugin.video.bobbi/?action=search_item&amp;mode=movies&amp;query=tmdb_popular&amp;api=tmdb" />
         <param name="active" value="String.Contains(Container.FolderPath,tmdb_popular)" />
         <param name="visible" value="String.IsEqual(Window(Home).Property(BobbiSection),movie)" />
       </include>
       <include content="StoreCategoryPill">
-        <param name="id" value="9048" /><param name="label" value="我的片库" />
+        <param name="id" value="9048" /><param name="label" value="$LOCALIZE[32037]" />
         <param name="path" value="plugin://plugin.video.bobbi/?action=personal_catalog&amp;mode=rail&amp;media_kind=movie" />
         <param name="active" value="String.Contains(Container.FolderPath,personal_catalog)" />
         <param name="visible" value="String.IsEqual(Window(Home).Property(BobbiSection),movie)" />
       </include>
       <include content="StoreCategoryPill">
-        <param name="id" value="9044" /><param name="label" value="类型" />
+        <param name="id" value="9044" /><param name="label" value="$LOCALIZE[32190]" />
         <param name="path" value="plugin://plugin.video.bobbi/?action=search_item&amp;mode=movies&amp;query=tmdb_genres&amp;api=tmdb" />
         <param name="active" value="Container.Content(genres) | String.Contains(Container.FolderPath,tmdb_genres)" />
         <param name="visible" value="String.IsEqual(Window(Home).Property(BobbiSection),movie)" />
       </include>
       <include content="StoreCategoryPill">
-        <param name="id" value="9045" /><param name="label" value="系列合集" />
+        <param name="id" value="9045" /><param name="label" value="$LOCALIZE[32192]" />
         <param name="path" value="plugin://plugin.video.bobbi/?action=search_item&amp;mode=movies&amp;query=tmdb_collections&amp;api=tmdb" />
         <param name="active" value="String.Contains(Container.FolderPath,tmdb_collections)" />
         <param name="visible" value="String.IsEqual(Window(Home).Property(BobbiSection),movie)" />
       </include>
       <include content="StoreCategoryPill">
-        <param name="id" value="9046" /><param name="label" value="年代" />
+        <param name="id" value="9046" /><param name="label" value="$LOCALIZE[32189]" />
         <param name="path" value="plugin://plugin.video.bobbi/?action=search_item&amp;mode=movies&amp;query=tmdb_years&amp;api=tmdb" />
         <param name="active" value="Container.Content(years) | String.Contains(Container.FolderPath,tmdb_years)" />
         <param name="visible" value="String.IsEqual(Window(Home).Property(BobbiSection),movie)" />
       </include>
       <include content="StoreCategoryPill">
-        <param name="id" value="9047" /><param name="label" value="地区与语言" />
+        <param name="id" value="9047" /><param name="label" value="$LOCALIZE[32191]" />
         <param name="path" value="plugin://plugin.video.bobbi/?action=search_item&amp;mode=movies&amp;query=tmdb_lang&amp;api=tmdb" />
         <param name="active" value="String.Contains(Container.FolderPath,tmdb_lang)" />
         <param name="visible" value="String.IsEqual(Window(Home).Property(BobbiSection),movie)" />
@@ -299,43 +306,43 @@
 
       <!-- TV Storefront Tabs -->
       <include content="StoreCategoryPill">
-        <param name="id" value="9061" /><param name="label" value="热门剧集" />
+        <param name="id" value="9061" /><param name="label" value="$LOCALIZE[32033]" />
         <param name="path" value="plugin://plugin.video.bobbi/?action=am6b_streaming_catalog&amp;section=tv&amp;page=1" />
         <param name="active" value="String.Contains(Container.FolderPath,section=tv)" />
         <param name="visible" value="String.IsEqual(Window(Home).Property(BobbiSection),tv)" />
       </include>
       <include content="StoreCategoryPill">
-        <param name="id" value="9062" /><param name="label" value="近期热门" />
+        <param name="id" value="9062" /><param name="label" value="$LOCALIZE[32194]" />
         <param name="path" value="plugin://plugin.video.bobbi/?action=search_item&amp;mode=tv&amp;query=tmdb_trending&amp;api=tmdb" />
         <param name="active" value="String.Contains(Container.FolderPath,tmdb_trending)" />
         <param name="visible" value="String.IsEqual(Window(Home).Property(BobbiSection),tv)" />
       </include>
       <include content="StoreCategoryPill">
-        <param name="id" value="9064" /><param name="label" value="今日播出" />
+        <param name="id" value="9064" /><param name="label" value="$LOCALIZE[32195]" />
         <param name="path" value="plugin://plugin.video.bobbi/?action=search_item&amp;mode=tv&amp;query=tmdb_airing_today&amp;api=tmdb" />
         <param name="active" value="String.Contains(Container.FolderPath,tmdb_airing_today)" />
         <param name="visible" value="String.IsEqual(Window(Home).Property(BobbiSection),tv)" />
       </include>
       <include content="StoreCategoryPill">
-        <param name="id" value="9068" /><param name="label" value="我的片库" />
+        <param name="id" value="9068" /><param name="label" value="$LOCALIZE[32037]" />
         <param name="path" value="plugin://plugin.video.bobbi/?action=personal_catalog&amp;mode=rail&amp;media_kind=tv" />
         <param name="active" value="String.Contains(Container.FolderPath,personal_catalog)" />
         <param name="visible" value="String.IsEqual(Window(Home).Property(BobbiSection),tv)" />
       </include>
       <include content="StoreCategoryPill">
-        <param name="id" value="9065" /><param name="label" value="类型" />
+        <param name="id" value="9065" /><param name="label" value="$LOCALIZE[32190]" />
         <param name="path" value="plugin://plugin.video.bobbi/?action=search_item&amp;mode=tv&amp;query=tmdb_genres&amp;api=tmdb" />
         <param name="active" value="Container.Content(genres) | String.Contains(Container.FolderPath,tmdb_genres)" />
         <param name="visible" value="String.IsEqual(Window(Home).Property(BobbiSection),tv)" />
       </include>
       <include content="StoreCategoryPill">
-        <param name="id" value="9066" /><param name="label" value="播出平台" />
+        <param name="id" value="9066" /><param name="label" value="$LOCALIZE[32193]" />
         <param name="path" value="plugin://plugin.video.bobbi/?action=search_item&amp;mode=tv&amp;query=tmdb_networks&amp;api=tmdb" />
         <param name="active" value="String.Contains(Container.FolderPath,tmdb_networks)" />
         <param name="visible" value="String.IsEqual(Window(Home).Property(BobbiSection),tv)" />
       </include>
       <include content="StoreCategoryPill">
-        <param name="id" value="9067" /><param name="label" value="年代" />
+        <param name="id" value="9067" /><param name="label" value="$LOCALIZE[32189]" />
         <param name="path" value="plugin://plugin.video.bobbi/?action=search_item&amp;mode=tv&amp;query=tmdb_years&amp;api=tmdb" />
         <param name="active" value="Container.Content(years) | String.Contains(Container.FolderPath,tmdb_years)" />
         <param name="visible" value="String.IsEqual(Window(Home).Property(BobbiSection),tv)" />
@@ -343,43 +350,43 @@
 
       <!-- Anime Storefront Tabs -->
       <include content="StoreCategoryPill">
-        <param name="id" value="9071" /><param name="label" value="本季度新番" />
+        <param name="id" value="9071" /><param name="label" value="$LOCALIZE[32035]" />
         <param name="path" value="plugin://plugin.video.bobbi/?action=search_item&amp;api=tmdb&amp;mode=anime&amp;submode=tv&amp;category=Anime_Current_Quarter" />
         <param name="active" value="String.Contains(Container.FolderPath,Anime_Current_Quarter)" />
         <param name="visible" value="String.IsEqual(Window(Home).Property(BobbiSection),anime)" />
       </include>
       <include content="StoreCategoryPill">
-        <param name="id" value="9073" /><param name="label" value="未来七日播出" />
+        <param name="id" value="9073" /><param name="label" value="$LOCALIZE[32197]" />
         <param name="path" value="plugin://plugin.video.bobbi/?action=search_item&amp;api=tmdb&amp;mode=anime&amp;submode=tv&amp;category=Anime_On_The_Air" />
         <param name="active" value="String.Contains(Container.FolderPath,Anime_On_The_Air)" />
         <param name="visible" value="String.IsEqual(Window(Home).Property(BobbiSection),anime)" />
       </include>
       <include content="StoreCategoryPill">
-        <param name="id" value="9074" /><param name="label" value="热门番剧" />
+        <param name="id" value="9074" /><param name="label" value="$LOCALIZE[32198]" />
         <param name="path" value="plugin://plugin.video.bobbi/?action=search_item&amp;api=tmdb&amp;mode=anime&amp;submode=tv&amp;category=Anime_Popular" />
         <param name="active" value="String.Contains(Container.FolderPath,Anime_Popular)" />
         <param name="visible" value="String.IsEqual(Window(Home).Property(BobbiSection),anime)" />
       </include>
       <include content="StoreCategoryPill">
-        <param name="id" value="9075" /><param name="label" value="高分动漫" />
+        <param name="id" value="9075" /><param name="label" value="$LOCALIZE[32199]" />
         <param name="path" value="plugin://plugin.video.bobbi/?action=search_item&amp;api=tmdb&amp;mode=anime&amp;submode=tv&amp;category=Anime_Top_Rated" />
         <param name="active" value="String.Contains(Container.FolderPath,Anime_Top_Rated)" />
         <param name="visible" value="String.IsEqual(Window(Home).Property(BobbiSection),anime)" />
       </include>
       <include content="StoreCategoryPill">
-        <param name="id" value="9072" /><param name="label" value="动漫电影" />
+        <param name="id" value="9072" /><param name="label" value="$LOCALIZE[32036]" />
         <param name="path" value="plugin://plugin.video.bobbi/?action=search_item&amp;api=tmdb&amp;mode=anime&amp;submode=movies&amp;category=Anime_Movies_New" />
         <param name="active" value="String.Contains(Container.FolderPath,Anime_Movies_New)" />
         <param name="visible" value="String.IsEqual(Window(Home).Property(BobbiSection),anime)" />
       </include>
       <include content="StoreCategoryPill">
-        <param name="id" value="9077" /><param name="label" value="往季动画" />
+        <param name="id" value="9077" /><param name="label" value="$LOCALIZE[32200]" />
         <param name="path" value="plugin://plugin.video.bobbi/?action=search_item&amp;api=tmdb&amp;mode=anime&amp;submode=tv&amp;category=Anime_Years" />
         <param name="active" value="String.Contains(Container.FolderPath,Anime_Years)" />
         <param name="visible" value="String.IsEqual(Window(Home).Property(BobbiSection),anime)" />
       </include>
       <include content="StoreCategoryPill">
-        <param name="id" value="9076" /><param name="label" value="类型" />
+        <param name="id" value="9076" /><param name="label" value="$LOCALIZE[32190]" />
         <param name="path" value="plugin://plugin.video.bobbi/?action=search_item&amp;api=tmdb&amp;mode=anime&amp;submode=tv&amp;category=Anime_Genres" />
         <param name="active" value="String.Contains(Container.FolderPath,Anime_Genres)" />
         <param name="visible" value="String.IsEqual(Window(Home).Property(BobbiSection),anime)" />
@@ -407,7 +414,7 @@
         <!-- Quick Add Source Pill on Cloud & Library Root -->
         <control type="button" id="9058">
           <width>164</width><height>56</height>
-          <label>+ 添加来源</label>
+          <label>$LOCALIZE[32186]</label>
           <font>Card24</font>
           <textcolor>F2F5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
           <textoffsetx>22</textoffsetx><align>center</align><aligny>center</aligny>
@@ -455,7 +462,7 @@
         <!-- Native Filter (id=19) -->
         <control type="radiobutton" id="19">
           <width>164</width><height>56</height>
-          <label>筛选</label>
+          <label>$LOCALIZE[32187]</label>
           <font>Card24</font>
           <textcolor>F2F5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor><disabledcolor>text_disabled</disabledcolor>
           <textoffsetx>22</textoffsetx><aligny>center</aligny>
@@ -471,7 +478,7 @@
         <!-- Native Addon Check for Updates (id=20) -->
         <control type="button" id="20">
           <width>152</width><height>56</height>
-          <label>检查更新</label>
+          <label>$LOCALIZE[32188]</label>
           <font>Card24</font>
           <textcolor>F2F5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor><disabledcolor>text_disabled</disabledcolor>
           <textoffsetx>22</textoffsetx><align>center</align><aligny>center</aligny>
@@ -901,7 +908,7 @@
       <onup condition="!Control.IsVisible(9040) + !Control.IsVisible(9050)">9701</onup>
       <onleft>9701</onleft>
       <onright>noop</onright>
-      <viewtype label="波比">wall</viewtype>
+      <viewtype label="$LOCALIZE[32000]">wall</viewtype>
       <!-- library root: 4-up 416x234 premium TV "Channels & Apps" cards + below-card captions -->
       <itemlayout width="448" height="328" condition="$EXP[BobbiInLibrary] + $EXP[BobbiLibraryRoot]">
         <control type="group"><left>16</left><top>14</top><include content="LibraryTile" /></control>

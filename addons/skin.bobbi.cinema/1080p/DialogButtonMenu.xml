@@ -29,9 +29,9 @@
       </control>
     </control>
 
-    <!-- Full-screen 1080p calibrated Control Center @ (1421,52) 432x512 -> x=1421..1853, header cy=80 -->
+    <!-- Full-screen 1080p calibrated Control Center @ (1421,52) 437x672 -> x=1421..1858, header cy=80 -->
     <control type="group" id="9000">
-      <left>1421</left><top>52</top><width>437</width><height>512</height>
+      <left>1421</left><top>52</top><width>437</width><height>672</height>
       <include content="MenuPop"><param name="center">1782,80</param></include>
 
       <!-- Header Row (y=52..108, cy=80): Semibold Clock @ x=1476 + 56x56 Active CC Disc @ x=1754 + 34x34 Rimmed Avatar @ x=1824 -->
@@ -54,9 +54,10 @@
         <texture>bobbi/glass/cc-avatar-34.png</texture>
       </control>
 
-      <!-- Power tile (208x208, continuous r=48); action pills use 208x96 semicircular ends on a 16 px grid. -->
+      <!-- Power tile 9010 (208x208, continuous r=48): capability-aware Shut Down (Powerdown) or Quit Kodi -->
       <control type="group">
         <left>0</left><top>80</top><width>208</width><height>208</height>
+        <visible>System.CanPowerDown | System.ShowExitButton</visible>
         <include content="Lift"><param name="center">104,184</param><param name="zoom">104</param></include>
         <control type="image">
           <left>-28</left><top>-28</top><width>264</width><height>264</height>
@@ -69,7 +70,8 @@
           <texturenofocus />
           <onup>noop</onup><ondown>9011</ondown>
           <onleft>noop</onleft><onright>9012</onright>
-          <onclick>Quit()</onclick>
+          <onclick condition="System.CanPowerDown">RunScript(script.bobbi.setup,power_action,powerdown)</onclick>
+          <onclick condition="!System.CanPowerDown + System.ShowExitButton">RunScript(script.bobbi.setup,power_action,quit)</onclick>
         </control>
         <include content="CCIdleFace">
           <param name="id" value="9010" /><param name="width" value="208" /><param name="height" value="208" />
@@ -87,19 +89,19 @@
         </control>
         <control type="label">
           <left>14</left><top>158</top><width>180</width><height>32</height>
-          <label>关机</label>
+          <label>$VAR[CCPowerPrimaryLabel]</label>
           <font>CCLabel24</font><textcolor>FFF5F5F7</textcolor><align>center</align><aligny>center</aligny>
           <visible>!Control.HasFocus(9010)</visible>
         </control>
         <control type="label">
           <left>14</left><top>158</top><width>180</width><height>32</height>
-          <label>关机</label>
+          <label>$VAR[CCPowerPrimaryLabel]</label>
           <font>CCLabel24</font><textcolor>FF1D1D1F</textcolor><align>center</align><aligny>center</aligny>
           <visible>Control.HasFocus(9010)</visible>
         </control>
       </control>
 
-      <!-- Action 9012: 返回影院 -->
+      <!-- Action 9012: Safe Default Return (never auto-resumes paused video) -->
       <control type="group">
         <left>224</left><top>80</top><width>208</width><height>96</height>
         <include content="Lift"><param name="center">328,128</param><param name="zoom">104</param></include>
@@ -112,8 +114,12 @@
           <label />
           <texturefocus>bobbi/glass/cc-pill-208x96-focus.png</texturefocus>
           <texturenofocus />
-          <onup>noop</onup><ondown>9013</ondown>
-          <onleft>9010</onleft><onright>noop</onright>
+          <onup>noop</onup>
+          <ondown condition="System.CanReboot">9013</ondown>
+          <ondown condition="!System.CanReboot">9014</ondown>
+          <onleft condition="System.CanPowerDown | System.ShowExitButton">9010</onleft>
+          <onleft condition="![System.CanPowerDown | System.ShowExitButton]">9011</onleft>
+          <onright>noop</onright>
           <onclick>Dialog.Close(shutdownmenu)</onclick>
         </control>
         <include content="CCIdleFace">
@@ -121,14 +127,15 @@
           <param name="face" value="bobbi/glass/cc-pill-208x96.png" /><param name="optics" value="bobbi/glass/lg-cc-pill.png" />
         </include>
         <include content="CCActionContent">
-          <param name="id" value="9012" /><param name="title" value="返回影院" /><param name="subtitle" value="继续观看" />
+          <param name="id" value="9012" /><param name="title" value="$LOCALIZE[32146]" /><param name="subtitle" value="$VAR[CCReturnSubtitle]" />
           <param name="glyph" value="house" /><param name="x" value="28" /><param name="y" value="28" /><param name="size" value="39" />
         </include>
       </control>
 
-      <!-- Action 9013: 重启系统 -->
+      <!-- Action 9013: Restart Host (capability-gated via System.CanReboot, confirmed) -->
       <control type="group">
         <left>224</left><top>192</top><width>208</width><height>96</height>
+        <visible>System.CanReboot</visible>
         <include content="Lift"><param name="center">328,240</param><param name="zoom">104</param></include>
         <control type="image">
           <left>-28</left><top>-28</top><width>264</width><height>152</height>
@@ -140,20 +147,22 @@
           <texturefocus>bobbi/glass/cc-pill-208x96-focus.png</texturefocus>
           <texturenofocus />
           <onup>9012</onup><ondown>9014</ondown>
-          <onleft>9010</onleft><onright>noop</onright>
-          <onclick>Reset()</onclick>
+          <onleft condition="System.CanPowerDown | System.ShowExitButton">9010</onleft>
+          <onleft condition="![System.CanPowerDown | System.ShowExitButton]">9011</onleft>
+          <onright>noop</onright>
+          <onclick>RunScript(script.bobbi.setup,power_action,reboot)</onclick>
         </control>
         <include content="CCIdleFace">
           <param name="id" value="9013" /><param name="width" value="208" /><param name="height" value="96" />
           <param name="face" value="bobbi/glass/cc-pill-208x96.png" /><param name="optics" value="bobbi/glass/lg-cc-pill.png" />
         </include>
         <include content="CCActionContent">
-          <param name="id" value="9013" /><param name="title" value="重启系统" /><param name="subtitle" value="CoreELEC" />
+          <param name="id" value="9013" /><param name="title" value="$LOCALIZE[32141]" /><param name="subtitle" value="$LOCALIZE[32149]" />
           <param name="glyph" value="refresh" /><param name="x" value="25" /><param name="y" value="25" /><param name="size" value="46" />
         </include>
       </control>
 
-      <!-- Action 9011: 重载界面 -->
+      <!-- Action 9011: Reload UI -->
       <control type="group">
         <left>0</left><top>304</top><width>208</width><height>96</height>
         <include content="Lift"><param name="center">104,352</param><param name="zoom">104</param></include>
@@ -166,8 +175,11 @@
           <label />
           <texturefocus>bobbi/glass/cc-pill-208x96-focus.png</texturefocus>
           <texturenofocus />
-          <onup>9010</onup><ondown>9021</ondown>
+          <onup condition="System.CanPowerDown | System.ShowExitButton">9010</onup>
+          <onup condition="![System.CanPowerDown | System.ShowExitButton]">9012</onup>
+          <ondown>9015</ondown>
           <onleft>noop</onleft><onright>9014</onright>
+          <onclick>Dialog.Close(shutdownmenu)</onclick>
           <onclick>ReloadSkin()</onclick>
         </control>
         <include content="CCIdleFace">
@@ -175,12 +187,12 @@
           <param name="face" value="bobbi/glass/cc-pill-208x96.png" /><param name="optics" value="bobbi/glass/lg-cc-pill.png" />
         </include>
         <include content="CCActionContent">
-          <param name="id" value="9011" /><param name="title" value="重载界面" /><param name="subtitle" value="波比TV" />
+          <param name="id" value="9011" /><param name="title" value="$LOCALIZE[32143]" /><param name="subtitle" value="$LOCALIZE[32000]" />
           <param name="glyph" value="tv-outline" /><param name="x" value="25" /><param name="y" value="25" /><param name="size" value="47" />
         </include>
       </control>
 
-      <!-- Action 9014: 系统信息 -->
+      <!-- Action 9014: System Info -->
       <control type="group">
         <left>224</left><top>304</top><width>208</width><height>96</height>
         <include content="Lift"><param name="center">328,352</param><param name="zoom">104</param></include>
@@ -193,9 +205,13 @@
           <label />
           <texturefocus>bobbi/glass/cc-pill-208x96-focus.png</texturefocus>
           <texturenofocus />
-          <onup>9013</onup><ondown>9023</ondown>
+          <onup condition="System.CanReboot">9013</onup>
+          <onup condition="!System.CanReboot">9012</onup>
+          <ondown condition="System.CanPowerDown + System.ShowExitButton">9016</ondown>
+          <ondown condition="![System.CanPowerDown + System.ShowExitButton]">9023</ondown>
           <onleft>9011</onleft><onright>noop</onright>
           <onclick>Dialog.Close(shutdownmenu)</onclick>
+          <onclick condition="Window.IsVisible(1114)">Dialog.Close(1114)</onclick>
           <onclick>ActivateWindow(SystemInfo)</onclick>
         </control>
         <include content="CCIdleFace">
@@ -203,15 +219,74 @@
           <param name="face" value="bobbi/glass/cc-pill-208x96.png" /><param name="optics" value="bobbi/glass/lg-cc-pill.png" />
         </include>
         <include content="CCActionContent">
-          <param name="id" value="9014" /><param name="title" value="系统信息" /><param name="subtitle" value="硬件与网络" />
+          <param name="id" value="9014" /><param name="title" value="$LOCALIZE[32106]" /><param name="subtitle" value="$LOCALIZE[32150]" />
           <param name="glyph" value="cpu" /><param name="x" value="28" /><param name="y" value="28" /><param name="size" value="39" />
+        </include>
+      </control>
+
+      <!-- Action 9015: Edit Spaces (always reachable even when Settings & Mine are hidden) -->
+      <control type="group">
+        <left>0</left><top>416</top><width>208</width><height>96</height>
+        <include content="Lift"><param name="center">104,464</param><param name="zoom">104</param></include>
+        <control type="image">
+          <left>-28</left><top>-28</top><width>264</width><height>152</height>
+          <texture>bobbi/glass/cc-pill-208x96-shadow.png</texture>
+        </control>
+        <control type="button" id="9015">
+          <left>0</left><top>0</top><width>208</width><height>96</height>
+          <label />
+          <texturefocus>bobbi/glass/cc-pill-208x96-focus.png</texturefocus>
+          <texturenofocus />
+          <onup>9011</onup><ondown>9021</ondown>
+          <onleft>noop</onleft>
+          <onright condition="System.CanPowerDown + System.ShowExitButton">9016</onright>
+          <onright condition="![System.CanPowerDown + System.ShowExitButton]">9014</onright>
+          <onclick>Dialog.Close(shutdownmenu)</onclick>
+          <onclick condition="Window.IsVisible(1114)">Dialog.Close(1114)</onclick>
+          <onclick>RunScript(script.bobbi.setup,home_spaces)</onclick>
+        </control>
+        <include content="CCIdleFace">
+          <param name="id" value="9015" /><param name="width" value="208" /><param name="height" value="96" />
+          <param name="face" value="bobbi/glass/cc-pill-208x96.png" /><param name="optics" value="bobbi/glass/lg-cc-pill.png" />
+        </include>
+        <include content="CCActionContent">
+          <param name="id" value="9015" /><param name="title" value="$LOCALIZE[32144]" /><param name="subtitle" value="$LOCALIZE[32151]" />
+          <param name="glyph" value="list-bullet" /><param name="x" value="18" /><param name="y" value="18" /><param name="size" value="60" />
+        </include>
+      </control>
+
+      <!-- Action 9016: Quit Kodi (shown separately when host supports both Powerdown and Quit) -->
+      <control type="group">
+        <left>224</left><top>416</top><width>208</width><height>96</height>
+        <visible>System.CanPowerDown + System.ShowExitButton</visible>
+        <include content="Lift"><param name="center">328,464</param><param name="zoom">104</param></include>
+        <control type="image">
+          <left>-28</left><top>-28</top><width>264</width><height>152</height>
+          <texture>bobbi/glass/cc-pill-208x96-shadow.png</texture>
+        </control>
+        <control type="button" id="9016">
+          <left>0</left><top>0</top><width>208</width><height>96</height>
+          <label />
+          <texturefocus>bobbi/glass/cc-pill-208x96-focus.png</texturefocus>
+          <texturenofocus />
+          <onup>9014</onup><ondown>9023</ondown>
+          <onleft>9015</onleft><onright>noop</onright>
+          <onclick>RunScript(script.bobbi.setup,power_action,quit)</onclick>
+        </control>
+        <include content="CCIdleFace">
+          <param name="id" value="9016" /><param name="width" value="208" /><param name="height" value="96" />
+          <param name="face" value="bobbi/glass/cc-pill-208x96.png" /><param name="optics" value="bobbi/glass/lg-cc-pill.png" />
+        </include>
+        <include content="CCActionContent">
+          <param name="id" value="9016" /><param name="title" value="$LOCALIZE[32142]" /><param name="subtitle" value="$LOCALIZE[32152]" />
+          <param name="glyph" value="power" /><param name="x" value="28" /><param name="y" value="28" /><param name="size" value="40" />
         </include>
       </control>
 
       <!-- Quick actions (4x 96x96 orbs on 16 px pitch: 0..96, 112..208, 224..320, 336..432) -->
       <control type="group">
-        <left>0</left><top>416</top><width>96</width><height>96</height>
-        <include content="Lift"><param name="center">48,464</param><param name="zoom">106</param></include>
+        <left>0</left><top>528</top><width>96</width><height>96</height>
+        <include content="Lift"><param name="center">48,576</param><param name="zoom">106</param></include>
         <control type="image">
           <left>-28</left><top>-28</top><width>152</width><height>152</height>
           <texture>bobbi/glass/cc-orb-96-shadow.png</texture>
@@ -221,9 +296,10 @@
           <label />
           <texturefocus>bobbi/glass/cc-orb-96-focus.png</texturefocus>
           <texturenofocus />
-          <onup>9011</onup><ondown>noop</ondown>
+          <onup>9015</onup><ondown>noop</ondown>
           <onleft>noop</onleft><onright>9022</onright>
           <onclick>Dialog.Close(shutdownmenu)</onclick>
+          <onclick condition="Window.IsVisible(1114)">Dialog.Close(1114)</onclick>
           <onclick>ActivateWindow(SkinSettings)</onclick>
         </control>
         <include content="CCIdleFace">
@@ -243,8 +319,8 @@
       </control>
 
       <control type="group">
-        <left>112</left><top>416</top><width>96</width><height>96</height>
-        <include content="Lift"><param name="center">160,464</param><param name="zoom">106</param></include>
+        <left>112</left><top>528</top><width>96</width><height>96</height>
+        <include content="Lift"><param name="center">160,576</param><param name="zoom">106</param></include>
         <control type="image">
           <left>-28</left><top>-28</top><width>152</width><height>152</height>
           <texture>bobbi/glass/cc-orb-96-shadow.png</texture>
@@ -254,10 +330,11 @@
           <label />
           <texturefocus>bobbi/glass/cc-orb-96-focus.png</texturefocus>
           <texturenofocus />
-          <onup>9011</onup><ondown>noop</ondown>
+          <onup>9015</onup><ondown>noop</ondown>
           <onleft>9021</onleft><onright>9023</onright>
           <onclick>Dialog.Close(shutdownmenu)</onclick>
-          <onclick>ActivateWindow(Videos,&quot;plugin://plugin.video.bobbi.library/&quot;,return)</onclick>
+          <onclick condition="Window.IsVisible(1114)">Dialog.Close(1114)</onclick>
+          <onclick>RunScript(script.bobbi.setup,accounts)</onclick>
         </control>
         <include content="CCIdleFace">
           <param name="id" value="9022" /><param name="width" value="96" /><param name="height" value="96" />
@@ -265,19 +342,19 @@
         </include>
         <control type="image">
           <left>28</left><top>28</top><width>40</width><height>40</height>
-          <texture colordiffuse="FFF5F5F7">bobbi/glass/icons/cloud-outline.png</texture>
+          <texture colordiffuse="FFF5F5F7">bobbi/glass/icons/person.png</texture>
           <visible>!Control.HasFocus(9022)</visible>
         </control>
         <control type="image">
           <left>28</left><top>28</top><width>40</width><height>40</height>
-          <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/cloud-outline.png</texture>
+          <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/person.png</texture>
           <visible>Control.HasFocus(9022)</visible>
         </control>
       </control>
 
       <control type="group">
-        <left>224</left><top>416</top><width>96</width><height>96</height>
-        <include content="Lift"><param name="center">272,464</param><param name="zoom">106</param></include>
+        <left>224</left><top>528</top><width>96</width><height>96</height>
+        <include content="Lift"><param name="center">272,576</param><param name="zoom">106</param></include>
         <control type="image">
           <left>-28</left><top>-28</top><width>152</width><height>152</height>
           <texture>bobbi/glass/cc-orb-96-shadow.png</texture>
@@ -287,9 +364,12 @@
           <label />
           <texturefocus>bobbi/glass/cc-orb-96-focus.png</texturefocus>
           <texturenofocus />
-          <onup>9014</onup><ondown>noop</ondown>
+          <onup condition="System.CanPowerDown + System.ShowExitButton">9016</onup>
+          <onup condition="![System.CanPowerDown + System.ShowExitButton]">9014</onup>
+          <ondown>noop</ondown>
           <onleft>9022</onleft><onright>9024</onright>
           <onclick>Dialog.Close(shutdownmenu)</onclick>
+          <onclick condition="Window.IsVisible(1114)">Dialog.Close(1114)</onclick>
           <onclick>ActivateWindow(Settings)</onclick>
         </control>
         <include content="CCIdleFace">
@@ -309,8 +389,8 @@
       </control>
 
       <control type="group">
-        <left>336</left><top>416</top><width>96</width><height>96</height>
-        <include content="Lift"><param name="center">384,464</param><param name="zoom">106</param></include>
+        <left>336</left><top>528</top><width>96</width><height>96</height>
+        <include content="Lift"><param name="center">384,576</param><param name="zoom">106</param></include>
         <control type="image">
           <left>-28</left><top>-28</top><width>152</width><height>152</height>
           <texture>bobbi/glass/cc-orb-96-shadow.png</texture>
@@ -320,9 +400,12 @@
           <label />
           <texturefocus>bobbi/glass/cc-orb-96-focus.png</texturefocus>
           <texturenofocus />
-          <onup>9014</onup><ondown>noop</ondown>
+          <onup condition="System.CanPowerDown + System.ShowExitButton">9016</onup>
+          <onup condition="![System.CanPowerDown + System.ShowExitButton]">9014</onup>
+          <ondown>noop</ondown>
           <onleft>9023</onleft><onright>noop</onright>
           <onclick>Dialog.Close(shutdownmenu)</onclick>
+          <onclick condition="Window.IsVisible(1114)">Dialog.Close(1114)</onclick>
           <onclick>RunPlugin(&quot;plugin://plugin.video.bobbi/?action=bobbi_search_prompt&amp;section=multi&quot;)</onclick>
         </control>
         <include content="CCIdleFace">
@@ -339,6 +422,14 @@
           <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/search.png</texture>
           <visible>Control.HasFocus(9024)</visible>
         </control>
+      </control>
+
+      <!-- Focused quick-orb caption row (self-explanatory in ZH and EN) -->
+      <control type="label">
+        <left>0</left><top>636</top><width>432</width><height>32</height>
+        <label>$VAR[CCOrbCaption]</label>
+        <font>CCLabel24</font><textcolor>D9F5F5F7</textcolor>
+        <align>center</align><aligny>center</aligny>
       </control>
     </control>
   </controls>

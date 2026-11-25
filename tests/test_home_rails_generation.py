@@ -36,8 +36,13 @@ def spec():
 def baseline_spec():
     value = spec()
     baseline_ids = {row[0] for row in BASELINE_ROWS}
-    value['rails'] = [row for row in value['rails'] if row['control_id'] in baseline_ids]
+    value['schema'] = 1
+    value['rails'] = [
+        {k: v for k, v in row.items() if k not in ('title_en', 'label_id')}
+        for row in value['rails'] if row['control_id'] in baseline_ids
+    ]
     value.pop('slot_preferences', None)
+    value.pop('spaces', None)
     return value
 
 
@@ -144,12 +149,16 @@ def test_restricted_schema_rejects_unknown_unsafe_or_unbounded_values(field, val
 
 
 @pytest.mark.parametrize('change', [
-    lambda value: value.update(schema=2),
+    lambda value: value.update(schema=3),
     lambda value: value.update(schema=True),
+    lambda value: value.pop('spaces'),
+    lambda value: value.update(slot_preferences=False),
     lambda value: value.update(output='elsewhere'),
     lambda value: value['rails'][0].update(onclick='PlayMedia(evil)'),
     lambda value: value['rails'][0]['params'].update(category='current_quarter'),
     lambda value: value['rails'][3]['params'].update(category='unknown'),
+    lambda value: value['spaces'][0].update(fixed=False),
+    lambda value: value['spaces'][1].update(route='PlayMedia(evil)'),
 ])
 def test_schema_fields_and_route_specific_parameters_fail_closed(change):
     value = spec()
@@ -176,7 +185,7 @@ def test_id_collision_is_checked_in_expanded_home_not_other_windows():
 
 def test_readonly_check_detects_manual_output_edits_without_repair(tmp_path):
     shutil.copytree(ROOT / generator.SKIN, tmp_path / generator.SKIN)
-    for relative in (generator.SPEC, Path('tools/generate_home_rails.py')):
+    for relative in (generator.SPEC, Path('tools/generate_home_rails.py'), generator.META_OUTPUT):
         (tmp_path / relative).parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(ROOT / relative, tmp_path / relative)
     target = tmp_path / generator.OUTPUT
@@ -234,6 +243,7 @@ def test_build_checks_generated_sources_before_refresh_or_output(monkeypatch, tm
 def test_only_committed_static_xml_is_loaded_at_runtime():
     includes = ET.parse(ROOT / generator.SKIN / 'Includes.xml').getroot()
     assert len(includes.findall("include[@file='Includes_HomeRails.generated.xml']")) == 1
+    assert len(includes.findall("include[@file='Includes_HomeNav.generated.xml']")) == 1
     for name in ('Home.xml', 'Includes.xml', 'Includes_Home.xml', 'Includes_Titles.xml'):
         text = (ROOT / generator.SKIN / name).read_text(encoding='utf-8')
         assert 'generate_home_rails.py' not in text
@@ -242,3 +252,29 @@ def test_only_committed_static_xml_is_loaded_at_runtime():
         tree = ET.parse(ROOT / generator.SKIN / name).getroot()
         assert not any(node.get('name', '').startswith('Stage') for node in tree if node.tag == 'variable')
         assert not any(node.get('name', '').endswith('_9810') for node in tree)
+
+
+def test_schema_v2_compiles_localized_rails_and_13_spaces_with_home_fixed_first():
+    current = spec()
+    assert current['schema'] == 2
+    assert len(current['rails']) == 8
+    assert len(current['spaces']) == 13
+    assert all('label_id' in r and 'title_en' in r for r in current['rails'])
+    raw, hero, nav, py_raw = generator.full_outputs(ROOT)
+    rails_tree = ET.fromstring(raw)
+    for row, rail in zip(rails_tree.find("include[@name='HomeRails']").findall('include'), current['rails']):
+        assert params(row)['title'] == f"$LOCALIZE[{rail['label_id']}]"
+    nav_tree = ET.fromstring(nav)
+    items = nav_tree.find("include[@name='HomeSpaceItems']/content").findall('item')
+    # 1 fixed home + 12*12 deduplicated slot items + 12 fallback unplaced items = 157 static items
+    assert len(items) == 1 + 12 * 12 + 12
+    assert items[0].findtext('label') == f"$LOCALIZE[{current['spaces'][0]['label_id']}]"
+    assert items[0].find('visible') is None
+    assert items[0].findtext("property[@name='space_key']") == 'home'
+    assert (ROOT / generator.ICONS).is_dir()
+    assert all((ROOT / generator.ICONS / f"{s['icon']}.png").is_file() for s in current['spaces'])
+    ns = {}
+    exec(py_raw.decode('utf-8'), ns)
+    assert len(ns['HOME_SPACE_SPECS']) == 13
+    assert ns['HOME_SPACE_KEYS'][0] == 'home'
+    assert len(ns['HOME_OPTIONAL_SPACE_KEYS']) == 12

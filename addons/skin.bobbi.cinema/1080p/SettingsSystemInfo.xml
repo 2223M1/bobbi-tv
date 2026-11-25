@@ -12,7 +12,7 @@
     <!-- Top-centered muted slate title (1:1 on-device Settings > General > About) -->
     <control type="label">
       <left>0</left><top>62</top><width>1920</width><height>62</height>
-      <label>系统信息</label>
+      <label>$LOCALIZE[32106]</label>
       <font>SettingsTitle50</font><textcolor>FF7C8088</textcolor>
       <align>center</align><aligny>center</aligny>
     </control>
@@ -90,7 +90,7 @@
     <!-- Bottom-left network management caption -->
     <control type="label">
       <left>112</left><top>848</top><width>300</width><height>28</height>
-      <label>网盘管理入口</label>
+      <label>$LOCALIZE[32346]</label>
       <font>NavHead24</font><textcolor>FF8A8D96</textcolor><aligny>center</aligny>
     </control>
     <control type="label">
@@ -178,7 +178,7 @@
     </control>
     <control type="label">
       <left>528</left><top>756</top><width>600</width><height>32</height>
-      <label>处理器  ·  $INFO[System.CPUUsage]</label>
+      <label>$LOCALIZE[32347]  ·  $INFO[System.CPUUsage]</label>
       <font>CardSub22</font><textcolor>FF989A9F</textcolor><aligny>center</aligny>
     </control>
     <control type="progress">
@@ -189,7 +189,7 @@
     </control>
     <control type="label">
       <left>1176</left><top>756</top><width>616</width><height>32</height>
-      <label>内存  ·  $INFO[system.memory(used)] / $INFO[system.memory(total)] ($INFO[system.memory(used.percent)])</label>
+      <label>$LOCALIZE[32348]  ·  $INFO[system.memory(used)] / $INFO[system.memory(total)] ($INFO[system.memory(used.percent)])</label>
       <font>CardSub22</font><textcolor>FF989A9F</textcolor><aligny>center</aligny>
     </control>
     <control type="progress">

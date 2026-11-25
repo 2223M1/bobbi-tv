@@ -28,7 +28,7 @@
         </control>
         <control type="label">
           <left>117</left><top>50</top><width>100</width><height>60</height>
-          <label>波比TV</label>
+          <label>$LOCALIZE[32000]</label>
           <font>Capsule28</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny>
         </control>
       </control>

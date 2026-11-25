@@ -135,8 +135,8 @@ def test_settings_hub_has_no_dead_action_tiles():
 def test_numeric_actions_keep_native_ids_but_have_readable_labels():
     root = document('DialogNumeric.xml')
     assert {str(n) for n in range(10, 24)} <= {n.get('id') for n in root.iter('control')}
-    assert control(root, '21').findtext('label') == '完成'
-    assert control(root, '23').findtext('label') == '退格'
+    assert control(root, '21').findtext('label') == '$LOCALIZE[32340]'
+    assert control(root, '23').findtext('label') == '$LOCALIZE[32341]'
     for ident in ('21', '23'):
         assert control(root, ident).find('onclick') is None
 

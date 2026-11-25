@@ -31,7 +31,7 @@
       <!-- Header -->
       <control type="label">
         <left>44</left><top>28</top><width>900</width><height>44</height>
-        <label>章节与书签</label>
+        <label>$LOCALIZE[32224]</label>
         <font>Head34</font><textcolor>text</textcolor><aligny>center</aligny>
       </control>
       <control type="label">
@@ -59,7 +59,7 @@
         </control>
         <control type="label">
           <left>40</left><top>120</top><width>1432</width><height>44</height>
-          <label>暂无书签 — 选择下方「添加书签」记录当前画面时间点</label>
+          <label>$LOCALIZE[32375]</label>
           <font>Card26</font><textcolor>$VAR[BobbiPanelCaption]</textcolor><align>center</align><aligny>center</aligny>
         </control>
       </control>
@@ -160,7 +160,7 @@
 
         <control type="button" id="2">
           <width>220</width><height>66</height>
-          <label>添加书签</label>
+          <label>$LOCALIZE[32372]</label>
           <font>Button24</font><textcolor>text</textcolor><focusedcolor>on_focus</focusedcolor>
           <align>center</align><aligny>center</aligny>
           <texturenofocus colordiffuse="24FFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturenofocus>
@@ -170,7 +170,7 @@
 
         <control type="button" id="3">
           <width>220</width><height>66</height>
-          <label>清空书签</label>
+          <label>$LOCALIZE[32373]</label>
           <font>Button24</font><textcolor>text</textcolor><focusedcolor>on_focus</focusedcolor>
           <align>center</align><aligny>center</aligny>
           <texturenofocus colordiffuse="24FFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturenofocus>
@@ -180,7 +180,7 @@
 
         <control type="button" id="4">
           <width>240</width><height>66</height>
-          <label>剧集书签</label>
+          <label>$LOCALIZE[32374]</label>
           <font>Button24</font><textcolor>text</textcolor><focusedcolor>on_focus</focusedcolor>
           <align>center</align><aligny>center</aligny>
           <texturenofocus colordiffuse="24FFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturenofocus>

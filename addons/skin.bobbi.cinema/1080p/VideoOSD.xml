@@ -13,7 +13,7 @@
       <visible>!Player.HasVideo</visible>
     </control>
     <control type="group">
-      <visible>![Window.IsVisible(1144) | Window.IsVisible(1145) | Window.IsVisible(1114) | Window.IsVisible(1115) | Window.IsVisible(1116) | Window.IsVisible(PlayerProcessInfo) | Window.IsVisible(OSDSubtitleSettings) | Window.IsVisible(OSDAudioSettings) | Window.IsVisible(OSDVideoSettings) | Window.IsVisible(VideoBookmarks) | Window.IsVisible(SliderDialog)]</visible>
+      <visible>![Window.IsVisible(1144) | Window.IsVisible(1145) | Window.IsVisible(1114) | Window.IsVisible(1115) | Window.IsVisible(1116) | Window.IsVisible(shutdownmenu) | Window.IsVisible(PlayerProcessInfo) | Window.IsVisible(OSDSubtitleSettings) | Window.IsVisible(OSDAudioSettings) | Window.IsVisible(OSDVideoSettings) | Window.IsVisible(VideoBookmarks) | Window.IsVisible(SliderDialog)]</visible>
       <include>FadeVisible</include>
       <include content="OSDScrim"><param name="top">480</param></include>
 
@@ -48,7 +48,14 @@
       <!-- Above Scrubber Left: Kicker (y=720) + Main Title (y=758, h=64) -->
       <include content="OSDTitle"><param name="top">720</param><param name="width">1420</param></include>
 
-      <!-- Above Scrubber Right (y=758, right-aligned to x=1840): 4 circular 64x64 Liquid Glass discs -->
+      <!-- Above Scrubber Right (y=758, right-aligned to x=1840): 4 circular 64x64 Liquid Glass discs + live track hint -->
+      <control type="label">
+        <left>1160</left><top>718</top><width>680</width><height>32</height>
+        <label>$VAR[OSDToolHint]</label>
+        <font>CardSub22</font><textcolor>BFEBEBF5</textcolor><align>right</align><aligny>center</aligny>
+        <visible>Control.HasFocus(700) | Control.HasFocus(710)</visible>
+      </control>
+
       <control type="list" id="700">
         <left>1536</left><top>758</top><width>160</width><height>64</height>
         <orientation>horizontal</orientation>
@@ -66,11 +73,13 @@
         </focusedlayout>
         <content>
           <item>
-            <label>字幕</label><icon>bobbi/glass/icons/bubble-captions.png</icon>
+            <label>$LOCALIZE[32210]</label><icon>bobbi/glass/icons/bubble-captions.png</icon>
+            <property name="hint">$LOCALIZE[32210] · $VAR[SubtitleLabel]</property>
             <onclick>ActivateWindow(1144)</onclick>
           </item>
           <item>
-            <label>音轨</label><icon>bobbi/glass/icons/waveform.png</icon>
+            <label>$LOCALIZE[32211]</label><icon>bobbi/glass/icons/waveform.png</icon>
+            <property name="hint">$LOCALIZE[32211] · $VAR[AudioLangLabel]</property>
             <onclick>ActivateWindow(1145)</onclick>
           </item>
         </content>
@@ -93,11 +102,13 @@
         </focusedlayout>
         <content>
           <item>
-            <label>画面</label><icon>bobbi/glass/icons/pip.png</icon>
+            <label>$LOCALIZE[32212]</label><icon>bobbi/glass/icons/pip.png</icon>
+            <property name="hint">$LOCALIZE[32212]</property>
             <onclick>ActivateWindow(OSDVideoSettings)</onclick>
           </item>
           <item>
-            <label>更多</label><icon>bobbi/glass/icons/sliders.png</icon>
+            <label>$LOCALIZE[32213]</label><icon>bobbi/glass/icons/sliders.png</icon>
+            <property name="hint">$LOCALIZE[32213] · $LOCALIZE[32014]</property>
             <onclick>ActivateWindow(1114)</onclick>
           </item>
         </content>
@@ -120,7 +131,7 @@
       </control>
       <control type="label">
         <left>560</left><top>864</top><width>800</width><height>32</height>
-        <label>确认 输入时间跳转   ·   ↓ 控制栏</label>
+        <label>$LOCALIZE[32214]</label>
         <font>CardSub22</font><textcolor>9CEBEBF5</textcolor><align>center</align><aligny>center</aligny>
         <visible>Control.HasFocus(87)</visible>
       </control>
@@ -143,36 +154,36 @@
         </focusedlayout>
         <content>
           <item>
-            <label>上一个</label><icon>bobbi/glass/icons/prev.png</icon>
-            <property name="hint">上一章 / 播放队列上一项</property>
+            <label>$LOCALIZE[32215]</label><icon>bobbi/glass/icons/prev.png</icon>
+            <property name="hint">$LOCALIZE[32216]</property>
             <onclick>RunScript(plugin.video.bobbi,bobbi_osd=chapter_previous)</onclick>
           </item>
           <item>
-            <label>后退</label><icon>bobbi/glass/icons/rewind.png</icon>
+            <label>$LOCALIZE[32217]</label><icon>bobbi/glass/icons/rewind.png</icon>
             <property name="hint">$VAR[BobbiSeekBackHint]</property>
             <property name="unavailable">$VAR[BobbiSeekUnavailable]</property>
             <onclick condition="Player.SeekEnabled">RunScript(plugin.video.bobbi,bobbi_osd=seek_back)</onclick>
           </item>
           <item>
-            <label>播放</label><icon>$VAR[PlayPauseIcon]</icon>
+            <label>$LOCALIZE[32051]</label><icon>$VAR[PlayPauseIcon]</icon>
             <property name="hint">$VAR[BobbiPauseHint]</property>
             <property name="unavailable">$VAR[BobbiPauseUnavailable]</property>
             <onclick condition="Player.PauseEnabled | Player.Forwarding | Player.Rewinding">RunScript(plugin.video.bobbi,bobbi_osd=toggle_pause)</onclick>
           </item>
           <item>
-            <label>前进</label><icon>bobbi/glass/icons/fastforward.png</icon>
+            <label>$LOCALIZE[32218]</label><icon>bobbi/glass/icons/fastforward.png</icon>
             <property name="hint">$VAR[BobbiSeekForwardHint]</property>
             <property name="unavailable">$VAR[BobbiSeekUnavailable]</property>
             <onclick condition="Player.SeekEnabled">RunScript(plugin.video.bobbi,bobbi_osd=seek_forward)</onclick>
           </item>
           <item>
-            <label>下一个</label><icon>bobbi/glass/icons/next.png</icon>
-            <property name="hint">下一章 / 播放队列下一项（不代表同版下一集）</property>
+            <label>$LOCALIZE[32219]</label><icon>bobbi/glass/icons/next.png</icon>
+            <property name="hint">$LOCALIZE[32220]</property>
             <onclick>RunScript(plugin.video.bobbi,bobbi_osd=chapter_next)</onclick>
           </item>
           <item>
-            <label>停止</label><icon>bobbi/glass/icons/stop.png</icon>
-            <property name="hint">停止播放并返回</property>
+            <label>$LOCALIZE[32221]</label><icon>bobbi/glass/icons/stop.png</icon>
+            <property name="hint">$LOCALIZE[32222]</property>
             <onclick>RunScript(plugin.video.bobbi,bobbi_osd=stop)</onclick>
           </item>
         </content>
@@ -196,26 +207,26 @@
         </focusedlayout>
         <content>
           <item>
-            <label>信号与编码</label><icon>bobbi/glass/icons/info.png</icon>
+            <label>$LOCALIZE[32223]</label><icon>bobbi/glass/icons/info.png</icon>
             <onclick>ActivateWindow(playerprocessinfo)</onclick>
           </item>
           <item>
-            <label>章节书签</label><icon>bobbi/glass/icons/bookmark.png</icon>
+            <label>$LOCALIZE[32224]</label><icon>bobbi/glass/icons/bookmark.png</icon>
             <onclick>RunScript(plugin.video.bobbi,bobbi_osd=chapters)</onclick>
             <visible>Player.SeekEnabled</visible>
           </item>
           <item>
-            <label>杜比视界 VS10</label><icon>bobbi/glass/icons/sparkles.png</icon>
+            <label>$LOCALIZE[32225]</label><icon>bobbi/glass/icons/sparkles.png</icon>
             <onclick>ActivateWindow(1116)</onclick>
-            <visible>System.Platform.Linux</visible>
+            <visible>System.Platform.Linux + !String.IsEmpty(Player.Process(video.source.hdr.type)) + !String.IsEqual(Player.Process(video.source.hdr.type.raw),2)</visible>
           </item>
           <item>
-            <label>播放速度</label><icon>bobbi/glass/icons/clock.png</icon>
+            <label>$LOCALIZE[32226]</label><icon>bobbi/glass/icons/clock.png</icon>
             <onclick>ActivateWindow(1115)</onclick>
             <visible>Player.TempoEnabled | Player.SeekEnabled</visible>
           </item>
           <item>
-            <label>找中文字幕</label><icon>bobbi/glass/icons/search.png</icon>
+            <label>$LOCALIZE[32227]</label><icon>bobbi/glass/icons/search.png</icon>
             <onclick>RunScript(script.bobbi.opensubtitles)</onclick>
             <visible>System.HasAddon(script.bobbi.opensubtitles)</visible>
           </item>

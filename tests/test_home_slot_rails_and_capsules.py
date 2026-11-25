@@ -197,7 +197,7 @@ def test_slot_reordering_hiding_corrupt_fallback_and_all_hidden_recovery():
     home_xml = ET.parse(ROOT / 'addons/skin.bobbi.cinema/1080p/Home.xml').getroot()
     reset_btn = home_xml.find(".//control[@id='9871']")
     assert reset_btn is not None
-    assert reset_btn.findtext('label') == '恢复默认栏目'
+    assert reset_btn.findtext('label') == '$LOCALIZE[32044]'
     assert reset_btn.findtext('onclick') == 'RunScript(script.bobbi.setup,home_rails_reset)'
 
 

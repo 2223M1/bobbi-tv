@@ -46,7 +46,7 @@
       </control>
       <control type="label">
         <left>117</left><top>50</top><width>100</width><height>60</height>
-        <label>波比TV</label>
+        <label>$LOCALIZE[32000]</label>
         <font>Capsule28</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny>
       </control>
     </control>
@@ -162,7 +162,7 @@
       <!-- Credits & source state -->
       <control type="label">
         <left>2</left><top>404</top><width>1200</width><height>28</height>
-        <label>$INFO[ListItem.Director,[COLOR 9CEBEBF5]导演  [/COLOR]]$INFO[ListItem.Cast,     [COLOR 9CEBEBF5]主演  [/COLOR]]</label>
+        <label>$INFO[ListItem.Director,[COLOR 9CEBEBF5]$LOCALIZE[32178]  [/COLOR]]$INFO[ListItem.Cast,     [COLOR 9CEBEBF5]$LOCALIZE[32179]  [/COLOR]]</label>
         <font>CardSub22</font><textcolor>D9EBEBF5</textcolor>
       </control>
       <control type="label">
@@ -217,7 +217,7 @@
       <control type="button" id="985">
         <width>236</width><height>66</height>
         <visible>!String.IsEmpty(ListItem.Property(Bobbi.Catalog.Variants))</visible>
-        <label>选择文件版本</label><font>Button24</font><textcolor>FFF5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
+        <label>$LOCALIZE[32171]</label><font>Button24</font><textcolor>FFF5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
         <align>center</align><aligny>center</aligny>
         <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
         <texturenofocus diffuse="bobbi/glass/lg-pill.png" border="33,0,33,0">bobbi/glass/glass-pill-66.png</texturenofocus>
@@ -229,7 +229,7 @@
       <control type="button" id="984">
         <width>248</width><height>66</height>
         <visible>!String.IsEmpty(ListItem.Property(Bobbi.Relationships))</visible>
-        <label>系列与演职作品</label><font>Button24</font><textcolor>FFF5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
+        <label>$LOCALIZE[32172]</label><font>Button24</font><textcolor>FFF5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
         <align>center</align><aligny>center</aligny>
         <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
         <texturenofocus diffuse="bobbi/glass/lg-pill.png" border="33,0,33,0">bobbi/glass/glass-pill-66.png</texturenofocus>
@@ -238,10 +238,10 @@
         </include>
         <onleft>981</onleft><onup condition="Control.IsVisible(983)">983</onup><ondown>50</ondown>
       </control>
-      <include content="TextPill"><param name="id">11</param><param name="label">预告片</param><param name="width">184</param><param name="visible">!String.IsEmpty(ListItem.Trailer)</param></include>
-      <include content="TextPill"><param name="id">7</param><param name="label">我的评分</param><param name="width">200</param><param name="visible">Integer.IsGreater(ListItem.DBID,0)</param></include>
-      <include content="TextPill"><param name="id">14</param><param name="label">版本</param><param name="width">156</param><param name="visible">Integer.IsGreater(ListItem.DBID,0)</param></include>
-      <include content="TextPill"><param name="id">6</param><param name="label">刷新资料</param><param name="width">200</param><param name="visible">Integer.IsGreater(ListItem.DBID,0)</param></include>
+      <include content="TextPill"><param name="id">11</param><param name="label">$LOCALIZE[32173]</param><param name="width">184</param><param name="visible">!String.IsEmpty(ListItem.Trailer)</param></include>
+      <include content="TextPill"><param name="id">7</param><param name="label">$LOCALIZE[32174]</param><param name="width">200</param><param name="visible">Integer.IsGreater(ListItem.DBID,0)</param></include>
+      <include content="TextPill"><param name="id">14</param><param name="label">$LOCALIZE[32175]</param><param name="width">156</param><param name="visible">Integer.IsGreater(ListItem.DBID,0)</param></include>
+      <include content="TextPill"><param name="id">6</param><param name="label">$LOCALIZE[32176]</param><param name="width">200</param><param name="visible">Integer.IsGreater(ListItem.DBID,0)</param></include>
     </control>
 
     <control type="button" id="8">
@@ -255,7 +255,7 @@
       <visible>Integer.IsGreater(Container(50).NumItems,0)</visible>
       <control type="label">
         <left>80</left><top>720</top><width>800</width><height>34</height>
-        <label>演职人员</label>
+        <label>$LOCALIZE[32177]</label>
         <font>RailTitle30</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
       </control>
       <control type="panel" id="50">

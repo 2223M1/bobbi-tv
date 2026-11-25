@@ -21,9 +21,9 @@
       <content target="videos" limit="1" browse="never">plugin://plugin.video.bobbi/?action=continue_watching_menu&amp;resume_preview=true</content>
     </control>
 
-    <!-- Left Category Rail @ x=46, y=161 (318x70 stadium pill, 75 px pitch, 1:1 premium TV Library) -->
+    <!-- Left Category Rail @ x=46, y=161 (318x70 stadium pill, 75 px pitch, 1:1 premium TV Library + migrated tools) -->
     <control type="grouplist" id="9100">
-      <left>46</left><top>161</top><width>318</width><height>780</height>
+      <left>46</left><top>161</top><width>318</width><height>876</height>
       <orientation>vertical</orientation>
       <itemgap>5</itemgap>
       <scrolltime>0</scrolltime>
@@ -33,7 +33,7 @@
       <onright>noop</onright>
       <include content="PersonalNavRow">
         <param name="id" value="9111" />
-        <param name="label" value="最近观看" />
+        <param name="label" value="$LOCALIZE[32160]" />
         <param name="tab" value="resume" />
         <param name="grid" value="9201" />
         <param name="active_cond" value="String.IsEqual(Window(Home).Property(BobbiPersonalTab),resume) | String.IsEmpty(Window(Home).Property(BobbiPersonalTab))" />
@@ -41,50 +41,87 @@
       </include>
       <include content="PersonalNavRow">
         <param name="id" value="9113" />
-        <param name="label" value="电影" />
+        <param name="label" value="$LOCALIZE[32003]" />
         <param name="tab" value="movies" />
         <param name="grid" value="9201" />
         <param name="fallback_action" value="ActivateWindow(Videos,&quot;plugin://plugin.video.bobbi/?action=am6b_streaming_catalog&amp;section=movie&amp;page=1&quot;,return)" />
       </include>
       <include content="PersonalNavRow">
         <param name="id" value="9114" />
-        <param name="label" value="剧集" />
+        <param name="label" value="$LOCALIZE[32052]" />
         <param name="tab" value="tv" />
         <param name="grid" value="9201" />
         <param name="fallback_action" value="ActivateWindow(Videos,&quot;plugin://plugin.video.bobbi/?action=am6b_streaming_catalog&amp;section=tv&amp;page=1&quot;,return)" />
       </include>
       <include content="PersonalNavRow">
         <param name="id" value="9115" />
-        <param name="label" value="我的收藏" />
+        <param name="label" value="$LOCALIZE[32161]" />
         <param name="tab" value="favs" />
         <param name="grid" value="9205" />
         <param name="fallback_action" value="ActivateWindow(favouritesbrowser)" />
       </include>
-      <!-- Kodi links every grouplist child by ID, including the non-focusable divider. -->
       <control type="image" id="9121">
-        <width>318</width><height>20</height>
+        <width>318</width><height>14</height>
         <texture />
       </control>
       <control type="label" id="9122">
-        <width>318</width><height>36</height>
-        <label>云盘与媒体库</label>
+        <width>318</width><height>32</height>
+        <label>$LOCALIZE[32162]</label>
         <font>NavHead24</font><textcolor>80EBEBF5</textcolor>
         <textoffsetx>16</textoffsetx><aligny>center</aligny>
       </control>
       <include content="PersonalNavRow">
         <param name="id" value="9116" />
-        <param name="label" value="影视海报库" />
+        <param name="label" value="$LOCALIZE[32007]" />
         <param name="tab" value="catalog" />
         <param name="grid" value="9201" />
         <param name="fallback_action" value="ActivateWindow(Videos,&quot;plugin://plugin.video.bobbi/?action=personal_catalog&quot;,return)" />
       </include>
       <include content="PersonalNavRow">
         <param name="id" value="9117" />
-        <param name="label" value="云盘与共享源" />
+        <param name="label" value="$LOCALIZE[32009]" />
         <param name="tab" value="sources" />
         <param name="grid" value="9207" />
         <param name="fallback_action" value="ActivateWindow(Videos,&quot;plugin://plugin.video.bobbi.library/&quot;,return)" />
       </include>
+      <control type="image" id="9123">
+        <width>318</width><height>14</height>
+        <texture />
+      </control>
+      <control type="label" id="9124">
+        <width>318</width><height>32</height>
+        <label>$LOCALIZE[32163]</label>
+        <font>NavHead24</font><textcolor>80EBEBF5</textcolor>
+        <textoffsetx>16</textoffsetx><aligny>center</aligny>
+      </control>
+      <!-- Business operations migrated out of Settings Hub per SETTINGS_IA.md -->
+      <control type="button" id="9118">
+        <width>318</width><height>64</height>
+        <label>$LOCALIZE[32164]</label>
+        <font>Card26</font><textcolor>D6EBEBF5</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
+        <textoffsetx>74</textoffsetx><aligny>center</aligny>
+        <texturefocus colordiffuse="FFEAEAEB" border="32,0,32,0">bobbi/glass/capsule-64.png</texturefocus>
+        <texturenofocus colordiffuse="14FFFFFF" border="32,0,32,0">bobbi/glass/capsule-64.png</texturenofocus>
+        <onclick>RunScript(script.bobbi.setup,accounts)</onclick>
+      </control>
+      <control type="button" id="9119">
+        <width>318</width><height>64</height>
+        <label>$LOCALIZE[32166]</label>
+        <font>Card26</font><textcolor>D6EBEBF5</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
+        <textoffsetx>74</textoffsetx><aligny>center</aligny>
+        <texturefocus colordiffuse="FFEAEAEB" border="32,0,32,0">bobbi/glass/capsule-64.png</texturefocus>
+        <texturenofocus colordiffuse="14FFFFFF" border="32,0,32,0">bobbi/glass/capsule-64.png</texturenofocus>
+        <onclick>ActivateWindow(FileManager)</onclick>
+      </control>
+      <control type="button" id="9120">
+        <width>318</width><height>64</height>
+        <label>$LOCALIZE[32167]</label>
+        <font>Card26</font><textcolor>D6EBEBF5</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
+        <textoffsetx>74</textoffsetx><aligny>center</aligny>
+        <texturefocus colordiffuse="FFEAEAEB" border="32,0,32,0">bobbi/glass/capsule-64.png</texturefocus>
+        <texturenofocus colordiffuse="14FFFFFF" border="32,0,32,0">bobbi/glass/capsule-64.png</texturenofocus>
+        <onclick>RunScript(script.bobbi.setup,wizard)</onclick>
+      </control>
     </control>
 
     <!-- Outline native glyph aligned on cx=81 (x=68, w=26) matching premium TV Library left rail -->
@@ -92,8 +129,11 @@
     <include content="PersonalNavGlyph"><param name="id" value="9113" /><param name="tab" value="movies" /><param name="icon" value="bobbi/glass/icons/film-outline.png" /><param name="yg" value="258" /></include>
     <include content="PersonalNavGlyph"><param name="id" value="9114" /><param name="tab" value="tv" /><param name="icon" value="bobbi/glass/icons/tv-outline.png" /><param name="yg" value="333" /></include>
     <include content="PersonalNavGlyph"><param name="id" value="9115" /><param name="tab" value="favs" /><param name="icon" value="bobbi/glass/icons/heart-outline.png" /><param name="yg" value="408" /></include>
-    <include content="PersonalNavGlyph"><param name="id" value="9116" /><param name="tab" value="catalog" /><param name="icon" value="bobbi/glass/icons/stack-outline.png" /><param name="yg" value="549" /></include>
-    <include content="PersonalNavGlyph"><param name="id" value="9117" /><param name="tab" value="sources" /><param name="icon" value="bobbi/glass/icons/cloud-outline.png" /><param name="yg" value="624" /></include>
+    <include content="PersonalNavGlyph"><param name="id" value="9116" /><param name="tab" value="catalog" /><param name="icon" value="bobbi/glass/icons/stack-outline.png" /><param name="yg" value="539" /></include>
+    <include content="PersonalNavGlyph"><param name="id" value="9117" /><param name="tab" value="sources" /><param name="icon" value="bobbi/glass/icons/cloud-outline.png" /><param name="yg" value="614" /></include>
+    <include content="PersonalNavGlyph"><param name="id" value="9118" /><param name="tab" value="none" /><param name="icon" value="bobbi/glass/icons/person.png" /><param name="yg" value="742" /></include>
+    <include content="PersonalNavGlyph"><param name="id" value="9119" /><param name="tab" value="none" /><param name="icon" value="bobbi/glass/icons/folder-outline.png" /><param name="yg" value="811" /></include>
+    <include content="PersonalNavGlyph"><param name="id" value="9120" /><param name="tab" value="none" /><param name="icon" value="bobbi/glass/icons/info.png" /><param name="yg" value="880" /></include>
 
     <!-- Right Content Area: single on-demand 6-column 200x300 poster grid @ x=440..1840, y=160 -->
     <control type="group">
@@ -123,7 +163,7 @@
         </focusedlayout>
         <content>favourites://</content>
       </control>
-      <!-- Tab 7 ("网盘与 NAS"): 3-column 440x220 Liquid Glass source cards @ x=440..1840, y=160 -->
+      <!-- Tab 7 ("云盘与共享源"): 3-column 440x220 Liquid Glass source cards @ x=440..1840, y=160 -->
       <control type="panel" id="9207">
         <left>420</left><top>142</top><width>1440</width><height>938</height>
         <orientation>vertical</orientation>

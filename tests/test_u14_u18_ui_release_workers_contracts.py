@@ -160,7 +160,10 @@ def test_single_json_declaration_drives_both_xml_and_python_meta_and_check_catch
     # Mutate JSON only (rename, delete, add rail) -> both XML and Python constants update together
     doc = gen.load_spec(ROOT / gen.SPEC)
     doc['rails'] = [r for r in doc['rails'] if r['key'] != 'anime_movies']
-    doc['rails'][0] = dict(doc['rails'][0], title='继续播放自定义')
+    relabelled = dict(doc['rails'][0], title='继续播放自定义')
+    relabelled.pop('label_id', None)
+    relabelled.pop('title_en', None)
+    doc['rails'][0] = relabelled
     doc['rails'].append({
         'key': 'extra_movies',
         'control_id': 9865,
@@ -477,8 +480,8 @@ def test_http_runtime_subprocess_records_actual_loaded_files_versions_and_python
     report = json.loads(res.stdout)
     assert report['requests']['version'] == '2.34.2'
     assert report['urllib3']['version'] == '2.8.0'
-    assert 'third_party/addons/script.module.requests' in report['requests']['file']
-    assert 'third_party/addons/script.module.urllib3' in report['urllib3']['file']
+    assert 'third_party/addons/script.module.requests' in report['requests']['file'].replace('\\', '/')
+    assert 'third_party/addons/script.module.urllib3' in report['urllib3']['file'].replace('\\', '/')
     assert report['python_version_info'][:2] >= [3, 11]
 
 

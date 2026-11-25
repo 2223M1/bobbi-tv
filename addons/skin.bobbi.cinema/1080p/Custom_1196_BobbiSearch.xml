@@ -10,7 +10,7 @@
     <!-- Header @ x=80, y=126 -->
     <control type="label">
       <left>80</left><top>126</top><width>1200</width><height>68</height>
-      <label>搜索</label>
+      <label>$LOCALIZE[32012]</label>
       <font>Hero60</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny>
     </control>
 
@@ -39,7 +39,7 @@
       </control>
       <control type="button" id="9101">
         <left>0</left><top>0</top><width>1760</width><height>76</height>
-        <label>输入片名，搜索电影、剧集、动漫与演员</label>
+        <label>$LOCALIZE[32168]</label>
         <textoffsetx>78</textoffsetx>
         <font>Label28</font>
         <textcolor>$VAR[BobbiPanelCaption]</textcolor>
@@ -133,23 +133,23 @@
       </focusedlayout>
       <content>
         <item>
-          <label>全部影视</label>
+          <label>$LOCALIZE[32169]</label>
           <onclick>RunPlugin(&quot;plugin://plugin.video.bobbi/?action=bobbi_search_prompt&amp;section=multi&quot;)</onclick>
         </item>
         <item>
-          <label>动漫</label>
+          <label>$LOCALIZE[32004]</label>
           <onclick>RunPlugin(&quot;plugin://plugin.video.bobbi/?action=bobbi_search_prompt&amp;section=anime_tv&quot;)</onclick>
         </item>
         <item>
-          <label>电视剧</label>
+          <label>$LOCALIZE[32002]</label>
           <onclick>RunPlugin(&quot;plugin://plugin.video.bobbi/?action=bobbi_search_prompt&amp;section=tv&quot;)</onclick>
         </item>
         <item>
-          <label>电影</label>
+          <label>$LOCALIZE[32003]</label>
           <onclick>RunPlugin(&quot;plugin://plugin.video.bobbi/?action=bobbi_search_prompt&amp;section=movie&quot;)</onclick>
         </item>
         <item>
-          <label>动漫电影</label>
+          <label>$LOCALIZE[32036]</label>
           <onclick>RunPlugin(&quot;plugin://plugin.video.bobbi/?action=bobbi_search_prompt&amp;section=anime_movie&quot;)</onclick>
         </item>
       </content>
@@ -158,7 +158,7 @@
     <!-- premium TV Search Trending Poster Grid (id=9300, 200x300 r=19 @ x=80..1840) -->
     <control type="label">
       <left>80</left><top>412</top><width>600</width><height>36</height>
-      <label>热门浏览</label>
+      <label>$LOCALIZE[32170]</label>
       <font>RailTitle30</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny>
     </control>
     <control type="panel" id="9300">

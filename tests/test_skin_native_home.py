@@ -122,7 +122,7 @@ def test_home_empty_state_is_not_loading_and_offers_a_real_destination():
 def test_wide_resume_rail_explains_initial_loading_without_hiding_cached_items():
     root = document('Includes_Home.xml').find("include[@name='HomeRailWide']")
     label = next(node for node in root.iter('control')
-                 if node.findtext('label') == '正在读取观看记录…')
+                 if node.findtext('label') == '$LOCALIZE[32055]')
     assert label.findtext('visible') == (
         'Container($PARAM[id]).IsUpdating + Integer.IsEqual(Container($PARAM[id]).NumItems,0)')
 
@@ -157,13 +157,13 @@ def test_home_rails_share_one_viewport_without_empty_group_scroll_slots():
         assert hidden is not None and hidden.text == 'Conditional'
         assert hidden.attrib == dict(effect='slide', start='0,0', end='0,2160', time='0',
             condition='!String.IsEqual(Control.GetLabel(9791),$PARAM[id])')
-    loading = root.find(".//control[label='正在加载片单…']")
+    loading = root.find(".//control[label='$LOCALIZE[32040]']")
     assert loading.findtext('visible') == '$EXP[BobbiHomeUpdating] + !$EXP[BobbiHomeHasItems]'
 
 
 def test_cold_home_has_a_visible_default_before_async_rails_arrive():
     node = document('Home.xml').find('defaultcontrol')
-    assert node.text == '9711'  # Always-present Home tab, not an empty group.
+    assert node.text == '9701'  # Always-present Home spaces list (with fixed Home first), not an empty group.
     assert node.get('always') == 'false'  # Returning retains the existing card.
 
 

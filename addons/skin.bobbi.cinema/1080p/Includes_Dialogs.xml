@@ -530,7 +530,7 @@
           </control>
         </control>
         <control type="group">
-          <visible>$PARAM[focused] + Control.HasFocus(9000)</visible>
+          <visible>$PARAM[focused] + Control.HasFocus($PARAM[list])</visible>
           <include content="Lift"><param name="center">208,102</param><param name="zoom">105</param></include>
           <control type="image">
             <left>-36</left><top>-36</top><width>488</width><height>276</height>
@@ -757,12 +757,13 @@
   <!-- ===== on-device Settings Right-Column Stadium Row (780x66 @ x=1060..1840, pitch=80) ===== -->
   <include name="SettingsStadiumRow">
     <param name="focused">false</param>
+    <param name="list">9000</param>
     <definition>
       <control type="group">
         <left>24</left><top>7</top><width>780</width><height>66</height>
         <control type="group">
           <left>0</left><top>0</top><width>780</width><height>66</height>
-          <visible>!$PARAM[focused] | !Control.HasFocus(9000)</visible>
+          <visible>!$PARAM[focused] | !Control.HasFocus($PARAM[list])</visible>
           <control type="image">
             <left>0</left><top>0</top><width>780</width><height>66</height>
             <texture colordiffuse="1CFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texture>

@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <window>
-  <defaultcontrol always="false">9711</defaultcontrol>
+  <defaultcontrol always="false">9701</defaultcontrol>
   <onload condition="Skin.HasSetting(BobiReduceMotion)">Skin.SetBool(BobbiReduceMotion)</onload>
   <onload condition="Skin.HasSetting(BobiReduceMotion)">Skin.Reset(BobiReduceMotion)</onload>
   <onload condition="Skin.HasSetting(BobiNavTopBar)">Skin.SetBool(BobbiNavTopBar)</onload>
@@ -35,7 +35,7 @@
     </control>
     <control type="label">
       <left>80</left><top>790</top><width>1600</width><height>48</height>
-      <label>正在加载片单…</label><font>Card26</font><textcolor>text3</textcolor>
+      <label>$LOCALIZE[32040]</label><font>Card26</font><textcolor>text3</textcolor>
       <visible>$EXP[BobbiHomeUpdating] + !$EXP[BobbiHomeHasItems]</visible>
     </control>
     <!-- name of the row below (kept for scripts/tests; the peek itself is visual) -->
@@ -49,38 +49,54 @@
       <include content="StateBlock">
         <param name="y">640</param>
         <param name="empty">true</param>
-        <param name="emptytitle">片单暂时无法加载</param>
-        <param name="emptyhint">首次使用请到「我的」配置影院；网盘与 NAS 也在「我的」里添加</param>
+        <param name="emptytitle">$LOCALIZE[32041]</param>
+        <param name="emptyhint">$LOCALIZE[32042]</param>
       </include>
       <control type="button" id="9870">
         <left>80</left><top>830</top><width>260</width><height>72</height>
-        <label>打开我的</label>
+        <label>$LOCALIZE[32043]</label>
         <font>Button28</font><textcolor>text</textcolor><focusedcolor>on_focus</focusedcolor>
         <align>center</align><aligny>center</aligny>
         <texturefocus colordiffuse="focus" border="36,0,36,0">bobbi/glass/capsule-72.png</texturefocus>
         <texturenofocus colordiffuse="2EFFFFFF" border="36,0,36,0">bobbi/glass/capsule-72.png</texturenofocus>
         <onup>9701</onup><onleft>9701</onleft>
         <onright condition="$EXP[BobbiHomeAnyRailHidden]">9871</onright>
-        <onright condition="!$EXP[BobbiHomeAnyRailHidden]">noop</onright>
+        <onright condition="!$EXP[BobbiHomeAnyRailHidden]">9872</onright>
         <ondown>noop</ondown>
         <onback>SetFocus(9701)</onback>
         <onclick>ActivateWindow(1197)</onclick>
       </control>
       <control type="button" id="9871">
         <left>356</left><top>830</top><width>280</width><height>72</height>
-        <label>恢复默认栏目</label>
+        <label>$LOCALIZE[32044]</label>
         <font>Button28</font><textcolor>text</textcolor><focusedcolor>on_focus</focusedcolor>
         <align>center</align><aligny>center</aligny>
         <texturefocus colordiffuse="focus" border="36,0,36,0">bobbi/glass/capsule-72.png</texturefocus>
         <texturenofocus colordiffuse="2EFFFFFF" border="36,0,36,0">bobbi/glass/capsule-72.png</texturenofocus>
         <visible>$EXP[BobbiHomeAnyRailHidden]</visible>
-        <onup>9701</onup><onleft>9870</onleft><onright>noop</onright><ondown>noop</ondown>
+        <onup>9701</onup><onleft>9870</onleft><onright>9872</onright><ondown>noop</ondown>
         <onback>SetFocus(9701)</onback>
         <onclick>RunScript(script.bobbi.setup,home_rails_reset)</onclick>
+      </control>
+      <control type="button" id="9872">
+        <left>652</left><top>830</top><width>260</width><height>72</height>
+        <label>$LOCALIZE[32014]</label>
+        <font>Button28</font><textcolor>text</textcolor><focusedcolor>on_focus</focusedcolor>
+        <align>center</align><aligny>center</aligny>
+        <animation effect="slide" start="0,0" end="-296,0" time="0" condition="!$EXP[BobbiHomeAnyRailHidden]">Conditional</animation>
+        <texturefocus colordiffuse="focus" border="36,0,36,0">bobbi/glass/capsule-72.png</texturefocus>
+        <texturenofocus colordiffuse="2EFFFFFF" border="36,0,36,0">bobbi/glass/capsule-72.png</texturenofocus>
+        <onup>9701</onup>
+        <onleft condition="$EXP[BobbiHomeAnyRailHidden]">9871</onleft>
+        <onleft condition="!$EXP[BobbiHomeAnyRailHidden]">9870</onleft>
+        <onright>noop</onright><ondown>noop</ondown>
+        <onback>SetFocus(9701)</onback>
+        <onclick>ActivateWindow(ShutdownMenu)</onclick>
       </control>
     </control>
     <include content="TopBar">
       <param name="down" value="SetFocus($VAR[HomeContentFocus])" />
+      <param name="home_nav" value="true" />
     </include>
   </controls>
 </window>
