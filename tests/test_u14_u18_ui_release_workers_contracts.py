@@ -621,3 +621,37 @@ def test_target_python311_runtime_entrypoint_imports_and_live_http_smoke():
         httpd.shutdown()
         httpd.server_close()
         srv.join(2)
+
+
+# --- CT-WORKERS & CT-DIAGNOSTICS (U18) ---
+
+
+def test_diagnostics_default_ci_node_contract_is_1_pass_1_skip_and_never_references_production():
+    import shutil as sh_mod
+    import subprocess
+
+    node_bin = sh_mod.which('node') or '/tmp/node-dist/bin/node'
+    assert Path(node_bin).is_file(), f'node binary required at {node_bin}'
+
+    env = dict(os.environ)
+    env.pop('BOBBI_TEST_LOCAL', None)
+    res = subprocess.run(
+        [node_bin, '--test', '--test-reporter=tap', str(ROOT / 'infra/diagnostics/intake.test.mjs')],
+        capture_output=True,
+        text=True,
+        env=env,
+        check=True,
+        timeout=20,
+    )
+    assert 'ok 1 - real SQL receipts, quotas, rejected fields, expiration and retry' in res.stdout
+    assert 'ok 2 - real local Workers runtime and D1, never production # SKIP' in res.stdout
+
+    intake_text = (ROOT / 'infra/diagnostics/intake.test.mjs').read_text(encoding='utf-8')
+    assert 'feixingwawa.cn' not in intake_text
+    assert 'SELECT COUNT(*) AS n FROM receipts WHERE id = ?' in intake_text
+    assert 'SELECT COALESCE(SUM(total), 0) AS total FROM daily' in intake_text
+
+    wrangler_cfg = json.loads((ROOT / 'infra/diagnostics/wrangler.jsonc').read_text(encoding='utf-8'))
+    assert wrangler_cfg['workers_dev'] is False
+    assert wrangler_cfg['preview_urls'] is False
+    assert not any(b.get('remote') for b in wrangler_cfg.get('d1_databases', []))
