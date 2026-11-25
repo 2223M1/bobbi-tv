@@ -158,6 +158,88 @@ class Accounts:
         finally:
             store.close()
 
+    def _session_source(self, store, expected):
+        if not self.current():
+            raise PanError('PAN_ACCOUNT_CHANGED')
+        if type(expected) is dict and expected.get('kind') == 'emby_source':
+            if (set(expected) != {'kind', 'provider', 'server_id', 'user_id', 'source_id', 'generation'}
+                    or expected.get('provider') != 'emby'):
+                raise PanError('PAN_SCOPE_INVALID')
+            source, matched = store.source_session_snapshot(expected['source_id'], expected['generation'])
+            if (not matched or source.kind != 'media_server'
+                    or source.metadata.get('provider') != 'emby'
+                    or source.metadata.get('server_id') != expected.get('server_id')
+                    or source.metadata.get('user_id') != expected.get('user_id')
+                    or not source.password):
+                raise PanError('PAN_ACCOUNT_CHANGED')
+            return source
+        checked = scope(expected, 'emby', authenticated=True)
+        source, matched = store.source_session_snapshot(checked['source_id'], checked['generation'])
+        if (not matched or source.kind != 'media_server'
+                or source.metadata.get('provider') != 'emby'
+                or not source.password
+                or self._scope(source, checked['generation']) != checked):
+            raise PanError('PAN_ACCOUNT_CHANGED')
+        return source
+
+    def is_session_current(self, expected):
+        if not self.current() or not self.path.is_file():
+            return False
+        store = None
+        try:
+            store = Registry(self.path, read_only=True, timeout=0)
+            source = self._session_source(store, expected)
+            self._credentials(source)
+            return True
+        except (PanError, LibraryError, OSError, ValueError, sqlite3.Error):
+            return False
+        finally:
+            if store is not None:
+                store.close()
+
+    def require_session_current(self, expected):
+        store = self._registry()
+        try:
+            source = self._session_source(store, expected)
+            self._credentials(source)
+            return dict(expected)
+        except LibraryError:
+            raise PanError('PAN_ACCOUNT_CHANGED') from None
+        finally:
+            store.close()
+
+    def run_if_session_current(self, expected, operation):
+        store = self._registry()
+        try:
+            before = self._session_source(store, expected)
+            self._credentials(before)
+        except LibraryError:
+            raise PanError('PAN_ACCOUNT_CHANGED') from None
+        finally:
+            store.close()
+        result = operation()
+        store = self._registry()
+        try:
+            after = self._session_source(store, expected)
+            if after != before:
+                raise PanError('PAN_ACCOUNT_CHANGED')
+            self._credentials(after)
+            return result
+        except LibraryError:
+            raise PanError('PAN_ACCOUNT_CHANGED') from None
+        finally:
+            store.close()
+
+    def session_credentials(self, expected):
+        store = self._registry()
+        try:
+            source = self._session_source(store, expected)
+            return self._credentials(source)
+        except LibraryError:
+            raise PanError('PAN_ACCOUNT_CHANGED') from None
+        finally:
+            store.close()
+
     def subscribe(self, listener):
         with self.lock:
             self.listeners.append(listener)
@@ -286,6 +368,7 @@ class Accounts:
             def remove():
                 store.db.execute('DELETE FROM sources WHERE id=?', (source.id,))
                 store.db.execute('DELETE FROM metadata WHERE key=?', ('source_revision:' + source.id,))
+                store.db.execute('DELETE FROM metadata WHERE key=?', ('emby_credential_secret:' + source.id,))
                 store.db.execute('DELETE FROM metadata WHERE key=?', ('emby_retained_revisions:' + source.id,))
             store.run_if_current(source, expected['generation'], remove)
         finally:

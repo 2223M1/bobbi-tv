@@ -59,6 +59,49 @@ class Attempt:
         return value
 
 
+class _StreamAccounts:
+    """Playback-stream account adapter: pins admitted Emby streams to their credential epoch."""
+
+    def __init__(self, accounts, servers):
+        self.accounts = accounts
+        self.servers = servers
+
+    @staticmethod
+    def _is_emby_stream(expected):
+        return type(expected) is dict and expected.get('kind') == 'emby_source'
+
+    def require_current(self, expected, authenticated=True):
+        if self._is_emby_stream(expected):
+            return self.servers.require_session_current(expected)
+        return self.accounts.require_current(expected, authenticated=authenticated)
+
+    def is_current(self, expected):
+        if self._is_emby_stream(expected):
+            return self.servers.is_session_current(expected)
+        return self.accounts.is_current(expected)
+
+    def run_if_current(self, expected, operation, authenticated=True):
+        if self._is_emby_stream(expected):
+            return self.servers.run_if_session_current(expected, operation)
+        return self.accounts.run_if_current(expected, operation, authenticated=authenticated)
+
+    def credentials(self, expected):
+        if self._is_emby_stream(expected):
+            return self.servers.session_credentials(expected)
+        return self.accounts.credentials(expected)
+
+    def subscribe(self, listener):
+        def _on_change(previous, current):
+            if type(previous) is dict and previous.get('provider') == 'emby':
+                # Browse-only Emby switches do not revoke admitted Emby source streams;
+                # real credential edits, source removal, or logout will fail is_session_current.
+                if previous.get('authenticated') and not self.servers.is_session_current(previous):
+                    listener(previous, current)
+                return
+            listener(previous, current)
+        return self.accounts.subscribe(_on_change)
+
+
 class PanService:
     def __init__(self, root, legacy, accounts=None, login_factory=None, client_factory=_client,
                  clock=time.monotonic, servers=None):
@@ -69,6 +112,7 @@ class PanService:
             servers = ServerAccounts(root)
         self.servers = servers
         self.accounts = Accounts(native, legacy, servers)
+        self._stream_accounts = _StreamAccounts(self.accounts, self.servers)
         self.legacy, self.clock = legacy, clock
         self.login_factory = login_factory if login_factory is not None else {
             key: value.login for key, value in DESCRIPTORS.items() if value.login is not None}
@@ -95,6 +139,22 @@ class PanService:
         for operation in tuple(self.operations.values()):
             if operation.expected == previous:
                 operation.cancelled.set()
+        if (type(previous) is dict and previous.get('provider') == 'emby'
+                and previous.get('authenticated') and self.streams is not None
+                and not self.servers.is_session_current(previous)):
+            with self.streams.lock:
+                stale = [
+                    (key, entry)
+                    for key, entry in self.streams.records.items()
+                    if type(entry.scope) is dict
+                    and entry.scope.get('kind') == 'emby_source'
+                    and entry.scope.get('source_id') == previous.get('source_id')
+                    and not self.servers.is_session_current(entry.scope)
+                ]
+                for key, _ in stale:
+                    self.streams.records.pop(key, None)
+            for _, entry in stale:
+                entry.revoke()
 
     def _server_publish(self, write):
         # Registration has completed all server IO before this local fence.
@@ -492,10 +552,66 @@ class PanService:
                 return reply
             return self.accounts.run_if_current(expected, publish_result)
 
+    @contextmanager
+    def _using_stream_client(self, expected, operation):
+        provider = expected['provider']
+        operation.check()
+        if not self.client_locks[provider].acquire(timeout=.1):
+            operation.check()
+            raise PanError('PAN_OPERATION_BUSY')
+        try:
+            with self.lock:
+                if self.closed:
+                    raise PanError('PAN_SERVICE_CLOSED')
+            saved = self._stream_accounts.credentials(expected)
+            client = self.client_factory(provider, saved)
+            session = getattr(client, 'session', None)
+            if session is not None and hasattr(session, 'operation'):
+                session.operation = operation
+            with _budget(client, 24):
+                operation.check()
+                yield client
+            self._stream_accounts.require_current(expected)
+            operation.check()
+        finally:
+            self.client_locks[provider].release()
+
     def _resolve_stream(self, body, expected):
         from .pan_stream import address
         if body['provider'] != expected['provider']:
             raise PanError('PAN_SCOPE_INVALID')
+        if type(expected) is dict and expected.get('kind') == 'emby_source':
+            import hashlib
+            import json
+            subject = json.dumps([expected['server_id'], expected['user_id']], separators=(',', ':'))
+            op_scope = dict(
+                provider='emby',
+                account_id='emby:' + hashlib.sha256(subject.encode('ascii')).hexdigest(),
+                authenticated=True,
+                epoch=0,
+                source_id=expected['source_id'],
+                generation=expected['generation'],
+            )
+            operation = Operation(
+                op_scope,
+                uuid4().hex,
+                'resolve',
+                clock=self.clock,
+                seconds=24,
+                max_requests=16,
+                max_pages=1,
+                max_items=1,
+                current=lambda _: self._stream_accounts.require_current(expected),
+                cooldowns=self.cooldowns,
+            )
+            operation.check()
+            with self._using_stream_client(expected, operation) as client:
+                resolved = client.resolve_original(body['selected'])
+                return address(
+                    body,
+                    resolved,
+                    header_check=lambda value, url, headers: self._headers(value, url, headers, expected),
+                )
         with self.scan_operation(expected, kind='resolve', seconds=24,
                                  max_requests=16, max_pages=1, max_items=1) as operation:
             with self._using_client(expected, operation) as client:
@@ -517,7 +633,7 @@ class PanService:
                 expected = entry.scope if entry is not None else None
         if expected is None:
             return False
-        saved = self.accounts.credentials(expected)
+        saved = self._stream_accounts.credentials(expected)
         from .server_http import Session, at_origin
         return at_origin(saved['location'], url) and headers == Session(
             expected['provider'], saved['location'], saved['token']).headers()
@@ -562,6 +678,7 @@ class PanService:
 
     def open_stream(self, expected, selected, request):
         from . import pan_stream
+        from .owned_playback import emby_source_scope
         from bobbi_core.share_stream import ShareStream
         expected = scope(expected, authenticated=True)
         body = pan_stream.body(expected['provider'], selected, request)
@@ -571,11 +688,21 @@ class PanService:
             self.accounts.require_current(expected)
             if request in self.cancelled_streams:
                 raise PanError('PAN_SELECTION_CANCELLED')
+            if expected['provider'] == 'emby':
+                saved = self.servers.credentials(expected)
+                stream_scope = emby_source_scope(
+                    source_id=expected['source_id'],
+                    generation=expected['generation'],
+                    server_id=saved['server_id'],
+                    user_id=saved['user_id'],
+                )
+            else:
+                stream_scope = expected
             if self.streams is None:
                 self.streams = ShareStream(pan_stream.checked, self._resolve_stream, lambda url: True,
-                    account=self.accounts, body_check=pan_stream.checked, header_check=self._headers,
+                    account=self._stream_accounts, body_check=pan_stream.checked, header_check=self._headers,
                     observer=lambda row: None)
-            result = self.streams.register(body, account=expected)
+            result = self.streams.register(body, account=stream_scope)
             with self.streams.lock:
                 entry = self.streams.records[request]
         # Resolve exact metadata/original before publishing the local URL;
@@ -584,19 +711,29 @@ class PanService:
         with self.lock:
             if self.closed or entry.cancelled() or request in self.cancelled_streams:
                 raise PanError('PAN_SELECTION_CANCELLED')
-            return self.accounts.run_if_current(expected, lambda: dict(result, account=expected))
+            return self._stream_accounts.run_if_current(stream_scope, lambda: dict(result, account=expected))
 
     def close_stream(self, expected, request):
         expected = scope(expected, authenticated=True)
         _attempt_id(request)
         with self.lock:
-            self.accounts.require_current(expected)
+            if expected['provider'] == 'emby':
+                self.servers.require_session_current(expected)
+            else:
+                self.accounts.require_current(expected)
             if self.streams is not None:
                 with self.streams.lock:
                     entry = self.streams.records.get(request)
-                    if entry is not None and entry.scope != expected:
-                        raise PanError('PAN_SCOPE_INVALID')
                     if entry is not None:
+                        same_scope = entry.scope == expected or (
+                            expected['provider'] == 'emby'
+                            and type(entry.scope) is dict
+                            and entry.scope.get('kind') == 'emby_source'
+                            and entry.scope.get('source_id') == expected['source_id']
+                            and entry.scope.get('generation') == expected['generation']
+                        )
+                        if not same_scope:
+                            raise PanError('PAN_SCOPE_INVALID')
                         entry.revoke()
             self.cancelled_streams[request] = self.clock()
             while len(self.cancelled_streams) > 128:
@@ -698,13 +835,13 @@ class PanService:
         gen = source_scope['generation']
         store = self.servers._registry(timeout=0.5)
         try:
-            src, rev = store.source_snapshot(sid)
+            src, matched = store.source_session_snapshot(sid, gen)
         except LibraryError:
             raise PanError('PAN_ACCOUNT_CHANGED') from None
         finally:
             store.close()
         if (
-            rev != gen
+            not matched
             or src.kind != 'media_server'
             or src.metadata.get('provider') != 'emby'
             or src.metadata.get('server_id') != source_scope['server_id']
@@ -722,8 +859,8 @@ class PanService:
             )
         store = self.servers._registry(timeout=0.5)
         try:
-            current_src, current_rev = store.source_snapshot(sid)
-            if current_src != src or current_rev != gen or not self.servers.current():
+            current_src, current_matched = store.source_session_snapshot(sid, gen)
+            if current_src != src or not current_matched or not self.servers.current():
                 raise PanError('PAN_ACCOUNT_CHANGED')
             return result
         except LibraryError:

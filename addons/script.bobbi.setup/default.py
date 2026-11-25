@@ -180,6 +180,20 @@ def main():
         from bobbi_platform.glass_settings import reset_home_rails
         reset_home_rails(dialog)
         return
+    if len(sys.argv) > 1 and sys.argv[1] == 'accounts':
+        if len(sys.argv) > 3:
+            raise ValueError('INVALID_ACCOUNT_DOMAIN')
+        from bobbi_platform.cloud_hub import show_accounts, validate_account_domain
+        domain = validate_account_domain(sys.argv[2] if len(sys.argv) == 3 else None)
+        show_accounts(dialog, domain=domain)
+        return
+    if sys.argv[1:] in (['about'], ['version_notes']):
+        from bobbi_platform.version_notes import show_about
+        show_about(dialog)
+        return
+    if sys.argv[1:] == ['helper']:
+        pair_helper(dialog, private_path(xbmcvfs.translatePath, 'helper-pairing.json'))
+        return
     if len(sys.argv) > 1 and sys.argv[1] == 'cloud':
         from bobbi_platform.cloud_hub import show
         show(dialog)
@@ -284,10 +298,8 @@ def main():
             from bobbi_platform.diagnostics_ui import show
             show(dialog)
         elif action == 'status':
-            from bobbi_core.project_metadata import ATTRIBUTION
-            dialog.ok('波比 TV', '支持 115、本地和 NAS 片库。BT 播放与 CD2 提前存片可按需配置。\n'
-                      '设备支持情况和已知问题见发行说明。\n'
-                      + ATTRIBUTION)
+            from bobbi_platform.version_notes import show_about
+            show_about(dialog)
         elif action == 'transport':
             from bobbi_platform.cloud_hub import transport
             transport(dialog)

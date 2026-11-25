@@ -144,7 +144,7 @@ def test_n01b_emby_multi_account_ui_switch_inflight_playback_isolation_and_remov
 
         # 1. Switch B -> A through server_ui.manage() choice 3 ("设为当前浏览账号")
         dlg_switch_a = SwitchDialog(3)
-        assert server_ui.manage(dlg_switch_a, store, src_a) is True
+        assert server_ui.manage(dlg_switch_a, store, src_a) == server_ui.CHANGED
         assert any('设为当前浏览账号' in opt for opt in dlg_switch_a.menus[0][1])
         active_now, _ = store.emby_binding()
         assert active_now is not None and active_now.id == src_a.id
@@ -153,7 +153,7 @@ def test_n01b_emby_multi_account_ui_switch_inflight_playback_isolation_and_remov
         # Clicking again when A is already active is idempotent and sends zero mutation IPC
         dialogs.clear()
         dlg_idempotent = SwitchDialog(3)
-        assert server_ui.manage(dlg_idempotent, store, src_a) is False
+        assert server_ui.manage(dlg_idempotent, store, src_a) == server_ui.CANCELLED
         assert any('当前浏览账号 · 已启用' in opt for opt in dlg_idempotent.menus[0][1])
         assert dialogs[-1][0] == '当前浏览账号'
 
@@ -193,7 +193,7 @@ def test_n01b_emby_multi_account_ui_switch_inflight_playback_isolation_and_remov
         # 3. While A is playing, switch active browse from A -> B via server_ui.manage()!
         dialogs.clear()
         src_b_cur = store.get(src_b.id)
-        assert server_ui.manage(SwitchDialog(3), store, src_b_cur) is True
+        assert server_ui.manage(SwitchDialog(3), store, src_b_cur) == server_ui.CHANGED
         active_after, _ = store.emby_binding()
         assert active_after is not None and active_after.id == src_b.id
 
@@ -206,6 +206,7 @@ def test_n01b_emby_multi_account_ui_switch_inflight_playback_isolation_and_remov
         builtins = []
         monkeypatch.setitem(sys.modules, 'xbmc', SimpleNamespace(executebuiltin=builtins.append))
         assert server_ui.browse(SwitchDialog(0), src_a) is True
+        assert server_ui.manage(SwitchDialog(0), store, src_a) == server_ui.NAVIGATED
         assert 'source=' + src_a.id in builtins[0]
 
         # Pause, backward seek, and stop on A's playing session report strictly to 'ua', never 'ub'!
@@ -249,13 +250,13 @@ def test_n01b_emby_multi_account_ui_switch_inflight_playback_isolation_and_remov
 
         monkeypatch.setattr(server_ui, 'call', commit_then_timeout)
         dialogs.clear()
-        assert server_ui.manage(SwitchDialog(3), store, store.get(src_a.id)) is True
+        assert server_ui.manage(SwitchDialog(3), store, store.get(src_a.id)) == server_ui.CHANGED
         assert store.emby_binding()[0].id == src_a.id
         assert dialogs[-1][0] == '已切换当前浏览账号'
         monkeypatch.setattr(server_ui, 'call', orig_call)
 
         # 5. Removing active Emby A leaves inactive marker: remaining Emby B is NEVER auto-activated!
-        assert server_ui.manage(SwitchDialog(2, yes=True), store, store.get(src_a.id)) is True
+        assert server_ui.manage(SwitchDialog(2, yes=True), store, store.get(src_a.id)) == server_ui.CHANGED
         assert [s.id for s in store.sources()] == [src_b.id]
         assert store.emby_binding()[0] is None
         assert not servers.snapshot('emby')['authenticated']

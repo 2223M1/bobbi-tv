@@ -234,10 +234,11 @@ def check_source(dialog, vfs, source):
         dialog.ok('连接成功', '找到 %d 个文件夹或视频，可以到“我的片库”选片。' % len(rows))
 
 
-def manage(legacy_root=''):
+def manage_outcome(legacy_root=''):
     import xbmc
     import xbmcgui
     import xbmcvfs
+    from .server_ui import CANCELLED, CHANGED, NAVIGATED
     dialog = xbmcgui.Dialog()
     store = None
     changed = False
@@ -265,14 +266,14 @@ def manage(legacy_root=''):
                     ' · T4 站点' if source.kind == 't4' else ' · 直链片库') for source in sources]
                 + (['源库 · ' + online.name] if online else []) + ['片库索引与任务'])
             if choice < 0:
-                return
+                return CHANGED if changed else CANCELLED
             try:
                 if choice == 0:
                     changed = add_source(dialog, xbmcvfs, store, source_store=source_store) or changed
                 elif choice == 1:
                     if open_library(dialog):
                         navigated = True
-                        return True  # Tell enclosing menus not to cover navigation.
+                        return NAVIGATED  # Tell enclosing menus not to cover navigation.
                 elif online and choice == len(sources) + 2:
                     from .source_library_ui import manage as manage_online
                     changed = manage_online(dialog, store, online) or changed
@@ -280,7 +281,7 @@ def manage(legacy_root=''):
                     from .catalog_ui import manage as manage_index
                     if manage_index():
                         navigated = True
-                        return True
+                        return NAVIGATED
                 else:
                     source = sources[choice - 2]
                     if source.kind == 't4':
@@ -289,7 +290,11 @@ def manage(legacy_root=''):
                         continue
                     if source.kind == 'media_server':
                         from .server_ui import manage as manage_server
-                        changed = manage_server(dialog, store, source) or changed
+                        outcome = manage_server(dialog, store, source)
+                        if outcome == NAVIGATED:
+                            navigated = True
+                            return NAVIGATED
+                        changed = (outcome in (CHANGED, True)) or changed
                         continue
                     actions = ['检查连接' if source.kind == 'vfs' else '检查片库格式',
                         '修改连接' if source.kind == 'vfs' else '重新导入片库',
@@ -333,7 +338,7 @@ def manage(legacy_root=''):
                         target = 'plugin://plugin.video.bobbi/?' + urlencode(params)
                         xbmc.executebuiltin('ActivateWindow(Videos,"' + target + '",return)')
                         navigated = True
-                        return True
+                        return NAVIGATED
             except (LibraryError, OSError, RuntimeError) as error:
                 dialog.ok('未完成', message(error))
     except (LibraryError, OSError, RuntimeError, ValueError) as error:
@@ -343,3 +348,9 @@ def manage(legacy_root=''):
             store.close()
         if changed and not navigated:
             xbmc.executebuiltin('Container.Refresh')
+    return CHANGED if changed else CANCELLED
+
+
+def manage(legacy_root=''):
+    from .server_ui import NAVIGATED
+    return True if manage_outcome(legacy_root) == NAVIGATED else None

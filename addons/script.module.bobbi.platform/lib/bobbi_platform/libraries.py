@@ -1,5 +1,6 @@
 """User-owned Registry storage; pure source contracts live in core."""
 import hashlib
+import hmac
 import json
 import os
 from pathlib import Path
@@ -175,9 +176,15 @@ class Registry:
                     if actual != expected_snapshot:
                         raise LibraryError('CATALOG_AUTHORITY_CHANGED')
                 content_changed = previous is None or self._read(previous[0]) != source
+                is_emby = source.kind == 'media_server' and source.metadata.get('provider') == 'emby'
                 if content_changed:
                     self.db.execute('DELETE FROM metadata WHERE key=?',
                                     ('emby_retained_revisions:' + source.id,))
+                    if is_emby:
+                        self._ensure_emby_secret(source.id, rotate=True)
+                    else:
+                        self.db.execute('DELETE FROM metadata WHERE key=?',
+                                        ('emby_credential_secret:' + source.id,))
                 switched = False
                 if source.kind == 'media_server':
                     provider = source.metadata['provider']
@@ -193,18 +200,57 @@ class Registry:
                         raise LibraryError('CATALOG_AUTHORITY_CHANGED')
                     switched = active is None or active.id != source.id
                     if active and switched:
-                        self._retain_emby_revision(active.id)
+                        active_secret = self._ensure_emby_secret(active.id, rotate=False)
                         self.db.execute('INSERT OR REPLACE INTO metadata VALUES (?,?)',
-                                        ('source_revision:' + active.id, secrets.token_hex(32)))
+                                        ('source_revision:' + active.id,
+                                         self._mint_emby_revision(active_secret, active.id)))
                     if switched and not content_changed and previous is not None:
-                        self._retain_emby_revision(source.id)
+                        self._ensure_emby_secret(source.id, rotate=False)
                     self.db.execute("INSERT OR REPLACE INTO metadata VALUES ('emby_active_source',?)", (source.id,))
                 if content_changed or switched:
+                    if is_emby:
+                        secret = self._ensure_emby_secret(source.id, rotate=False)
+                        next_rev = self._mint_emby_revision(secret, source.id)
+                    else:
+                        next_rev = secrets.token_hex(32)
                     self.db.execute('INSERT OR REPLACE INTO metadata VALUES (?,?)',
-                        ('source_revision:' + source.id, secrets.token_hex(32)))
+                        ('source_revision:' + source.id, next_rev))
                 self.db.execute('INSERT OR REPLACE INTO sources(id, record) VALUES (?,?)', (source.id, raw))
         except sqlite3.Error:
             raise LibraryError('STORAGE_UNAVAILABLE') from None
+
+    @staticmethod
+    def _mint_emby_revision(secret_hex, source_id):
+        nonce = secrets.token_hex(16)
+        tag = hmac.new(bytes.fromhex(secret_hex),
+                       (source_id + ':' + nonce).encode('ascii'),
+                       hashlib.sha256).hexdigest()[:32]
+        return nonce + tag
+
+    @staticmethod
+    def _verify_emby_revision(secret_hex, source_id, generation):
+        if (type(secret_hex) is not str or not re.fullmatch('[0-9a-f]{64}', secret_hex)
+                or type(generation) is not str or not re.fullmatch('[0-9a-f]{64}', generation)):
+            return False
+        expected_tag = hmac.new(bytes.fromhex(secret_hex),
+                                (source_id + ':' + generation[:32]).encode('ascii'),
+                                hashlib.sha256).hexdigest()[:32]
+        return hmac.compare_digest(generation[32:], expected_tag)
+
+    def _ensure_emby_secret(self, source_id, *, rotate=False):
+        key = 'emby_credential_secret:' + source_id
+        if rotate:
+            secret = secrets.token_hex(32)
+            self.db.execute('INSERT OR REPLACE INTO metadata VALUES (?,?)', (key, secret))
+            return secret
+        row = self.db.execute('SELECT value FROM metadata WHERE key=?', (key,)).fetchone()
+        if row is not None and type(row[0]) is str and re.fullmatch('[0-9a-f]{64}', row[0]):
+            return row[0]
+        # Upgrade path for pre-existing v1 DBs whose initial revision was plain random hex.
+        self._retain_emby_revision(source_id)
+        secret = secrets.token_hex(32)
+        self.db.execute('INSERT OR REPLACE INTO metadata VALUES (?,?)', (key, secret))
+        return secret
 
     def _retain_emby_revision(self, source_id):
         cur = self.db.execute('SELECT value FROM metadata WHERE key=?',
@@ -223,18 +269,22 @@ class Registry:
                 history = []
         if cur[0] not in history:
             history.append(cur[0])
-        history = history[-16:]
         self.db.execute('INSERT OR REPLACE INTO metadata VALUES (?,?)',
                         (key, json.dumps(history, separators=(',', ':'))))
 
     def source_session_snapshot(self, source_id, generation):
-        """Verify source snapshot, accepting retained Emby revisions across browse-only switches."""
+        """Verify source snapshot, accepting credential-epoch Emby revisions across browse-only switches."""
         source, rev = self.source_snapshot(source_id)
         if rev == generation:
             return source, True
-        if source.kind != 'media_server' or source.metadata.get('provider') != 'emby':
+        if (source.kind != 'media_server' or source.metadata.get('provider') != 'emby'
+                or type(generation) is not str or not re.fullmatch('[0-9a-f]{64}', generation)):
             return source, False
         try:
+            secret_row = self.db.execute('SELECT value FROM metadata WHERE key=?',
+                                         ('emby_credential_secret:' + source.id,)).fetchone()
+            if secret_row is not None and self._verify_emby_revision(secret_row[0], source.id, generation):
+                return source, True
             row = self.db.execute('SELECT value FROM metadata WHERE key=?',
                                   ('emby_retained_revisions:' + source.id,)).fetchone()
         except sqlite3.Error:
@@ -272,7 +322,12 @@ class Registry:
             with self.db:
                 self.db.execute('BEGIN IMMEDIATE')
                 source = self.get(source_id)
-                self.db.execute('INSERT OR IGNORE INTO metadata VALUES (?,?)', (key, secrets.token_hex(32)))
+                if source.kind == 'media_server' and source.metadata.get('provider') == 'emby':
+                    secret = self._ensure_emby_secret(source.id, rotate=False)
+                    initial_rev = self._mint_emby_revision(secret, source.id)
+                else:
+                    initial_rev = secrets.token_hex(32)
+                self.db.execute('INSERT OR IGNORE INTO metadata VALUES (?,?)', (key, initial_rev))
                 row = self.db.execute('SELECT value FROM metadata WHERE key=?', (key,)).fetchone()
         if type(row[0]) is not str or not re.fullmatch('[0-9a-f]{64}', row[0]):
             raise LibraryError('INVALID_SOURCE')
@@ -328,6 +383,7 @@ class Registry:
             with self.db:
                 self.db.execute('DELETE FROM sources WHERE id=?', (source_id,))
                 self.db.execute('DELETE FROM metadata WHERE key=?', ('source_revision:' + source_id,))
+                self.db.execute('DELETE FROM metadata WHERE key=?', ('emby_credential_secret:' + source_id,))
                 self.db.execute('DELETE FROM metadata WHERE key=?', ('emby_retained_revisions:' + source_id,))
         except sqlite3.Error:
             raise LibraryError('STORAGE_UNAVAILABLE') from None

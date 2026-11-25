@@ -7,8 +7,16 @@ from copy import deepcopy
 from dataclasses import replace
 import io
 import json
+from pathlib import Path
+import sys
 from types import SimpleNamespace
 from urllib.error import HTTPError
+
+_PRIVATE_BASELINE = str(Path(__file__).resolve().parent / 'private_baseline')
+_PLUGIN_ROOT = str(Path(__file__).resolve().parents[1] / 'addons/plugin.video.bobbi')
+for _extra_path in (_PRIVATE_BASELINE, _PLUGIN_ROOT):
+    if _extra_path not in sys.path:
+        sys.path.append(_extra_path)
 
 import pytest
 

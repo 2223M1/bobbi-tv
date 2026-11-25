@@ -73,7 +73,15 @@ def execute(handle, params):
         from bobbi_platform.mounted_catalog_ui import execute as mounted_execute
         return mounted_execute(handle, params, item)
     if action == 'manage':
-        xbmc.executebuiltin('RunScript(script.bobbi.setup,libraries)')
+        if set(params) - {'action', 'kind'}:
+            raise LibraryError('INVALID_VALUE')
+        manage_kind = params.get('kind')
+        if manage_kind is None:
+            xbmc.executebuiltin('RunScript(script.bobbi.setup,libraries)')
+        elif manage_kind == 'media_server':
+            xbmc.executebuiltin('RunScript(script.bobbi.setup,accounts,servers)')
+        else:
+            raise LibraryError('INVALID_VALUE')
         if handle >= 0:  # Compatibility for previously saved folder URLs.
             xbmcplugin.endOfDirectory(handle, succeeded=False, cacheToDisc=False)
         return
@@ -89,21 +97,43 @@ def execute(handle, params):
         rows = []
         category = '云盘与片库'
         if action == 'root':
-            rows.append(item('管理片库来源', route(action='manage'), False, playable=False,
-                             label2='连接云盘账号、CD2 挂载与局域网共享',
-                             properties={'Bobbi.Library.Manage': 'true'}))
-            for source in store.sources():
-                kind, label2 = source_presentation(source)
-                rows.append(item(source.name, route(action='browse', source=source.id),
-                                 folder=(source.kind != 'media_server' or
-                                         source.metadata.get('provider') == 'emby'), playable=False,
-                                 label2=label2, properties={'Bobbi.Library.Kind': kind}))
-            rows.append(item('个人云盘', route(action='native_files'), False, playable=False,
-                label2='浏览已连接的网盘，或使用已有 CD2 挂载',
-                properties={'Bobbi.Library.Kind': 'native_pan'}))
-            rows.append(item('影视海报库', 'plugin://plugin.video.bobbi/?action=personal_catalog',
-                label2='已刮削电影、剧集与多版本片源',
-                properties={'Bobbi.Library.Kind': 'personal_catalog'}))
+            if set(params) - {'action', 'kind'}:
+                raise LibraryError('INVALID_VALUE')
+            kind_filter = params.get('kind')
+            if kind_filter is None:
+                rows.append(item('管理片库来源', route(action='manage'), False, playable=False,
+                                 label2='连接云盘账号、CD2 挂载与局域网共享',
+                                 properties={'Bobbi.Library.Manage': 'true'}))
+                for source in store.sources():
+                    kind, label2 = source_presentation(source)
+                    rows.append(item(source.name, route(action='browse', source=source.id),
+                                     folder=(source.kind != 'media_server' or
+                                             source.metadata.get('provider') == 'emby'), playable=False,
+                                     label2=label2, properties={'Bobbi.Library.Kind': kind}))
+                rows.append(item('个人云盘', route(action='native_files'), False, playable=False,
+                    label2='浏览已连接的网盘，或使用已有 CD2 挂载',
+                    properties={'Bobbi.Library.Kind': 'native_pan'}))
+                rows.append(item('影视海报库', 'plugin://plugin.video.bobbi/?action=personal_catalog',
+                    label2='已刮削电影、剧集与多版本片源',
+                    properties={'Bobbi.Library.Kind': 'personal_catalog'}))
+            elif kind_filter == 'media_server':
+                category = '媒体服务器'
+                active_emby = store.emby_binding()[0]
+                rows.append(item('管理媒体服务器', route(action='manage', kind='media_server'), False, playable=False,
+                                 label2='添加、核验或切换当前浏览的 Emby / Jellyfin / Plex 连接',
+                                 properties={'Bobbi.Library.Manage': 'true'}))
+                for source in store.sources():
+                    if source.kind != 'media_server':
+                        continue
+                    kind, label2 = source_presentation(source)
+                    if (source.metadata.get('provider') == 'emby'
+                            and active_emby is not None and active_emby.id == source.id):
+                        label2 = (label2 + ' · 当前浏览账号') if label2 else '当前浏览账号'
+                    rows.append(item(source.name, route(action='browse', source=source.id),
+                                     folder=source.metadata.get('provider') == 'emby', playable=False,
+                                     label2=label2, properties={'Bobbi.Library.Kind': kind}))
+            else:
+                raise LibraryError('INVALID_VALUE')
         elif action in (
             'browse', 'play', 'play_pointer',
             'emby_page', 'emby_play', 'emby_search', 'emby_mark',

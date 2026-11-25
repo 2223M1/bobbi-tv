@@ -2,6 +2,10 @@
 from .pan_accounts import SERVER_PROVIDERS, PanError
 from .runtime import call
 
+NAVIGATED = 'NAVIGATED'
+CHANGED = 'CHANGED'
+CANCELLED = 'CANCELLED'
+
 
 def add(dialog, store, previous=None):
     import xbmcgui
@@ -146,12 +150,12 @@ def manage(dialog, store, source):
     heading = source.name + (' · 当前浏览账号' if is_active_emby else '') + ' · 媒体服务器'
     choice = dialog.select(heading, options)
     if choice == 0:
-        return browse(dialog, source)
+        return NAVIGATED if browse(dialog, source) else CANCELLED
     if choice == 1:
-        return add(dialog, store, source)
+        return CHANGED if add(dialog, store, source) else CANCELLED
     if choice == 2 and dialog.yesno('移除服务器连接？', '移除本机连接并撤销相关播放权限；索引整理与历史保留，服务器媒体不变。'):
         store.remove(source.id)
-        return True
+        return CHANGED
     if is_emby and choice == 3:
-        return activate_emby_account(dialog, store, source)
-    return False
+        return CHANGED if activate_emby_account(dialog, store, source) else CANCELLED
+    return CANCELLED

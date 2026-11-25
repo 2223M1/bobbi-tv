@@ -1298,11 +1298,9 @@ def clear_database_cache():
 
 
 def clear_stremio_cache():
-    cache.delete(STREMIO_ADDONS_KEY)
-    cache.delete(STREMIO_ADDONS_CATALOGS_KEY)
-    cache.delete(STREMIO_TV_ADDONS_KEY)
-    cache.delete(STREMIO_USER_ADDONS)
-
+    cache.delete_like("stremio.%")
+    cache.delete_like("stremio_stream:%")
+    cache.delete_like("%stremio_resource:%")
     cache.delete_like("search_catalog%")
     cache.delete_like("list_catalog%")
     cache.delete_like("list_stremio_%")
@@ -1653,7 +1651,22 @@ def export_to_kodi_paste(log_content):
 
 
 def show_log_export_dialog(params):
-    log_file = params.get("log_file")
+    from xbmcgui import Dialog
+
+    dialog = Dialog()
+    log_file = (params or {}).get("log_file")
+    if not log_file:
+        picked = dialog.select(
+            "查看运行日志",
+            ["当前运行日志 (kodi.log)", "上次运行日志 (kodi.old.log)"],
+        )
+        if picked not in (0, 1):
+            return
+        log_file = "kodi.log" if picked == 0 else "kodi.old.log"
+    elif log_file not in ("kodi.log", "kodi.old.log"):
+        notification(translation(90603))
+        return
+
     kodi_log_path = os.path.join(translatePath("special://logpath"), log_file)
     if os.path.exists(kodi_log_path):
         try:
@@ -1662,16 +1675,18 @@ def show_log_export_dialog(params):
 
             content = "".join(reversed(lines))
 
-            # Ask user if they want to export
-            from xbmcgui import Dialog
-
-            dialog = Dialog()
+            # Local viewing is default option 0; upload happens ONLY on explicit choice 1.
             choice = dialog.select(
                 translation(90566),
                 [translation(90567), translation(90568)],
             )
+            if choice < 0:
+                return
             if choice == 1:
                 paste_url = export_to_kodi_paste(content)
+                if not paste_url:
+                    notification(translation(90601))
+                    return
                 from lib.utils.debrid.qrcode_utils import make_qrcode
                 qr_code = make_qrcode(paste_url)
                 copy2clip(paste_url)
@@ -1682,19 +1697,16 @@ def show_log_export_dialog(params):
                     paste_url,
                     is_debrid=False,
                 )
-                if paste_url:
-                    count = 20
-                    progressDialog.show_dialog()
-                    while not progressDialog.iscanceled and count >= 0:
-                        try:
-                            count -= 1
-                            progressDialog.update_progress(count)
-                        except Exception:
-                            pass
-                        sleep(1000 * count)
-                else:
-                    notification(translation(90601))
-            else:
+                count = 20
+                progressDialog.show_dialog()
+                while not progressDialog.iscanceled and count >= 0:
+                    try:
+                        count -= 1
+                        progressDialog.update_progress(count)
+                    except Exception:
+                        pass
+                    sleep(1000 * count)
+            elif choice == 0:
                 dialog_text(translation(90566), content)
         except Exception as e:
             notification(translation(90602) % e)
