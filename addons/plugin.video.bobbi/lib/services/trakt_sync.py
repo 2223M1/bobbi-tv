@@ -1,3 +1,4 @@
+from copy import deepcopy
 from time import monotonic
 
 import xbmc
@@ -11,6 +12,7 @@ from lib.api.trakt.trakt_cache import (
     clear_trakt_list_contents_data,
     clear_trakt_list_data,
     clear_trakt_watchlist,
+    default_activities,
     get_activity,
     set_activity,
     trakt_watched_cache,
@@ -20,6 +22,24 @@ from lib.utils.kodi.utils import get_property_no_fallback, get_setting, kodilog
 PAUSE_SERVICES_PROP = "bobbi.pause_services"
 DEFAULT_SYNC_INTERVAL_MINUTES = 15
 WAIT_STEP_SECONDS = 5
+
+_BUCKET_ACTIVITY_PATHS = {
+    "watched_movies": (("movies", "watched_at"),),
+    "watched_shows": (("episodes", "watched_at"),),
+    "progress_movies": (("movies", "paused_at"),),
+    "progress_episodes": (("episodes", "paused_at"),),
+    "collection_movies": (("movies", "collected_at"),),
+    "collection_shows": (("episodes", "collected_at"),),
+    "watchlist_movies": (("movies", "watchlisted_at"),),
+    "watchlist_shows": (("shows", "watchlisted_at"),),
+    "favorites_movies": (("movies", "favorited_at"),),
+    "favorites_shows": (("shows", "favorited_at"),),
+    "recommendations_movies": (("movies", "recommendations_at"),),
+    "recommendations_shows": (("shows", "recommendations_at"),),
+    "lists": (("lists", "liked_at"), ("lists", "updated_at")),
+    "hidden_movies": (("movies", "hidden_at"),),
+    "hidden_shows": (("shows", "hidden_at"),),
+}
 
 
 class TraktSyncService:
@@ -118,6 +138,23 @@ class TraktSyncService:
             remaining -= WAIT_STEP_SECONDS
         return False
 
+    @staticmethod
+    def _merge_committed_activities(previous, latest, failed_buckets):
+        merged = deepcopy(latest)
+        if not failed_buckets:
+            return merged
+        defaults = default_activities()
+        prev_dict = previous if isinstance(previous, dict) else defaults
+        for bucket in failed_buckets:
+            for section, field in _BUCKET_ACTIVITY_PATHS.get(bucket, ()):
+                prev_section = prev_dict.get(section)
+                if not isinstance(prev_section, dict):
+                    prev_section = defaults.get(section, {})
+                if isinstance(merged.get(section), dict) and field in prev_section:
+                    merged[section][field] = prev_section[field]
+        merged["all"] = prev_dict.get("all", defaults["all"])
+        return merged
+
     def sync_activities(self, force=False):
         cycle_context = self._get_cycle_context(force=force)
         started_at = monotonic()
@@ -127,7 +164,7 @@ class TraktSyncService:
 
         try:
             latest_activities = self.api.sync.get_last_activities()
-            if not latest_activities:
+            if not isinstance(latest_activities, dict) or not latest_activities:
                 self._log_sync_summary(
                     cycle_context,
                     force,
@@ -141,9 +178,9 @@ class TraktSyncService:
 
             previous_activities = get_activity()
             detected_buckets = self._get_changed_buckets(previous_activities, latest_activities)
-            applied_buckets = set(detected_buckets)
-            if force and not applied_buckets:
-                applied_buckets = {
+            planned_buckets = set(detected_buckets)
+            if force and not planned_buckets:
+                planned_buckets = {
                     "watched_movies",
                     "watched_shows",
                     "progress_movies",
@@ -151,7 +188,7 @@ class TraktSyncService:
                 }
                 forced_defaults = True
 
-            if not applied_buckets:
+            if not planned_buckets:
                 set_activity(latest_activities)
                 self._log_sync_summary(
                     cycle_context,
@@ -164,13 +201,29 @@ class TraktSyncService:
                 )
                 return applied_buckets
 
-            kodilog("Trakt sync: changed buckets = {}".format(", ".join(sorted(applied_buckets))))
-            self._apply_activity_changes(applied_buckets)
-            set_activity(latest_activities)
+            kodilog("Trakt sync: changed buckets = {}".format(", ".join(sorted(planned_buckets))))
+            succeeded_buckets, failed_buckets, first_error = self._apply_activity_changes(planned_buckets)
+            applied_buckets = set(succeeded_buckets)
+
+            if succeeded_buckets and not failed_buckets:
+                set_activity(latest_activities)
+            elif succeeded_buckets:
+                set_activity(
+                    self._merge_committed_activities(
+                        previous_activities,
+                        latest_activities,
+                        failed_buckets,
+                    )
+                )
+
+            if first_error is not None:
+                raise first_error
+
+            outcome = "applied_changes" if not failed_buckets else "partial_changes"
             self._log_sync_summary(
                 cycle_context,
                 force,
-                "applied_changes",
+                outcome,
                 detected_buckets,
                 applied_buckets,
                 forced_defaults,
@@ -230,26 +283,57 @@ class TraktSyncService:
         return changes
 
     def _apply_activity_changes(self, changes):
-        if "watched_movies" in changes:
-            self.sync_watched_movies()
-        if "watched_shows" in changes:
-            self.sync_watched_shows()
-        if "progress_movies" in changes:
-            self.sync_movie_progress()
-        if "progress_episodes" in changes:
-            self.sync_episode_progress()
+        succeeded = set()
+        failed = set()
+        first_error = None
+        sync_dispatch = (
+            ("watched_movies", self.sync_watched_movies),
+            ("watched_shows", self.sync_watched_shows),
+            ("progress_movies", self.sync_movie_progress),
+            ("progress_episodes", self.sync_episode_progress),
+        )
+        for bucket, fn in sync_dispatch:
+            if bucket not in changes:
+                continue
+            try:
+                ok = fn()
+            except Exception as exc:
+                failed.add(bucket)
+                if first_error is None:
+                    first_error = exc
+            else:
+                if ok is False:
+                    failed.add(bucket)
+                else:
+                    succeeded.add(bucket)
 
-        self.invalidate_cached_buckets(changes)
+        invalidation_buckets = set(changes) - {b for b, _ in sync_dispatch}
+        if invalidation_buckets:
+            try:
+                self.invalidate_cached_buckets(invalidation_buckets)
+            except Exception as exc:
+                failed.update(invalidation_buckets)
+                if first_error is None:
+                    first_error = exc
+            else:
+                succeeded.update(invalidation_buckets)
+
+        return succeeded, failed, first_error
 
     def sync_watched_movies(self):
         movies = self.api.movies.get_watched_movies()
-        if not movies:
-            trakt_watched_cache.set_bulk_movie_watched([])
-            return
+        if not isinstance(movies, list):
+            kodilog("Trakt watched movies response unknown; preserving existing snapshot", level=xbmc.LOGWARNING)
+            return False
 
         insert_list = []
         for item in movies:
-            tmdb_id = item["movie"]["ids"].get("tmdb")
+            if not isinstance(item, dict) or not isinstance(item.get("movie"), dict):
+                raise ValueError("Invalid Trakt watched movie entry")
+            ids = item["movie"].get("ids")
+            if not isinstance(ids, dict):
+                raise ValueError("Invalid Trakt watched movie ids")
+            tmdb_id = ids.get("tmdb")
             if not tmdb_id:
                 continue
             insert_list.append(
@@ -265,22 +349,38 @@ class TraktSyncService:
 
         trakt_watched_cache.set_bulk_movie_watched(insert_list)
         kodilog(f"Synced {len(insert_list)} watched movies from Trakt")
+        return True
 
     def sync_watched_shows(self):
         shows = self.api.tv.get_watched_shows()
-        if not shows:
-            trakt_watched_cache.set_bulk_tvshow_watched([])
-            return
+        if not isinstance(shows, list):
+            kodilog("Trakt watched shows response unknown; preserving existing snapshot", level=xbmc.LOGWARNING)
+            return False
 
         insert_list = []
         for item in shows:
-            show_tmdb = item["show"]["ids"].get("tmdb")
+            if not isinstance(item, dict) or not isinstance(item.get("show"), dict):
+                raise ValueError("Invalid Trakt watched show entry")
+            ids = item["show"].get("ids")
+            if not isinstance(ids, dict):
+                raise ValueError("Invalid Trakt watched show ids")
+            show_tmdb = ids.get("tmdb")
             if not show_tmdb:
                 continue
             show_title = item["show"]["title"]
-            for season in item.get("seasons", []):
+            seasons = item.get("seasons", [])
+            if not isinstance(seasons, list):
+                raise ValueError("Invalid Trakt watched show seasons")
+            for season in seasons:
+                if not isinstance(season, dict):
+                    raise ValueError("Invalid Trakt watched season entry")
                 season_num = season["number"]
-                for episode in season.get("episodes", []):
+                episodes = season.get("episodes", [])
+                if not isinstance(episodes, list):
+                    raise ValueError("Invalid Trakt watched episodes")
+                for episode in episodes:
+                    if not isinstance(episode, dict):
+                        raise ValueError("Invalid Trakt watched episode entry")
                     insert_list.append(
                         (
                             "episode",
@@ -294,16 +394,22 @@ class TraktSyncService:
 
         trakt_watched_cache.set_bulk_tvshow_watched(insert_list)
         kodilog(f"Synced {len(insert_list)} watched episodes from Trakt")
+        return True
 
     def sync_movie_progress(self):
         paused_movies = self.api.scrobble.trakt_get_playback_progress("movies")
-        if not paused_movies:
-            trakt_watched_cache.set_bulk_movie_progress([])
-            return
+        if not isinstance(paused_movies, list):
+            kodilog("Trakt movie progress response unknown; preserving existing snapshot", level=xbmc.LOGWARNING)
+            return False
 
         insert_list = []
         for item in paused_movies:
-            tmdb_id = item["movie"]["ids"].get("tmdb")
+            if not isinstance(item, dict) or not isinstance(item.get("movie"), dict):
+                raise ValueError("Invalid Trakt movie progress entry")
+            ids = item["movie"].get("ids")
+            if not isinstance(ids, dict):
+                raise ValueError("Invalid Trakt movie progress ids")
+            tmdb_id = ids.get("tmdb")
             if not tmdb_id:
                 continue
             insert_list.append(
@@ -322,16 +428,26 @@ class TraktSyncService:
 
         trakt_watched_cache.set_bulk_movie_progress(insert_list)
         kodilog(f"Synced {len(insert_list)} movie progress items from Trakt")
+        return True
 
     def sync_episode_progress(self):
         paused_episodes = self.api.scrobble.trakt_get_playback_progress("episodes")
-        if not paused_episodes:
-            trakt_watched_cache.set_bulk_tvshow_progress([])
-            return
+        if not isinstance(paused_episodes, list):
+            kodilog("Trakt episode progress response unknown; preserving existing snapshot", level=xbmc.LOGWARNING)
+            return False
 
         insert_list = []
         for item in paused_episodes:
-            show_tmdb = item["show"]["ids"].get("tmdb")
+            if (
+                not isinstance(item, dict)
+                or not isinstance(item.get("show"), dict)
+                or not isinstance(item.get("episode"), dict)
+            ):
+                raise ValueError("Invalid Trakt episode progress entry")
+            ids = item["show"].get("ids")
+            if not isinstance(ids, dict):
+                raise ValueError("Invalid Trakt episode progress ids")
+            show_tmdb = ids.get("tmdb")
             if not show_tmdb:
                 continue
             insert_list.append(
@@ -350,6 +466,7 @@ class TraktSyncService:
 
         trakt_watched_cache.set_bulk_tvshow_progress(insert_list)
         kodilog(f"Synced {len(insert_list)} episode progress items from Trakt")
+        return True
 
     def invalidate_cached_buckets(self, changes):
         if "collection_movies" in changes:

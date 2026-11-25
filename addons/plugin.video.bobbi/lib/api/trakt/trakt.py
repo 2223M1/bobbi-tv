@@ -126,15 +126,13 @@ class TraktBase:
         return None
 
     def _handle_unauthorized(self):
-        kodilog("Trakt unauthorized - Revoking authentication")
+        kodilog("Trakt unauthorized - Revoking authentication without wiping local snapshot")
         set_property("trakt_token", "")
         set_property("trakt_refresh", "")
         set_property("trakt_expires", "")
         set_setting("trakt_user", EMPTY_USER)
         set_setting("is_trakt_auth", "false")
         notification(translation(90408), time=5000)
-        with contextlib.suppress(BaseException):
-            TraktCache().clear_all_trakt_cache_data()
 
     @classmethod
     def _trakt_user_agent(cls):
@@ -239,7 +237,7 @@ class TraktBase:
 
         if with_auth:
             if self.ensure_token_valid() is False:
-                return []
+                return None
             token = get_property("trakt_token")
 
             if token:
@@ -283,7 +281,7 @@ class TraktBase:
             if status_code == 401:
                 if "Authorization" in headers:
                     self._handle_unauthorized()
-                return []
+                return None
 
             status_code = response.status_code
             error_messages = {
@@ -677,8 +675,12 @@ class TraktAuthentication(TraktBase):
         try:
             user = self.call_trakt("users/me")
             if user and isinstance(user, dict):
-                set_setting("trakt_user", str(user["username"]))
+                username = str(user["username"])
+                set_setting("trakt_user", username)
                 set_setting("is_trakt_auth", "true")
+                with contextlib.suppress(Exception):
+                    from lib.api.trakt.trakt_cache import trakt_watched_cache
+                    trakt_watched_cache.bind_account(username)
                 notification(translation(90385), time=3000)
                 return True
         except Exception:
@@ -786,16 +788,18 @@ class TraktMovies(TraktBase):
             "pagination": False,
             "params": {"extended": "full"},
         }
-        return self.get_trakt(params)
+        result = self.get_trakt(params)
+        return result if isinstance(result, list) else None
 
     def trakt_movies_progress(self):
         set_pluging_category(translation(90200))
         try:
-            return TraktScrobble().trakt_get_playback_progress("movies")
+            result = TraktScrobble().trakt_get_playback_progress("movies")
+            return result if isinstance(result, list) else None
         except ProviderException:
             raise
         except Exception:
-            return []
+            return None
 
     def trakt_collection(self, page_no):
         set_pluging_category(translation(90294))
@@ -879,7 +883,8 @@ class TraktTV(TraktBase):
             "pagination": False,
             "params": {"extended": "full"},
         }
-        return self.get_trakt(params)
+        result = self.get_trakt(params)
+        return result if isinstance(result, list) else None
 
     @staticmethod
     def _parse_iso_date(value):
@@ -1932,13 +1937,13 @@ class TraktScrobble(TraktBase):
                 "with_auth": True,
                 "pagination": False,
             }
-            return self.get_trakt(params)
+            result = self.get_trakt(params)
+            return result if isinstance(result, list) else None
         except ProviderException:
             raise
         except Exception as e:
             kodilog(f"Error fetching playback progress: {e}")
-            return []
-        return 0
+            return None
 
     @staticmethod
     def _playback_positive_integer(value):
