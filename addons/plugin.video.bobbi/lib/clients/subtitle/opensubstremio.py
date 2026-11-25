@@ -6,6 +6,9 @@ from concurrent.futures import Future, ThreadPoolExecutor, wait
 from typing import Any, Callable, Dict, List, Optional, Tuple
 from urllib.parse import urlparse
 from uuid import uuid4
+from threading import Event
+
+from bobbi_core.http_policy import read_bounded_http_body
 
 import requests
 import xbmc
@@ -53,6 +56,16 @@ def _check_download(deadline, cancelled):
         raise SubtitleDownloadStopped('cancelled')
     if deadline is not None and time.monotonic() >= deadline:
         raise SubtitleDownloadStopped('deadline')
+
+
+def _wait_for_retry(delay, deadline, cancelled):
+    until = min(deadline, time.monotonic() + max(0.0, delay))
+    while True:
+        _check_download(deadline, cancelled)
+        remaining = until - time.monotonic()
+        if remaining <= 0:
+            return
+        time.sleep(min(.1, remaining))
 
 
 def safe_subtitle_path_component(value: Any) -> str:
@@ -119,103 +132,55 @@ class OpenSubtitleStremioClient:
         max_retries: int = 2,
         retry_delay: float = 1.0,
         extra_args: Optional[Dict[str, Any]] = None,
+        *,
+        deadline: Optional[float] = None,
+        cancelled: Optional[Callable[[], bool]] = None,
     ) -> Optional[List[Dict[str, Any]]]:
-        """Fetch subtitles from a single addon's base URL.
+        """Read one source under one budget across DNS, redirects, body and retries.
 
-        Returns:
-            - list (possibly empty) on HTTP 200 with a valid JSON body
-            - ``None`` on non-200, network error, or non-JSON response
+        A confirmed empty result is [], while unavailable/invalid responses are
+        None. Destination DNS is checked once per actual connection by the
+        shared transport, not again for every subtitle record in the response.
         """
+        end = time.monotonic() + timeout
+        deadline = end if deadline is None else min(deadline, end)
         url = self._build_url(base_url, mode, imdb_id, season, episode, extra_args)
         safe_base_url = _redact_subtitle_url(base_url)
-        if not is_safe_http_url(url):
-            kodilog(
-                f"[StremioSubs] addon {safe_base_url} rejected by network policy",
-                level=xbmc.LOGWARNING,
-            )
-            return None
-        for attempt in range(max_retries + 1):
-            try:
-                response = request_with_safe_redirects(
-                    requests.get,
-                    url,
-                    validator=is_safe_http_url,
-                    timeout=timeout,
-                )
-            except Exception as e:
-                if attempt < max_retries:
-                    kodilog(
-                        f"[StremioSubs] addon {safe_base_url} failed "
-                        f"(attempt {attempt + 1}/{max_retries + 1}), retrying: "
-                        f"{type(e).__name__}",
-                        level=xbmc.LOGWARNING,
+        with requests.Session() as session:
+            session.trust_env = False
+            session.headers["Accept-Encoding"] = "gzip, deflate"
+            for attempt in range(max_retries + 1):
+                response = None
+                delay = retry_delay
+                try:
+                    _check_download(deadline, cancelled)
+                    response = request_with_safe_redirects(
+                        session.get, url, validator=is_safe_http_url,
+                        headers=USER_AGENT_HEADER, timeout=timeout, stream=True,
+                        deadline=deadline, cancelled=cancelled,
                     )
-                    time.sleep(retry_delay)
-                    continue
-                kodilog(
-                    f"[StremioSubs] addon {safe_base_url} failed after "
-                    f"{max_retries + 1} attempts: {type(e).__name__}",
-                    level=xbmc.LOGWARNING,
-                )
-                return None
-            if response.status_code != 200:
-                if response.status_code == 429 and attempt < max_retries:
+                    if response.status_code == 200:
+                        data = response_json(response, deadline=deadline, cancelled=cancelled)
+                        if not isinstance(data, dict) or not isinstance(data.get('subtitles', []), list):
+                            return []
+                        return [row for row in data.get('subtitles', []) if self._valid_subtitle_record(row)]
+                    if 400 <= response.status_code < 500 and response.status_code != 429:
+                        return None
                     delay = _retry_delay(response, attempt, retry_delay)
-                    kodilog(
-                        f"[StremioSubs] addon {safe_base_url} rate limited "
-                        f"(attempt {attempt + 1}/{max_retries + 1}), retrying in {delay}s",
-                        level=xbmc.LOGWARNING,
-                    )
-                    time.sleep(delay)
-                    continue
-                if 400 <= response.status_code < 500:
-                    kodilog(
-                        f"[StremioSubs] addon {safe_base_url} failed: HTTP {response.status_code}",
-                        level=xbmc.LOGWARNING,
-                    )
+                except (SubtitleDownloadStopped, ValueError):
                     return None
+                except Exception as error:
+                    kodilog(f"[StremioSubs] addon {safe_base_url} failed: {type(error).__name__}",
+                            level=xbmc.LOGWARNING)
+                finally:
+                    if response is not None:
+                        with contextlib.suppress(Exception):
+                            response.close()
                 if attempt < max_retries:
-                    kodilog(
-                        f"[StremioSubs] addon {safe_base_url} failed "
-                        f"(attempt {attempt + 1}/{max_retries + 1}), retrying: "
-                        f"HTTP {response.status_code}",
-                        level=xbmc.LOGWARNING,
-                    )
-                    time.sleep(retry_delay)
-                    continue
-                kodilog(
-                    f"[StremioSubs] addon {safe_base_url} failed after "
-                    f"{max_retries + 1} attempts: HTTP {response.status_code}",
-                    level=xbmc.LOGWARNING,
-                )
-                return None
-            final_url = getattr(response, "url", url)
-            if not isinstance(final_url, str) or not is_safe_http_url(final_url):
-                kodilog(
-                    f"[StremioSubs] addon {safe_base_url} redirect rejected by network policy",
-                    level=xbmc.LOGWARNING,
-                )
-                return None
-            try:
-                data = response_json(response)
-            except Exception as e:
-                kodilog(
-                    f"[StremioSubs] addon {safe_base_url} failed: invalid JSON "
-                    f"({type(e).__name__})",
-                    level=xbmc.LOGWARNING,
-                )
-                return None
-            kodilog(
-                f"[StremioSubs] subtitles response received: "
-                f"{len(data.get('subtitles') or []) if isinstance(data, dict) else 0} subtitle(s)",
-                level=xbmc.LOGDEBUG,
-            )
-            if not isinstance(data, dict):
-                return []
-            subtitles = data.get("subtitles") or []
-            if not isinstance(subtitles, list):
-                return []
-            return [subtitle for subtitle in subtitles if self._valid_subtitle_record(subtitle)]
+                    try:
+                        _wait_for_retry(delay, deadline, cancelled)
+                    except SubtitleDownloadStopped:
+                        return None
         return None
 
     @staticmethod
@@ -373,12 +338,15 @@ class OpenSubtitleStremioClient:
         futures: List[Tuple[str, str, str, Future]] = []
         executor: Optional[ThreadPoolExecutor] = None
         timed_out = False
+        stop_fetch = Event()
 
         try:
             executor = ThreadPoolExecutor(max_workers=min(MAX_SUBTITLE_WORKERS, len(sources)))
             for source_key, base_url, source_label in sources:
                 try:
-                    retry_options = {"max_retries": 0} if auto_select else {}
+                    retry_options = {"cancelled": stop_fetch.is_set}
+                    if auto_select:
+                        retry_options.update(max_retries=0, deadline=start + cap_seconds)
                     if extra_args:
                         retry_options["extra_args"] = extra_args
                     future = executor.submit(
@@ -426,6 +394,7 @@ class OpenSubtitleStremioClient:
                 level=xbmc.LOGWARNING,
             )
         finally:
+            stop_fetch.set()
             if executor is not None:
                 # Auto-select must return at its shared deadline rather than wait for retries.
                 executor.shutdown(wait=not auto_select)
@@ -652,7 +621,7 @@ class OpenSubtitleStremioClient:
         if not isinstance(subtitle, dict):
             return False
         url = subtitle.get("url")
-        if not is_safe_http_url(url):
+        if not is_safe_http_url(url, resolve_dns=False):
             return False
         lang = subtitle.get("lang")
         subtitle_id = subtitle.get("id") or subtitle.get("subId")
@@ -779,80 +748,71 @@ class OpenSubtitleStremioClient:
 
         # Concurrent requests must never truncate or remove each other's part.
         temporary_path = file_path + '.' + uuid4().hex + ".part"
-        responses = []
-
-        def get(url, **kwargs):
-            _check_download(deadline, cancelled)
-            if responses:
-                with contextlib.suppress(Exception):
-                    responses[-1].close()
-            if deadline is not None:
-                remaining = deadline - time.monotonic()
-                if remaining <= 0:
-                    raise SubtitleDownloadStopped('deadline')
-                kwargs['timeout'] = min(timeout, remaining)
-            response = requests.get(url, **kwargs)
-            responses.append(response)
-            _check_download(deadline, cancelled)
-            return response
+        response = None
+        supplied_deadline = deadline
+        request_deadline = time.monotonic() + timeout
+        if deadline is not None:
+            request_deadline = min(request_deadline, deadline)
 
         try:
             os.makedirs(os.path.dirname(file_path), exist_ok=True)
-            response: Any = None
-            for attempt in range(max_retries + 1):
-                try:
-                    response = request_with_safe_redirects(
-                        get,
-                        url,
-                        validator=is_safe_http_url,
-                        stream=True,
-                        headers=USER_AGENT_HEADER,
-                        timeout=timeout,
-                    )
-                except SubtitleDownloadStopped:
-                    raise
-                except Exception:
-                    if attempt < max_retries:
-                        time.sleep(1.0)
+            with requests.Session() as session:
+                session.trust_env = False
+                session.headers["Accept-Encoding"] = "gzip, deflate"
+                for attempt in range(max_retries + 1):
+                    if response is not None:
+                        response.close()
+                        response = None
+                    try:
+                        _check_download(request_deadline, cancelled)
+                        response = request_with_safe_redirects(
+                            session.get, url, validator=is_safe_http_url,
+                            stream=True, headers=USER_AGENT_HEADER, timeout=timeout,
+                            deadline=request_deadline, cancelled=cancelled,
+                        )
+                    except SubtitleDownloadStopped:
+                        raise
+                    except Exception:
+                        _check_download(request_deadline, cancelled)
+                        if attempt >= max_retries:
+                            raise
+                        _wait_for_retry(1.0, request_deadline, cancelled)
                         continue
-                    raise
-                if response.status_code == 200:
-                    final_url = getattr(response, "url", url)
-                    if not isinstance(final_url, str) or not is_safe_http_url(final_url):
-                        raise ValueError("unsafe subtitle redirect")
-                    break
-                if attempt < max_retries:
-                    time.sleep(_retry_delay(response, attempt))
-                    continue
-                raise Exception(f"HTTP {response.status_code}")
-            bytes_written = 0
-            first_content = b""
-            with open(temporary_path, "wb") as file:
-                for chunk in response.iter_content(chunk_size=8192):
-                    _check_download(deadline, cancelled)
-                    if chunk:
-                        if len(first_content) < 512:
-                            first_content += chunk[: 512 - len(first_content)]
-                        file.write(chunk)
-                        bytes_written += len(chunk)
-                        if bytes_written > MAX_SUBTITLE_BYTES:
-                            raise ValueError("subtitle response exceeds the size limit")
-            if not bytes_written:
-                raise ValueError("empty subtitle response")
-            if _is_obvious_html_response(first_content):
-                raise ValueError("HTML subtitle response")
-            _check_download(deadline, cancelled)
-            os.replace(temporary_path, file_path)
-            return file_path
-        except Exception as e:
+                    if response.status_code == 200:
+                        break
+                    status = response.status_code
+                    delay = _retry_delay(response, attempt)
+                    response.close()
+                    response = None
+                    if attempt >= max_retries:
+                        raise ValueError(f"HTTP {status}")
+                    _wait_for_retry(delay, request_deadline, cancelled)
+                raw = read_bounded_http_body(response, max_bytes=MAX_SUBTITLE_BYTES,
+                                            deadline=request_deadline, cancelled=cancelled)
+                if not raw:
+                    raise ValueError("empty subtitle response")
+                if _is_obvious_html_response(raw[:512]):
+                    raise ValueError("HTML subtitle response")
+                _check_download(request_deadline, cancelled)
+                with open(temporary_path, "wb") as file:
+                    file.write(raw)
+                _check_download(request_deadline, cancelled)
+                os.replace(temporary_path, file_path)
+                return file_path
+        except Exception as error:
             with contextlib.suppress(OSError):
                 os.remove(temporary_path)
-            if not isinstance(e, SubtitleDownloadStopped):
-                kodilog(f"Subtitle download error: {type(e).__name__}")
-                if deadline is None:
-                    self.notification(f"Subtitle download error: {type(e).__name__}")
-            raise
+            # Preserve the existing cooperative signal for a caller's playback
+            # deadline/cancellation. A manual per-file timeout need not cancel
+            # the remaining user-selected downloads in download_subtitles_batch.
+            _check_download(supplied_deadline, cancelled)
+            if isinstance(error, SubtitleDownloadStopped):
+                error = TimeoutError('subtitle download deadline')
+            kodilog(f"Subtitle download error: {type(error).__name__}")
+            if supplied_deadline is None:
+                self.notification(f"Subtitle download error: {type(error).__name__}")
+            raise error
         finally:
-            for response in responses:
+            if response is not None:
                 with contextlib.suppress(Exception):
                     response.close()

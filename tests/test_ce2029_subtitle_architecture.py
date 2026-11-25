@@ -132,7 +132,7 @@ def test_current_stremio_manager_uses_current_client_and_real_response_parser(tm
         requests.append((url, options))
         return SimpleNamespace(status_code=200, url=url, headers={},
                                content=json.dumps(dict(subtitles=rows)).encode())
-    monkeypatch.setattr(client.requests, 'get', get)
+    monkeypatch.setattr(client.requests.Session, 'get', lambda _self, url, **options: get(url, **options))
     result = manager.opensub_client._fetch_subtitles_data_for_source(
         'https://8.8.8.8', 'tv', 'tt1234567', season=1, episode=2, max_retries=0)
     assert result == [rows[0]]
