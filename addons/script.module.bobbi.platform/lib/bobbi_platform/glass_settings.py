@@ -255,6 +255,7 @@ def manage_home_rails(dialog, get_bool, get_string, set_bool, set_string, reset_
         return False
     order, hidden = read_home_rail_prefs(get_bool, get_string)
     dirty = False
+    save_requested = False
     while is_current():
         rows = []
         for idx, key in enumerate(order, start=1):
@@ -271,6 +272,7 @@ def manage_home_rails(dialog, get_bool, get_string, set_bool, set_string, reset_
             dirty = True
             continue
         if pick == len(order) + 1:
+            save_requested = True
             break
         if 0 <= pick < len(order):
             chosen_key = order[pick]
@@ -297,7 +299,7 @@ def manage_home_rails(dialog, get_bool, get_string, set_bool, set_string, reset_
                 elif op == 'down':
                     order[pick + 1], order[pick] = order[pick], order[pick + 1]
                     dirty = True
-    if dirty and is_current():
+    if save_requested and dirty and is_current():
         apply_home_rail_prefs(order, hidden, set_bool, set_string, reset_setting)
         return True
     return False
