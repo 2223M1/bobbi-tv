@@ -18,6 +18,10 @@ OWNED_COMPONENTS = frozenset(('plugin.video.bobbi', 'plugin.video.bobbi.library'
     'script.module.bobbi.catalog', 'script.module.bobbi.core', 'script.module.bobbi.mdsub',
     'script.module.bobbi.platform', 'skin.bobbi.cinema'))
 FULL_COMPONENTS = OWNED_COMPONENTS | UPSTREAM_COMPONENTS
+DECLARED_HTTP_RUNTIME_FLOORS = {
+    'script.module.requests': '2.34.2',
+    'script.module.urllib3': '2.8.0',
+}
 
 
 def managed_components(expected):
@@ -134,3 +138,36 @@ def check_dependencies(addons_root, candidate_root, managed=OWNED_COMPONENTS):
             raise UpdateError('Kodi dependency too old: ' + name + ' requires ' + required
                               + '; install/update it in Kodi')
     return dict(sorted(minimums.items()))
+
+
+def inspect_http_runtime():
+    """Record actual loaded requests/urllib3 versions, file paths, and Python runtime."""
+    import sys
+    import requests
+    import urllib3
+    from .updates import UpdateError
+
+    req_ver = getattr(requests, '__version__', '')
+    u3_ver = getattr(urllib3, '__version__', '')
+    if compare_versions(req_ver, DECLARED_HTTP_RUNTIME_FLOORS['script.module.requests']) < 0:
+        raise UpdateError(
+            'Loaded requests runtime too old: ' + str(req_ver)
+            + ' < ' + DECLARED_HTTP_RUNTIME_FLOORS['script.module.requests']
+        )
+    if compare_versions(u3_ver, DECLARED_HTTP_RUNTIME_FLOORS['script.module.urllib3']) < 0:
+        raise UpdateError(
+            'Loaded urllib3 runtime too old: ' + str(u3_ver)
+            + ' < ' + DECLARED_HTTP_RUNTIME_FLOORS['script.module.urllib3']
+        )
+    return {
+        'python_version': sys.version,
+        'python_version_info': list(sys.version_info[:3]),
+        'requests': {
+            'version': req_ver,
+            'file': str(Path(requests.__file__).resolve()),
+        },
+        'urllib3': {
+            'version': u3_ver,
+            'file': str(Path(urllib3.__file__).resolve()),
+        },
+    }

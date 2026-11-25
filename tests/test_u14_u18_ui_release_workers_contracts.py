@@ -419,3 +419,110 @@ def test_modal_deferral_dedup_context_switch_and_retry_on_failure(monkeypatch):
     state['modal'] = False
     service.tick()
     assert refreshed == ['Container.Refresh'] and service._pending_container_source is None
+
+
+# --- CT-HTTP-RUNTIME & CT-STAGING-BYTES (U15: REL-01, REL-02) ---
+
+
+def test_upgrade_declares_the_http_runtime_used_by_hardening_tests(tmp_path):
+    from bobbi_platform import ce_install_ui as ui
+    from bobbi_platform.updates import UpdateError
+    from bobbi_platform.upstream_addons import (
+        DECLARED_HTTP_RUNTIME_FLOORS,
+        UPSTREAM_COMPONENTS,
+        check_dependencies,
+    )
+
+    expected = {'script.module.requests': '2.34.2', 'script.module.urllib3': '2.8.0'}
+    assert DECLARED_HTTP_RUNTIME_FLOORS == expected
+
+    for name in UPSTREAM_COMPONENTS:
+        folder = tmp_path / name
+        folder.mkdir()
+        version = expected.get(name, '99.0.0')
+        (folder / 'addon.xml').write_text(f'<addon id="{name}" version="{version}"/>', encoding='utf-8')
+    minimums = check_dependencies(tmp_path, ROOT / 'addons')
+    assert {name: minimums[name] for name in expected} == expected
+
+    # Outdated 2.31.0 / 2.2.3 raises clear diagnostic and never overwrites Kodi-owned folder
+    (tmp_path / 'script.module.requests/addon.xml').write_text(
+        '<addon id="script.module.requests" version="2.31.0"/>', encoding='utf-8'
+    )
+    with pytest.raises(UpdateError) as exc_info:
+        check_dependencies(tmp_path, ROOT / 'addons')
+    diag = ui.diagnosis('apply', exc_info.value)
+    msg = ui.failure_message(exc_info.value, 'apply')
+    assert 'DEPENDENCY_TOO_OLD' in diag and 'script.module.requests' in diag
+    assert '不会私自覆盖' in msg and 'Kodi' in msg
+
+
+def test_http_runtime_subprocess_records_actual_loaded_files_versions_and_python():
+    import subprocess
+    probe = (
+        'import json, sys; '
+        'repo = sys.argv[1]; '
+        'sys.path[:0] = ['
+        'repo + "/third_party/addons/script.module.requests/lib", '
+        'repo + "/third_party/addons/script.module.urllib3/lib", '
+        'repo + "/third_party/addons/script.module.certifi/lib", '
+        'repo + "/third_party/addons/script.module.chardet/lib", '
+        'repo + "/third_party/addons/script.module.idna/lib", '
+        'repo + "/addons/script.module.bobbi.core/lib", '
+        'repo + "/addons/script.module.bobbi.platform/lib"'
+        ']; '
+        'from bobbi_platform.upstream_addons import inspect_http_runtime; '
+        'print(json.dumps(inspect_http_runtime()))'
+    )
+    res = subprocess.run([sys.executable, '-I', '-B', '-c', probe, str(ROOT)], capture_output=True, text=True, check=True)
+    report = json.loads(res.stdout)
+    assert report['requests']['version'] == '2.34.2'
+    assert report['urllib3']['version'] == '2.8.0'
+    assert 'third_party/addons/script.module.requests' in report['requests']['file']
+    assert 'third_party/addons/script.module.urllib3' in report['urllib3']['file']
+    assert report['python_version_info'][:2] >= [3, 11]
+
+
+def test_native_staging_does_not_reopen_unverified_changed_archives(tmp_path, monkeypatch):
+    import zipfile as zf_mod
+
+    spec = importlib.util.spec_from_file_location('u15_stage_components', ROOT / 'native/stage-components.py')
+    stage = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(stage)
+    host = tmp_path / 'host'
+    (host / 'system').mkdir(parents=True)
+    (host / 'system/addon-manifest.xml').write_text('<addons><addon>xbmc.python</addon></addons>', encoding='utf-8')
+    names = ('plugin.video.bobbi', 'skin.bobbi.cinema', 'resource.uisounds.bobbi-modern')
+    rows = []
+    original_zipfile = zf_mod.ZipFile
+
+    def write_archive(path, name, code):
+        with original_zipfile(path, 'w') as archive:
+            archive.writestr(name + '/addon.xml', f'<addon id="{name}" version="1.0"/>')
+            archive.writestr(name + '/code.py', code)
+
+    for name in names:
+        path = tmp_path / (name + '.zip')
+        write_archive(path, name, 'verified code')
+        rows.append({
+            'id': name,
+            'version': '1.0',
+            'file': path.name,
+            'bytes': path.stat().st_size,
+            'sha256': hashlib.sha256(path.read_bytes()).hexdigest(),
+        })
+    manifest = tmp_path / 'manifest.json'
+    manifest.write_text(json.dumps({'version': 'fixture', 'components': rows}), encoding='utf-8')
+    first = tmp_path / (names[0] + '.zip')
+    first_read_count = [0]
+
+    def open_with_change(path, *args, **kwargs):
+        if Path(path) == first and (not args or args[0] == 'r'):
+            first_read_count[0] += 1
+            if first_read_count[0] == 2:
+                write_archive(first, names[0], 'changed after validation')
+        return original_zipfile(path, *args, **kwargs)
+
+    monkeypatch.setattr(stage.zipfile, 'ZipFile', open_with_change)
+    stage.stage(manifest, host)
+    assert first_read_count[0] == 1
+    assert (host / 'addons' / names[0] / 'code.py').read_text(encoding='utf-8') == 'verified code'

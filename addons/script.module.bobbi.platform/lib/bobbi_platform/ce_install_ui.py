@@ -435,7 +435,9 @@ def failure_message(error, stage=None):
     """Explain existing failures without echoing URLs, paths or server bodies."""
     code = str(error)
     if code.startswith(('DEPENDENCY_UNAVAILABLE:', 'DEPENDENCY_ENABLE_FAILED:')):
-        return 'Kodi 未能启用所需依赖。请检查下方组件，再打开“开始使用”。'
+        return 'Kodi 未能启用或满足所需依赖版本（不会私自覆盖 Kodi 组件）。请在 Kodi 插件管理中更新下方组件后，再打开“开始使用”。'
+    if code.startswith(('Kodi dependency too old:', 'Kodi dependency missing or invalid:')):
+        return 'Kodi 已安装的上游依赖版本过低或缺失（不会私自覆盖 Kodi 组件）。请在 Kodi 插件管理中更新对应依赖后，再打开“开始使用”。'
     if code.startswith('COMPONENT_ENABLE_FAILED:') or code == 'HOST_ACTIVATION_NOT_CONFIRMED':
         return '影院组件尚未启用。请重新打开“开始使用”恢复，不用删除数据。'
     if code.startswith(('ADDON_STATE_UNKNOWN:', 'COMPONENT_REGISTRATION_FAILED:')) or code == 'ADDON_REFRESH_NOT_CONFIRMED':
@@ -519,6 +521,14 @@ def diagnosis(stage, error):
              'CE_REGISTRY_FORMAT_REQUIRES_EXPLICIT_OFFLINE_RESTORE', 'HOST_RESTORE_NOT_CONFIRMED'}
     if reason in known:
         code = reason
+    elif reason in ('Kodi dependency too old', 'Kodi dependency missing or invalid'):
+        code = 'DEPENDENCY_TOO_OLD' if reason == 'Kodi dependency too old' else 'DEPENDENCY_MISSING'
+        candidate_comp = detail.strip().split(';', 1)[0].split()[0] if detail.strip() else ''
+        if candidate_comp in UPSTREAM_COMPONENTS | {'script.module.pycryptodome'}:
+            detail = candidate_comp
+            reason = 'DEPENDENCY_UNAVAILABLE'
+        else:
+            detail = ''
     elif isinstance(error, BadZipFile):
         code = 'ZIP_INVALID'
     elif isinstance(error, OSError):

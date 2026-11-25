@@ -114,5 +114,49 @@ class StageTests(unittest.TestCase):
         self.assertFalse((self.host / 'addons').exists())
 
 
+    def test_archive_mutated_between_validation_and_extraction_never_extracts_unverified_bytes(self):
+        first_archive = self.root / self.rows[0]['file']
+        second_archive = self.root / self.rows[1]['file']
+        original_zip = STAGE.zipfile.ZipFile
+        open_calls = []
+
+        def intercept_after_first_validated(path, *args, **kwargs):
+            open_calls.append(Path(path))
+            if Path(path) == second_archive:
+                # Mutate first_archive AFTER its validation finished, BEFORE extraction starts
+                with original_zip(first_archive, 'w') as tampered:
+                    tampered.writestr(self.rows[0]['id'] + '/addon.xml', f'<addon id="{self.rows[0]["id"]}" version="1.0"/>')
+                    tampered.writestr(self.rows[0]['id'] + '/code.py', 'UNVERIFIED_TAMPERED\n')
+            return original_zip(path, *args, **kwargs)
+
+        STAGE.zipfile.ZipFile = intercept_after_first_validated
+        try:
+            STAGE.stage(self.manifest, self.host)
+        finally:
+            STAGE.zipfile.ZipFile = original_zip
+        self.assertEqual(open_calls.count(first_archive), 1)
+        self.assertEqual((self.host / 'addons/plugin.video.bobbi/code.py').read_text(), 'print("fixture")\n')
+
+    def test_archive_mutated_between_stat_hash_and_zip_open_is_rejected(self):
+        first_archive = self.root / self.rows[0]['file']
+        original_zip = STAGE.zipfile.ZipFile
+
+        def intercept_during_open(path, *args, **kwargs):
+            zf = original_zip(path, *args, **kwargs)
+            if Path(path) == first_archive:
+                with original_zip(first_archive, 'w') as tampered:
+                    tampered.writestr(self.rows[0]['id'] + '/addon.xml', f'<addon id="{self.rows[0]["id"]}" version="1.0"/>')
+                    tampered.writestr(self.rows[0]['id'] + '/code.py', 'UNVERIFIED_TAMPERED\n')
+            return zf
+
+        STAGE.zipfile.ZipFile = intercept_during_open
+        try:
+            with self.assertRaisesRegex(ValueError, 'changed during validation'):
+                STAGE.stage(self.manifest, self.host)
+        finally:
+            STAGE.zipfile.ZipFile = original_zip
+        self.assertFalse((self.host / 'addons').exists())
+
+
 if __name__ == '__main__':
     unittest.main()
