@@ -342,6 +342,52 @@ def test_manage_js_uses_single_authoritative_po_source():
         assert zh_po[code][1] == js_zh, f"Divergent fallback in manage.js for #{code}: {js_zh!r} != {zh_po[code][1]!r}"
 
 
+def test_continue_watching_tr_format_guard_on_translated_strings(monkeypatch):
+    xbmc_stub = types.ModuleType("xbmc")
+    xbmc_stub.executebuiltin = lambda *a: None
+    xbmcplugin_stub = types.ModuleType("xbmcplugin")
+    xbmcplugin_stub.setContent = lambda *a: None
+    xbmcplugin_stub.setPluginCategory = lambda *a: None
+
+    replies = {
+        91217: "Torrent",
+        91225: "Play from beginning",
+        91230: "Season %s",
+        99999: "Broken %d %s",
+    }
+    kodi_utils_stub = types.ModuleType("lib.utils.kodi.utils")
+    kodi_utils_stub.ADDON_HANDLE = 1
+    kodi_utils_stub.ADDON_PATH = str(BOBBI)
+    kodi_utils_stub.add_directory_items_batch = lambda *a: None
+    kodi_utils_stub.apply_section_view = lambda *a, **kw: None
+    kodi_utils_stub.build_url = lambda action, **kw: f"plugin://plugin.video.bobbi/?action={action}"
+    kodi_utils_stub.end_of_directory = lambda **kw: None
+    kodi_utils_stub.make_list_item = lambda **kw: types.SimpleNamespace()
+    kodi_utils_stub.notification = lambda *a, **kw: None
+    kodi_utils_stub.translation = lambda po_id: replies.get(po_id, str(po_id))
+
+    pickle_stub = types.ModuleType("lib.db.pickle_db")
+    pickle_stub.PickleDatabase = object
+
+    monkeypatch.setitem(sys.modules, "xbmc", xbmc_stub)
+    monkeypatch.setitem(sys.modules, "xbmcplugin", xbmcplugin_stub)
+    monkeypatch.setitem(sys.modules, "lib.utils.kodi.utils", kodi_utils_stub)
+    monkeypatch.setitem(sys.modules, "lib.db.pickle_db", pickle_stub)
+
+    spec = importlib.util.spec_from_file_location(
+        "r3_continue_watching_tr_test",
+        BOBBI / "lib/utils/views/continue_watching.py",
+    )
+    cw = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(cw)
+
+    assert cw._tr(91225, "从头播放") == "Play from beginning"
+    assert cw._tr(91230, "第 %s 季") == "Season %s"
+    assert cw._tr(99999, "第 %s 季") == "第 %s 季"
+    assert cw._tr(91255, "下一页") == "下一页"
+    assert cw._source_kind({"is_torrent": True}) == "Torrent"
+
+
 def test_settings_ia_preserves_all_233_ids_45_hidden_and_53_action_routes():
     en_po = _parse_po_strict(BOBBI / "resources/language/English/strings.po")
     zh_po = _parse_po_strict(BOBBI / "resources/language/resource.language.zh_cn/strings.po")
