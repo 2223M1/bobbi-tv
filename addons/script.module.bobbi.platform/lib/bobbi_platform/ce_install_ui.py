@@ -689,7 +689,13 @@ def ensure_zh_cn_ready_and_selected(host, addons_root, dialog, *, payload=None, 
 
 def ensure_host_language(host, installer, dialog, *, payload=None, rpc_fn=None):
     """Apply first-use / upgrade host language policy without unsolicited resets."""
-    if not callable(getattr(host, 'locale', None)) or not callable(getattr(host, 'details', None)):
+    if (
+        not callable(getattr(host, 'locale', None))
+        or not callable(getattr(host, 'details', None))
+        or not hasattr(installer, 'addons')
+        or not hasattr(installer, 'work')
+        or not callable(getattr(installer, '_read', None))
+    ):
         return dict(action='skipped_unmanaged_host')
 
     call_rpc = rpc_fn or rpc
@@ -711,10 +717,27 @@ def ensure_host_language(host, installer, dialog, *, payload=None, rpc_fn=None):
         userdata_root=getattr(installer, 'userdata', None),
         bobbi_installed=bobbi_installed,
     )
-    if category == 'already_initialized':
-        return dict(action='already_initialized', locale=current_locale)
-
-    if category == 'explicit_existing':
+    if category in ('already_initialized', 'explicit_existing'):
+        if normalize_locale(current_locale) == 'zh_cn':
+            try:
+                zh_installed = host.details(ZH_CN_ADDON_ID)
+            except UpdateError:
+                return dict(action='skipped_addon_state_unknown')
+            if not zh_installed or not zh_installed.get('enabled'):
+                result = ensure_zh_cn_ready_and_selected(
+                    host,
+                    installer.addons,
+                    dialog,
+                    payload=payload,
+                    trust=getattr(installer, 'trust', None),
+                    rpc_fn=call_rpc,
+                )
+                if result['ok']:
+                    _write_language_marker(installer.work, 'repaired_existing_zh_cn', ZH_CN_ADDON_ID)
+                    return dict(action=category, locale=ZH_CN_ADDON_ID, version=result['version'], repaired=True)
+                return dict(action='pack_unavailable', locale=current_locale, reason=result['reason'])
+        if category == 'already_initialized':
+            return dict(action='already_initialized', locale=current_locale)
         _write_language_marker(installer.work, 'preserved_existing', current_locale or 'resource.language.en_gb')
         return dict(action='preserved_existing', locale=current_locale)
 
@@ -864,6 +887,7 @@ def install_online(installer, host, dialog):
         host.check_idle()
         progress.close()
         installer.apply(selected)
+        ensure_host_language(host, installer, dialog, payload=selected)
         return True
     except Cancelled:
         return False
@@ -1283,6 +1307,7 @@ def main(payload=None, online=False, storage=False):
                 return
             stage = 'apply'
             installer.apply(selected)
+            ensure_host_language(host, installer, dialog, payload=selected)
             if diagnostic_root is not None:
                 observe(diagnostic_root, 'install', 'ok', started)
             dialog.ok(tr('installed_title', host=host), tr('installed_offline_body', host=host))

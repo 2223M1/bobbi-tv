@@ -285,3 +285,68 @@ def test_explicit_existing_and_ambiguous_historical_language_profiles(tmp_path, 
         rpc_fn=lambda *a, **k: {},
     )
     assert res_again['action'] == 'already_initialized'
+
+
+def test_existing_zh_cn_setting_with_missing_language_addon_provisions_pack_on_upgrade(tmp_path):
+    """Real-box CE2185 upgrade case: locale.language is resource.language.zh_cn but addon is absent."""
+    userdata = tmp_path / 'userdata'
+    addons = tmp_path / 'addons'
+    work = userdata / 'addon_data/script.bobbi.start'
+    (addons / 'script.module.bobbi.platform/resources/language_packs').mkdir(parents=True)
+    (addons / 'script.module.bobbi.platform/resources/language_packs' / bi18n.ZH_CN_FILENAME).write_bytes(PACK_ZIP.read_bytes())
+    (addons / 'script.module.bobbi.platform/resources/language_packs/provenance.json').write_bytes(PROVENANCE.read_bytes())
+    work.mkdir(parents=True)
+    (userdata / 'guisettings.xml').write_text(
+        '<settings version="2"><setting id="locale.language">resource.language.zh_cn</setting></settings>',
+        encoding='utf-8',
+    )
+
+    settings = {'locale.language': 'resource.language.zh_cn', 'lookandfeel.font': 'Default'}
+    enabled_addons = set()
+
+    def fake_rpc(method, params=None):
+        if method == 'Settings.GetSettingValue':
+            return {'value': settings[params['setting']]}
+        if method == 'Settings.SetSettingValue':
+            settings[params['setting']] = params['value']
+            return True
+        if method == 'Addons.SetAddonEnabled':
+            enabled_addons.add(params['addonid'])
+            return 'OK'
+        raise AssertionError(method)
+
+    def details(aid):
+        if aid == 'kodi.resource':
+            return {'version': '1.0.0', 'enabled': True}
+        if aid == 'plugin.video.bobbi':
+            return {'version': '0.1.99', 'enabled': True}
+        if (addons / aid / 'addon.xml').is_file():
+            return {'version': '11.0.105', 'enabled': aid in enabled_addons}
+        return None
+
+    host = SimpleNamespace(
+        locale=lambda: settings['locale.language'],
+        details=details,
+        refresh=lambda: None,
+        skin=lambda: 'skin.bobbi.cinema',
+        check_idle=lambda: None,
+    )
+    installer = SimpleNamespace(
+        work=work,
+        addons=addons,
+        userdata=userdata,
+        trust=None,
+        _read=lambda: {'sequence': 2026102188, 'phase': 'complete'},
+    )
+    dialog = SimpleNamespace(
+        select=lambda *a, **k: pytest.fail('Must not prompt when locale.language is already zh_cn'),
+        yesno=lambda *a, **k: pytest.fail('skin.bobbi.cinema must not prompt for Estuary Arial'),
+        ok=lambda *a, **k: None,
+    )
+
+    res = ensure_host_language(host, installer, dialog, rpc_fn=fake_rpc)
+    assert res['action'] == 'explicit_existing'
+    assert res['repaired'] is True
+    assert res['locale'] == 'resource.language.zh_cn'
+    assert 'resource.language.zh_cn' in enabled_addons
+    assert (addons / 'resource.language.zh_cn/addon.xml').is_file()

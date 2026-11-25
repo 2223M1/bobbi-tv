@@ -14,6 +14,7 @@ from pathlib import Path
 import re
 
 _PO_CACHE = {}
+_GUI_LOCALE_CACHE = {}
 _ADDONS_ROOT = Path(__file__).resolve().parents[3]
 _ENTRY_RE = re.compile(
     r'msgctxt\s+"#(\d+)"(?:\s*\n(?:#[^\n]*\n)*)\s*msgid\s+((?:"(?:[^"\\]|\\.)*"\s*\n?)+)(?:#[^\n]*\n)*\s*msgstr\s+((?:"(?:[^"\\]|\\.)*"\s*\n?)+)',
@@ -66,9 +67,48 @@ def normalize_locale(raw_value):
         return ''
     if lowered.startswith(('resource.language.en', 'en_', 'english')) or lowered == 'en':
         return 'en_gb'
-    if lowered.startswith(('resource.language.zh', 'zh_', 'chinese')) or lowered == 'zh':
+    if (
+        lowered.startswith(('resource.language.zh', 'zh_', 'chinese'))
+        or lowered in ('zh', 'chs', 'cht')
+        or '中文' in lowered
+        or '简体' in lowered
+        or '繁體' in lowered
+        or '繁体' in lowered
+    ):
         return 'zh_cn'
     return ''
+
+
+def _guisettings_fallback_locale():
+    """Read-only stat-cached fallback when resource.language.zh_cn addon is absent on disk."""
+    try:
+        import xml.etree.ElementTree as ET
+        import xbmcvfs
+        gui_path = Path(xbmcvfs.translatePath('special://profile/guisettings.xml'))
+        st = gui_path.stat()
+    except Exception:
+        return ''
+    key = (str(gui_path), st.st_mtime_ns, st.st_size)
+    cached = _GUI_LOCALE_CACHE.get(key)
+    if cached is not None:
+        return cached
+    if st.st_size > 2 * 1024 * 1024:
+        return ''
+    try:
+        raw = gui_path.read_bytes()
+        if b'<!DOCTYPE' in raw.upper() or b'<!ENTITY' in raw.upper():
+            return ''
+        root = ET.fromstring(raw)
+        val = ''
+        for node in root.findall('./setting'):
+            if node.get('id') == 'locale.language' and node.get('default') != 'true':
+                val = normalize_locale(node.text or '')
+                break
+        _GUI_LOCALE_CACHE.clear()
+        _GUI_LOCALE_CACHE[key] = val
+        return val
+    except Exception:
+        return ''
 
 
 def current_locale():
@@ -78,26 +118,36 @@ def current_locale():
     except ImportError:
         return 'zh_cn'
 
+    norm = ''
     get_info = getattr(xbmc, 'getInfoLabel', None)
     if callable(get_info):
         try:
             norm = normalize_locale(get_info('System.Language'))
-            if norm:
-                return norm
         except Exception:
-            pass
+            norm = ''
 
-    get_lang = getattr(xbmc, 'getLanguage', None)
-    if callable(get_lang):
-        try:
-            iso_flag = getattr(xbmc, 'ISO_639_1', 0)
-            norm = normalize_locale(get_lang(iso_flag) if isinstance(iso_flag, int) else get_lang())
-            if norm:
-                return norm
-        except Exception:
-            pass
+    if not norm:
+        get_lang = getattr(xbmc, 'getLanguage', None)
+        if callable(get_lang):
+            try:
+                iso_flag = getattr(xbmc, 'ISO_639_1', 0)
+                norm = normalize_locale(get_lang(iso_flag) if isinstance(iso_flag, int) else get_lang())
+            except Exception:
+                norm = ''
 
-    return 'zh_cn'
+    if norm == 'en_gb':
+        get_cond = getattr(xbmc, 'getCondVisibility', None)
+        if callable(get_cond):
+            try:
+                has_zh_pack = bool(get_cond('System.HasAddon(resource.language.zh_cn)'))
+            except Exception:
+                has_zh_pack = True
+            if not has_zh_pack:
+                gui_norm = _guisettings_fallback_locale()
+                if gui_norm == 'zh_cn':
+                    return 'zh_cn'
+
+    return norm or 'zh_cn'
 
 
 def is_english():
