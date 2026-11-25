@@ -27,7 +27,8 @@ def check_versions(offer, versions, changed_paths):
         parts = path.split('/')
         if len(parts) >= 3 and parts[0] == 'addons' and parts[1] in OWNED_COMPONENTS:
             changed.add(parts[1])
-    if bootstrap.intersection(changed_paths):
+    assembly = {'tools/build_ce_entry.py', 'tools/build_online_repository.py'}
+    if (bootstrap | assembly).intersection(changed_paths):
         changed.add('script.bobbi.start')
     prior = offer['versions']
     failures = []
@@ -76,7 +77,8 @@ def preflight(feed, commit=None, root=ROOT):
             versions[addon] = meta.get('version')
     # Include working-tree edits: running before the final commit cannot hide a
     # changed addon. Publication still separately requires a clean frozen tree.
-    changed = git('diff', '--name-only', commit, '--', 'addons').splitlines()
+    changed = git('diff', '--name-only', commit, '--', 'addons',
+                  'tools/build_ce_entry.py', 'tools/build_online_repository.py').splitlines()
     result = check_versions(offer, versions, changed)
     result.update(published_commit=commit, candidate_commit=git('rev-parse', 'HEAD'))
     return result

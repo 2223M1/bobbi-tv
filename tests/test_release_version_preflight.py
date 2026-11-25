@@ -29,6 +29,11 @@ def test_changed_plugin_requires_new_component_version():
         gate.check_versions(offer(), offer()['versions'], ['addons/plugin.video.bobbi/lib/router.py'])
 
 
+def test_launcher_assembly_changes_also_require_new_version():
+    with pytest.raises(ValueError, match='script.bobbi.start'):
+        gate.check_versions(offer(), offer()['versions'], ['tools/build_ce_entry.py'])
+
+
 def test_new_component_and_launcher_versions_pass_without_allocating_release():
     versions = {'script.bobbi.start': '0.2.124', 'script.module.bobbi.platform': '0.1.99',
                 'plugin.video.bobbi': '0.1.98'}
