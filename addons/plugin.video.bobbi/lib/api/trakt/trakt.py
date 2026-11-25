@@ -237,6 +237,7 @@ class TraktBase:
         method=None,
         pagination=False,
         page_no=1,
+        _auth_token=None,
     ):
         params = params or {}
         headers = self._trakt_headers()
@@ -246,10 +247,10 @@ class TraktBase:
 
         request_auth_state = None
         if with_auth:
-            if self.ensure_token_valid() is False:
+            if _auth_token is None and self.ensure_token_valid() is False:
                 return None
             request_auth_state = self._auth_state()
-            token = request_auth_state[0]
+            token = request_auth_state[0] if _auth_token is None else _auth_token
 
             if token:
                 headers["Authorization"] = f"Bearer {token}"
@@ -299,7 +300,7 @@ class TraktBase:
                 )
                 return None
             if status_code == 401:
-                if "Authorization" in headers:
+                if "Authorization" in headers and _auth_token is None:
                     self._handle_unauthorized(request_auth_state)
                 return None
 
@@ -697,28 +698,35 @@ class TraktAuthentication(TraktBase):
             return False
         if not self._auth_current(auth_state):
             return False
-        set_property("trakt_token", str(token["access_token"]))
-        set_property("trakt_refresh", str(token["refresh_token"]))
-        set_property("trakt_expires", str(self._oauth_token_expiration(token)))
-        auth_state = self._auth_state()
         try:
-            user = self.call_trakt("users/me")
+            if not isinstance(token, dict) or any(
+                not isinstance(token.get(key), str) or not token[key].strip()
+                for key in ("access_token", "refresh_token")
+            ):
+                return False
+            expiration = str(self._oauth_token_expiration(token))
+            # A pending account must not replace the active bearer while its
+            # identity request is in flight: concurrent syncs still belong to A.
+            user = self.call_trakt("users/me", _auth_token=token["access_token"])
             if not self._auth_current(auth_state):
                 return False
-            if user and isinstance(user, dict):
-                username = str(user["username"])
-                set_setting("trakt_user", username)
-                set_setting("is_trakt_auth", "true")
-                with contextlib.suppress(Exception):
-                    from lib.api.trakt.trakt_cache import trakt_watched_cache
-                    trakt_watched_cache.bind_account(username)
-                notification(translation(90385), time=3000)
-                return True
-        except Exception:
-            if not self._auth_current(auth_state):
+            username = user.get("username") if isinstance(user, dict) else None
+            if not isinstance(username, str) or not username.strip():
                 return False
-            kodilog("Trakt user not found, setting to empty user")
+            username = username.strip()
             set_setting("is_trakt_auth", "false")
+            set_property("trakt_token", token["access_token"])
+            set_property("trakt_refresh", token["refresh_token"])
+            set_property("trakt_expires", expiration)
+            set_setting("trakt_user", username)
+            with contextlib.suppress(Exception):
+                from lib.api.trakt.trakt_cache import trakt_watched_cache
+                trakt_watched_cache.bind_account(username)
+            set_setting("is_trakt_auth", "true")
+            notification(translation(90385), time=3000)
+            return True
+        except Exception:
+            kodilog("Trakt candidate identity failed; preserving the existing login")
             notification(translation(90384), time=3000)
             return False
 

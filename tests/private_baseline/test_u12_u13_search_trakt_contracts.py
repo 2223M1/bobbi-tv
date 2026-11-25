@@ -988,3 +988,49 @@ def test_round2_trakt_device_login_positive_binds_new_owner(isolated_trakt_env, 
     assert env.props['trakt_token'] == 'bob-token'
     assert env.props['trakt_refresh'] == 'bob-refresh'
     assert env.tc_mod._stored_cache_owner(env.conn) == 'bob'
+
+
+@pytest.mark.parametrize('identity_status', [200, 401])
+def test_round2_trakt_candidate_identity_is_private_until_validated(isolated_trakt_env, monkeypatch, identity_status):
+    env = isolated_trakt_env
+    auth = env.trakt_mod.TraktAuthentication()
+    service = env.ts_mod.TraktSyncService(api=env.trakt_mod.TraktAPI(), monitor=SimpleNamespace())
+    env.watched_cache.set_bulk_movie_watched([('movie', '101', None, None, '2026-11-25', 'Alice')])
+    observations = []
+    monkeypatch.setattr(auth, 'trakt_get_device_code', lambda: {'device_code': 'synthetic'})
+    monkeypatch.setattr(auth, 'trakt_get_device_token', lambda _: {
+        'access_token': 'bob-token', 'refresh_token': 'bob-refresh', 'expires_in': 7200,
+    })
+
+    def send(_self, path, _params, _data, headers, *_args):
+        response = requests.Response()
+        response._content_consumed = True
+        if path == 'users/me':
+            assert headers['Authorization'] == 'Bearer bob-token'
+            observations.append((env.settings['trakt_user'], env.props['trakt_token']))
+            assert service.sync_watched_movies() is True
+            observations.append(env.conn.execute('SELECT media_id FROM watched').fetchall())
+            response.status_code = identity_status
+            response._content = b'{"username":"bob"}'
+        else:
+            assert path == 'sync/watched/movies'
+            owner_id = 101 if headers['Authorization'] == 'Bearer tok-alice' else 202
+            response.status_code = 200
+            response._content = json.dumps([{'last_watched_at': '2026-11-25', 'movie': {
+                'title': 'Synthetic', 'ids': {'tmdb': owner_id},
+            }}]).encode()
+        return response
+
+    monkeypatch.setattr(env.trakt_mod.TraktBase, '_send_request', send)
+    result = auth.trakt_authenticate()
+    assert observations == [('alice', 'tok-alice'), [('101',)]]
+    if identity_status == 200:
+        assert result is True
+        assert env.settings['trakt_user'] == 'bob'
+        assert env.props['trakt_token'] == 'bob-token'
+    else:
+        assert result is False
+        assert env.settings['trakt_user'] == 'alice'
+        assert env.props['trakt_token'] == 'tok-alice'
+        assert env.settings['is_trakt_auth'] == 'true'
+        assert env.watched_cache.get_watched_status('movie', '101') is True
