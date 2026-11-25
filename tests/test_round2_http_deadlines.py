@@ -6,7 +6,9 @@ import time
 import pytest
 import requests
 
-from bobbi_core.http_policy import is_safe_http_url, request_with_safe_redirects, response_json
+from bobbi_core.http_policy import (
+    is_safe_http_url, request_with_safe_redirects, resolved_http_addresses, response_json,
+)
 
 
 @pytest.fixture
@@ -175,3 +177,29 @@ def test_request_adapter_retries_cannot_start_independent_budgets(server):
         assert response.status_code == 503
         response.close()
     assert len(seen) == 1
+
+
+def test_url_policy_and_actual_dial_share_one_vetted_dns_result(server, monkeypatch):
+    from bobbi_core import http_policy
+    from urllib.parse import urlsplit
+    base, _ = server
+    port = urlsplit(base).port
+    original = http_policy.socket.getaddrinfo
+    lookups = []
+
+    def lookup(host, service, *args):
+        lookups.append(host)
+        assert host == 'library.invalid'
+        assert len(lookups) == 1, 'transport must use the vetted result, not resolve again'
+        return original('127.0.0.1', service, *args)
+
+    monkeypatch.setattr(http_policy.socket, 'getaddrinfo', lookup)
+    with requests.Session() as session:
+        deadline = time.monotonic() + 2
+        response = request_with_safe_redirects(
+            session.get, 'http://library.invalid:%d/normal' % port,
+            lambda url: resolved_http_addresses(url) == ['127.0.0.1'],
+            deadline=deadline, stream=True, timeout=2,
+        )
+        assert response_json(response, deadline=deadline)['answer'] == 12345678901234567890
+    assert lookups == ['library.invalid']

@@ -262,6 +262,32 @@ def read_bounded_http_body(
         raise
 
 
+def resolved_http_addresses(url: str) -> list[str]:
+    """Share bounded DNS and its pinned result across public/LAN URL policies."""
+    from .bounded_http import AttemptHandle, resolve_addresses
+    parts = urlsplit(url)
+    try:
+        return [str(ipaddress.ip_address(parts.hostname))]
+    except ValueError:
+        pass
+    context = _VALIDATION_CONTEXT.get()
+    key = _origin_tuple(url)
+    resolved = context['addresses'].get(key) if context is not None else None
+    if resolved is None:
+        attempt = context['attempt'] if context else AttemptHandle(deadline=time.monotonic() + 5)
+        try:
+            resolved = resolve_addresses(
+                parts.hostname, key[2], attempt,
+                resolver=lambda host, port, *_: socket.getaddrinfo(host, port, 0, socket.SOCK_STREAM),
+            )
+        finally:
+            if context is None:
+                attempt.close()
+        if context is not None:
+            context['addresses'][key] = resolved
+    return [entry[4][0] for entry in resolved]
+
+
 def is_safe_http_url(url: Any, resolve_dns: bool = True) -> bool:
     """Return whether *url* is a public HTTP(S) destination."""
     try:
@@ -278,21 +304,7 @@ def is_safe_http_url(url: Any, resolve_dns: bool = True) -> bool:
         except ValueError:
             if not resolve_dns:
                 return True
-            from .bounded_http import AttemptHandle, resolve_addresses
-            context = _VALIDATION_CONTEXT.get()
-            attempt = context['attempt'] if context else AttemptHandle(deadline=time.monotonic() + 5)
-            port = parts.port or (443 if parts.scheme.lower() == 'https' else 80)
-            try:
-                resolved = resolve_addresses(
-                    parts.hostname, port, attempt,
-                    resolver=lambda host, port, *_: socket.getaddrinfo(host, port, 0, socket.SOCK_STREAM),
-                )
-            finally:
-                if context is None:
-                    attempt.close()
-            addresses = [entry[4][0] for entry in resolved]
-            if context is not None:
-                context['addresses'][parts.hostname] = resolved
+            addresses = resolved_http_addresses(url)
         if not addresses:
             return False
         for address in addresses:
@@ -403,7 +415,7 @@ def request_with_safe_redirects(
             response = _bounded_requests_get(
                 request, target, deadline=deadline, cancelled=cancelled, clock=clock,
                 strip_sensitive=strip_sensitive,
-                vetted_addresses=validation['addresses'].get(urlsplit(target).hostname),
+                vetted_addresses=validation['addresses'].get(_origin_tuple(target)),
                 kwargs=call_kwargs,
             )
         try:

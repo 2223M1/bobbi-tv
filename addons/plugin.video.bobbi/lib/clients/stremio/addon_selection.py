@@ -87,7 +87,7 @@ def _configuration_url(addon):
 def _fetch_manifest(url):
     """Fetch a small JSON manifest without exposing a configured URL."""
     manifest_url = _safe_manifest_url(url)
-    if not manifest_url or not is_safe_https_url(manifest_url):
+    if not manifest_url or not is_safe_https_url(manifest_url, resolve_dns=False):
         raise ValueError("invalid manifest URL")
 
     timeout_s = max(1, int(get_int_setting("stremio_timeout") or 10))
@@ -109,7 +109,7 @@ def _fetch_manifest(url):
         )
         response.raise_for_status()
         final_url = _safe_manifest_url(response.url)
-        if not final_url or not is_safe_https_url(final_url):
+        if not final_url or not is_safe_https_url(final_url, resolve_dns=False):
             raise ValueError("unsafe redirect")
         raw = read_bounded_http_body(response, max_bytes=MAX_MANIFEST_BYTES, deadline=deadline)
     finally:

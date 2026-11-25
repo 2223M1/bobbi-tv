@@ -1149,21 +1149,18 @@ def test_u08_src03_stremio_never_downgrades_to_http_while_preserving_explicit_la
     # Explicit LAN HTTP works; public HTTP is rejected before network I/O!
     lan_calls = []
     raw_ok = json.dumps({'id': 'lan.addon', 'name': 'LAN Addon', 'resources': ['stream'], 'types': ['movie']}).encode('utf-8')
-    monkeypatch.setattr(
-        web,
-        'request_with_safe_redirects',
-        lambda getter, target_url, **kw: (
-            lan_calls.append(target_url)
-            or SimpleNamespace(
-                url=target_url,
-                status_code=200,
-                headers={},
-                raise_for_status=lambda: None,
-                iter_content=lambda chunk_size=8192: [raw_ok],
-                close=lambda: None,
-            )
-        ),
-    )
+    def permitted_lan_get(getter, target_url, **kw):
+        # Per-hop DNS/policy runs inside the shared GET budget, before its actual
+        # network operation. The injected transport must preserve that boundary.
+        if not kw['validator'](target_url):
+            raise ValueError('unsafe request destination')
+        lan_calls.append(target_url)
+        return SimpleNamespace(
+            url=target_url, status_code=200, headers={}, raise_for_status=lambda: None,
+            iter_content=lambda chunk_size=8192: [raw_ok], close=lambda: None,
+        )
+
+    monkeypatch.setattr(web, 'request_with_safe_redirects', permitted_lan_get)
     res_lan, man_lan, err_lan = web.prepare_stremio_addon('http://192.168.1.50:7000/manifest.json')
     assert err_lan is None and res_lan == 'http://192.168.1.50:7000/manifest.json' and man_lan['id'] == 'lan.addon'
 

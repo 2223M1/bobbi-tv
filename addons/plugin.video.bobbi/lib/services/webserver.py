@@ -27,7 +27,7 @@ from lib.clients.stremio.constants import (
     decode_selected_ids,
     encode_selected_ids,
 )
-from bobbi_core.http_policy import read_bounded_http_body
+from bobbi_core.http_policy import read_bounded_http_body, resolved_http_addresses
 from lib.clients.stremio.protocol import (
     MAX_RESOURCE_JSON_BYTES,
     is_safe_http_url,
@@ -130,9 +130,6 @@ def _is_local_or_private_host(url):
     host = (urlsplit(url).hostname or "").lower()
     if not host:
         return False
-    if host == "localhost":
-        return True
-
     try:
         ip = ipaddress.ip_address(host)
         return ip.is_private or ip.is_loopback
@@ -140,7 +137,7 @@ def _is_local_or_private_host(url):
         pass
 
     try:
-        addresses = [entry[4][0] for entry in socket.getaddrinfo(host, None)]
+        addresses = resolved_http_addresses(url)
     except (OSError, UnicodeError):
         return False
 
@@ -165,10 +162,13 @@ def _safe_url_description(url):
     return "<redacted URL>"
 
 
-def _allowed_manifest_url(url):
+def _allowed_manifest_url(url, *, resolve_dns=True):
     parts = urlsplit(url)
-    if parts.scheme not in {"http", "https"} or parts.username or parts.password:
+    if (parts.scheme not in {"http", "https"} or not parts.hostname
+            or parts.username or parts.password or parts.fragment):
         return False
+    if not resolve_dns:
+        return True  # Syntax only; the complete per-hop check belongs to the GET deadline.
     if parts.scheme == "http":
         return _is_local_or_private_host(url)
     return is_safe_http_url(url) or _is_local_or_private_host(url)
@@ -243,7 +243,7 @@ def _fetch_manifest(url):
     resp = None
     deadline = time.monotonic() + 10.0
     try:
-        if not _allowed_manifest_url(url):
+        if not _allowed_manifest_url(url, resolve_dns=False):
             raise ValueError("manifest destination rejected")
         kodilog(f"[WebServer] Fetching Stremio manifest: {_safe_url_description(url)}")
         headers = dict(USER_AGENT_HEADER)
@@ -258,7 +258,7 @@ def _fetch_manifest(url):
             stream=True,
         )
         resp.raise_for_status()
-        if not _allowed_manifest_url(resp.url):
+        if not _allowed_manifest_url(resp.url, resolve_dns=False):
             raise ValueError("manifest redirect rejected")
         raw = read_bounded_http_body(resp, max_bytes=MAX_RESOURCE_JSON_BYTES, deadline=deadline)
         manifest = json.loads(raw.decode("utf-8"))
