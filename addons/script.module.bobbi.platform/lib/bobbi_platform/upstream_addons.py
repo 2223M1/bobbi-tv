@@ -18,9 +18,12 @@ OWNED_COMPONENTS = frozenset(('plugin.video.bobbi', 'plugin.video.bobbi.library'
     'script.module.bobbi.catalog', 'script.module.bobbi.core', 'script.module.bobbi.mdsub',
     'script.module.bobbi.platform', 'skin.bobbi.cinema'))
 FULL_COMPONENTS = OWNED_COMPONENTS | UPSTREAM_COMPONENTS
+# These are tested installed Kodi floors, not the versions of bundled seeds.
+# release/http-runtime-policy.json and check_http_runtime_matrix.py bind the
+# exact old/current bytes to the production consumer contract.
 DECLARED_HTTP_RUNTIME_FLOORS = {
-    'script.module.requests': '2.34.2',
-    'script.module.urllib3': '2.8.0',
+    'script.module.requests': '2.31.0',
+    'script.module.urllib3': '2.2.3',
 }
 
 

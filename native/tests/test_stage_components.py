@@ -114,47 +114,37 @@ class StageTests(unittest.TestCase):
         self.assertFalse((self.host / 'addons').exists())
 
 
-    def test_archive_mutated_between_validation_and_extraction_never_extracts_unverified_bytes(self):
+    def test_archive_mutation_after_snapshot_does_not_change_extracted_bytes(self):
         first_archive = self.root / self.rows[0]['file']
-        second_archive = self.root / self.rows[1]['file']
         original_zip = STAGE.zipfile.ZipFile
-        open_calls = []
+        seen = []
 
-        def intercept_after_first_validated(path, *args, **kwargs):
-            open_calls.append(Path(path))
-            if Path(path) == second_archive:
-                # Mutate first_archive AFTER its validation finished, BEFORE extraction starts
+        def intercept_verified_snapshot(fileobj, *args, **kwargs):
+            # stage must not reopen a path. Mutate the real path after its
+            # bounded snapshot is captured, before its central directory parses.
+            self.assertTrue(hasattr(fileobj, 'read'))
+            if not seen:
                 with original_zip(first_archive, 'w') as tampered:
-                    tampered.writestr(self.rows[0]['id'] + '/addon.xml', f'<addon id="{self.rows[0]["id"]}" version="1.0"/>')
-                    tampered.writestr(self.rows[0]['id'] + '/code.py', 'UNVERIFIED_TAMPERED\n')
-            return original_zip(path, *args, **kwargs)
+                    addon = self.rows[0]['id']
+                    tampered.writestr(addon + '/addon.xml', f'<addon id="{addon}" version="1.0"/>')
+                    tampered.writestr(addon + '/code.py', 'UNVERIFIED_TAMPERED\n')
+            seen.append(fileobj)
+            return original_zip(fileobj, *args, **kwargs)
 
-        STAGE.zipfile.ZipFile = intercept_after_first_validated
+        STAGE.zipfile.ZipFile = intercept_verified_snapshot
         try:
             STAGE.stage(self.manifest, self.host)
         finally:
             STAGE.zipfile.ZipFile = original_zip
-        self.assertEqual(open_calls.count(first_archive), 1)
+        self.assertEqual(len(seen), len(self.rows))
         self.assertEqual((self.host / 'addons/plugin.video.bobbi/code.py').read_text(), 'print("fixture")\n')
 
-    def test_archive_mutated_between_stat_hash_and_zip_open_is_rejected(self):
+    def test_archive_grows_before_snapshot_is_rejected_before_writes(self):
         first_archive = self.root / self.rows[0]['file']
-        original_zip = STAGE.zipfile.ZipFile
-
-        def intercept_during_open(path, *args, **kwargs):
-            zf = original_zip(path, *args, **kwargs)
-            if Path(path) == first_archive:
-                with original_zip(first_archive, 'w') as tampered:
-                    tampered.writestr(self.rows[0]['id'] + '/addon.xml', f'<addon id="{self.rows[0]["id"]}" version="1.0"/>')
-                    tampered.writestr(self.rows[0]['id'] + '/code.py', 'UNVERIFIED_TAMPERED\n')
-            return zf
-
-        STAGE.zipfile.ZipFile = intercept_during_open
-        try:
-            with self.assertRaisesRegex(ValueError, 'changed during validation'):
-                STAGE.stage(self.manifest, self.host)
-        finally:
-            STAGE.zipfile.ZipFile = original_zip
+        with first_archive.open('ab') as stream:
+            stream.write(b'changed after manifest freeze')
+        with self.assertRaisesRegex(ValueError, 'Component hash mismatch'):
+            STAGE.stage(self.manifest, self.host)
         self.assertFalse((self.host / 'addons').exists())
 
 

@@ -433,7 +433,7 @@ def test_upgrade_declares_the_http_runtime_used_by_hardening_tests(tmp_path):
         check_dependencies,
     )
 
-    expected = {'script.module.requests': '2.34.2', 'script.module.urllib3': '2.8.0'}
+    expected = {'script.module.requests': '2.31.0', 'script.module.urllib3': '2.2.3'}
     assert DECLARED_HTTP_RUNTIME_FLOORS == expected
 
     for name in UPSTREAM_COMPONENTS:
@@ -444,9 +444,9 @@ def test_upgrade_declares_the_http_runtime_used_by_hardening_tests(tmp_path):
     minimums = check_dependencies(tmp_path, ROOT / 'addons')
     assert {name: minimums[name] for name in expected} == expected
 
-    # Outdated 2.31.0 / 2.2.3 raises clear diagnostic and never overwrites Kodi-owned folder
+    # A runtime below the tested Kodi floor fails clearly without overwriting Kodi-owned folders
     (tmp_path / 'script.module.requests/addon.xml').write_text(
-        '<addon id="script.module.requests" version="2.31.0"/>', encoding='utf-8'
+        '<addon id="script.module.requests" version="2.30.0"/>', encoding='utf-8'
     )
     with pytest.raises(UpdateError) as exc_info:
         check_dependencies(tmp_path, ROOT / 'addons')
@@ -513,18 +513,18 @@ def test_native_staging_does_not_reopen_unverified_changed_archives(tmp_path, mo
     manifest = tmp_path / 'manifest.json'
     manifest.write_text(json.dumps({'version': 'fixture', 'components': rows}), encoding='utf-8')
     first = tmp_path / (names[0] + '.zip')
-    first_read_count = [0]
+    opened_snapshots = []
 
-    def open_with_change(path, *args, **kwargs):
-        if Path(path) == first and (not args or args[0] == 'r'):
-            first_read_count[0] += 1
-            if first_read_count[0] == 2:
-                write_archive(first, names[0], 'changed after validation')
-        return original_zipfile(path, *args, **kwargs)
+    def open_with_change(snapshot, *args, **kwargs):
+        assert hasattr(snapshot, 'read'), 'verified archives must not reopen the source path'
+        if not opened_snapshots:
+            write_archive(first, names[0], 'changed after validation')
+        opened_snapshots.append(snapshot)
+        return original_zipfile(snapshot, *args, **kwargs)
 
     monkeypatch.setattr(stage.zipfile, 'ZipFile', open_with_change)
     stage.stage(manifest, host)
-    assert first_read_count[0] == 1
+    assert len(opened_snapshots) == len(names)
     assert (host / 'addons' / names[0] / 'code.py').read_text(encoding='utf-8') == 'verified code'
 
 

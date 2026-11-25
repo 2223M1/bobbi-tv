@@ -2,6 +2,10 @@
 
 本文件对应 `codex/ultimate-047c0f18` 候选分支的当前代码与离线/辅助设备证据。仓库中保留的 `2026102134`（`2acdba8`）、`2026102135`（`35b9d61`）、`2026102136`（`42a3729`）、`2026102155`（`r18-device-acceptance.md`）与线上已签发 `CE2184`（`2026102184`）均为**明确历史版本记录**，保留其原始通过、失败、负控与回执摘要，不冒充本候选的真机全量结果。
 
+本轮复审补充：上一轮本地验收报告记录了 AM6B+ 的 Python 3.11.9 / requests 2.34.2 / urllib3 2.8.0、5 冷 5 暖启动、私有输入分片与 CE2184 恢复。这些属于已提供的历史辅助验收；其原始本地收据尚未在当前复审环境逐份回读，不将其移植为本轮新补丁的设备 PASS。用户已确认输入来自真实 Yatse，后续不再要求手机 ADB、UI 自动化或来源自证；以实际操作及盒端结果完成尚未执行的场景。
+
+复审同时发现：官方 Kodi Omega 依赖目录仅提供 requests 2.31.0 / urllib3 2.2.3，单纯把依赖下限提高到捆绑版本会阻断已有用户升级。当前策略保留已有 Kodi 组件，使用固定哈希的官方下限 ZIP 与捆绑版本分别运行生产消费者契约；详见 `release/http-runtime-policy.json`、`tools/check_http_runtime_matrix.py`。这项兼容认证不把旧库所有裸 API 宣称为新版安全等价。
+
 ## 1. 能力分层与外部参考边界
 
 每项来源与播放能力严格区分六个证据层级，不因界面存在按钮或静态路由可达而宣称全链支持：
@@ -13,7 +17,7 @@
 | 字节流读取与重定向 | `bounded_http` 单地址切片超时回退不污染全局 `AttemptHandle`；Stremio/Nuvio 共用 `http_policy` 安全重定向关闭、响应大小上限与截止时间且禁静默降级 `http://`；`source_media_http` + `SourceStreams` 在探测与后续 `Range` 每跳连接前校验 `(source_id, generation)` 同源或电视显式批准，跨源剥离敏感头；支持 `Protocol == 'File'` 直连与 `Protocol == 'Http'` 受控网关子集（弱会话身份强制零起点）。 | 必须服务端动态转码的 HLS/DASH 会话、任意脚本/网页解析与未批准跨站流仍拒绝。 |
 | 播放实例权威与续集 | `PlaybackAuthority` 统一管理播放选择与 `authorize_next` / `reserve_child` 3 秒续播窗口；`PlaybackControlServer` 复用 `playback_completion.terminal_end`（毫秒位置、5 秒新鲜度、同实例校核）与同实例时钟采样，早退流降级为 `ERROR`；`Host.owned_next`（`OwnedNextCoordinator`）统一纳管摘要预取与续集探测并支持取消/排空回执；`NextResolution` 区分末集完结、页上限、多版本待选、鉴权失败与网络错误。 | `standard` 播放器无 `native` 原子实例收据，仅在受检事件窗口内提供观察级近似，不宣称原子级切换。 |
 | 远端会话回报与双端冲突 | `EmbyInvalidationHub` 非重入锁纯投影 + 完整有界 RFC 6455 客户端帧流（校验 `101`/`Sec-WebSocket-Accept`、客户端掩码、分片重组上限、`Ping`/`Pong`/`Close`）+ 摘要轮询回退；`EmbySessionReporter` 持久化已证实服务器基线 `UserData`，离线期间外部客户端改写（如改到更小的 `200s`、重置未看或标记已看）时拒绝旧 `900s` 覆盖，同实例回退拖动（`900s -> 600s`）如实写回；`Host.close()` 中止在途请求并在线程未退出前保留 `runtime.lease`。 | **Infuse Direct / EmbyCon 仅作交互语义与服务器 `UserData`/会话状态参考**；不复制任何闭源同步实现，不承诺固定毫秒/秒级推送时延。 |
-| 实机遥控与音画解码 | CoreELEC / Kodi 21（Python `3.11+`，捆绑及声明下限对齐 `requests >= 2.34.2`、`urllib3 >= 2.8.0`）宿主导入、组件原子快照解包（`REL-02`）已验证；Windows 旧 `python3.8.dll` 宿主非本轮发行目标（`PLAT-01`）。 | **实体手机 Yatse + ADB UI 全量 152 场景**在缺连接手机/`adb` 时如实记为 `BLOCKED`（绝不用 Kodi JSON-RPC `Input.*` 冒充 `real_yatse` PASS）；**Dolby Vision Profile 7 FEL** 须具备授权双层 BL+EL+RPU 样片与解码/显示链实证，缺样片与采集链时记为 `BLOCKED`，绝不凭文件名、`DV` 徽标或 `P7` 标签宣称支持。 |
+| 实机遥控与音画解码 | CoreELEC / Kodi 21（Python `3.11+`，已安装依赖下限 `requests >= 2.31.0`、`urllib3 >= 2.2.3`；新安装捆绑 `2.34.2` / `2.8.0`）宿主导入、组件原子快照解包（`REL-02`）已验证；Windows 旧 `python3.8.dll` 宿主非本轮发行目标（`PLAT-01`）。 | **真实 Yatse 信号来源已由用户确认**；152 场景逐项记录操作及盒端效果，不要求 ADB、手机 UI 自动化或额外来源证明。尚未执行的场景仍为 `NOT_RUN`，不能仅凭来源确认批量变为 PASS；**Dolby Vision Profile 7 FEL** 须具备授权双层 BL+EL+RPU 样片与解码/显示链实证，缺样片与采集链时记为 `BLOCKED`，绝不凭文件名、`DV` 徽标或 `P7` 标签宣称支持。 |
 
 ## 2. 历史私有配置复核结论（`my_ext.json`）
 
@@ -33,14 +37,14 @@
 | `R02` (`U10`, `U19`) | 前端纯文本渲染与分页交互 | **离线通过**：`manage.js`/`manage.html` 零动态 HTML 拼接，`68` 项 Node 前端回归通过。 |
 | `R03` / `R11` (`U06`) | 云盘分页完整性与断点续扫 | **离线通过**：`MediaIndex` `v3` 持久化分页 `proof`、统一恢复原因码、10 万条有界扫描与 `SIGKILL` 恢复通过。 |
 | `R04` / `R05` (`U12`, `U13`) | 搜索失败保留与 Trakt 状态分离 | **离线通过**：Prowlarr 等失败保留已有结果并可重试；Trakt `401`/未知返回 `None` 不清空旧缓存，`200 []` 原子事务清空目标桶。 |
-| `R06` (`U08`, `U15`) | 有界 HTTP、TLS 与运行库下限 | **离线通过**：`connect_tcp` 单切片回退、禁 `https->http` 降级、流式上限与 `requests 2.34.2` / `urllib3 2.8.0` 下限一致。 |
+| `R06` (`U08`, `U15`) | 有界 HTTP、TLS 与运行库下限 | **离线通过**：`connect_tcp` 单切片回退、禁 `https->http` 降级、流式上限与 官方 Kodi `2.31.0` / `2.2.3` 与捆绑 `2.34.2` / `2.8.0` 分别通过实际加载消费者矩阵；保留上游组件所有权。 |
 | `R07` / `R08` (`U02`, `U03`, `U17`) | 播放完成权威、同实例时钟与续集准入 | **离线通过**：早退流不误判完播，跨实例不串读时钟，`authorize_next` + `reserve_child` 3 秒内精确一次续播，摘要预取不建远端会话。 |
 | `R09` / `R10` (`U01`, `U04`, `U05`) | Emby 失效刷新、队列合并、冲突保护与排空 | **离线通过**：非重入锁纯投影、RFC 6455 帧流、SQLite busy 恢复、1:1 进度标记、离线外部改写保护与 `Host.close()` 真实排空通过。 |
-| `R12` / `R13` (`U14`) | Emby 单次目录完成、模态延迟刷新与首页单源生成 | **离线通过**：`execute_home_rail`/`execute` 唯一 `finally` 完成出口，取消不落盘，`home_rails.json` 同时生成 XML 与 `home_rails_meta.py`。 |
+| `R12` / `R13` (`U14`) | Emby 单次目录完成、模态延迟刷新与首页单源生成 | **离线通过**：`execute_home_rail`/`execute` 唯一 `finally` 完成出口，取消不落盘，`home_rails.json` 同时生成 XML 与 `home_rails_meta.py`。复审补充：仅确认已读取的 Emby 修订，且刷新旧修订时不丢弃并发到达的新修订。 |
 | `R14` / `R15` (`U07`, `U09`) | T4 自足票据、有界分页与媒体逐跳同源网关 | **离线通过**：`T4TokenStore` `v2` 自足 `play` 记录、原生分类筛选目录、逐跳连接前同源检查与 Emby `Http` 网关子集通过。 |
 | `R16` (`U18`) | 诊断隐私 schema 与真实本地 Workers/D1 | **离线通过**：默认 Node 测试与真实本地 Wrangler `4.167.0` + D1 SQLite 去重行计数（`receipt_count=1, daily_delta=1`）均已核验。 |
-| `R17` (`U15`, `U17`, `U19`) | 可复现构建、原子解包与发布门负控 | **离线通过**：两次 `source-check` 逐字节一致，`stage-components.py` 单快照校验解包，历史重打包编排安全负控已迁入当前门禁。 |
-| `R18` (`U17`, `U20`, `U21`) | 架构图、能力矩阵与实机冷暖启动/恢复 | **离线通过 + AM6B+ 辅助校验（实体手机 Yatse 为 `BLOCKED`）**：架构图确定性重生成且零反向依赖；AM6B+ 实机辅助校验与回退恢复至 `CE2184` 单独记录，缺 Android 手机/`adb` 的 `real_yatse` 场景保持 `BLOCKED`。 |
+| `R17` (`U15`, `U17`, `U19`) | 可复现构建、原子解包与发布门负控 | **离线通过**：两次 `source-check` 逐字节一致，`stage-components.py` 直接从已校验的 `BytesIO` 单快照解析及解包，历史重打包编排安全负控已迁入当前门禁。 |
+| `R18` (`U17`, `U20`, `U21`) | 架构图、能力矩阵与实机冷暖启动/恢复 | **历史本地报告：离线通过 + AM6B+ 辅助校验并恢复 CE2184**。真实 Yatse 信号来源已由用户确认，ADB 不构成门槛；本轮新补丁仍需用真实操作及盒端效果完成逐项验收。 |
 | `R19` (`U10`, `U11`, `U20`) | 私有 JSON 复核、分片上传与桥接五阶段 | **私有输入与分片契约通过，真实外部 Spider 桥接为 `BLOCKED`**：原 `my_ext.json` 复核与 6 分片上传通过；缺外部桥接运行时与站点凭据的逐站实测保持 `BLOCKED`。 |
 
 ## 4. 已删除重复通路与消费者迁移表

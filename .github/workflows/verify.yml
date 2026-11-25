@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -24,6 +26,8 @@ jobs:
           printf 'event=%s ref=%s\n' "$VERIFY_EVENT" "$VERIFY_REF"
           git show -s --format='commit=%H%ntree=%T%nparents=%P'
       - run: python -m pip install -r requirements-test.txt
+      - name: Reject changed components or bootstrap reusing published versions
+        run: python tools/check_release_versions.py --published-feed repository/stable/current.json
       - name: Check diagnostic receiver with SQLite
         run: node --test infra/diagnostics/intake.test.mjs
       - name: Check paired phone frontend suites
@@ -90,4 +94,25 @@ jobs:
             test-results/native/native-ci-*/generic/generic-*/result.json
             test-results/native/native-ci-*/negative/completion-gate-*/result.json
             test-results/native/native-ci-*/negative/completion-gate-*/*/results/generic-*/result.json
+          if-no-files-found: error
+  http-runtime-matrix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -r requirements-test.txt
+      - name: Verify actual Kodi floor and bundled HTTP consumers
+        run: python tools/check_http_runtime_matrix.py --fetch-floor --output "$RUNNER_TEMP/bobbi-http-runtime-matrix"
+      - name: Preserve runtime identity and consumer test evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: http-runtime-${{ github.event_name }}-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/bobbi-http-runtime-matrix/runtime-matrix.json
+            ${{ runner.temp }}/bobbi-http-runtime-matrix/*.xml
+            ${{ runner.temp }}/bobbi-http-runtime-matrix/*.log
           if-no-files-found: error

@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "policy": "preserve-kodi-owned-dependencies-with-tested-consumer-contracts",
+  "minimums": {"script.module.requests": "2.31.0", "script.module.urllib3": "2.2.3"},
+  "bundled": {"script.module.requests": "2.34.2", "script.module.urllib3": "2.8.0"},
+  "floor_artifacts": [
+    {
+      "id": "script.module.requests", "version": "2.31.0",
+      "url": "https://mirrors.kodi.tv/addons/omega/script.module.requests/script.module.requests-2.31.0.zip",
+      "bytes": 67576,
+      "sha256": "a5704f0fd7afb4154e1beea9b5f05a002bcd75fa581a1e5fd15ece39bf2bd38a"
+    },
+    {
+      "id": "script.module.urllib3", "version": "2.2.3",
+      "url": "https://mirrors.kodi.tv/addons/omega/script.module.urllib3/script.module.urllib3-2.2.3.zip",
+      "bytes": 130842,
+      "sha256": "740b2d63bb50eee9fb35f01c567ec8d3588c5bbd548e2b8d280932be30d82f53"
+    }
+  ],
+  "scope": "Consumer compatibility of the production bounded transport, redirects, JSON caps, cancellation and CE dependency ownership. This is not blanket security equivalence of old and bundled libraries.",
+  "fresh_install": "Seed signed bundled originals only when the Kodi addon is absent; retain Kodi ownership after installation.",
+  "upgrade": "Preserve installed Kodi addons at or above the tested floor; do not require versions absent from the official Kodi Omega repository.",
+  "device_receipt": "Record actual requests and urllib3 __version__, __file__, Python version and installed dependency origins on the target CE before promotion."
+}

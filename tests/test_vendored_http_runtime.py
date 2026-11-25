@@ -351,44 +351,44 @@ def test_r06_06_custom_adapter_and_kodi_upstream_ownership_preservation(tmp_path
         httpd.server_close()
         worker.join(2)
 
-    # Verify installed Kodi upstream addons are preserved when >= minimum (2.34.2 / 2.8.0), and rejected via Kodi upgrade path when outdated
+    # Verify installed Kodi upstream addons are preserved when >= minimum (2.31.0 / 2.2.3), and rejected via Kodi upgrade path when outdated
     addons_dir = tmp_path / 'addons'
     for name in UPSTREAM_COMPONENTS:
-        ver = '2.34.2' if name == 'script.module.requests' else '2.8.0' if name == 'script.module.urllib3' else '99.0.0'
+        ver = '2.31.0' if name == 'script.module.requests' else '2.2.3' if name == 'script.module.urllib3' else '99.0.0'
         comp = addons_dir / name
         comp.mkdir(parents=True)
         (comp / 'addon.xml').write_text(f'<addon id="{name}" version="{ver}"/>', encoding='utf-8')
         (comp / 'kodi-origin-marker').write_text('kodi-owned', encoding='utf-8')
 
     minimums = check_dependencies(addons_dir, ROOT / 'addons')
-    assert minimums['script.module.requests'] == '2.34.2'
-    assert minimums['script.module.urllib3'] == '2.8.0'
+    assert minimums['script.module.requests'] == '2.31.0'
+    assert minimums['script.module.urllib3'] == '2.2.3'
     assert (addons_dir / 'script.module.requests/kodi-origin-marker').read_text(encoding='utf-8') == 'kodi-owned'
 
-    # Higher third-party installed Kodi addons (>= 2.34.2 / >= 2.8.0) are also accepted without overwriting
+    # Higher third-party installed Kodi addons (>= 2.31.0 / >= 2.2.3) are also accepted without overwriting
     (addons_dir / 'script.module.requests/addon.xml').write_text(
         '<addon id="script.module.requests" version="2.35.0+matrix.1"/>', encoding='utf-8'
     )
     (addons_dir / 'script.module.urllib3/addon.xml').write_text(
         '<addon id="script.module.urllib3" version="2.9.1+matrix.1"/>', encoding='utf-8'
     )
-    assert check_dependencies(addons_dir, ROOT / 'addons')['script.module.urllib3'] == '2.8.0'
+    assert check_dependencies(addons_dir, ROOT / 'addons')['script.module.urllib3'] == '2.2.3'
     assert (addons_dir / 'script.module.requests/kodi-origin-marker').read_text(encoding='utf-8') == 'kodi-owned'
 
-    # Outdated 2.31.0 / 2.2.3 installed Kodi addons fail closed with Kodi upgrade instruction without overwriting
+    # Below-floor installed Kodi addons fail closed with Kodi upgrade instruction without overwriting
     (addons_dir / 'script.module.requests/addon.xml').write_text(
-        '<addon id="script.module.requests" version="2.31.0"/>', encoding='utf-8'
+        '<addon id="script.module.requests" version="2.30.0"/>', encoding='utf-8'
     )
-    with pytest.raises(UpdateError, match='script.module.requests requires 2.34.2; install/update it in Kodi'):
+    with pytest.raises(UpdateError, match='script.module.requests requires 2.31.0; install/update it in Kodi'):
         check_dependencies(addons_dir, ROOT / 'addons')
     assert (addons_dir / 'script.module.requests/kodi-origin-marker').read_text(encoding='utf-8') == 'kodi-owned'
 
     (addons_dir / 'script.module.requests/addon.xml').write_text(
-        '<addon id="script.module.requests" version="2.34.2"/>', encoding='utf-8'
+        '<addon id="script.module.requests" version="2.31.0"/>', encoding='utf-8'
     )
     (addons_dir / 'script.module.urllib3/addon.xml').write_text(
-        '<addon id="script.module.urllib3" version="2.2.3"/>', encoding='utf-8'
+        '<addon id="script.module.urllib3" version="2.2.2"/>', encoding='utf-8'
     )
-    with pytest.raises(UpdateError, match='script.module.urllib3 requires 2.8.0; install/update it in Kodi'):
+    with pytest.raises(UpdateError, match='script.module.urllib3 requires 2.2.3; install/update it in Kodi'):
         check_dependencies(addons_dir, ROOT / 'addons')
     assert (addons_dir / 'script.module.urllib3/kodi-origin-marker').read_text(encoding='utf-8') == 'kodi-owned'

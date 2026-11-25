@@ -451,10 +451,13 @@ class EmbyInvalidationHub:
                         st['changed_items'].popitem(last=False)
             return st['revision']
 
-    def mark_confirmed(self, source_id: str, generation: str, *, offline: bool = False) -> dict:
+    def mark_confirmed(self, source_id: str, generation: str, *, offline: bool = False,
+                       expected_revision: int | None = None) -> dict:
         now = self.clock()
         with self._lock:
             st = self._entry(source_id, generation)
+            if expected_revision is not None and st['revision'] != expected_revision:
+                return self._snapshot_locked(st)
             if offline:
                 st['sync_state'] = 'offline'
             else:

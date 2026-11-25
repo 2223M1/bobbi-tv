@@ -1,6 +1,6 @@
 """One shared, drainable dependency worker; the owner only publishes revisions."""
 from queue import Empty, Full, Queue
-from threading import Event, Thread
+from threading import Event, Lock, Thread
 from time import monotonic, time
 
 import xbmc
@@ -21,6 +21,7 @@ class WidgetRefreshService:
         self._emby_sources_cache = (0.0, ())
         self._active_emby_sources = None
         self._pending_container = None
+        self._container_lock = Lock()
         self._last_refreshed_container = None
 
     @staticmethod
@@ -37,36 +38,48 @@ class WidgetRefreshService:
 
     @property
     def _pending_container_source(self):
-        return None if self._pending_container is None else self._pending_container['source_id']
+        with self._container_lock:
+            return None if self._pending_container is None else self._pending_container['source_id']
 
     @_pending_container_source.setter
     def _pending_container_source(self, value):
         if value is None:
-            self._pending_container = None
+            with self._container_lock:
+                self._pending_container = None
             return
         folder = xbmc.getInfoLabel('Container.FolderPath') if hasattr(xbmc, 'getInfoLabel') else ''
         in_lib, sid, gen = self._parse_library_folder(folder)
         matched = folder if (in_lib and (sid == value or (not sid and value in folder))) else None
-        self._pending_container = {
+        record = {
             'profile': self._profile_identity(),
             'source_id': value,
             'generation': gen if matched is not None else '',
             'revision': None,
             'container': matched,
         }
+        with self._container_lock:
+            self._pending_container = record
 
     def _schedule_container_refresh(self, source_id, generation, revision, container):
         profile_id = self._profile_identity()
         dedup = (profile_id, source_id, generation, revision, container)
         if revision is not None and self._last_refreshed_container == dedup:
             return
-        self._pending_container = {
-            'profile': profile_id,
-            'source_id': source_id,
-            'generation': generation,
-            'revision': revision,
-            'container': container,
-        }
+        with self._container_lock:
+            self._pending_container = {
+                'profile': profile_id,
+                'source_id': source_id,
+                'generation': generation,
+                'revision': revision,
+                'container': container,
+            }
+
+    def _ack_container_refresh(self, record):
+        # Kodi dispatch can release the interpreter while the dependency worker
+        # publishes another revision. Acknowledge only our own snapshot.
+        with self._container_lock:
+            if self._pending_container is record:
+                self._pending_container = None
 
     def start(self):
         if self.worker is None and not self.stop.is_set():
@@ -95,11 +108,12 @@ class WidgetRefreshService:
             self.mailbox.put_nowait(dict(self.observed))
 
     def _flush_pending_container_refresh(self):
-        rec = self._pending_container
+        with self._container_lock:
+            rec = self._pending_container
         if rec is None or self.stop.is_set():
             return
         if rec['profile'] != self._profile_identity():
-            self._pending_container = None
+            self._ack_container_refresh(rec)
             return
         if rec['revision'] is None and 'emby_server' in self.revisions:
             rec['revision'] = self.revisions['emby_server']
@@ -108,19 +122,19 @@ class WidgetRefreshService:
             and self._active_emby_sources is not None
             and (rec['source_id'], rec['generation']) not in self._active_emby_sources
         ):
-            self._pending_container = None
+            self._ack_container_refresh(rec)
             return
         folder = xbmc.getInfoLabel('Container.FolderPath') if hasattr(xbmc, 'getInfoLabel') else ''
         in_lib, folder_sid, folder_gen = self._parse_library_folder(folder)
         source_matches = folder_sid == rec['source_id'] if folder_sid else rec['source_id'] in folder
         if not in_lib or not source_matches:
-            self._pending_container = None
+            self._ack_container_refresh(rec)
             return
         if rec['generation'] and folder_gen and folder_gen != rec['generation']:
-            self._pending_container = None
+            self._ack_container_refresh(rec)
             return
         if rec['container'] is not None and folder != rec['container']:
-            self._pending_container = None
+            self._ack_container_refresh(rec)
             return
         if rec['container'] is None:
             rec['container'] = folder
@@ -131,7 +145,7 @@ class WidgetRefreshService:
             return
         dedup = (rec['profile'], rec['source_id'], rec['generation'], rec['revision'], folder)
         if rec['revision'] is not None and self._last_refreshed_container == dedup:
-            self._pending_container = None
+            self._ack_container_refresh(rec)
             return
         try:
             xbmc.executebuiltin('Container.Refresh')
@@ -139,13 +153,14 @@ class WidgetRefreshService:
             return  # Retain pending state for retry if builtin dispatch fails.
         if rec['revision'] is not None:
             self._last_refreshed_container = dedup
-        self._pending_container = None
+        self._ack_container_refresh(rec)
 
     def tick(self):
         """Owner thread: one bounded mailbox read and Window revision updates."""
         if not self._profile_current():
             self.pending = None
-            self._pending_container = None
+            with self._container_lock:
+                self._pending_container = None
             self._last_refreshed_container = None
             return
         try:

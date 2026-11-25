@@ -38,16 +38,13 @@ def stage(manifest_path, host):
             raise ValueError('Invalid component byte count: ' + addon)
         archive = manifest_path.parent.joinpath(*relative.parts)
         with archive.open('rb') as raw_handle:
-            data = raw_handle.read()
+            data = raw_handle.read(row['bytes'] + 1)
         if len(data) != row['bytes'] or hashlib.sha256(data).hexdigest() != row['sha256']:
             raise ValueError('Component hash mismatch: ' + addon)
-        with zipfile.ZipFile(archive, 'r') as zipped:
-            if hasattr(zipped, 'fp') and zipped.fp is not None:
-                zipped.fp.seek(0)
-                reopen_bytes = zipped.fp.read()
-                if reopen_bytes != data:
-                    raise ValueError('Component archive changed during validation: ' + addon)
-                zipped.fp = io.BytesIO(data)
+        # Parse metadata and extract payloads from the same verified snapshot.
+        # Reopening the pathname then swapping ZipFile.fp leaves its directory
+        # metadata tied to a separate read and doubles compressed IO/memory.
+        with zipfile.ZipFile(io.BytesIO(data), 'r') as zipped:
             names = set()
             meta = ET.fromstring(zipped.read(addon + '/addon.xml'))
             if meta.get('id') != addon or meta.get('version') != row['version']:

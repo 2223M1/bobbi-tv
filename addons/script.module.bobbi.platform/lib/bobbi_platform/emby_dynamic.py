@@ -117,6 +117,7 @@ def execute(handle, params, store, item):
     submitted = False
     succeeded = False
     confirm_sync = False
+    read_revision = None
     root = None
 
     try:
@@ -350,6 +351,14 @@ def execute(handle, params, store, item):
 
         if set(params) - {'action', 'source', 'revision', 'parent', 'page', 'term'}:
             raise PanError('PAN_ROUTE_REJECTED')
+        try:
+            snapshot = runtime.bind_call(root / 'runtime.json')(
+                'emby_invalidation_status', {'source_id': source.id, 'generation': rev}, 1.0)
+            value = snapshot.get('revision') if isinstance(snapshot, dict) else None
+            if type(value) is int and value >= 0:
+                read_revision = value
+        except Exception:
+            pass  # Browsing still works without a running Host; no false acknowledgement.
         parent = params.get('parent', 'root')
         page = int(params.get('page', '1'))
         page_number(page, PAGE)
@@ -450,11 +459,12 @@ def execute(handle, params, store, item):
         elif not mark and handle >= 0 and not submitted:
             submitted = True
             xbmcplugin.endOfDirectory(handle, succeeded=succeeded, cacheToDisc=False)
-            if succeeded and confirm_sync and root is not None:
+            if succeeded and confirm_sync and root is not None and read_revision is not None:
                 try:
                     runtime.bind_call(root / 'runtime.json')(
                         'emby_invalidation_status',
-                        {'source_id': source.id, 'generation': rev, 'confirm': True},
+                        {'source_id': source.id, 'generation': rev, 'confirm': True,
+                         'expected_revision': read_revision},
                         1.0,
                     )
                 except Exception:

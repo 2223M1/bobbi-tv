@@ -544,7 +544,7 @@ class Host:
             hub.notify_event(sid, gen, item_ids=[body['item_id']], kind='ManualUserState')
             return res
         if action == 'emby_invalidation_status' and {'source_id', 'generation'} <= set(body) <= {
-            'source_id', 'generation', 'confirm', 'enable_ws', 'poll_fallback'
+            'source_id', 'generation', 'confirm', 'expected_revision', 'enable_ws', 'poll_fallback'
         }:
             import re
             sid = body.get('source_id')
@@ -562,7 +562,10 @@ class Host:
             if body.get('poll_fallback') is True:
                 hub.poll_server_digest(sid, gen)
             if body.get('confirm') is True:
-                return hub.mark_confirmed(sid, gen, offline=False)
+                expected = body.get('expected_revision')
+                if type(expected) is not int or expected < 0:
+                    raise ValueError('EMBY_INVALIDATION_REVISION_REQUIRED')
+                return hub.mark_confirmed(sid, gen, offline=False, expected_revision=expected)
             return hub.snapshot(sid, gen)
         if action in ('playback', 'standard_playback'):
             if body.get('operation') == 'register' and isinstance(body.get('data'), dict):

@@ -13,23 +13,31 @@ from build_ce_entry import BOOTSTRAP, ROOT
 from bobbi_platform.offline_updates import SignedBundle, load_trust
 
 
+def require(condition, message):
+    if not condition:
+        raise ValueError(message)
+
+
 def audit(path, online_bundle=None):
     with tempfile.TemporaryDirectory(prefix='bobbi-entry-audit-') as name:
         temporary = Path(name)
         with zipfile.ZipFile(path) as entry:
             names = entry.namelist()
-            assert len(set(names)) == len(names)
-            assert all(n.startswith('script.bobbi.start/') and '..' not in n.split('/') for n in names)
+            require(len(set(names)) == len(names), 'Duplicate entry member')
+            require(all(n.startswith('script.bobbi.start/') and '..' not in n.split('/')
+                        and '\\' not in n and ':' not in n for n in names), 'Unsafe entry member')
             addon = ET.fromstring(entry.read('script.bobbi.start/addon.xml'))
-            assert addon.get('id') == 'script.bobbi.start'
-            assert addon.find('./extension[@point="xbmc.python.script"]').get('library') == 'default.py'
+            require(addon.get('id') == 'script.bobbi.start', 'Entry addon identity differs')
+            extension = addon.find('./extension[@point="xbmc.python.script"]')
+            require(extension is not None and extension.get('library') == 'default.py', 'Entry script differs')
             requires = {n.get('addon') for n in addon.findall('./requires/import')}
-            assert requires == {'xbmc.python', 'script.module.pycryptodome'}
+            require(requires == {'xbmc.python', 'script.module.pycryptodome'}, 'Entry dependencies differ')
             bundle = temporary / 'bundle.zip'
             if online_bundle is None:
                 bundle.write_bytes(entry.read('script.bobbi.start/resources/complete.bobbi-update.zip'))
             else:
-                assert 'script.bobbi.start/resources/complete.bobbi-update.zip' not in names
+                require('script.bobbi.start/resources/complete.bobbi-update.zip' not in names,
+                        'Online entry unexpectedly embeds a complete bundle')
                 bundle = Path(online_bundle)
             with SignedBundle(bundle, load_trust(), 'coreelec') as signed:
                 manifest = signed.check_all()
@@ -39,16 +47,17 @@ def audit(path, online_bundle=None):
                 with zipfile.ZipFile(BytesIO(signed.read(component['file'], component['size']))) as source:
                     expected = set(source.namelist())
                     for filename in expected:
-                        assert entry.read(filename) == source.read(filename), 'Entry differs: ' + filename
+                        require(entry.read(filename) == source.read(filename), 'Entry differs: ' + filename)
                 if online_bundle is None:
                     expected.add('script.bobbi.start/resources/complete.bobbi-update.zip')
                 expected.update('script.bobbi.start/bootstrap/bobbi_platform/' + name for name in BOOTSTRAP)
-                assert set(names) == expected, 'Outer entry member set differs from signed generation'
+                require(set(names) == expected, 'Outer entry member set differs from signed generation')
                 platform = next(row for row in manifest['components'] if row['id'] == 'script.module.bobbi.platform')
                 with zipfile.ZipFile(BytesIO(signed.read(platform['file'], platform['size']))) as source:
                     for filename in BOOTSTRAP:
                         raw = entry.read('script.bobbi.start/bootstrap/bobbi_platform/' + filename)
-                        assert raw == source.read('script.module.bobbi.platform/lib/bobbi_platform/' + filename)
+                        require(raw == source.read('script.module.bobbi.platform/lib/bobbi_platform/' + filename),
+                                'Bootstrap differs from signed generation: ' + filename)
                         target = temporary / 'bootstrap/bobbi_platform' / filename
                         target.parent.mkdir(parents=True, exist_ok=True)
                         target.write_bytes(raw)
