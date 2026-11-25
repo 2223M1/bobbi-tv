@@ -6,7 +6,7 @@ from lib.utils.kodi.utils import translation
 
 def _tr(po_id, zh_fallback):
     val = translation(po_id)
-    return val if isinstance(val, str) and val else zh_fallback
+    return val if isinstance(val, str) and val and val != str(po_id) else zh_fallback
 
 
 class FilterTypeWindow(BaseWindow):

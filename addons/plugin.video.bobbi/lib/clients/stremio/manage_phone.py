@@ -4,12 +4,18 @@ from lib.services.webserver import StremioWebServer, get_local_ip
 from lib.utils.debrid.qrcode_utils import make_qrcode
 from lib.utils.kodi.utils import ADDON_PATH, kodilog, translation
 
+import re
+
 _SERVER_PORT = 8081
+_FMT_RE = re.compile(r'%[sdif%]')
 
 
 def _tr(po_id, zh_text):
     val = translation(po_id)
-    return val if isinstance(val, str) and val else zh_text
+    if isinstance(val, str) and val and val != str(po_id):
+        if _FMT_RE.findall(val) == _FMT_RE.findall(zh_text):
+            return val
+    return zh_text
 
 
 def catalog_manage_phone(expected):

@@ -660,7 +660,8 @@ def test_signed_install_preserves_upstream_and_installed_owned_osd_still_runs(
     original_archive = installer_tests.archive
     monkeypatch.setattr(installer_tests, 'archive', lambda name, version:
         packaged_osd.path.read_bytes() if name == 'plugin.video.bobbi' else original_archive(name, version))
-    bundle = installer_tests.package(env.root / 'owned-osd-signed.zip', signing, version=packaged_osd.version)
+    owned_versions = {p.parent.name: ET.parse(p).getroot().get('version') for p in (ROOT / 'addons').glob('*/addon.xml')}
+    bundle = installer_tests.package(env.root / 'owned-osd-signed.zip', signing, version=packaged_osd.version, versions=owned_versions)
     env.installer.apply(bundle)
     assert env.calls == ['dependencies', 'quiesce', 'refresh', 'verify', 'activate']
     assert vendor_hashes() == before

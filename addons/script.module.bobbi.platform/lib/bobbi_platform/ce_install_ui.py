@@ -126,17 +126,19 @@ class KodiHost:
         self.xbmc.executebuiltin('ActivateWindow(AddonInformation,%s)' % addon_id, False)
 
     def _capture_profile_guard(self):
-        import xbmcvfs
         try:
+            import xbmcvfs
             initial = str(xbmcvfs.translatePath('special://profile/'))
         except Exception:
+            xbmcvfs = None
             initial = None
 
         def ensure_active():
-            abort = getattr(self.monitor, 'abortRequested', None)
+            monitor = getattr(self, 'monitor', None)
+            abort = getattr(monitor, 'abortRequested', None) if monitor is not None else None
             if callable(abort) and abort():
                 raise UpdateError('DEPENDENCY_PREPARATION_CANCELLED')
-            if initial is not None:
+            if initial is not None and xbmcvfs is not None:
                 try:
                     current = str(xbmcvfs.translatePath('special://profile/'))
                 except Exception:
@@ -146,8 +148,15 @@ class KodiHost:
         return ensure_active
 
     def dependencies(self, staged, dialog=None):
-        import xbmcvfs
-        root = _safe_path(xbmcvfs.translatePath('special://home/addons'))
+        addons_attr = getattr(self, 'addons', None)
+        if addons_attr is not None:
+            root = _safe_path(addons_attr)
+        else:
+            try:
+                import xbmcvfs
+                root = _safe_path(xbmcvfs.translatePath('special://home/addons'))
+            except ImportError:
+                root = None
         staged_path = _safe_path(staged)
         active_dialog = dialog if dialog is not None else getattr(self, 'dialog', None)
         ensure_active = self._capture_profile_guard()
@@ -224,7 +233,7 @@ class KodiHost:
                 raise UpdateError(f'DEPENDENCY_NEEDS_UPGRADE:{name}:{have}->{minimum}')
 
             installed = self.details(name)
-            if state == MISSING_SEEDABLE and not installed and name in UPSTREAM_COMPONENTS:
+            if state == MISSING_SEEDABLE and not installed and name in UPSTREAM_COMPONENTS and root is not None:
                 target = _safe_path(root / name)
                 if target.exists() or target.is_symlink():
                     raise UpdateError('DEPENDENCY_DIRECTORY_CONFLICT:' + name)
@@ -248,7 +257,9 @@ class KodiHost:
                     installed = self.details(name)
                     if installed is not None:
                         break
-                    if self.monitor.waitForAbort(.1):
+                    monitor = getattr(self, 'monitor', None)
+                    wait_abort = getattr(monitor, 'waitForAbort', None) if monitor is not None else None
+                    if callable(wait_abort) and wait_abort(.1):
                         raise UpdateError('DEPENDENCY_PREPARATION_CANCELLED')
                     if time.monotonic() >= deadline:
                         raise UpdateError('DEPENDENCY_UNAVAILABLE:' + name)

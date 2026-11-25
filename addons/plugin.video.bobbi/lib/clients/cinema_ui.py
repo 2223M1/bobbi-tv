@@ -29,7 +29,7 @@ def _tr(po_id, zh_text, en_text):
         translate = getattr(kodi_utils, 'translation', None)
         if callable(translate):
             val = translate(po_id)
-            if isinstance(val, str) and val:
+            if isinstance(val, str) and val and val != str(po_id):
                 return val
     except Exception:
         pass

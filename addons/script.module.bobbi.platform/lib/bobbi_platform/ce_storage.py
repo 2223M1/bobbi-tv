@@ -9,9 +9,13 @@ import sqlite3
 import stat
 import zipfile
 
-from .bootstrap_i18n import tr
 from .updates import UpdateError, _Lock, _safe_path, archive_rows, MAX_MANIFEST, MAX_BACKUP_RECEIPT
 from .upstream_addons import UPSTREAM_COMPONENTS, plan_dependencies
+
+
+def tr(key, **kwargs):
+    from .bootstrap_i18n import tr as _bootstrap_tr
+    return _bootstrap_tr(key, **kwargs)
 
 RESERVE = 16*1024**2
 SCAN_FILES = 100000

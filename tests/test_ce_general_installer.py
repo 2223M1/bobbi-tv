@@ -12,7 +12,7 @@ from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from bobbi_platform.ce_installer import Installer, MANAGED, blocked
 from bobbi_platform.upstream_addons import FULL_COMPONENTS, UPSTREAM_COMPONENTS
 from bobbi_platform.updates import UpdateError
-from test_updates import archive
+from test_updates import archive as _base_archive
 
 
 @pytest.fixture(scope='module')
@@ -41,13 +41,20 @@ def _bobbi_plugin_archive(version='1.0.0'):
     return buf.getvalue()
 
 
-def package(path, signing, sequence=1, version='1.0.0', profile='coreelec', channel='private-candidate'):
+def archive(name, version='1.0.0'):
+    if name == 'plugin.video.bobbi':
+        return _bobbi_plugin_archive(version)
+    return _base_archive(name, version)
+
+
+def package(path, signing, sequence=1, version='1.0.0', profile='coreelec', channel='private-candidate', versions=None):
     items, content = [], {}
     for name in sorted(FULL_COMPONENTS):
-        raw = _bobbi_plugin_archive(version) if name == 'plugin.video.bobbi' else archive(name, version)
-        filename = name + '/' + name + '-' + version + '.zip'
+        comp_version = (versions or {}).get(name, version)
+        raw = archive(name, comp_version)
+        filename = name + '/' + name + '-' + comp_version + '.zip'
         content[filename] = raw
-        items.append(dict(id=name, version=version, file=filename, size=len(raw),
+        items.append(dict(id=name, version=comp_version, file=filename, size=len(raw),
                           sha256=hashlib.sha256(raw).hexdigest()))
     raw = json.dumps(dict(schema=2, channel=channel, profile=profile,
                          sequence=sequence, components=items), sort_keys=True).encode()

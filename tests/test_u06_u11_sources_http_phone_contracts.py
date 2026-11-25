@@ -236,7 +236,7 @@ time.sleep(30)
             import time as _t
             _t.sleep(0.03)
         assert marker_pre.exists()
-        os.kill(proc1.pid, signal.SIGKILL)
+        os.kill(proc1.pid, signal.SIGKILL) if hasattr(signal, 'SIGKILL') else proc1.kill()
         proc1.wait(timeout=5)
     finally:
         if proc1.poll() is None:
@@ -270,7 +270,7 @@ time.sleep(30)
             import time as _t
             _t.sleep(0.03)
         assert marker_post.exists()
-        os.kill(proc2.pid, signal.SIGKILL)
+        os.kill(proc2.pid, signal.SIGKILL) if hasattr(signal, 'SIGKILL') else proc2.kill()
         proc2.wait(timeout=5)
     finally:
         if proc2.poll() is None:

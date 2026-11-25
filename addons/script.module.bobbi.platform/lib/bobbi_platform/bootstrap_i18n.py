@@ -136,7 +136,7 @@ STRINGS = {
         'After updating {addon} (>= {need}) in Kodi, choose "Yes" to re-read its version and continue, or "No" to exit.',
     ),
     'lang_prompt_title': (32957, '选择界面语言 / Interface Language', 'Interface Language / 选择界面语言'),
-    'lang_opt_zh': (32958, '简体中文（推荐 / Default）', '简体中文 (Chinese Simplified — Recommended)'),
+    'lang_opt_zh': (32958, '简体中文（推荐 / Default）', '简体中文 (Chinese Simplified · Recommended)'),
     'lang_opt_keep_en': (32959, 'Keep current language (English) / 保留当前英文', 'Keep current language (English) / 保留当前英文'),
     'lang_pack_unavailable_title': (32960, '中文语言包未就绪', 'Chinese language pack unavailable'),
     'lang_pack_unavailable_body': (

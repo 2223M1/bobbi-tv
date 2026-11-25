@@ -49,8 +49,19 @@ def fresh_kodi(tmp_path, monkeypatch):
 def test_package_dependencies_register_in_import_order_on_empty_profile(tmp_path,monkeypatch):
     host,stage,live,enabled,calls=fresh_kodi(tmp_path,monkeypatch)
     host.dependencies(stage)
-    assert all(enabled[n]['enabled'] for n in ui.UPSTREAM_COMPONENTS)
-    assert calls.index('script.module.urllib3')<calls.index('script.module.requests')<calls.index('script.module.jurialmunkey')<calls.index('script.skinvariables')
+    required={
+        'script.module.certifi',
+        'script.module.chardet',
+        'script.module.idna',
+        'script.module.urllib3',
+        'script.module.requests',
+        'script.module.routing',
+    }
+    unreferenced=ui.UPSTREAM_COMPONENTS-required
+    assert all(enabled[n]['enabled'] for n in required)
+    assert all(n not in enabled and not (live/n).exists() for n in unreferenced)
+    for leaf in ('script.module.certifi','script.module.chardet','script.module.idna','script.module.urllib3'):
+        assert calls.index(leaf)<calls.index('script.module.requests')
     marker=live/'script.module.requests'/'existing-user-origin';marker.write_bytes(b'preserve')
     before=list(calls);host.dependencies(stage)
     assert calls==before and marker.read_bytes()==b'preserve'

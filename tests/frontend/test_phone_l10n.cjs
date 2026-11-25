@@ -16,7 +16,7 @@ function loadPoSessionPayload(kodiLocale) {
     `sys.path.insert(0, ${JSON.stringify(path.join(ROOT, 'addons/script.module.bobbi.platform/lib'))})`,
     'import types',
     'xbmc = types.ModuleType("xbmc")',
-    `xbmc.executeJSONRPC = lambda req: json.dumps({"result": {"value": ${JSON.stringify(kodiLocale)}}})`,
+    `xbmc.getInfoLabel = lambda key: ${JSON.stringify(kodiLocale)} if key == "System.Language" else ""`,
     'sys.modules["xbmc"] = xbmc',
     'from lib.services.phone_l10n import session_locale_payload',
     'print(json.dumps(session_locale_payload()))',

@@ -1369,7 +1369,7 @@
       "status": "candidate",
       "evidence": {
         "path": "tests/private_baseline/test_osd_playback_contract.py",
-        "line": 730,
+        "line": 731,
         "anchor": "def test_owned_script_declares_runtime_dependencies_and_vendor_is_not_bobbi_owner():"
       },
       "note": "Static mapping for owned script extension/dependencies and absence of Bobbi OSD ownership in vendor modules. Signed-package fixture execution and deployed-device acceptance are separately recorded, not implied by this mapping."

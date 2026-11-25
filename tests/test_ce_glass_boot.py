@@ -22,6 +22,14 @@ def material(name, seq):
     if seq == guard.OPTICS and name.endswith('/sidebar-classic.png'):
         return (ROOT/'tests/fixtures/ce2169-sidebar-classic.png').read_bytes()
     if seq in guard.BRANDED_SEQUENCES:
+        hist_zip = ROOT/'tests/fixtures/ce2174-2185-materials.zip'
+        if hist_zip.exists():
+            with zipfile.ZipFile(hist_zip) as archived:
+                if name in archived.namelist():
+                    raw = archived.read(name)
+                    if seq < guard.ZIP_OPT_IN and name.endswith('/DialogButtonMenu.xml'):
+                        raw = raw.replace(b'!Skin.HasSetting(BobbiLiquidGlassEnabled)', b'Skin.HasSetting(BobbiGlassPrerendered)').replace(b'Skin.HasSetting(BobbiLiquidGlassEnabled)', b'!Skin.HasSetting(BobbiGlassPrerendered)')
+                    return raw
         raw = (ROOT/'addons'/name).read_bytes()
         if seq < guard.ZIP_OPT_IN and name.endswith('/DialogButtonMenu.xml'):
             raw = raw.replace(b'!Skin.HasSetting(BobbiLiquidGlassEnabled)', b'Skin.HasSetting(BobbiGlassPrerendered)').replace(b'Skin.HasSetting(BobbiLiquidGlassEnabled)', b'!Skin.HasSetting(BobbiGlassPrerendered)')

@@ -61,9 +61,9 @@ def test_real_installer_dependency_stage_preserves_official_floor(tmp_path, outd
     host.xbmc = SimpleNamespace(executebuiltin=lambda *args: commands.append(args))
     host.monitor = SimpleNamespace(waitForAbort=lambda _: True)
     if outdated:
-        with pytest.raises(UpdateError, match='DEPENDENCY_UNAVAILABLE:script.module.requests'):
+        with pytest.raises(UpdateError, match=r'DEPENDENCY_NEEDS_UPGRADE:script\.module\.requests:2\.30\.0->2\.31\.0'):
             host.dependencies(staged)
-        assert commands == [('InstallAddon(script.module.requests)', False)]
+        assert commands == []
     else:
         host.dependencies(staged)
         assert commands == []

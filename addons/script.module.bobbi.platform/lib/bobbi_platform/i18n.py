@@ -78,22 +78,6 @@ def current_locale():
     except ImportError:
         return 'zh_cn'
 
-    rpc = getattr(xbmc, 'executeJSONRPC', None)
-    if callable(rpc):
-        try:
-            raw = rpc(
-                '{"jsonrpc":"2.0","id":1,"method":"Settings.GetSettingValue",'
-                '"params":{"setting":"locale.language"}}'
-            )
-            if isinstance(raw, str) and raw:
-                payload = json.loads(raw)
-                val = ((payload.get('result') or {}).get('value')) if isinstance(payload, dict) else None
-                norm = normalize_locale(val)
-                if norm:
-                    return norm
-        except Exception:
-            pass
-
     get_info = getattr(xbmc, 'getInfoLabel', None)
     if callable(get_info):
         try:
@@ -156,7 +140,7 @@ def tr(msg_id, zh_text='', en_text='', addon_id='script.module.bobbi.platform'):
             import xbmcaddon
             addon = xbmcaddon.Addon(addon_id)
             localized = addon.getLocalizedString(int(msg_id))
-            if isinstance(localized, str) and localized:
+            if isinstance(localized, str) and localized and localized != str(int(msg_id)):
                 return localized
         except Exception:
             pass

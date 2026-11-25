@@ -11,7 +11,7 @@ from lib.utils.kodi.utils import kodilog, set_setting, translation
 
 def _tr(po_id, fallback):
     val = translation(po_id)
-    return val if isinstance(val, str) and val else fallback
+    return val if isinstance(val, str) and val and val != str(po_id) else fallback
 
 
 def choose_external_scraper():

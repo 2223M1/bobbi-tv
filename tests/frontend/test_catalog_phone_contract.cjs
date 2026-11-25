@@ -19,7 +19,8 @@ async function waitUntil(predicate) {
 }
 
 async function backend(count) {
-  const child=spawn(process.env.BOBBI_TEST_PYTHON||'python3',['-u',path.join(__dirname,'phone_management_bridge.py'),
+  const defaultPy=process.platform==='win32'?'python':'python3';
+  const child=spawn(process.env.BOBBI_TEST_PYTHON||defaultPy,['-u',path.join(__dirname,'phone_management_bridge.py'),
     '--repo',repo,'--count',String(count)],{stdio:['pipe','pipe','pipe']});
   const pending=new Map();let sequence=0,errors='',readyResolve,readyReject;
   const ready=new Promise((resolve,reject)=>{readyResolve=resolve;readyReject=reject;});

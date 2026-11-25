@@ -23,7 +23,10 @@ from lib.utils.kodi.utils import (
 
 def _tr(po_id, zh_text):
     val = translation(po_id)
-    return val if isinstance(val, str) and val else zh_text
+    if isinstance(val, str) and val and val != str(po_id):
+        if re.findall(r'%[sdif%]', val) == re.findall(r'%[sdif%]', zh_text):
+            return val
+    return zh_text
 
 
 def has_continue_watching_items():

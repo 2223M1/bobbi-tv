@@ -60,9 +60,10 @@ def test_error_guidance_keeps_real_limits_and_does_not_echo_error_details():
 
 def test_risky_maintenance_guidance_keeps_data_and_restart_consequences():
     base = 'addons/script.module.bobbi.platform/lib/bobbi_platform/'
-    installer = '\n'.join(strings(base + 'ce_install_ui.py'))
-    recovery = '\n'.join(strings(base + 'ce_recovery.py'))
-    storage = '\n'.join(strings(base + 'ce_storage.py'))
+    bootstrap = '\n'.join(strings(base + 'bootstrap_i18n.py'))
+    installer = '\n'.join(strings(base + 'ce_install_ui.py')) + '\n' + bootstrap
+    recovery = '\n'.join(strings(base + 'ce_recovery.py')) + '\n' + bootstrap
+    storage = '\n'.join(strings(base + 'ce_storage.py')) + '\n' + bootstrap
     library = '\n'.join(strings(base + 'library_ui.py'))
     assert '仅恢复程序' in installer and '重启 Kodi' in installer
     assert '账号、片库与观看记录保留' in installer
@@ -74,7 +75,7 @@ def test_risky_maintenance_guidance_keeps_data_and_restart_consequences():
 def test_primary_guidance_avoids_developer_jargon_and_obsolete_entry_name():
     base = 'addons/script.module.bobbi.platform/lib/bobbi_platform/'
     names = ('cloud_ui.py', 'account_dialog.py', 'cloud_hub.py', 'pan_ui.py', 'onboarding.py',
-             'library_ui.py', 'ce_install_ui.py', 'ce_recovery.py', 'ce_storage.py')
+             'library_ui.py', 'ce_install_ui.py', 'ce_recovery.py', 'ce_storage.py', 'bootstrap_i18n.py')
     for name in names:
         for text in strings(base + name):
             if not re.search('[\u4e00-\u9fff]', text):

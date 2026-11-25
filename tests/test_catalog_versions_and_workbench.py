@@ -137,7 +137,7 @@ def test_private_detail_version_action_preserves_scope_and_filters(catalog, kind
     import xml.etree.ElementTree as ET
     tree = ET.parse(Path(__file__).resolve().parents[1]/'addons/skin.bobbi.cinema/1080p/DialogVideoInfo.xml')
     button = tree.find(".//control[@id='985']")
-    assert button.findtext('label') == '选择文件版本'
+    assert button.findtext('label') == '$LOCALIZE[32171]'
     assert 'Bobbi.Catalog.Variants' in button.findtext('visible')
     navigation = button.find("include[@content='DetailFolderNavigation']")
     assert navigation.findtext("param[@name='target']") == '$INFO[ListItem.Property(Bobbi.Catalog.Variants)]'
@@ -298,8 +298,8 @@ def test_unknown_type_kicker_is_private_property_driven_and_preserves_public_ski
     tree = ET.parse(ROOT/'addons/skin.bobbi.cinema/1080p/Variables.xml')
     rows = tree.find("variable[@name='DetailKicker']").findall('value')
     assert rows[0].attrib['condition'] == 'String.IsEqual(ListItem.Property(Bobbi.Catalog.MediaKind),unknown)'
-    assert rows[0].text == '原文件'
-    assert [row.text for row in rows[1:]] == ['电影', '剧集', '剧集 · 季', '剧集 · 单集']
+    assert rows[0].text == '$LOCALIZE[32276]'
+    assert [row.text for row in rows[1:]] == ['$LOCALIZE[32053]', '$LOCALIZE[32052]', '$LOCALIZE[32277]', '$LOCALIZE[32278]']
     assert all('ListItem.DBType' in row.attrib['condition'] for row in rows[1:])
 
 

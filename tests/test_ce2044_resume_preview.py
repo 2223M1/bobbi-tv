@@ -154,7 +154,7 @@ def test_skin_waits_for_item_bound_empty_state_and_preview_uses_shared_route():
     assert title is not None
     entries=[(n.get('condition'),n.text) for n in title.findall('value')]
     assert entries[0][0]=='Container(9130).IsUpdating'
-    empty=next(condition for condition,text in entries if text=='还没有在看的影片')
+    empty=next(condition for condition,text in entries if text=='$LOCALIZE[32334]')
     assert 'Bobbi.Resume.State),empty' in empty
-    assert entries[-1][0] is None and '读取' in entries[-1][1]
+    assert entries[-1][0] is None and entries[-1][1]=='$LOCALIZE[32312]'
     assert 'HubResumeStateTitle' in ET.tostring(root.getroot(),encoding='unicode')

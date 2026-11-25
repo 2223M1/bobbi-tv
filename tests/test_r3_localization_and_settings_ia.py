@@ -149,7 +149,7 @@ def test_cinema_context_labels_removed_and_live_zh_en_zh_roundtrip(monkeypatch, 
     xbmc_stub.ISO_639_1 = 0
     xbmc_stub.getSkinDir = lambda: active["skin"]
     xbmc_stub.executeJSONRPC = lambda raw: json.dumps({"result": {"value": active["locale"]}})
-    xbmc_stub.getInfoLabel = lambda key: ""
+    xbmc_stub.getInfoLabel = lambda key: active["locale"] if key == "System.Language" else ""
     xbmc_stub.getLanguage = lambda *a: ""
     xbmc_stub.getCondVisibility = lambda expr: False
     xbmc_stub.PlayList = lambda *a: object()
