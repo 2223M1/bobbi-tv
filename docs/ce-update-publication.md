@@ -51,18 +51,20 @@ python tools/sign_private_bundle.py \
   --output "$OUT/assets/BobbiTV-${NEXT_TAG_UPPER}.bobbi-update.zip"
 python tools/build_ce_entry.py \
   --bundle "$OUT/assets/BobbiTV-${NEXT_TAG_UPPER}.bobbi-update.zip" \
-  --output "$OUT/assets/script.bobbi.start-${ENTRY_VERSION}.zip"
+  --output "$OUT/assets/script.bobbi.start-${ENTRY_VERSION}-${NEXT_TAG_UPPER}.zip"
 python tools/audit_ce_entry.py \
-  "$OUT/assets/script.bobbi.start-${ENTRY_VERSION}.zip" \
+  "$OUT/assets/script.bobbi.start-${ENTRY_VERSION}-${NEXT_TAG_UPPER}.zip" \
   --report "$OUT/entry-audit.json"
 python tools/build_online_repository.py \
   --bundle "$OUT/assets/BobbiTV-${NEXT_TAG_UPPER}.bobbi-update.zip" \
   --output "$OUT/github-feed" --tag "$NEXT_TAG" --source github --track "$TRACK"
 ```
 
+正式完整入口附件采用 `script.bobbi.start-<版本>-CE<编号>.zip`，以满足 GitCode Release 重定向允许的文件名；在线仓库内部生成的小启动器仍保持工具规定的版本化路径，不能连同它一起改名。
+
 `NEXT_TAG_UPPER` 对应已确定标签的大写形式，例如 `ceNNNN -> CENNNN`；`ENTRY_VERSION` 来自本次已提交的启动器 addon.xml。使用已有、与 `release_trust.json` 匹配的签名密钥，不创建替代信任密钥。双镜像发布再用 `--source gitcode` 构建 `"$OUT/gitcode-feed"`。包的轨道、签名 channel、Release prerelease 标志必须一致；预览包不能仅修改 feed 文本升为稳定包。
 
-在同一候选上先完成目标 CE 的已有版本升级、干净安装、失败保留、恢复上一版本、恢复后再次升级；记录安装前后程序身份、实际加载的 HTTP 库路径/版本及用户数据哨兵。上一轮 AM6B+ 的 5 冷 5 暖和 CE2184 恢复属于历史本地报告证据，不能代替新补丁的设备验收。
+在同一候选上先完成目标 CE 的已有版本升级、干净安装、失败保留、恢复上一版本、恢复后再次升级；记录安装前后程序身份、实际加载的 HTTP 库路径/版本及用户数据哨兵。回滚保留防回放高水位，普通更新的复升必须使用更高 sequence 重新签名；恢复已保存候选只能记录为恢复，不等同普通新更新。可在同一已冻结源码上规划试装 A < 复升 B < 正式发行 S，验证后受校验恢复已发布程序并保留 B 水位，再从真实更新入口安装 S；不得清水位或把 A/B 的报告冒充 S 的安装结果。上一轮 AM6B+ 的 5 冷 5 暖和 CE2184 恢复属于历史本地报告证据，不能代替新补丁的设备验收。
 
 ## 发布与线上回读
 
@@ -82,7 +84,7 @@ GitHub 单镜像发布可按以下命令准备与回读；双镜像发布删除 
 ```sh
 python tools/ce_release_gate.py prepare \
   --bundle "$OUT/assets/BobbiTV-${NEXT_TAG_UPPER}.bobbi-update.zip" \
-  --entry "$OUT/assets/script.bobbi.start-${ENTRY_VERSION}.zip" \
+  --entry "$OUT/assets/script.bobbi.start-${ENTRY_VERSION}-${NEXT_TAG_UPPER}.zip" \
   --github-feed "$OUT/github-feed" --mirror-policy github-only \
   --github-release "$OUT/github-release.json" --track "$TRACK" \
   --source-first "$OUT/source-first" --source-second "$OUT/source-second" \
