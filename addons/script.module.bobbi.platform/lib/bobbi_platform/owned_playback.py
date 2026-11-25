@@ -520,3 +520,117 @@ def reserve_playback(
         account_scope=account_scope,
         owner_context=owner_ctx,
     )
+
+
+class OwnedNextCoordinator:
+    """Host-owned lifecycle for native next-episode summary prefetch and continuation probes.
+
+    Tracks every background worker with explicit per-job cancellation so Host.close()
+    can cancel and drain all in-flight next-episode work before releasing runtime.lease.
+    """
+
+    def __init__(self, *, stopping=None, profile_current=None):
+        from threading import Event, Lock
+        self._stopping = stopping
+        self._profile_current = profile_current or (lambda: True)
+        self._lock = Lock()
+        self._closed = False
+        self._jobs = {}
+        self._seq = 0
+        self._drained_total = 0
+
+    def _is_stopping(self) -> bool:
+        return bool(
+            self._closed
+            or (self._stopping is not None and self._stopping.is_set())
+            or not self._profile_current()
+        )
+
+    def has_active_kind(self, kind: str) -> bool:
+        with self._lock:
+            dead = [jid for jid, row in self._jobs.items() if not row['thread'].is_alive()]
+            for jid in dead:
+                self._jobs.pop(jid, None)
+                self._drained_total += 1
+            return any(row['kind'] == kind and row['thread'].is_alive() for row in self._jobs.values())
+
+    def submit(self, kind: str, fn, *, singleton: bool = False) -> bool:
+        from threading import Event, Thread
+        with self._lock:
+            if self._is_stopping():
+                return False
+            dead = [jid for jid, row in self._jobs.items() if not row['thread'].is_alive()]
+            for jid in dead:
+                self._jobs.pop(jid, None)
+                self._drained_total += 1
+            if singleton and any(row['kind'] == kind and row['thread'].is_alive() for row in self._jobs.values()):
+                return False
+            self._seq += 1
+            job_id = self._seq
+            cancel_event = Event()
+
+            def _cancelled() -> bool:
+                return cancel_event.is_set() or self._is_stopping()
+
+            def _runner():
+                try:
+                    if not _cancelled():
+                        fn(_cancelled)
+                finally:
+                    with self._lock:
+                        if self._jobs.pop(job_id, None) is not None:
+                            self._drained_total += 1
+
+            worker = Thread(target=_runner, name=f'bobbi-owned-next-{kind}-{job_id}', daemon=True)
+            self._jobs[job_id] = {'kind': kind, 'cancel': cancel_event, 'thread': worker}
+            worker.start()
+            return True
+
+    def cancel_all(self) -> int:
+        with self._lock:
+            items = list(self._jobs.values())
+        for row in items:
+            row['cancel'].set()
+        return len(items)
+
+    def wait_idle(self, timeout: float = 1.0) -> bool:
+        deadline = time.monotonic() + max(0.0, float(timeout))
+        while True:
+            with self._lock:
+                workers = [row['thread'] for row in self._jobs.values() if row['thread'].is_alive()]
+            if not workers:
+                return True
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                return False
+            workers[0].join(min(remaining, 0.05))
+
+    def snapshot(self) -> dict:
+        with self._lock:
+            active = [row['kind'] for row in self._jobs.values() if row['thread'].is_alive()]
+            return {
+                'closed': self._closed,
+                'active_count': len(active),
+                'active_kinds': tuple(active),
+                'drained_total': self._drained_total,
+            }
+
+    def close(self, timeout: float = 5.0) -> bool:
+        with self._lock:
+            self._closed = True
+            items = list(self._jobs.values())
+        for row in items:
+            row['cancel'].set()
+        deadline = time.monotonic() + max(0.0, float(timeout))
+        for row in items:
+            worker = row['thread']
+            if worker.is_alive():
+                remaining = max(0.0, deadline - time.monotonic())
+                worker.join(remaining)
+        with self._lock:
+            dead = [jid for jid, row in self._jobs.items() if not row['thread'].is_alive()]
+            for jid in dead:
+                self._jobs.pop(jid, None)
+                self._drained_total += 1
+            still_alive = any(row['thread'].is_alive() for row in self._jobs.values())
+        return not still_alive

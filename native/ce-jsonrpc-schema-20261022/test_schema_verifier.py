@@ -1,5 +1,6 @@
 """Parser counterexamples and real frozen predecessor mismatch; no WSL/device."""
 import json
+import os
 from pathlib import Path
 
 import pytest
@@ -8,7 +9,12 @@ from verify_artifact import binary_methods_bytes, verify_methods
 
 
 HERE = Path(__file__).resolve().parent
-OLD = Path('D:/AM6B-Project/ce2038-native-original-audio-20261022/run-1792612141766198431/candidate.bin')
+DEFAULT_HISTORICAL_CANDIDATE_BIN = Path(
+    'D:/AM6B-Project/ce2038-native-original-audio-20261022/run-1792612141766198431/candidate.bin'
+)
+OLD = Path(
+    os.environ.get('BOBBI_HISTORICAL_CANDIDATE_BIN') or DEFAULT_HISTORICAL_CANDIDATE_BIN
+)
 
 
 def encoded(name, method):

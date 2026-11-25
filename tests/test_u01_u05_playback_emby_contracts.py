@@ -641,7 +641,7 @@ def _setup_playing_episode_a(pc, monkeypatch):
         'last_emit_at': now0 - 5.0,
     }
     srv._owned_poll_due = 0.0
-    srv._owned_next_worker = None
+    srv._local_owned_next = None
     srv._owned_next_summaries = Queue(maxsize=8)
     srv._owned_next_candidates = Queue(maxsize=4)
     srv._owned_next_ready = Queue(maxsize=4)
@@ -720,8 +720,7 @@ def test_u03_positive_uncontested_natural_eof_launches_child_once_without_generi
     authority.refresh()
 
     srv._observe_owned_tracks(time.monotonic())
-    assert srv._owned_next_worker is not None
-    srv._owned_next_worker.join(1.0)
+    assert srv.drain_owned_next(1.0)
     srv._observe_owned_tracks(time.monotonic())
 
     assert open_session_flags == [False, True]
@@ -839,7 +838,7 @@ def test_u03_negative_contested_or_expired_never_hijacks_new_selection(monkeypat
         authority.terminal_seen_at -= 3.5
 
     release.set()
-    srv._owned_next_worker.join(1.0)
+    assert srv.drain_owned_next(1.0)
     srv._observe_owned_tracks(time.monotonic())
 
     assert played_urls == []

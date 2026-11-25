@@ -468,6 +468,17 @@ class Graph:
                     if action:
                         addon = addon_context(path).rsplit("/", 1)[-1] or "unknown-addon"
                         self.edge(scope.node, self.protocol("kodi-action", addon + ":" + action), "kodi_action_request", "candidate", path, node.lineno, **values)
+                if leaf in ("_spec", "RouteSpec") and addon_context(path).rsplit("/", 1)[-1].startswith("plugin."):
+                    addon = addon_context(path).rsplit("/", 1)[-1]
+                    targets_node = node.args[1] if leaf == "_spec" and len(node.args) > 1 else next((k.value for k in node.keywords if k.arg in ("actions", "targets")), None)
+                    spec_actions = []
+                    if isinstance(targets_node, (ast.Tuple, ast.List, ast.Set)):
+                        spec_actions = [literal(x) for x in targets_node.elts]
+                    elif isinstance(targets_node, ast.Dict):
+                        spec_actions = [literal(k) for k in targets_node.keys]
+                    for act_name in filter(None, spec_actions):
+                        for kind, key in (("host-action", act_name), ("kodi-action", addon + ":" + act_name)):
+                            self.edge(self.protocol(kind, key), scope.node, "dispatch_branch", "candidate", path, node.lineno, comparison=ast.unparse(node)[:200], **values)
                 if "rpc" in leaf.lower() or leaf in ("invoke", "call"):
                     if first:
                         kind = "jsonrpc" if re.fullmatch(r"[A-Z]\w*\.\w+", first) else "host-action"

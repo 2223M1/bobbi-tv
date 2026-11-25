@@ -160,8 +160,10 @@ def prepare(bundle, entry, component_assets, feeds, output, *, track, github_rel
         source_matches(signed)
     if audit(entry)['sequence'] != manifest['sequence']:
         raise ValueError('Entry belongs to another generation')
+    from delivery_policy import DEFAULT_EMBEDDED_BUNDLE, safe_members
     with zipfile.ZipFile(entry) as archive:
-        raw = archive.read('script.bobbi.start/resources/complete.bobbi-update.zip')
+        list(safe_members(archive))
+        raw = archive.read(DEFAULT_EMBEDDED_BUNDLE)
         if hashlib.sha256(raw).hexdigest() != identity(bundle)['sha256']:
             raise ValueError('Embedded complete package differs')
     feed_rows, offers = {}, {}

@@ -67,6 +67,8 @@ class Host:
         self.can_quiesce = lambda: False
         self.refresh_due, self.idle_check, self.idle = 0, 0, False
         self.stopping = Event()
+        from .owned_playback import OwnedNextCoordinator
+        self.owned_next = OwnedNextCoordinator(stopping=self.stopping, profile_current=self.check_profile)
         self.runtime = Runtime(self.dispatch, self.root / 'runtime.json')
         self.runtime.report = report
         self.unsubscribe = lambda: None
@@ -899,7 +901,8 @@ class Host:
         playback = getattr(self, 'playback', None)
         if playback is not None:
             drain(playback.close, 'PLAYBACK')
-        for label, component in (('EMBY_SESSIONS', getattr(self, 'emby_sessions', None)),
+        for label, component in (('OWNED_NEXT', getattr(self, 'owned_next', None)),
+                                 ('EMBY_SESSIONS', getattr(self, 'emby_sessions', None)),
                                  ('EMBY_INVALIDATION', getattr(self, 'emby_invalidation', None)),
                                  ('IMAGES', self.images), ('PREPARATION', self.preparation), ('STREAMS', self.streams),
                                  ('SOURCE_STREAMS', getattr(self, 'source_streams', None))):

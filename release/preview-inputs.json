@@ -43,6 +43,7 @@
       "lib/bobbi_platform/emby_session.py",
       "lib/bobbi_platform/environment.py",
       "lib/bobbi_platform/glass_settings.py",
+      "lib/bobbi_platform/home_rails_meta.py",
       "lib/bobbi_platform/host.py",
       "lib/bobbi_platform/instance_lock.py",
       "lib/bobbi_platform/kodi.py",

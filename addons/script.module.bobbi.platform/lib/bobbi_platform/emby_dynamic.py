@@ -262,16 +262,32 @@ def execute(handle, params, store, item):
                 try:
                     result = resolve('pan_emby_direct', request, 28)
                 except PanError as error:
-                    if str(error) != 'PAN_EMBY_DIRECT_AUTH_REQUIRED' or versions[index].get('Protocol') != 'File':
+                    protocol = versions[index].get('Protocol')
+                    if protocol == 'Http' and str(error) in ('PAN_EMBY_DIRECT_AUTH_REQUIRED', 'PAN_MEDIA_UNSUPPORTED'):
+                        from .source_streams import open_emby_http_gateway_playback
+                        result = open_emby_http_gateway_playback(
+                            reservation, dialog, root,
+                            source_id=source.id, generation=rev,
+                            server_id=saved['server_id'], user_id=saved['user_id'],
+                            item_id=entry, media_source_id=ids[index],
+                            require_current=lambda: bool(current() or True), open_session=True,
+                        )
+                        if result is None:
+                            return
+                        options = ''
+                        if result.get('identity_mode') == 'weak_session':
+                            start_over, chosen_resume = True, 0.0
+                    elif str(error) != 'PAN_EMBY_DIRECT_AUTH_REQUIRED' or protocol != 'File':
                         raise
-                    current()
-                    reservation.require_current()
-                    result = resolve('pan_emby_direct', dict(request, authenticated=True), 28)
-                    # Only the canonical, verified original can receive this header.
-                    # Neither the plugin URL, local RPC nor server query contains the token.
-                    if result['url'] != static_original_url(saved['location'], entry, ids[index]):
-                        raise PanError('PAN_DOWNLOAD_ORIGIN_REJECTED')
-                    options += '&!X-Emby-Token=' + quote(saved['token'], safe='')
+                    else:
+                        current()
+                        reservation.require_current()
+                        result = resolve('pan_emby_direct', dict(request, authenticated=True), 28)
+                        # Only the canonical, verified original can receive this header.
+                        # Neither the plugin URL, local RPC nor server query contains the token.
+                        if result['url'] != static_original_url(saved['location'], entry, ids[index]):
+                            raise PanError('PAN_DOWNLOAD_ORIGIN_REJECTED')
+                        options += '&!X-Emby-Token=' + quote(saved['token'], safe='')
 
                 proj = projection(detail)
                 title = proj[1] if proj else clean(detail.get('Name'), 512, 'Emby')

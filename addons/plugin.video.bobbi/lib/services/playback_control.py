@@ -321,7 +321,7 @@ class PlaybackControlServer:
         self.host = host
         self._owned_state = None
         self._owned_poll_due = 0.0
-        self._owned_next_worker = None
+        self._local_owned_next = None
         self._owned_next_candidates = Queue(maxsize=4)
         self._owned_next_ready = Queue(maxsize=4)
         self._owned_next_consumed_parents = []
@@ -848,18 +848,36 @@ class PlaybackControlServer:
             pass
         return 0.0, 0.0, False, pres
 
-    def _prepare_owned_next_summary(self, boot_id, epoch, request_id, native_instance, account_scope, current_data):
+    def _owned_next_coordinator(self):
         host = getattr(self, 'host', None)
         if host is None:
+            return None
+        coord = getattr(host, 'owned_next', None)
+        if coord is not None:
+            return coord
+        local = getattr(self, '_local_owned_next', None)
+        if local is None:
+            from bobbi_platform.owned_playback import OwnedNextCoordinator
+            local = self._local_owned_next = OwnedNextCoordinator(
+                stopping=getattr(host, 'stopping', None),
+                profile_current=getattr(host, 'check_profile', None),
+            )
+        return local
+
+    def drain_owned_next(self, timeout=1.0):
+        coord = self._owned_next_coordinator()
+        return True if coord is None else coord.wait_idle(timeout)
+
+    def _prepare_owned_next_summary(self, boot_id, epoch, request_id, native_instance, account_scope, current_data):
+        coord = self._owned_next_coordinator()
+        if coord is None:
             return
         if getattr(self, '_owned_next_summaries', None) is None:
             self._owned_next_summaries = Queue(maxsize=8)
-        from threading import Thread
-        def _resolve():
+        def _resolve(cancelled):
             try:
                 from bobbi_core.next_episode_summary import project
                 from bobbi_platform.owned_playback import resolve_owned_next_result
-                cancelled = lambda: host.stopping.is_set() or not host.check_profile()
                 res = resolve_owned_next_result(
                     current_data,
                     dict(current_data['_owned_next']),
@@ -883,7 +901,7 @@ class PlaybackControlServer:
                 self._owned_next_summaries.put_nowait(payload)
             except Exception:
                 pass
-        Thread(target=_resolve, name='bobbi-native-next-summary', daemon=True).start()
+        coord.submit('summary', _resolve)
 
     def _capture_parent_continuation_context(self, current_data):
         captured = getattr(self, '_owned_terminal_parent', None)
@@ -1033,20 +1051,18 @@ class PlaybackControlServer:
             return False
 
     def _spawn_owned_next_session_open(self, child_res, parent_ctx, current_data, spec):
-        host = self.host
-        from threading import Thread
+        coord = self._owned_next_coordinator()
+        if coord is None:
+            child_res.cancel()
+            return
         if getattr(self, '_owned_next_ready', None) is None:
             self._owned_next_ready = Queue(maxsize=4)
 
-        def _open_work():
+        def _open_work(cancelled):
             try:
                 from bobbi_platform.owned_playback import resolve_owned_next_result
-                cancelled = lambda: (
-                    host.stopping.is_set()
-                    or (hasattr(host, 'check_profile') and not host.check_profile())
-                    or child_res.cancelled
-                )
-                final_res = resolve_owned_next_result(current_data, spec, cancelled, open_session=True)
+                is_cancelled = lambda: cancelled() or child_res.cancelled
+                final_res = resolve_owned_next_result(current_data, spec, is_cancelled, open_session=True)
                 self._owned_next_ready.put_nowait((child_res, parent_ctx, final_res))
             except Exception:
                 try:
@@ -1055,8 +1071,8 @@ class PlaybackControlServer:
                 except Exception:
                     pass
 
-        self._owned_next_worker = Thread(target=_open_work, name='bobbi-native-owned-next', daemon=True)
-        self._owned_next_worker.start()
+        if not coord.submit('session_open', _open_work, singleton=True):
+            child_res.cancel()
 
     def _drain_owned_next_queues(self):
         from bobbi_platform.owned_playback import next_selection_identity
@@ -1106,9 +1122,10 @@ class PlaybackControlServer:
 
     def _launch_owned_next(self, current_data):
         host = getattr(self, 'host', None)
-        if host is None or not isinstance(current_data, dict) or not isinstance(current_data.get('_owned_next'), dict):
+        coord = self._owned_next_coordinator()
+        if host is None or coord is None or not isinstance(current_data, dict) or not isinstance(current_data.get('_owned_next'), dict):
             return
-        if self._owned_next_worker is not None and self._owned_next_worker.is_alive():
+        if coord.has_active_kind('candidate') or coord.has_active_kind('session_open'):
             return
         if getattr(self, '_owned_next_candidates', None) is None:
             self._owned_next_candidates = Queue(maxsize=4)
@@ -1131,12 +1148,9 @@ class PlaybackControlServer:
                 self._submit_owned_child_reservation(child_res, prefetched)
             return
 
-        from threading import Thread
-
-        def _work():
+        def _work(cancelled):
             try:
                 from bobbi_platform.owned_playback import resolve_owned_next_result
-                cancelled = lambda: host.stopping.is_set() or (hasattr(host, 'check_profile') and not host.check_profile())
                 res = resolve_owned_next_result(current_data, spec, cancelled, open_session=False)
                 if cancelled() or res.outcome == 'cancelled':
                     return
@@ -1144,14 +1158,17 @@ class PlaybackControlServer:
             except Exception:
                 pass
 
-        self._owned_next_worker = Thread(target=_work, name='bobbi-native-owned-next', daemon=True)
-        self._owned_next_worker.start()
+        coord.submit('candidate', _work, singleton=True)
 
     def close(self):
         if hasattr(self, 'next_display'):
             self.next_display.clear()
         close_io = getattr(self.native, 'close', None)
         errors = []
+        drained_next = True
+        local_next = getattr(self, '_local_owned_next', None)
+        if local_next is not None:
+            drained_next = bool(local_next.close())
         def drain(action):
             try:
                 action()
@@ -1172,3 +1189,4 @@ class PlaybackControlServer:
             self.lock = None
         if errors:
             raise errors[0]
+        return drained_next
