@@ -62,15 +62,30 @@ def _scope_key(meta: dict) -> tuple[str, str, str, str]:
     )
 
 
+class _ShutdownAbort(Exception):
+    """Internal marker raised when reporter shutdown begins before or during HTTP."""
+
+
 def _load_emby_client(root: Path, source_id: str, generation: str, *, session_factory=None) -> tuple[Client, dict]:
     reg_path = Path(root) / 'libraries.sqlite3'
-    store = Registry(reg_path, read_only=True, timeout=0.1)
+    store = None
     try:
+        store = Registry(reg_path, read_only=True, timeout=0.1)
         src, rev = store.source_snapshot(source_id)
     except LibraryError as exc:
+        if str(exc) == 'STORAGE_UNAVAILABLE':
+            raise PanError('PAN_STORAGE_UNAVAILABLE') from exc
         raise PanError('PAN_ACCOUNT_CHANGED') from exc
     finally:
-        store.close()
+        if store is not None:
+            try:
+                store.close()
+            except LibraryError as exc:
+                if str(exc) == 'STORAGE_UNAVAILABLE':
+                    raise PanError('PAN_STORAGE_UNAVAILABLE') from exc
+                raise PanError('PAN_ACCOUNT_CHANGED') from exc
+            except OSError as exc:
+                raise PanError('PAN_STORAGE_UNAVAILABLE') from exc
     if (
         rev != generation
         or src.kind != 'media_server'
@@ -434,15 +449,119 @@ class EmbySessionReporter:
         self.clock = clock
         self._lock = Lock()
         self._queue: Queue = Queue(maxsize=64)
-        self._coalesced_progress: dict[str, dict] = {}
+        self._coalesced_progress: OrderedDict[str, dict] = OrderedDict()
+        self._queued_progress_markers: set[str] = set()
+        self._storage_retries: OrderedDict[str, dict] = OrderedDict()
         self._sessions: OrderedDict[str, dict] = OrderedDict()
         self._pending_stops: OrderedDict[str, dict] = OrderedDict()
         self._auth_halted_scopes: set[tuple[str, str, str, str]] = set()
+        self._inflight: list[tuple[object, str, str]] = []
+        self._unknown_requests: list[dict] = []
+        self._worker_errors: int = 0
         self._done = Event()
         self._worker: Thread | None = None
         if start_worker:
             self._worker = Thread(target=self._run, name='bobbi-emby-session', daemon=True)
             self._worker.start()
+
+    @staticmethod
+    def _initial_baseline_from_meta(meta: dict) -> dict | None:
+        raw_ticks = meta.get('initial_ticks')
+        raw_played = meta.get('initial_played')
+        if raw_ticks is None or raw_played is None:
+            return None
+        try:
+            ticks = int(raw_ticks)
+        except (TypeError, ValueError):
+            return None
+        if ticks < 0:
+            return None
+        if str(raw_played) in ('1', 'true', 'True'):
+            played = True
+        elif str(raw_played) in ('0', 'false', 'False'):
+            played = False
+        else:
+            return None
+        return {'PlaybackPositionTicks': ticks, 'Played': played}
+
+    def _evict_one_non_terminal_locked(self) -> bool:
+        """Evict one non-terminal item (preferring PROGRESS marker) with exact task_done accounting."""
+        count = self._queue.qsize()
+        if count <= 0:
+            return False
+        pulled = []
+        for _ in range(count):
+            try:
+                item = self._queue.get_nowait()
+            except Empty:
+                break
+            self._queue.task_done()
+            pulled.append(item)
+        if not pulled:
+            return False
+        drop_idx = next((i for i, x in enumerate(pulled) if x.get('event') == 'PROGRESS'), None)
+        if drop_idx is None:
+            drop_idx = next((i for i, x in enumerate(pulled) if x.get('event') != 'TERMINAL'), None)
+        if drop_idx is None:
+            for item in pulled:
+                try:
+                    self._queue.put_nowait(item)
+                except Full:
+                    break
+            return False
+        dropped = pulled.pop(drop_idx)
+        if dropped.get('event') == 'PROGRESS':
+            self._queued_progress_markers.discard(dropped.get('request_id', ''))
+        for item in pulled:
+            try:
+                self._queue.put_nowait(item)
+            except Full:
+                if item.get('event') == 'PROGRESS':
+                    self._queued_progress_markers.discard(item.get('request_id', ''))
+                break
+        return True
+
+    def _schedule_unqueued_locked(self, *, now: float | None = None, allow_retries: bool = True) -> None:
+        if self._done.is_set():
+            return
+        if allow_retries and self._storage_retries:
+            cur_now = self.clock() if now is None else now
+            for req_id in list(self._storage_retries.keys()):
+                entry = self._storage_retries.get(req_id)
+                if entry is None or cur_now < entry['due_at']:
+                    continue
+                sess = self._sessions.get(req_id)
+                if sess is None or sess.get('sealed') or sess.get('started_sent'):
+                    self._storage_retries.pop(req_id, None)
+                    continue
+                try:
+                    self._queue.put_nowait(entry['item'])
+                    self._storage_retries.pop(req_id, None)
+                except Full:
+                    break
+        for req_id in list(self._coalesced_progress.keys()):
+            if req_id in self._queued_progress_markers:
+                continue
+            sess = self._sessions.get(req_id)
+            if sess is None or sess.get('sealed'):
+                self._coalesced_progress.pop(req_id, None)
+                continue
+            try:
+                self._queue.put_nowait({'event': 'PROGRESS', 'request_id': req_id})
+                self._queued_progress_markers.add(req_id)
+            except Full:
+                break
+
+    def _discard_queued_locked(self) -> None:
+        self._coalesced_progress.clear()
+        self._queued_progress_markers.clear()
+        self._storage_retries.clear()
+        while True:
+            try:
+                self._queue.get_nowait()
+            except Empty:
+                break
+            self._queue.task_done()
 
     def on_playback_event(self, payload: dict) -> bool:
         """Non-blocking callback invoked from resident playback owner."""
@@ -460,7 +579,7 @@ class EmbySessionReporter:
             return False
         skey = _scope_key(meta)
         with self._lock:
-            if skey in self._auth_halted_scopes:
+            if self._done.is_set() or skey in self._auth_halted_scopes:
                 return False
             sess = self._sessions.get(req_id)
             if sess is not None and sess.get('sealed'):
@@ -485,48 +604,65 @@ class EmbySessionReporter:
                     # Never started AV -> do NOT send Stopped or Playing on pre-AV cancel (R09-01)!
                     return False
                 self._coalesced_progress.pop(req_id, None)
+                self._storage_retries.pop(req_id, None)
             elif event_kind == 'AV_START':
                 if sess is None:
+                    init_base = self._initial_baseline_from_meta(meta)
                     self._sessions[req_id] = {
                         'meta': deepcopy(meta),
+                        'scope': skey,
                         'started_sent': False,
                         'stopped_acked': False,
+                        'reconciled': None,
                         'sealed': False,
                         'last_ticks': 0,
+                        'baseline_userdata': init_base,
+                        'initial_played': bool(init_base['Played']) if init_base is not None else False,
                         'seq': 0,
                     }
                     while len(self._sessions) > 32:
-                        self._sessions.popitem(last=False)
+                        evicted_req, _ = self._sessions.popitem(last=False)
+                        self._coalesced_progress.pop(evicted_req, None)
+                        self._storage_retries.pop(evicted_req, None)
             elif event_kind == 'PROGRESS':
                 if sess is None:
                     return False
-                if req_id in self._coalesced_progress:
-                    self._coalesced_progress[req_id] = snap
-                    return True
                 self._coalesced_progress[req_id] = snap
+                self._coalesced_progress.move_to_end(req_id)
+                while len(self._coalesced_progress) > 32:
+                    old_req, _ = self._coalesced_progress.popitem(last=False)
+                    if old_req == req_id:
+                        break
+                if req_id in self._queued_progress_markers:
+                    return True
+                try:
+                    self._queue.put_nowait({'event': 'PROGRESS', 'request_id': req_id})
+                    self._queued_progress_markers.add(req_id)
+                except Full:
+                    pass
+                return True
 
             try:
                 self._queue.put_nowait(snap)
                 return True
             except Full:
-                if event_kind == 'PROGRESS':
-                    self._coalesced_progress[req_id] = snap
-                    return True
-                # Evict one non-terminal item so AV_START / TERMINAL is never dropped.
+                if not self._evict_one_non_terminal_locked():
+                    return False
                 try:
-                    dropped = self._queue.get_nowait()
-                    if dropped.get('event') == 'TERMINAL':
-                        self._queue.put_nowait(dropped)
-                        return False
                     self._queue.put_nowait(snap)
                     return True
-                except Empty:
+                except Full:
                     return False
 
     def drain_once(self, *, flush_pending: bool = True) -> int:
         """Process all currently queued events synchronously (for deterministic tests and drain)."""
+        if self._done.is_set():
+            return 0
+        start_now = self.clock()
+        with self._lock:
+            self._schedule_unqueued_locked(now=start_now, allow_retries=True)
         processed = 0
-        while True:
+        while not self._done.is_set():
             try:
                 item = self._queue.get_nowait()
             except Empty:
@@ -536,38 +672,129 @@ class EmbySessionReporter:
                 processed += 1
             finally:
                 self._queue.task_done()
-        if flush_pending:
+                with self._lock:
+                    self._schedule_unqueued_locked(now=start_now, allow_retries=False)
+        if flush_pending and not self._done.is_set():
             self._flush_pending_stops()
         return processed
 
     def _run(self) -> None:
         next_retry = self.clock() + 5.0
-        while not self._done.is_set() or not self._queue.empty():
+        while not self._done.is_set():
+            with self._lock:
+                self._schedule_unqueued_locked(now=self.clock(), allow_retries=True)
             try:
-                item = self._queue.get(timeout=0.15)
+                item = self._queue.get(timeout=0.1)
             except Empty:
-                if self.clock() >= next_retry and not self._done.is_set():
-                    self._flush_pending_stops()
+                if self._done.is_set():
+                    break
+                if self.clock() >= next_retry:
+                    try:
+                        self._flush_pending_stops()
+                    except _ShutdownAbort:
+                        break
+                    except Exception:
+                        self._worker_errors += 1
                     next_retry = self.clock() + 5.0
                 continue
             try:
-                self._process_event(item)
                 if not self._done.is_set():
-                    self._flush_pending_stops()
+                    self._process_event(item)
+                    if not self._done.is_set():
+                        self._flush_pending_stops()
+            except _ShutdownAbort:
+                pass
+            except Exception:
+                self._worker_errors += 1
             finally:
                 self._queue.task_done()
+                if not self._done.is_set():
+                    with self._lock:
+                        self._schedule_unqueued_locked(now=self.clock(), allow_retries=True)
+        with self._lock:
+            self._discard_queued_locked()
+
+    def _call_http(self, client, req_id: str, label: str, fn):
+        token = (client, req_id, label)
+        with self._lock:
+            if self._done.is_set():
+                raise _ShutdownAbort()
+            self._inflight.append(token)
+        try:
+            res = fn()
+        except BaseException:
+            with self._lock:
+                if token in self._inflight:
+                    self._inflight.remove(token)
+                if self._done.is_set():
+                    self._record_unknown_locked(req_id, label)
+                    raise _ShutdownAbort() from None
+            raise
+        with self._lock:
+            if token in self._inflight:
+                self._inflight.remove(token)
+            if self._done.is_set():
+                self._record_unknown_locked(req_id, label)
+                raise _ShutdownAbort()
+        return res
+
+    def _record_unknown_locked(self, req_id: str, path: str) -> None:
+        self._unknown_requests.append({
+            'request_id': req_id,
+            'path': path,
+            'status': 'UNKNOWN',
+            'at': self.clock(),
+        })
+        if len(self._unknown_requests) > 32:
+            del self._unknown_requests[:-32]
+        sess = self._sessions.get(req_id)
+        if sess is not None:
+            sess['shutdown_status'] = 'UNKNOWN'
+
+    def _defer_storage_retry(self, item: dict) -> None:
+        req_id = item['request_id']
+        event_kind = item['event']
+        now = self.clock()
+        with self._lock:
+            if self._done.is_set():
+                return
+            sess = self._sessions.get(req_id)
+            if sess is None:
+                return
+            if event_kind == 'PROGRESS':
+                if not sess.get('sealed') and req_id not in self._coalesced_progress:
+                    self._coalesced_progress[req_id] = item
+                return
+            if event_kind == 'AV_START':
+                if sess.get('sealed') or sess.get('started_sent'):
+                    return
+                attempts = int(item.get('storage_attempts') or 0) + 1
+                if attempts > 8:
+                    return
+                retry_item = dict(item, storage_attempts=attempts)
+                backoff = min(1.0, 0.05 * (2 ** (attempts - 1)))
+                self._storage_retries[req_id] = {'item': retry_item, 'due_at': now + backoff}
+                self._storage_retries.move_to_end(req_id)
+                while len(self._storage_retries) > 32:
+                    self._storage_retries.popitem(last=False)
 
     def _process_event(self, item: dict) -> None:
+        if self._done.is_set():
+            raise _ShutdownAbort()
         req_id = item['request_id']
         event_kind = item['event']
         if event_kind == 'PROGRESS':
             with self._lock:
+                self._queued_progress_markers.discard(req_id)
                 latest = self._coalesced_progress.pop(req_id, None)
-                if latest is not None:
-                    item = latest
+                if latest is None:
+                    return
+                item = latest
         meta = item['meta']
         skey = _scope_key(meta)
         with self._lock:
+            if self._done.is_set():
+                raise _ShutdownAbort()
             if skey in self._auth_halted_scopes:
                 return
             sess = self._sessions.get(req_id)
@@ -577,7 +804,7 @@ class EmbySessionReporter:
                 return
             if event_kind == 'AV_START' and sess.get('started_sent'):
                 return
-            if event_kind == 'TERMINAL' and sess.get('stopped_acked'):
+            if event_kind == 'TERMINAL' and (sess.get('stopped_acked') or sess.get('reconciled') is not None):
                 return
             needs_playing_first = not sess.get('started_sent')
 
@@ -603,40 +830,80 @@ class EmbySessionReporter:
             stop_body['PlaySessionId'] = meta['play_session_id']
 
         try:
-            client, _ = self.client_loader(meta['source_id'], meta['source_generation'])
-        except PanError:
+            client, saved = self.client_loader(meta['source_id'], meta['source_generation'])
+            if isinstance(saved, dict) and (
+                (saved.get('server_id') and saved['server_id'] != meta.get('server_id'))
+                or (saved.get('user_id') and saved['user_id'] != meta.get('user_id'))
+            ):
+                raise PanError('PAN_ACCOUNT_CHANGED')
+        except PanError as exc:
+            code = str(exc)
+            if code == 'PAN_STORAGE_UNAVAILABLE':
+                if event_kind == 'TERMINAL':
+                    self._queue_pending_stop(req_id, meta, stop_body, item['reason'], sess.get('baseline_userdata'))
+                else:
+                    self._defer_storage_retry(item)
+                return
+            if code == 'PAN_ACCOUNT_CHANGED':
+                with self._lock:
+                    self._sessions.pop(req_id, None)
+                    self._coalesced_progress.pop(req_id, None)
+                    self._storage_retries.pop(req_id, None)
+                    self._pending_stops.pop(req_id, None)
             return
 
         try:
             with client.session.budget(6):
                 if needs_playing_first:
-                    client.session.request(
+                    self._call_http(
+                        client,
+                        req_id,
                         '/Sessions/Playing',
-                        data=body,
-                        method='POST',
-                        success_statuses=(200, 204),
-                        empty_response=True,
+                        lambda: client.session.request(
+                            '/Sessions/Playing',
+                            data=body,
+                            method='POST',
+                            success_statuses=(200, 204),
+                            empty_response=True,
+                        ),
                     )
                     with self._lock:
                         sess['started_sent'] = True
                         sess['last_ticks'] = pos_ticks
+                        sess['baseline_userdata'] = {
+                            'PlaybackPositionTicks': pos_ticks,
+                            'Played': bool(sess.get('initial_played', False)),
+                        }
                 if event_kind == 'AV_START':
                     pass
                 elif event_kind == 'PROGRESS':
                     ev_name = item['trigger'] if item['trigger'] in ALLOWED_EVENT_NAMES else 'TimeUpdate'
                     body['EventName'] = ev_name
-                    client.session.request(
+                    self._call_http(
+                        client,
+                        req_id,
                         '/Sessions/Playing/Progress',
-                        data=body,
-                        method='POST',
-                        success_statuses=(200, 204),
-                        empty_response=True,
+                        lambda: client.session.request(
+                            '/Sessions/Playing/Progress',
+                            data=body,
+                            method='POST',
+                            success_statuses=(200, 204),
+                            empty_response=True,
+                        ),
                     )
                     with self._lock:
                         sess['last_ticks'] = pos_ticks
+                        sess['baseline_userdata'] = {
+                            'PlaybackPositionTicks': pos_ticks,
+                            'Played': bool(sess.get('initial_played', False)),
+                        }
                 elif event_kind == 'TERMINAL':
                     self._send_stop_with_readback(client, req_id, sess, meta, stop_body, item['reason'])
+        except _ShutdownAbort:
+            raise
         except PanError as exc:
+            if self._done.is_set():
+                raise _ShutdownAbort() from None
             code = str(exc)
             if code == 'PAN_SERVER_UNAUTHORIZED':
                 with self._lock:
@@ -646,28 +913,63 @@ class EmbySessionReporter:
                 self.invalidation.mark_auth_state(meta['source_id'], meta['source_generation'], 'AUTH_REQUIRED')
             elif code == 'PAN_SERVER_FORBIDDEN':
                 self.invalidation.mark_auth_state(meta['source_id'], meta['source_generation'], 'FORBIDDEN')
-            elif event_kind == 'TERMINAL' and code in ('PAN_NETWORK_ERROR', 'PAN_BUDGET_EXHAUSTED', 'PAN_RATE_LIMITED'):
+            elif event_kind == 'TERMINAL' and code in (
+                'PAN_NETWORK_ERROR',
+                'PAN_BUDGET_EXHAUSTED',
+                'PAN_RATE_LIMITED',
+                'PAN_STORAGE_UNAVAILABLE',
+            ):
                 self._queue_pending_stop(req_id, meta, stop_body, item['reason'], sess.get('baseline_userdata'))
                 self.invalidation.mark_confirmed(meta['source_id'], meta['source_generation'], offline=True)
 
-    def _send_stop_with_readback(self, client: Client, req_id: str, sess: dict, meta: dict, stop_body: dict, reason: str) -> None:
-        client.session.request(
+    def _send_stop_with_readback(
+        self,
+        client: Client,
+        req_id: str,
+        sess: dict,
+        meta: dict,
+        stop_body: dict,
+        reason: str,
+    ) -> None:
+        self._call_http(
+            client,
+            req_id,
             '/Sessions/Playing/Stopped',
-            data=stop_body,
-            method='POST',
-            success_statuses=(200, 204),
-            empty_response=True,
+            lambda: client.session.request(
+                '/Sessions/Playing/Stopped',
+                data=stop_body,
+                method='POST',
+                success_statuses=(200, 204),
+                empty_response=True,
+            ),
         )
         # Bounded readback verification (R09-03, R09-04): never re-triggers playback.
         try:
-            fresh = client._item(meta['item_id'])
+            fresh = self._call_http(
+                client,
+                req_id,
+                f"/Users/{meta['user_id']}/Items/{meta['item_id']}",
+                lambda: client._item(meta['item_id']),
+            )
             udata = fresh.get('UserData') if isinstance(fresh, dict) else None
             if reason == 'NATURAL_EOF' and isinstance(udata, dict) and udata.get('Played') is not True:
-                client.set_played(meta['item_id'], True)
+                self._call_http(
+                    client,
+                    req_id,
+                    f"/Users/{meta['user_id']}/PlayedItems/{meta['item_id']}",
+                    lambda: client.set_played(meta['item_id'], True),
+                )
+        except _ShutdownAbort:
+            raise
         except PanError:
             pass
         with self._lock:
             sess['stopped_acked'] = True
+            sess['reconciled'] = 'acked'
+            sess['baseline_userdata'] = {
+                'PlaybackPositionTicks': 0 if reason == 'NATURAL_EOF' else stop_body['PositionTicks'],
+                'Played': True if reason == 'NATURAL_EOF' else bool(sess.get('initial_played', False)),
+            }
             self._pending_stops.pop(req_id, None)
         self.invalidation.notify_event(
             meta['source_id'],
@@ -677,16 +979,21 @@ class EmbySessionReporter:
         )
 
     def _queue_pending_stop(self, req_id: str, meta: dict, stop_body: dict, reason: str, baseline_userdata) -> None:
+        if self._done.is_set():
+            return
         now = self.clock()
         with self._lock:
-            if req_id in self._pending_stops:
+            if self._done.is_set() or req_id in self._pending_stops:
                 return
             self._pending_stops[req_id] = {
                 'meta': deepcopy(meta),
+                'scope': _scope_key(meta),
+                'play_session_id': str(meta.get('play_session_id') or ''),
                 'stop_body': deepcopy(stop_body),
                 'reason': reason,
                 'expires_at': now + PENDING_STOP_TTL_SECONDS,
                 'attempts': 1,
+                'storage_waits': 0,
                 'last_ticks': stop_body['PositionTicks'],
                 'baseline_userdata': deepcopy(baseline_userdata),
             }
@@ -694,12 +1001,16 @@ class EmbySessionReporter:
                 self._pending_stops.popitem(last=False)
 
     def _flush_pending_stops(self) -> None:
+        if self._done.is_set():
+            return
         now = self.clock()
         with self._lock:
             items = list(self._pending_stops.items())
         for req_id, entry in items:
+            if self._done.is_set():
+                raise _ShutdownAbort()
             meta = entry['meta']
-            skey = _scope_key(meta)
+            skey = entry.get('scope') or _scope_key(meta)
             if now >= entry['expires_at'] or entry['attempts'] >= 5:
                 with self._lock:
                     self._pending_stops.pop(req_id, None)
@@ -709,8 +1020,19 @@ class EmbySessionReporter:
                     self._pending_stops.pop(req_id, None)
                     continue
             try:
-                client, _ = self.client_loader(meta['source_id'], meta['source_generation'])
-            except PanError:
+                client, saved = self.client_loader(meta['source_id'], meta['source_generation'])
+                if isinstance(saved, dict) and (
+                    (saved.get('server_id') and saved['server_id'] != meta.get('server_id'))
+                    or (saved.get('user_id') and saved['user_id'] != meta.get('user_id'))
+                ):
+                    raise PanError('PAN_ACCOUNT_CHANGED')
+            except PanError as exc:
+                if str(exc) == 'PAN_STORAGE_UNAVAILABLE':
+                    entry['storage_waits'] = int(entry.get('storage_waits') or 0) + 1
+                    if entry['storage_waits'] >= 16:
+                        with self._lock:
+                            self._pending_stops.pop(req_id, None)
+                    continue
                 # Scope/account changed or removed -> never carry pending stop to new account (R09-06)!
                 with self._lock:
                     self._pending_stops.pop(req_id, None)
@@ -718,41 +1040,69 @@ class EmbySessionReporter:
             try:
                 with client.session.budget(6):
                     # Check server UserData FIRST before replaying an uncertain/offline Stopped (REV-09 #4, #10):
-                    fresh = client._item(meta['item_id'])
-                    udata = fresh.get('UserData') if isinstance(fresh.get('UserData'), dict) else {}
-                    srv_ticks = udata.get('PlaybackPositionTicks') or 0
-                    srv_played = udata.get('Played')
+                    fresh = self._call_http(
+                        client,
+                        req_id,
+                        f"/Users/{meta['user_id']}/Items/{meta['item_id']}",
+                        lambda: client._item(meta['item_id']),
+                    )
+                    udata = fresh.get('UserData') if isinstance(fresh, dict) else None
+                    if not isinstance(udata, dict):
+                        with self._lock:
+                            self._pending_stops.pop(req_id, None)
+                        continue
+                    srv_ticks = udata.get('PlaybackPositionTicks')
+                    if srv_ticks is None:
+                        srv_ticks = 0
+                    srv_played = bool(udata.get('Played', False)) if udata.get('Played') is not None else False
                     with self._lock:
-                        sess = self._sessions.get(req_id) or {'started_sent': True, 'stopped_acked': False}
-                    try:
-                        init_ticks = int(meta.get('initial_ticks') or '0')
-                    except ValueError:
-                        init_ticks = 0
-                    # 1. Lost ACK check: if the server already recorded our Stopped state, never re-POST!
+                        sess = self._sessions.get(req_id) or {
+                            'started_sent': True,
+                            'stopped_acked': False,
+                            'reconciled': None,
+                            'initial_played': False,
+                        }
+                    baseline = entry.get('baseline_userdata')
+
+                    # 1. Effect already observed on server: reconcile as effect_observed without re-POSTing
+                    #    or claiming a specific POST/PlaySessionId ACK.
                     if entry['reason'] == 'NATURAL_EOF' and srv_played is True:
                         with self._lock:
                             self._pending_stops.pop(req_id, None)
-                            sess['stopped_acked'] = True
+                            sess['reconciled'] = 'effect_observed'
                         self.invalidation.mark_confirmed(meta['source_id'], meta['source_generation'], offline=False)
                         continue
+                    expected_played = baseline.get('Played') if isinstance(baseline, dict) else False
                     if (
                         entry['reason'] != 'NATURAL_EOF'
-                        and entry['last_ticks'] > 0
-                        and entry['last_ticks'] != init_ticks
                         and type(srv_ticks) is int
+                        and srv_played == expected_played
                         and abs(srv_ticks - entry['last_ticks']) <= 2 * TICKS_PER_SECOND
+                        and (
+                            not isinstance(baseline, dict)
+                            or entry['last_ticks'] != baseline.get('PlaybackPositionTicks')
+                        )
                     ):
                         with self._lock:
                             self._pending_stops.pop(req_id, None)
-                            sess['stopped_acked'] = True
+                            sess['reconciled'] = 'effect_observed'
                         self.invalidation.mark_confirmed(meta['source_id'], meta['source_generation'], offline=False)
                         continue
-                    # 2. Cross-client offline conflict check (R09-05):
-                    had_prior_server_progress = sess.get('last_ticks', 0) > 0 or init_ticks > 0
-                    if had_prior_server_progress and srv_played is False and srv_ticks == 0:
+
+                    # 2. Proven baseline check (PB-07): never use max(position) or numeric ordering.
+                    #    Only replay if server UserData still matches our session's proven last-confirmed baseline.
+                    baseline_matches = (
+                        isinstance(baseline, dict)
+                        and type(baseline.get('PlaybackPositionTicks')) is int
+                        and type(baseline.get('Played')) is bool
+                        and srv_played == baseline['Played']
+                        and type(srv_ticks) is int
+                        and abs(srv_ticks - baseline['PlaybackPositionTicks']) <= 2 * TICKS_PER_SECOND
+                    )
+                    if not baseline_matches:
                         with self._lock:
                             self._pending_stops.pop(req_id, None)
-                            sess['stopped_acked'] = True
+                            sess['reconciled'] = 'conflict_discarded'
                         self.invalidation.notify_event(
                             meta['source_id'],
                             meta['source_generation'],
@@ -760,24 +1110,29 @@ class EmbySessionReporter:
                             kind='OfflineConflictDiscarded',
                         )
                         continue
-                    if srv_played is True or (type(srv_ticks) is int and srv_ticks > entry['last_ticks']):
-                        with self._lock:
-                            self._pending_stops.pop(req_id, None)
-                            sess['stopped_acked'] = True
-                        continue
+
                     entry['attempts'] += 1
                     if not sess.get('started_sent'):
-                        client.session.request(
+                        playing_body = dict(entry['stop_body'], IsPaused=False, CanSeek=True, PlayMethod='DirectPlay')
+                        playing_body.pop('Failed', None)
+                        self._call_http(
+                            client,
+                            req_id,
                             '/Sessions/Playing',
-                            data=dict(entry['stop_body'], IsPaused=False, CanSeek=True, PlayMethod='DirectPlay'),
-                            method='POST',
-                            success_statuses=(200, 204),
-                            empty_response=True,
+                            lambda: client.session.request(
+                                '/Sessions/Playing',
+                                data=playing_body,
+                                method='POST',
+                                success_statuses=(200, 204),
+                                empty_response=True,
+                            ),
                         )
                         with self._lock:
                             sess['started_sent'] = True
                     self._send_stop_with_readback(client, req_id, sess, meta, entry['stop_body'], entry['reason'])
                     self.invalidation.mark_confirmed(meta['source_id'], meta['source_generation'], offline=False)
+            except _ShutdownAbort:
+                raise
             except PanError as exc:
                 if str(exc) == 'PAN_SERVER_UNAUTHORIZED':
                     with self._lock:
@@ -785,10 +1140,23 @@ class EmbySessionReporter:
                         self._pending_stops.pop(req_id, None)
                     self.invalidation.mark_auth_state(meta['source_id'], meta['source_generation'], 'AUTH_REQUIRED')
 
-    def close(self) -> None:
+    def close(self, *, timeout: float = 3.0) -> bool:
         self._done.set()
-        if self._worker is not None:
-            self._worker.join(3.0)
+        with self._lock:
+            inflight = list(self._inflight)
+            self._discard_queued_locked()
+        for client, _req_id, _path in inflight:
+            sess_http = getattr(client, 'session', None)
+            attempt = getattr(sess_http, '_active_attempt', None)
+            if attempt is not None and hasattr(attempt, 'abort'):
+                try:
+                    attempt.abort()
+                except Exception:
+                    pass
+        if self._worker is not None and self._worker is not current_thread():
+            self._worker.join(timeout)
+            return not self._worker.is_alive()
+        return True
 
 
 def resolve_next_episode_result(

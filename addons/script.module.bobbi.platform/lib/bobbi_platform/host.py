@@ -872,7 +872,8 @@ class Host:
         def drain(close, label):
             report('SHUTDOWN_BEGIN_' + label)
             try:
-                close()
+                if close() is False:
+                    raise RuntimeError(label + '_DRAIN_PENDING')
             except BaseException as error:
                 errors.append(error)
                 report('SHUTDOWN_FAILED_' + label + '_' + type(error).__name__)
