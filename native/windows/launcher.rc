@@ -1,0 +1,13 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+#include <windows.h>
+#include "launcher.h"
+
+#pragma code_page(65001)
+
+STRINGTABLE
+BEGIN
+    IDS_APP_TITLE_ZH     "bobbi TV"
+    IDS_STARTUP_ERROR_ZH "bobbi TV 未能安全启动。请先关闭已运行的窗口后再试。\n若更新中断，请保留 maintenance 文件夹并运行上一版本的安装程序。\n账号数据与个人配置均未被移除。"
+    IDS_APP_TITLE_EN     "bobbi TV"
+    IDS_STARTUP_ERROR_EN "bobbi TV could not start safely. Close any existing instance, then retry.\nIf an update failed, keep the maintenance folder and use the previous installer.\nNo account data or profile has been removed."
+END

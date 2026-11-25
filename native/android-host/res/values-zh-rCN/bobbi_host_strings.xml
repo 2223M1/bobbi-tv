@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="bobbi_host_app_title">波比 TV</string>
+    <string name="bobbi_host_channel_name">BT 播放</string>
+    <string name="bobbi_host_stop_bt">停止 BT</string>
+    <string name="bobbi_host_starting_verify">正在启动并验证本机控制接口</string>
+    <string name="bobbi_host_ready">BT 播放已就绪</string>
+    <string name="bobbi_host_stopping">正在停止 BT</string>
+</resources>

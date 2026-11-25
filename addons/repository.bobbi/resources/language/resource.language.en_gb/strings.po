@@ -1,0 +1,19 @@
+# Kodi Media Center language file
+# Addon id: repository.bobbi
+# Addon Provider: bobbi TV contributors
+msgid ""
+msgstr ""
+"Project-Id-Version: repository.bobbi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en_GB\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgctxt "#32000"
+msgid "bobbi TV · Install & Updates"
+msgstr ""
+
+msgctxt "#32001"
+msgid "Online installer and update repository for bobbi Cinema"
+msgstr ""

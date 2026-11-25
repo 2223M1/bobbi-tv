@@ -14,7 +14,14 @@ Unicode true
   !define BUILD_SEQUENCE "2026101901"
 !endif
 !define INSTALLKEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\bobbiTV-${VERSION}-${BUILD_SEQUENCE}"
+!define LANG_REG_ROOT HKCU
+!define LANG_REG_KEY "Software\bobbi TV\Installer"
+!define LANG_REG_VAL "InstallerLanguage"
+!define MUI_LANGDLL_REGISTRY_ROOT "${LANG_REG_ROOT}"
+!define MUI_LANGDLL_REGISTRY_KEY "${LANG_REG_KEY}"
+!define MUI_LANGDLL_REGISTRY_VALUENAME "${LANG_REG_VAL}"
 Var LifecycleGuard
+Var SavedInstallerLang
 Name "bobbi TV ${VERSION}"
 OutFile "${OUTPUT}"
 InstallDir "$LOCALAPPDATA\Programs\bobbi TV\${VERSION}-${BUILD_SEQUENCE}"
@@ -29,21 +36,48 @@ ShowUninstDetails show
 !insertmacro MUI_PAGE_FINISH
 !insertmacro MUI_UNPAGE_CONFIRM
 !insertmacro MUI_UNPAGE_INSTFILES
+; Default to Simplified Chinese on fresh install while preserving explicit upgrade preference.
+!insertmacro MUI_LANGUAGE "SimpChinese"
 !insertmacro MUI_LANGUAGE "English"
 
+LangString DESC_SEC_MAIN ${LANG_SIMPCHINESE} "bobbi TV 原生宿主程序"
+LangString DESC_SEC_MAIN ${LANG_ENGLISH} "bobbi TV native host"
+
+LangString MSG_REQUIRE_X64 ${LANG_SIMPCHINESE} "此版本需要 64 位 Windows 10 或更高版本。"
+LangString MSG_REQUIRE_X64 ${LANG_ENGLISH} "This candidate requires 64-bit Windows 10 or later."
+
+LangString MSG_CLOSE_BEFORE_UNINSTALL ${LANG_SIMPCHINESE} "卸载前请先关闭正在运行的 bobbi TV。本次未移除任何文件。"
+LangString MSG_CLOSE_BEFORE_UNINSTALL ${LANG_ENGLISH} "Close bobbi TV before uninstalling. No files were removed."
+
+LangString MSG_CHOOSE_EMPTY_DIR ${LANG_SIMPCHINESE} "请选择一个新的空版本目录。安装程序绝不会覆盖正在运行的宿主或已有用户配置。"
+LangString MSG_CHOOSE_EMPTY_DIR ${LANG_ENGLISH} "Choose a new empty version directory. The installer never overwrites a running host or an existing profile."
+
+LangString MSG_NOT_MANAGED_GENERATION ${LANG_SIMPCHINESE} "此目录不是受管理的安装版本目录。本次未移除任何文件。"
+LangString MSG_NOT_MANAGED_GENERATION ${LANG_ENGLISH} "This is not a managed installed host generation. No files were removed."
+
 Function .onInit
+  ReadRegStr $SavedInstallerLang "${LANG_REG_ROOT}" "${LANG_REG_KEY}" "${LANG_REG_VAL}"
+  ${If} $SavedInstallerLang == ""
+    StrCpy $LANGUAGE ${LANG_SIMPCHINESE}
+  ${EndIf}
+  !insertmacro MUI_LANGDLL_DISPLAY
   ${IfNot} ${RunningX64}
-    MessageBox MB_ICONSTOP "This candidate requires 64-bit Windows 10 or later."
+    MessageBox MB_ICONSTOP "$(MSG_REQUIRE_X64)"
     Abort
   ${EndIf}
 FunctionEnd
 
+Function .onInstSuccess
+  !insertmacro MUI_LANGDLL_SAVELANGUAGE
+FunctionEnd
+
 Function un.onInit
+  !insertmacro MUI_UNGETLANGUAGE
   CreateDirectory "$LOCALAPPDATA\bobbi TV\profile"
   System::Call 'kernel32::CreateFileW(w "$LOCALAPPDATA\bobbi TV\profile\host-lifecycle.lock", i 0xC0000000, i 0, p 0, i 4, i 0x80, p 0) p .r0'
   StrCpy $LifecycleGuard $0
   ${If} $LifecycleGuard == -1
-    MessageBox MB_ICONSTOP "Close bobbi TV before uninstalling. No files were removed."
+    MessageBox MB_ICONSTOP "$(MSG_CLOSE_BEFORE_UNINSTALL)"
     Abort
   ${EndIf}
 FunctionEnd
@@ -52,9 +86,9 @@ Function un.onUninstSuccess
   System::Call 'kernel32::CloseHandle(p $LifecycleGuard)'
 FunctionEnd
 
-Section "bobbi TV native host" SEC_MAIN
+Section "$(DESC_SEC_MAIN)" SEC_MAIN
   IfFileExists "$INSTDIR\*.*" 0 fresh
-    MessageBox MB_ICONSTOP "Choose a new empty version directory. The installer never overwrites a running host or an existing profile."
+    MessageBox MB_ICONSTOP "$(MSG_CHOOSE_EMPTY_DIR)"
     Abort
   fresh:
   SetOutPath "$INSTDIR"
@@ -87,7 +121,7 @@ Section "Uninstall"
   DeleteRegKey HKCU "${INSTALLKEY}"
   Goto done
   invalid:
-    MessageBox MB_ICONSTOP "This is not a managed installed host generation. No files were removed."
+    MessageBox MB_ICONSTOP "$(MSG_NOT_MANAGED_GENERATION)"
     Abort
   done:
 SectionEnd

@@ -1,0 +1,243 @@
+# Kodi Media Center language file
+# Addon id: script.module.bobbi.platform
+# Addon Provider: bobbi TV contributors
+msgid ""
+msgstr ""
+"Project-Id-Version: script.module.bobbi.platform\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: zh_CN\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgctxt "#32000"
+msgid "Sign in to 115 Share Playback"
+msgstr "登录 115 分享播放"
+
+msgctxt "#32001"
+msgid "Scan with the 115 Life app"
+msgstr "用「115 生活」App 扫码"
+
+msgctxt "#32002"
+msgid "Preparing QR code; press Back to cancel."
+msgstr "正在准备二维码，可按返回取消。"
+
+msgctxt "#32003"
+msgid "Cancel"
+msgstr "取消"
+
+msgctxt "#32004"
+msgid "Confirm on your phone after scanning. Cancelling keeps the current account."
+msgstr "扫码后在手机确认。取消会保留当前账号。"
+
+msgctxt "#32005"
+msgid "Preparing QR code"
+msgstr "准备二维码"
+
+msgctxt "#32006"
+msgid "Waiting for phone confirmation"
+msgstr "等待手机确认"
+
+msgctxt "#32007"
+msgid "Fetching sign-in token"
+msgstr "获取登录信息"
+
+msgctxt "#32008"
+msgid "Verifying account identity"
+msgstr "核验登录信息"
+
+msgctxt "#32009"
+msgid "Saving sign-in"
+msgstr "保存登录"
+
+msgctxt "#32010"
+msgid "Completed"
+msgstr "完成"
+
+msgctxt "#32011"
+msgid "Cancelled"
+msgstr "取消"
+
+msgctxt "#32012"
+msgid "Sign-in"
+msgstr "登录"
+
+msgctxt "#32013"
+msgid "Save receipt confirmed"
+msgstr "已收到保存回执"
+
+msgctxt "#32014"
+msgid "Save receipt pending"
+msgstr "保存回执待确认"
+
+msgctxt "#32015"
+msgid "Not submitted for save yet"
+msgstr "尚未提交保存"
+
+msgctxt "#32016"
+msgid "%s (%s); %s."
+msgstr "%s（%s）；%s。"
+
+msgctxt "#32017"
+msgid "Open bobbi Helper and tap \"Start\" first, then return and retry."
+msgstr "请先打开 bobbi 助手并点击“启动”，然后回来重试。"
+
+msgctxt "#32018"
+msgid "Local Helper timed out. Open Helper to check its status, then retry."
+msgstr "本机助手响应超时，请打开助手查看状态，再回来重试。"
+
+msgctxt "#32019"
+msgid "Pairing expired. Export a new pairing file in Helper and import it again."
+msgstr "配对已失效。请在助手重新导出配对文件，再导入一次。"
+
+msgctxt "#32020"
+msgid "Port is occupied by another app or an unsupported helper. Open Helper to check status."
+msgstr "后台端口被其他程序占用或不是受支持的助手，请打开助手查看状态。"
+
+msgctxt "#32021"
+msgid "Helper settings are incompatible with this version. Stop and restart Helper, then retry."
+msgstr "助手设置与此版本不兼容，请在助手停止后重新启动，再重试。"
+
+msgctxt "#32022"
+msgid "Helper and Cinema versions do not match. Install the matching release and retry."
+msgstr "助手与影院版本不配套，请安装同一发行版本后重试。"
+
+msgctxt "#32023"
+msgid "Timed out waiting for source metadata. Retry or pick another source manually."
+msgstr "等待片源信息超时。可以重试，或手动选其他片源。"
+
+msgctxt "#32024"
+msgid "No playable video file found in this source. Please pick another source."
+msgstr "这个片源没有可播放的视频文件，请手动选择其他片源。"
+
+msgctxt "#32025"
+msgid "Invalid pairing file. Use the file exported by bobbi Helper on this device."
+msgstr "配对文件无效，请使用本机 bobbi 助手导出的文件。"
+
+msgctxt "#32026"
+msgid "Source hash mismatch; resolution stopped. Refresh and select a source again."
+msgstr "片源标识不一致，已停止解析。请刷新后重新选源。"
+
+msgctxt "#32027"
+msgid "Missing verifiable torrent hash. Refresh and select a source again."
+msgstr "这个片源缺少可核对的种子标识，请刷新后重新选源。"
+
+msgctxt "#32028"
+msgid "Could not connect or resolve this source. Open Helper to check status and retry."
+msgstr "本次未能连接或解析片源，请打开助手检查状态后重试。"
+
+msgctxt "#32029"
+msgid "Built-in"
+msgstr "已内置，选源时启动"
+
+msgctxt "#32030"
+msgid "Connected"
+msgstr "已连接"
+
+msgctxt "#32031"
+msgid "Paired, check"
+msgstr "已配对，点此检查"
+
+msgctxt "#32032"
+msgid "Not paired"
+msgstr "尚未连接"
+
+msgctxt "#32033"
+msgid "Re-pair"
+msgstr "需要重新配对"
+
+msgctxt "#32034"
+msgid "Start/retry"
+msgstr "需要启动或重试"
+
+msgctxt "#32035"
+msgid "Retry check"
+msgstr "连接失败，点此重试"
+
+msgctxt "#32036"
+msgid "Check config"
+msgstr "配置需要检查"
+
+msgctxt "#32037"
+msgid "Unavailable"
+msgstr "组件暂不可用"
+
+msgctxt "#32038"
+msgid "Check status"
+msgstr "已配置，点此检查"
+
+msgctxt "#32039"
+msgid "Needs check"
+msgstr "需要检查"
+
+msgctxt "#32040"
+msgid "%d sources"
+msgstr "已保存 %d 个来源"
+
+msgctxt "#32041"
+msgid "Kept folder"
+msgstr "原目录已保留"
+
+msgctxt "#32042"
+msgid "Skippable"
+msgstr "可跳过"
+
+msgctxt "#32043"
+msgid "OK"
+msgstr "通过"
+
+msgctxt "#32044"
+msgid "Action needed"
+msgstr "需要处理"
+
+msgctxt "#32045"
+msgid "1. Player · %s"
+msgstr "1. 检查播放器 · %s"
+
+msgctxt "#32046"
+msgid "2. BT (Optional) · %s"
+msgstr "2. BT 播放（可选）· %s"
+
+msgctxt "#32047"
+msgid "3. My Library · %s"
+msgstr "3. 我的片库 · %s"
+
+msgctxt "#32048"
+msgid "4. Audio & Subtitles"
+msgstr "4. 原声与中文字幕"
+
+msgctxt "#32049"
+msgid "5. Test Playback"
+msgstr "5. 选择视频试播"
+
+msgctxt "#32050"
+msgid "Cloud Accounts & CD2"
+msgstr "网盘账号与 CD2"
+
+msgctxt "#32051"
+msgid "Posters & Search"
+msgstr "海报与搜索设置"
+
+msgctxt "#32052"
+msgid "Enter bobbi Cinema"
+msgstr "进入波比影院"
+
+msgctxt "#32053"
+msgid "Updates & Recovery"
+msgstr "更新与恢复"
+
+msgctxt "#32054"
+msgid "Check & Diagnostics"
+msgstr "检查与诊断"
+
+msgctxt "#32055"
+msgid "About bobbi TV"
+msgstr "关于波比 TV"
+
+msgctxt "#32056"
+msgid "Cannot connect to the player right now. Restart Kodi and check again."
+msgstr "暂时无法连接播放器，请重启 Kodi 后再检查。"
+
+msgctxt "#32057"
+msgid "Player connection is ready for test playback. You can skip BT setup when using 115 or local libraries."
+msgstr "播放器连接正常，可以选择视频试播。使用 115 或本地片库时，可跳过 BT 设置。"

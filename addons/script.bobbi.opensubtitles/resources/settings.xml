@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <settings version="1">
   <section id="script.bobbi.opensubtitles">
-    <category id="provider" label="OpenSubtitles">
+    <category id="provider" label="32000">
       <group id="1">
-        <setting id="api_key" type="string" label="个人 OpenSubtitles API Key">
+        <setting id="api_key" type="string" label="32001">
           <level>0</level><default></default><constraints><allowempty>true</allowempty></constraints>
-          <control type="edit" format="string"><heading>个人 OpenSubtitles API Key</heading><hidden>true</hidden></control>
+          <control type="edit" format="string"><heading>32001</heading><hidden>true</hidden></control>
         </setting>
       </group>
     </category>

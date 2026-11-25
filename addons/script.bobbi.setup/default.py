@@ -180,6 +180,41 @@ def main():
         from bobbi_platform.glass_settings import reset_home_rails
         reset_home_rails(dialog)
         return
+    if sys.argv[1:] == ['home_spaces']:
+        from bobbi_platform.glass_settings import show_home_spaces
+        show_home_spaces(dialog)
+        return
+    if sys.argv[1:] == ['home_spaces_reset']:
+        from bobbi_platform.glass_settings import reset_home_spaces
+        reset_home_spaces(dialog)
+        return
+    if len(sys.argv) > 1 and sys.argv[1] == 'power_action':
+        if len(sys.argv) != 3:
+            raise ValueError('INVALID_POWER_ACTION')
+        from bobbi_platform.power_menu import run_power_action
+        run_power_action(dialog, sys.argv[2])
+        return
+    if sys.argv[1:] == ['interface_language']:
+        from bobbi_platform.power_menu import open_interface_language
+        open_interface_language()
+        return
+    if sys.argv[1:] == ['display_adaptation']:
+        from bobbi_platform.power_menu import show_display_adaptation
+        show_display_adaptation(dialog)
+        return
+    if sys.argv[1:] == ['language_guide']:
+        from bobbi_platform.power_menu import is_english_ui
+        if is_english_ui(xbmc.getInfoLabel):
+            dialog.ok('Original Audio & Subtitles',
+                      'Open "Language" on the next screen to set Preferred Audio Language to "Original language" and Preferred Subtitle Language.')
+        else:
+            dialog.ok('原声与中文字幕', '下一页进入“语言”，将音轨首选语言设为“原始语言”，字幕首选语言设为“中文”。')
+        xbmc.executebuiltin('ActivateWindow(playersettings)')
+        return
+    if sys.argv[1:] == ['transport']:
+        from bobbi_platform.cloud_hub import transport
+        transport(dialog)
+        return
     if len(sys.argv) > 1 and sys.argv[1] == 'accounts':
         if len(sys.argv) > 3:
             raise ValueError('INVALID_ACCOUNT_DOMAIN')
@@ -191,7 +226,7 @@ def main():
         from bobbi_platform.version_notes import show_about
         show_about(dialog)
         return
-    if sys.argv[1:] == ['helper']:
+    if sys.argv[1:] in (['helper'], ['bt_helper']):
         pair_helper(dialog, private_path(xbmcvfs.translatePath, 'helper-pairing.json'))
         return
     if len(sys.argv) > 1 and sys.argv[1] == 'cloud':
@@ -263,8 +298,8 @@ def main():
             xbmc.executebuiltin('ActivateWindow(playersettings)')
             return
         elif action == 'cloud':
-            from bobbi_platform.cloud_hub import show
-            if show(dialog):
+            from bobbi_platform.cloud_hub import NAVIGATED, show_outcome
+            if show_outcome(dialog) == NAVIGATED:
                 return
         elif action == 'catalog':
             import xbmcaddon

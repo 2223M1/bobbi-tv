@@ -634,7 +634,7 @@ class PhoneManagement:
                                   'local' if self.reference_kind == 'local_path' else
                                   'network' if self.reference_kind == 'network_path' else
                                   'mounted' if self.path_source else 'native'),
-                    source_id=self.expected['source_id'] if self.path_source else None)
+                    source_id=self.expected['source_id'] if self.path_source else None, **_phone_locale_payload(self.scopes))
 
     def _remember_playback(self, args):
         prior = self.playback_operations.get(args['command_id'])
@@ -1339,3 +1339,20 @@ class PhoneManagement:
         self.playback_operations.clear()
         self._cleanup_staged_import()
         self._cleanup_staged_subtitle()
+
+
+def _phone_locale_payload(scopes):
+    try:
+        from lib.services.phone_l10n import session_locale_payload
+    except ImportError:
+        import importlib.util
+        import sys
+        mod = sys.modules.get('bobbi_phone_l10n')
+        if mod is None:
+            spec = importlib.util.spec_from_file_location(
+                'bobbi_phone_l10n', Path(__file__).with_name('phone_l10n.py'))
+            mod = importlib.util.module_from_spec(spec)
+            sys.modules['bobbi_phone_l10n'] = mod
+            spec.loader.exec_module(mod)
+        session_locale_payload = mod.session_locale_payload
+    return session_locale_payload(scopes)

@@ -307,15 +307,17 @@ def test_r3_set02_changelog_packaged_in_component_zip_and_displayed_offline(tmp_
     assert 'CoreELEC' in extracted_notes and '重启 Kodi' in extracted_notes
 
     # Verify version_notes.read_installed_notes & show_about & navigation.show_changelog
-    notes = version_notes.read_installed_notes(changelog, '0.1.98')
+    import xml.etree.ElementTree as ET
+    cur_ver = ET.parse(PLUGIN_ROOT / 'addon.xml').getroot().get('version')
+    notes = version_notes.read_installed_notes(changelog, cur_ver)
     assert notes['available'] is True and notes['matched_version'] is True
-    assert '0.1.98' in notes['body']
+    assert cur_ver in notes['body']
 
     viewed = []
     dlg = SimpleNamespace(textviewer=lambda title, body, *a: viewed.append((title, body)))
     monkeypatch.setitem(sys.modules, 'xbmcgui', SimpleNamespace(Dialog=lambda: dlg))
-    version_notes.show_about(dlg, changelog_path=changelog, installed_version='0.1.98')
-    assert len(viewed) == 1 and '0.1.98' in viewed[0][0] and 'TMDB' in viewed[0][1]
+    version_notes.show_about(dlg, changelog_path=changelog, installed_version=cur_ver)
+    assert len(viewed) == 1 and cur_ver in viewed[0][0] and 'TMDB' in viewed[0][1]
 
     # Even if changelog file is missing on disk, show_changelog renders clean status without "Error reading file."
     viewed.clear()

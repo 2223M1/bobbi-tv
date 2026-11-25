@@ -7,6 +7,37 @@ from urllib.parse import parse_qs, urlencode, urlsplit
 
 
 ROWS = {"weekly": "本周值得看", "anime": "热门番剧", "movies": "热门电影", "series": "热门剧集", "anime_movies": "热门动漫电影"}
+_ROW_IDS = {
+    "weekly": (91189, "本周值得看", "Worth Watching This Week"),
+    "anime": (91190, "热门番剧", "Popular Anime"),
+    "movies": (91191, "热门电影", "Popular Movies"),
+    "series": (91192, "热门剧集", "Popular Series"),
+    "anime_movies": (91193, "热门动漫电影", "Popular Anime Movies"),
+}
+_SEARCH_HEADING_IDS = {
+    'multi': (91194, '搜索影视', 'Search Movies & TV'),
+    'tv': (91195, '搜索电视剧', 'Search TV Series'),
+    'movie': (91196, '搜索电影', 'Search Movies'),
+    'anime_tv': (91197, '搜索动漫', 'Search Anime'),
+    'anime_movie': (91198, '搜索动漫电影', 'Search Anime Movies'),
+}
+
+
+def _tr(po_id, zh_text, en_text):
+    try:
+        from lib.utils.kodi import utils as kodi_utils
+        translate = getattr(kodi_utils, 'translation', None)
+        if callable(translate):
+            val = translate(po_id)
+            if isinstance(val, str) and val:
+                return val
+    except Exception:
+        pass
+    try:
+        from bobbi_platform.i18n import tr
+        return tr(po_id, zh_text, en_text, addon_id='plugin.video.bobbi')
+    except Exception:
+        return zh_text
 
 
 def catalog_playable_property():
@@ -24,10 +55,8 @@ def is_ui_action():
 
 def search_prompt(params):
     import xbmc
-    headings = {'multi': '搜索影视', 'tv': '搜索电视剧', 'movie': '搜索电影',
-                'anime_tv': '搜索动漫', 'anime_movie': '搜索动漫电影'}
     section = params.get('section', 'multi')
-    if section not in headings:
+    if section not in _SEARCH_HEADING_IDS:
         return
     from lib.utils.kodi.utils import get_property, set_property
     memory_key = 'bobbitv.search.last.' + section
@@ -35,14 +64,20 @@ def search_prompt(params):
     initial = params.get('query', previous)
     if not isinstance(initial, str):
         initial = previous if isinstance(previous, str) else ''
-    keyboard = xbmc.Keyboard(initial, headings[section])
+    heading = _tr(*_SEARCH_HEADING_IDS[section])
+    keyboard = xbmc.Keyboard(initial, heading)
     keyboard.doModal()
     query = str(keyboard.getText() or '').strip() if keyboard.isConfirmed() else ''
     if query:
+        import xbmcgui
         set_property(memory_key, query)
+        xbmcgui.Window(10000).setProperty('BobbiSection', 'search')
         url = 'plugin://plugin.video.bobbi/?' + urlencode({
             'action': 'am6b_streaming_search', 'section': section, 'query': query, 'page': 1})
-        xbmc.executebuiltin('ActivateWindow(Videos,"' + url + '",return)')
+        if xbmc.getCondVisibility('Window.IsActive(videos)'):
+            xbmc.executebuiltin('Container.Update("' + url + '")')
+        else:
+            xbmc.executebuiltin('ActivateWindow(Videos,"' + url + '",return)')
 
 
 def load_preview(path):
@@ -96,7 +131,7 @@ def handle(params):
                 apply(item, (route.get('id') or [''])[0], title)
             items.append((entry["file"], item, folder))
         xbmcplugin.setContent(handle_id, "movies")
-        xbmcplugin.setPluginCategory(handle_id, ROWS[section] + " · 片单预览")
+        xbmcplugin.setPluginCategory(handle_id, _tr(*_ROW_IDS[section]) + _tr(91199, " · 片单预览", " · Preview"))
         xbmcplugin.addDirectoryItems(handle_id, items)
         xbmcplugin.endOfDirectory(handle_id, cacheToDisc=False)
         from lib.clients.tmdb.season_cards import enqueue_directory

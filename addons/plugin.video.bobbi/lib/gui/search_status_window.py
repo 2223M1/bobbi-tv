@@ -18,6 +18,11 @@ STATUS_MAP = {
 }
 
 
+def _tr(po_id, zh_fallback):
+    val = translation(po_id)
+    return val if isinstance(val, str) and val else zh_fallback
+
+
 @dataclass
 class SearchTask:
     name: str
@@ -47,9 +52,6 @@ class SearchTaskManager:
 
             self._update_task(task, status="In Progress")
             try:
-                # ARTIFICIAL DELAY FOR TESTING GUI UPDATES
-                # xbmc.sleep(8000)
-
                 results = fn(*a, **kw)
 
                 if self._cancel_event.is_set():
@@ -146,11 +148,12 @@ class SearchStatusWindow(BaseWindow):
         self._monitor = xbmc.Monitor()
 
     def onInit(self):
-        self.getControl(13001).setLabel("正在搜索片源")
+        heading = _tr(91181, "正在搜索片源")
+        self.getControl(13001).setLabel(heading)
         self.setProperty("instant_close", "false")
-        self.setProperty("search_heading", "正在搜索片源")
-        self.setProperty("search_subheading", "选择片源后开始播放")
-        self.setProperty("search_hint", "正在查询各个来源…")
+        self.setProperty("search_heading", heading)
+        self.setProperty("search_subheading", _tr(91182, "选择片源后开始播放"))
+        self.setProperty("search_hint", _tr(91183, "正在查询各个来源…"))
 
         # Set initial task names so feedback is visible before slow providers return.
         self._update_ui_state()
@@ -223,7 +226,7 @@ class SearchStatusWindow(BaseWindow):
         percent = int((completed_tasks / total_tasks) * 100) if total_tasks else 0
         self.getControl(13002).setPercent(percent)
 
-        self.setProperty("search_results_count", "已找到 {} 个候选".format(total_results))
+        self.setProperty("search_results_count", _tr(91184, "已找到 %d 个候选") % total_results)
         self.setProperty("search_progress_text", "{} / {}".format(completed_tasks, total_tasks))
         self.setProperty("search_active", "true" if completed_tasks < total_tasks else "false")
 

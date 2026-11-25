@@ -17,6 +17,18 @@ MAX_BYTES = 8 * 1024 * 1024
 HEADING = "找中文字幕 · OpenSubtitles"
 
 
+def _tr(msg_id, zh_text, en_text):
+    try:
+        from bobbi_platform.i18n import tr
+        return tr(msg_id, zh_text, en_text, addon_id="script.bobbi.opensubtitles")
+    except Exception:
+        return zh_text
+
+
+def _heading():
+    return _tr(32002, HEADING, "Find Subtitles · OpenSubtitles")
+
+
 class AlreadyRunning(RuntimeError):
     pass
 
@@ -146,44 +158,63 @@ def readable_alias(result, context, root, cancelled=lambda: False):
 
 def _label(candidate):
     label = text(candidate.get("title") or candidate.get("label") or candidate.get("release"), 150)
-    label = label.replace("[", "［").replace("]", "］") or "中文字幕候选"
+    label = label.replace("[", "［").replace("]", "］") or _tr(32003, "中文字幕候选", "Chinese Subtitle Candidate")
     language = text(candidate.get("language"), 20)
-    return "{}  ·  {}  ·  待校准".format(label, language or "中文")
+    return _tr(32004, "%s  ·  %s  ·  待校准", "%s  ·  %s  ·  Sync unverified") % (
+        label, language or _tr(32005, "中文", "Chinese")
+    )
 
 
 def _failure(error):
     reason = str(getattr(error, "reason", str(error)))
     if reason == 'PROVIDER_NOT_CONFIGURED':
-        return '请先在“找中文字幕”插件设置中填写 OpenSubtitles API Key。当前播放不受影响。'
+        return _tr(32006, '请先在“找中文字幕”插件设置中填写 OpenSubtitles API Key。当前播放不受影响。',
+                   'Enter your OpenSubtitles API Key in the add-on settings first. Current playback is unaffected.')
     if reason == 'READ_ONLY_RPC_UNAVAILABLE':
-        return '当前播放器不支持此字幕功能，原字幕和播放保留。'
+        return _tr(32007, '当前播放器不支持此字幕功能，原字幕和播放保留。',
+                   'Current player does not support this subtitle action; existing subtitles and playback are kept.')
     if reason in {"NO_ACTIVE_PLAYBACK", "DURATION_UNAVAILABLE"}:
-        return "请先开始播放影片，待画面出现后再找字幕。"
+        return _tr(32008, "请先开始播放影片，待画面出现后再找字幕。",
+                   "Start playing a video first and wait for video output before searching subtitles.")
     if reason in {"PLAYBACK_CHANGED", "CANCELLED", "CANCELLED_OR_DEADLINE"}:
-        return "操作已取消或播放选择已变化，未加载字幕。"
+        return _tr(32009, "操作已取消或播放选择已变化，未加载字幕。",
+                   "Action cancelled or playback changed; no subtitle was loaded.")
     if reason in {"MEDIA_CONTEXT_UNAVAILABLE", "CONTEXT_INVALID"}:
-        return "影片资料不足，无法查找对应字幕。"
+        return _tr(32010, "影片资料不足，无法查找对应字幕。",
+                   "Insufficient media metadata to search for matching subtitles.")
     if "LIMIT" in reason or "QUOTA" in reason or "429" in reason:
-        return "字幕下载或查询次数已达限制，请稍后重试。原字幕保留。"
+        return _tr(32011, "字幕下载或查询次数已达限制，请稍后重试。原字幕保留。",
+                   "Subtitle download or search quota reached; retry later. Existing subtitles are kept.")
     if "TIMEOUT" in reason or "DEADLINE" in reason:
-        return "字幕服务响应超时，请稍后重试。原字幕保留。"
+        return _tr(32012, "字幕服务响应超时，请稍后重试。原字幕保留。",
+                   "Subtitle service timed out; retry later. Existing subtitles are kept.")
     if "AUTH" in reason:
-        return "字幕服务登录验证失败，请检查插件设置。原字幕保留。"
-    return "字幕操作未完成，请稍后重试。原字幕和播放保留。"
+        return _tr(32013, "字幕服务登录验证失败，请检查插件设置。原字幕保留。",
+                   "Subtitle service authentication failed; check add-on settings. Existing subtitles are kept.")
+    return _tr(32014, "字幕操作未完成，请稍后重试。原字幕和播放保留。",
+               "Subtitle action did not complete; retry later. Existing subtitles and playback are kept.")
 
 
 def _completion_message(alias, result):
-    lines = ["字幕已下载，需手动加载。时间可能需要调整。"]
+    lines = [_tr(32015, "字幕已下载，需手动加载。时间可能需要调整。",
+                 "Subtitle downloaded; load it manually. Timing adjustment may be needed.")]
     cached = result.get("cached") is True
     if cached:
-        lines.append("使用已下载文件，不占下载次数。")
+        lines.append(_tr(32016, "使用已下载文件，不占下载次数。",
+                         "Reused cached file without consuming download quota."))
     remaining = result.get("remaining")
     if type(remaining) is int and remaining >= 0:
         if cached:
-            lines.append("上次记录还可下载 {} 次，以网站为准。".format(remaining))
+            lines.append(_tr(32017, "上次记录还可下载 %d 次，以网站为准。",
+                             "Last recorded remaining downloads: %d (subject to website).") % remaining)
         else:
-            lines.append("还可下载 {} 次，以网站为准。".format(remaining))
-    lines.extend(["点击“浏览字幕”，在本地缓存中选择以下文件", alias.name])
+            lines.append(_tr(32018, "还可下载 %d 次，以网站为准。",
+                             "Remaining downloads: %d (subject to website).") % remaining)
+    lines.extend([
+        _tr(32019, "点击“浏览字幕”，在本地缓存中选择以下文件",
+            "Select \"Browse Subtitles\" and pick the following file in local cache"),
+        alias.name,
+    ])
     return "\n".join(lines)
 
 
@@ -191,6 +222,7 @@ def run(rpc, dialogs, progress_factory, monitor, builtin, provider_factory,
         state_directory, root, clock=time.monotonic, lock_factory=InvocationLock,
         account_reader=None, current=lambda: True):
     """Only this user-driven script displays UI; provider never applies subtitles."""
+    heading = _heading()
     try:
         if current() is not True:
             return 'cancelled'
@@ -198,7 +230,8 @@ def run(rpc, dialogs, progress_factory, monitor, builtin, provider_factory,
             snapshot = capture(rpc, account_reader)
             provider = provider_factory(state_directory)
             progress = progress_factory()
-            progress.create(HEADING, "正在搜索当前影片的中文字幕；可返回取消。")
+            progress.create(heading, _tr(32020, "正在搜索当前影片的中文字幕；可返回取消。",
+                                         "Searching Chinese subtitles for current video; press Back to cancel."))
             guard = Guard(snapshot, rpc, monitor, progress, clock, current)
             try:
                 choices = provider.search(snapshot.context, clock() + OPERATION_SECONDS, guard)
@@ -209,15 +242,20 @@ def run(rpc, dialogs, progress_factory, monitor, builtin, provider_factory,
             if not isinstance(choices, list) or len(choices) > 20 or any(not isinstance(c, dict) for c in choices):
                 raise ValueError("PROVIDER_CANDIDATES_INVALID")
             if not choices:
-                dialogs.ok(HEADING, "未找到中文字幕，原字幕保留。")
+                dialogs.ok(heading, _tr(32021, "未找到中文字幕，原字幕保留。",
+                                        "No Chinese subtitles found; existing subtitles are kept."))
                 return "empty"
-            selected = dialogs.select(HEADING + " · 选择后下载", [_label(c) for c in choices])
+            selected = dialogs.select(
+                heading + _tr(32022, " · 选择后下载", " · Select to Download"),
+                [_label(c) for c in choices],
+            )
             if type(selected) is not int or not 0 <= selected < len(choices):
                 return "cancelled"
             if current() is not True or not snapshot.current(rpc) or monitor.abortRequested():
                 return "cancelled"
             progress = progress_factory()
-            progress.create(HEADING, "正在下载所选字幕；仅保存到本地，不自动应用。")
+            progress.create(heading, _tr(32023, "正在下载所选字幕；仅保存到本地，不自动应用。",
+                                         "Downloading selected subtitle; saved locally only and never auto-applied."))
             guard = Guard(snapshot, rpc, monitor, progress, clock, current)
             try:
                 result = provider.download(choices[selected], snapshot.context,
@@ -230,7 +268,12 @@ def run(rpc, dialogs, progress_factory, monitor, builtin, provider_factory,
             finally:
                 progress.close()
             message = _completion_message(alias, result)
-            browse = dialogs.yesno(HEADING, message, nolabel="稍后", yeslabel="浏览字幕")
+            browse = dialogs.yesno(
+                heading,
+                message,
+                nolabel=_tr(32024, "稍后", "Later"),
+                yeslabel=_tr(32025, "浏览字幕", "Browse Subtitles"),
+            )
             if browse and current() is True and snapshot.current(rpc) and not monitor.abortRequested():
                 # This opens the patched native browser. The user chooses a
                 # file there; ReserveBobiSubtitle + native actor own application.
@@ -238,9 +281,10 @@ def run(rpc, dialogs, progress_factory, monitor, builtin, provider_factory,
                 return "browser_opened"
             return "downloaded"
     except AlreadyRunning:
-        dialogs.ok(HEADING, "已有字幕搜索窗口，请先完成或取消上次操作。")
+        dialogs.ok(heading, _tr(32026, "已有字幕搜索窗口，请先完成或取消上次操作。",
+                                "Another subtitle search window is active; finish or cancel it first."))
         return "busy"
     except (ContextUnavailable, RuntimeError, ValueError, TypeError, OSError) as error:
         if not monitor.abortRequested():
-            dialogs.ok(HEADING, _failure(error))
+            dialogs.ok(heading, _failure(error))
         return "failed"

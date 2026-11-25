@@ -301,7 +301,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/plugin.video.bobbi/lib/db/cached.py",
-        "line": 258,
+        "line": 273,
         "anchor": "class HybridCache(_BaseCache):"
       },
       "note": "Explicit database scopes L1 and the existing SQLite format. Strict reads distinguish unknown/corrupt configuration from absence; publication rechecks after serialization, locks and before COMMIT. Legacy unbound callers remain debt."
@@ -565,7 +565,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/libraries.py",
-        "line": 20,
+        "line": 21,
         "anchor": "class Registry:"
       },
       "note": "Reviewed responsibility declaration: libraries.sqlite3: registered sources and saved views. Not a runtime test result."
@@ -685,8 +685,8 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/ce_update_notice.py",
-        "line": 70,
-        "anchor": "def check(work, cancelled, notify, *, lookup=latest):"
+        "line": 129,
+        "anchor": "def check(work, cancelled, notify, *, lookup=latest, legacy_settings=None):"
       },
       "note": "The idle worker reads a validated installer journal and track. Preference and notification receipts belong to the launcher profile; only the confirmed installer owns the package transaction."
     },
@@ -1009,7 +1009,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/server_accounts.py",
-        "line": 197,
+        "line": 279,
         "anchor": "def register(self, provider, name, location='', secret='', expected_source=None, client_factory=None,"
       },
       "note": "Server registration uses the existing Registry and expected snapshot CAS after bounded identity verification; no second credential inventory or catalog database is added. Reviewed static responsibility, not device execution evidence."
@@ -1021,7 +1021,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/pan_service.py",
-        "line": 71,
+        "line": 114,
         "anchor": "self.accounts = Accounts(native, legacy, servers)"
       },
       "note": "Server account adapters join the existing native provider/account owner, cache, operation budget and stream/ticket paths. They are not typed network_path references. Reviewed static responsibility, not device execution evidence."
@@ -1321,8 +1321,8 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/upstream_addons.py",
-        "line": 15,
-        "anchor": "OWNED_COMPONENTS = frozenset(('plugin.video.bobbi', 'plugin.video.bobbi.library',"
+        "line": 22,
+        "anchor": "OWNED_COMPONENTS = frozenset(("
       },
       "note": "Fixed ownership inventory includes plugin.video.bobbi and skin.bobbi.cinema; script.skinvariables belongs to UPSTREAM_COMPONENTS and is not an owned deployment target. Static installation boundary."
     },
@@ -1765,7 +1765,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/server_ui.py",
-        "line": 87,
+        "line": 91,
         "anchor": "def activate_emby_account(dialog, store, source):"
       },
       "note": "Explicit TV UI action delegates default-browse Emby switching to Host pan_server_activate_emby CAS and re-reads Registry.emby_binding() on uncertain transport errors; never mutates server tokens directly or auto-activates another user on active source removal."

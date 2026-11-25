@@ -1,0 +1,79 @@
+# Kodi Media Center language file
+# Addon id: plugin.video.bobbi.library
+# Addon Provider: bobbi TV contributors
+msgid ""
+msgstr ""
+"Project-Id-Version: plugin.video.bobbi.library\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: zh_CN\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgctxt "#32000"
+msgid "Cloud & Libraries"
+msgstr "云盘与片库"
+
+msgctxt "#32001"
+msgid "Manage Library Sources"
+msgstr "管理片库来源"
+
+msgctxt "#32002"
+msgid "Connect cloud drives, CD2 mounts, and LAN shares"
+msgstr "连接云盘账号、CD2 挂载与局域网共享"
+
+msgctxt "#32003"
+msgid "Personal Cloud Drives"
+msgstr "个人云盘"
+
+msgctxt "#32004"
+msgid "Browse connected cloud drives or existing CD2 mounts"
+msgstr "浏览已连接的网盘，或使用已有 CD2 挂载"
+
+msgctxt "#32005"
+msgid "Poster Library"
+msgstr "影视海报库"
+
+msgctxt "#32006"
+msgid "Indexed movies, series, and multi-release files"
+msgstr "已刮削电影、剧集与多版本片源"
+
+msgctxt "#32007"
+msgid "Play Media Referenced by STRM?"
+msgstr "播放 STRM 指向的媒体？"
+
+msgctxt "#32008"
+msgid "Will connect to %s://%s without sending library credentials."
+msgstr "将连接 %s://%s，不会发送片库账号密码。"
+
+msgctxt "#32009"
+msgid "Next Page"
+msgstr "下一页"
+
+msgctxt "#32010"
+msgid "No Videos Found"
+msgstr "没有找到视频"
+
+msgctxt "#32011"
+msgid "Folder may be empty or unreadable. Check the connection in \"Manage Library Sources\"."
+msgstr "目录可能为空或无法读取。请到“管理片库来源”检查连接。"
+
+msgctxt "#32012"
+msgid "Library Temporarily Unavailable"
+msgstr "片库暂时不可用"
+
+msgctxt "#32013"
+msgid "Media Servers"
+msgstr "媒体服务器"
+
+msgctxt "#32014"
+msgid "Manage Media Servers"
+msgstr "管理媒体服务器"
+
+msgctxt "#32015"
+msgid "Add, verify, or switch Emby / Jellyfin / Plex connections"
+msgstr "添加、核验或切换当前浏览的 Emby / Jellyfin / Plex 连接"
+
+msgctxt "#32016"
+msgid "Active Account"
+msgstr "当前浏览账号"

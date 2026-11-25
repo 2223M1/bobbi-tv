@@ -8,10 +8,15 @@ import android.app.Service;
 import android.content.Intent;
 import android.content.Context;
 import android.content.pm.ServiceInfo;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import java.io.File;
+import java.io.FileInputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
@@ -20,6 +25,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public final class EngineService extends Service implements EngineRunner.Listener {
     static final String START = "org.bobbi.helper.START";
     static final String STOP = "org.bobbi.helper.STOP";
+    static final String REFRESH_LOCALE = "org.bobbi.helper.REFRESH_LOCALE";
     private static final String CHANNEL = "bobbi_engine";
     private static final int NOTIFICATION = 8090;
     static final class Snapshot {
@@ -31,7 +37,81 @@ public final class EngineService extends Service implements EngineRunner.Listene
     }
     static volatile Snapshot snapshot = new Snapshot("STOPPED", "NOT_STARTED");
     private static volatile EngineRunner activeEngine;
+    private static volatile String projectedLocale = "";
     private static final AtomicLong generation = new AtomicLong();
+
+    static String normalizeLocaleTag(String raw) {
+        if (raw == null) return "";
+        String lower = raw.trim().toLowerCase(Locale.ROOT).replace('-', '_');
+        if (lower.startsWith("en") || lower.startsWith("resource.language.en")) return "en";
+        if (lower.startsWith("zh") || lower.startsWith("resource.language.zh")) return "zh";
+        return "";
+    }
+
+    private static String readKodiGuiLocale(Context app) {
+        File external = app.getExternalFilesDir(null);
+        File[] bases = external != null ? new File[]{external, app.getFilesDir()} : new File[]{app.getFilesDir()};
+        for (File base : bases) {
+            if (base == null) continue;
+            File gui = new File(base, ".kodi/userdata/guisettings.xml");
+            if (!gui.isFile() || gui.length() <= 0 || gui.length() > 512 * 1024) continue;
+            try (FileInputStream in = new FileInputStream(gui)) {
+                byte[] buf = new byte[(int) gui.length()];
+                int read = in.read(buf);
+                if (read <= 0) continue;
+                String xml = new String(buf, 0, read, StandardCharsets.UTF_8);
+                int idx = xml.indexOf("id=\"locale.language\"");
+                if (idx >= 0) {
+                    int gt = xml.indexOf('>', idx);
+                    int lt = gt >= 0 ? xml.indexOf('<', gt + 1) : -1;
+                    if (gt >= 0 && lt > gt) {
+                        String norm = normalizeLocaleTag(xml.substring(gt + 1, lt));
+                        if (!norm.isEmpty()) return norm;
+                    }
+                }
+            } catch (Exception ignored) { }
+        }
+        return "";
+    }
+
+    static String effectiveLocale(Context app) {
+        String explicit = projectedLocale;
+        if (!explicit.isEmpty()) return explicit;
+        String fromKodi = readKodiGuiLocale(app);
+        return fromKodi.isEmpty() ? "zh" : fromKodi;
+    }
+
+    static String hostString(Context app, String resName, String fallbackEn) {
+        boolean en = "en".equals(effectiveLocale(app));
+        Locale target = en ? Locale.ENGLISH : Locale.SIMPLIFIED_CHINESE;
+        Configuration cfg = new Configuration(app.getResources().getConfiguration());
+        cfg.setLocale(target);
+        Context localized = app.createConfigurationContext(cfg);
+        int id = localized.getResources().getIdentifier(resName, "string", app.getPackageName());
+        if (id != 0) {
+            try { return localized.getString(id); }
+            catch (RuntimeException ignored) { }
+        }
+        return fallbackEn;
+    }
+
+    static synchronized boolean applyUiLocale(Context app, String rawLocale) {
+        String normalized = normalizeLocaleTag(rawLocale);
+        if (normalized.isEmpty()) return false;
+        projectedLocale = normalized;
+        NotificationManager manager = app.getSystemService(NotificationManager.class);
+        if (manager != null) {
+            manager.createNotificationChannel(new NotificationChannel(CHANNEL,
+                    hostString(app, "bobbi_host_channel_name", "BT Playback"),
+                    NotificationManager.IMPORTANCE_LOW));
+        }
+        if (snapshot.busy() && activeEngine != null) {
+            try { app.startService(new Intent(app, EngineService.class).setAction(REFRESH_LOCALE)); }
+            catch (RuntimeException ignored) { }
+        }
+        return true;
+    }
+
     static synchronized void requestStart(Context app) {
         if (snapshot.busy() || activeEngine != null) return;
         long ticket = generation.incrementAndGet();
@@ -58,7 +138,8 @@ public final class EngineService extends Service implements EngineRunner.Listene
         super.onCreate();
         NotificationManager manager = getSystemService(NotificationManager.class);
         manager.createNotificationChannel(new NotificationChannel(CHANNEL,
-                "BT 播放", NotificationManager.IMPORTANCE_LOW));
+                hostString(this, "bobbi_host_channel_name", "BT Playback"),
+                NotificationManager.IMPORTANCE_LOW));
     }
 
     private Notification notification(String message) {
@@ -67,9 +148,16 @@ public final class EngineService extends Service implements EngineRunner.Listene
         PendingIntent stop = PendingIntent.getService(this, 1, new Intent(this, EngineService.class).setAction(STOP),
                 PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
         return new Notification.Builder(this, CHANNEL).setSmallIcon(android.R.drawable.stat_sys_download)
-                .setContentTitle("波比 TV").setContentText(message)
+                .setContentTitle(hostString(this, "bobbi_host_app_title", "bobbi TV")).setContentText(message)
                 .setContentIntent(open).setOngoing(true).setOnlyAlertOnce(true)
-                .addAction(new Notification.Action.Builder(null, "停止 BT", stop).build()).build();
+                .addAction(new Notification.Action.Builder(null,
+                        hostString(this, "bobbi_host_stop_bt", "Stop BT"), stop).build()).build();
+    }
+
+    private String statusText(String state) {
+        if ("STARTING".equals(state)) return hostString(this, "bobbi_host_starting_verify", "Starting and verifying local control interface");
+        if ("RUNNING".equals(state)) return hostString(this, "bobbi_host_ready", "BT playback ready");
+        return hostString(this, "bobbi_host_stopping", "Stopping BT");
     }
 
     @Override public int onStartCommand(Intent intent, int flags, int startId) {
@@ -77,7 +165,7 @@ public final class EngineService extends Service implements EngineRunner.Listene
         if (START.equals(action) && runner == null && activeEngine == null
                 && intent.getLongExtra("generation", -1) == generation.get()) {
             snapshot = new Snapshot("STARTING", "VERIFYING_PACKAGED_ENGINE");
-            Notification notice = notification("正在启动并验证本机控制接口");
+            Notification notice = notification(statusText("STARTING"));
             try {
                 if (Build.VERSION.SDK_INT >= 34)
                     startForeground(NOTIFICATION, notice, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE);
@@ -91,6 +179,12 @@ public final class EngineService extends Service implements EngineRunner.Listene
             activeEngine = runner;
             if (intent.getLongExtra("generation", -1) != generation.get()) runner.stop();
             executor.execute(runner);
+        } else if (REFRESH_LOCALE.equals(action) && runner != null && snapshot.busy()) {
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(new NotificationChannel(CHANNEL,
+                    hostString(this, "bobbi_host_channel_name", "BT Playback"),
+                    NotificationManager.IMPORTANCE_LOW));
+            manager.notify(NOTIFICATION, notification(statusText(snapshot.state)));
         } else if (STOP.equals(action)) {
             requestStop();
             if ("STOP_UNCONFIRMED".equals(snapshot.state)) {
@@ -111,8 +205,7 @@ public final class EngineService extends Service implements EngineRunner.Listene
             if (("RUNNING".equals(state) || "STARTING".equals(state)) && !owner.requested()) return;
             snapshot = new Snapshot(state, detail);
             if (!destroyed && ("RUNNING".equals(state) || "STOPPING".equals(state) || "STOP_UNCONFIRMED".equals(state))) {
-                String label = "RUNNING".equals(state) ? "BT 播放已就绪" : "正在停止 BT";
-                getSystemService(NotificationManager.class).notify(NOTIFICATION, notification(label));
+                getSystemService(NotificationManager.class).notify(NOTIFICATION, notification(statusText(state)));
             }
         });
     }

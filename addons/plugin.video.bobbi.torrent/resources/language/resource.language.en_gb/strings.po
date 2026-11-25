@@ -1,0 +1,35 @@
+# Kodi Media Center language file
+# Addon id: plugin.video.bobbi.torrent
+# Addon Provider: bobbi TV
+msgid ""
+msgstr ""
+"Project-Id-Version: plugin.video.bobbi.torrent\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en_GB\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgctxt "#32000"
+msgid "unknown"
+msgstr ""
+
+msgctxt "#32001"
+msgid "Slow BT Buffering"
+msgstr ""
+
+msgctxt "#32002"
+msgid "Selected video is still buffering. Wait another round?\nTotal swarm speed %s (not exact file rate).\nSource and quality are never changed while waiting."
+msgstr ""
+
+msgctxt "#32003"
+msgid "Back to Sources"
+msgstr ""
+
+msgctxt "#32004"
+msgid "Keep Waiting"
+msgstr ""
+
+msgctxt "#32005"
+msgid "Select Main Feature File (No Auto-Continue)"
+msgstr ""

@@ -331,3 +331,155 @@ def test_display_adaptation_is_strictly_read_only_and_deep_links_native_windows(
     )
     assert out_nav == 'NAVIGATED'
     assert executed == ['ActivateWindow(ScreenCalibration)']
+
+
+def test_manage_home_spaces_draft_cancel_save_reset_and_python_xml_equivalence(monkeypatch):
+    from bobbi_platform import glass_settings as gs
+
+    _, _, nav, _ = generator.full_outputs(ROOT)
+    nav_tree = ET.fromstring(nav)
+    expressions = {e.get('name'): (e.text or '') for e in nav_tree.findall('expression')}
+    items = nav_tree.find("include[@name='HomeSpaceItems']/content").findall('item')
+
+    bools: set[str] = set()
+    strings: dict[str, str] = {}
+    writes = []
+
+    def get_bool(k):
+        return k in bools
+
+    def get_string(k):
+        return strings.get(k, '')
+
+    def set_bool(k, on):
+        writes.append(('set_bool', k, on))
+        if on:
+            bools.add(k)
+        else:
+            bools.discard(k)
+
+    def set_string(k, v):
+        writes.append(('set_string', k, v))
+        strings[k] = v
+
+    def reset_setting(k):
+        writes.append(('reset', k))
+        bools.discard(k)
+        strings.pop(k, None)
+
+    def xml_visible_spaces():
+        return [
+            item.findtext("property[@name='space_key']")
+            for item in items
+            if item.findtext('visible') is None or _eval_bool(item.findtext('visible'), expressions, bools, strings)
+        ]
+
+    # 1. Selecting fixed Home (0) shows pinned notice; modifying tv (1 -> hide=0) then cancelling (-1) writes 0 settings
+    ok_notices = []
+    seq_cancel = iter([0, 1, 0, -1])
+    changed = gs.manage_home_spaces(
+        SimpleNamespace(select=lambda _h, _r: next(seq_cancel), ok=lambda t, m: ok_notices.append((t, m))),
+        get_bool, get_string, set_bool, set_string, reset_setting,
+        english=True,
+    )
+    assert changed is False and writes == [] and len(ok_notices) == 1
+
+    # 2. Hide 'mine' (index 4 -> toggle=0), enable 'continue_watching' (index 5 -> toggle=0), move 'continue_watching' up (index 5 -> up=1), Save (14)
+    seq_save = iter([4, 0, 5, 0, 5, 1, 14])
+    changed = gs.manage_home_spaces(
+        SimpleNamespace(select=lambda _h, _r: next(seq_save), ok=lambda *_a: None),
+        get_bool, get_string, set_bool, set_string, reset_setting,
+    )
+    assert changed is True
+    order, vis = gs.read_home_space_prefs(get_bool, get_string)
+    assert 'home' in vis and 'mine' not in vis and 'continue_watching' in vis
+    assert [k for k in order if k in vis] == xml_visible_spaces()
+
+    # 3. Corrupted / duplicate / unknown slot strings match between Python read_home_space_prefs and XML 100%!
+    for raw_case in (
+        {'BobbiSpaceSlot1': 'settings', 'BobbiSpaceSlot2': 'settings', 'BobbiSpaceSlot3': 'bogus'},
+        {'BobbiSpaceSlot1': 'home', 'BobbiSpaceSlot5': 'tv', 'BobbiSpaceSlot12': 'tv'},
+        {'BobbiSpaceSlot2': 'favourites', 'BobbiSpaceSlot4': 'favourites', 'BobbiSpaceSlot9': 'unknown_key'},
+    ):
+        strings.clear()
+        strings.update(raw_case)
+        py_order, py_vis = gs.read_home_space_prefs(get_bool, get_string)
+        assert [k for k in py_order if k in py_vis] == xml_visible_spaces()
+
+    # 4. show_home_spaces redirects to Home when the active BobbiSection space was hidden (contract N07 / SP08)
+    props = {'BobbiSection': 'settings'}
+    builtins = []
+    monkeypatch.setattr(gs, 'ProfileBinding', lambda: SimpleNamespace(is_current=lambda: True))
+    monkeypatch.setattr(gs, '_kodi_skin_accessors', lambda: (get_bool, get_string, set_bool, set_string, reset_setting))
+    monkeypatch.setitem(sys.modules, 'xbmc', SimpleNamespace(
+        getSkinDir=lambda: 'skin.bobbi.cinema',
+        getInfoLabel=lambda _k: 'English',
+        getCondVisibility=lambda c: False if c == 'Window.IsActive(home)' else False,
+        executebuiltin=lambda cmd, *_a: builtins.append(cmd),
+    ))
+    monkeypatch.setitem(sys.modules, 'xbmcgui', SimpleNamespace(
+        Window=lambda _wid: SimpleNamespace(
+            getProperty=lambda k: props.get(k, ''),
+            setProperty=lambda k, v: props.__setitem__(k, v),
+        ),
+    ))
+    # Hide 'settings' (find its current index in order) and Save (14)
+    cur_order, _ = gs.read_home_space_prefs(get_bool, get_string)
+    settings_idx = cur_order.index('settings')
+    seq_hide_settings = iter([settings_idx, 0, 14])
+    assert gs.show_home_spaces(SimpleNamespace(select=lambda _h, _r: next(seq_hide_settings), ok=lambda *_a: None)) is True
+    assert props['BobbiSection'] == 'home'
+    assert builtins == ['ActivateWindow(Home)']
+
+
+def test_search_prompt_uses_container_update_inside_videos_and_activate_window_outside(monkeypatch):
+    pkg = str(ROOT / 'addons/plugin.video.bobbi')
+    if pkg not in sys.path:
+        sys.path.insert(0, pkg)
+
+    mem = {}
+    win_props = {}
+    dispatched = []
+    in_videos = [False]
+
+    class FakeKeyboard:
+        def __init__(self, initial='', heading=''):
+            self.initial = initial
+            self.heading = heading
+
+        def doModal(self):
+            pass
+
+        def isConfirmed(self):
+            return True
+
+        def getText(self):
+            return 'Severance'
+
+    monkeypatch.setitem(sys.modules, 'xbmc', SimpleNamespace(
+        Keyboard=FakeKeyboard,
+        getCondVisibility=lambda c: in_videos[0] if c == 'Window.IsActive(videos)' else False,
+        executebuiltin=dispatched.append,
+    ))
+    monkeypatch.setitem(sys.modules, 'xbmcgui', SimpleNamespace(
+        Window=lambda _wid: SimpleNamespace(setProperty=lambda k, v: win_props.__setitem__(k, v)),
+    ))
+    fake_kodi_utils = SimpleNamespace(
+        get_property=lambda k: mem.get(k, ''),
+        set_property=lambda k, v: mem.__setitem__(k, v),
+        translation=lambda _id: '',
+    )
+    monkeypatch.setitem(sys.modules, 'lib.utils.kodi', SimpleNamespace(utils=fake_kodi_utils))
+    monkeypatch.setitem(sys.modules, 'lib.utils.kodi.utils', fake_kodi_utils)
+
+    from lib.clients import cinema_ui
+
+    cinema_ui.search_prompt({'section': 'tv'})
+    assert len(dispatched) == 1 and dispatched[0].startswith('ActivateWindow(Videos,"plugin://plugin.video.bobbi/?')
+    assert win_props['BobbiSection'] == 'search'
+
+    dispatched.clear()
+    in_videos[0] = True
+    cinema_ui.search_prompt({'section': 'tv'})
+    assert len(dispatched) == 1 and dispatched[0].startswith('Container.Update("plugin://plugin.video.bobbi/?')
+

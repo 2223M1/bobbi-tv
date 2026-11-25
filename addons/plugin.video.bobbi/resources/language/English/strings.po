@@ -14,6 +14,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 # Settings
+
 msgctxt "#30000"
 msgid "Players"
 msgstr ""
@@ -1552,19 +1553,19 @@ msgstr ""
 
 msgctxt "#30866"
 msgid "Sign in to your Stremio account to access add-ons and personalized features."
-msgstr "Inicia sesión en tu cuenta de Stremio para acceder a complementos y características personalizadas."
+msgstr ""
 
 msgctxt "#30867"
 msgid "Sign out of your Stremio account. This will disconnect your account but won't delete your data."
-msgstr "Cierra sesión en tu cuenta de Stremio. Esto desconectará tu cuenta, pero no eliminará tus datos."
+msgstr ""
 
 msgctxt "#30868"
 msgid "Log Out of Stremio"
-msgstr "Cerrar sesión en Stremio"
+msgstr ""
 
 msgctxt "#30869"
 msgid "Enable Stremio add-ons integration."
-msgstr "Habilitar la integración de complementos de Stremio."
+msgstr ""
 
 msgctxt "#30870"
 msgid "Select Stream Addons"
@@ -1572,11 +1573,11 @@ msgstr ""
 
 msgctxt "#30871"
 msgid "Log In to Stremio"
-msgstr "Iniciar sesión en Stremio"
+msgstr ""
 
 msgctxt "#30872"
 msgid "Enable or disable Stremio add-ons."
-msgstr "Habilitar o deshabilitar los complementos de Stremio."
+msgstr ""
 
 msgctxt "#30873"
 msgid "Select language for player subtitle selection"
@@ -1668,7 +1669,7 @@ msgstr "Add Custom Addon"
 
 msgctxt "#90002"
 msgid "Add a custom Stremio addon by entering its URL"
-msgstr "Agrega un complemento personalizado de Stremio ingresando su URL"
+msgstr ""
 
 msgctxt "#90003"
 msgid "Auto-select audio when playing"
@@ -1730,8 +1731,6 @@ msgctxt "#90017"
 msgid "History"
 msgstr ""
 
-
-
 msgctxt "#90019"
 msgid "Recently Watched Files"
 msgstr ""
@@ -1743,11 +1742,6 @@ msgstr ""
 msgctxt "#90021"
 msgid "TV Calendar"
 msgstr ""
-
-
-
-
-
 
 msgctxt "#90024"
 msgid "Trending Recent"
@@ -1848,8 +1842,6 @@ msgstr ""
 msgctxt "#90048"
 msgid "Choose which providers to include in the stream request."
 msgstr ""
-
-# Context menus
 
 msgctxt "#90049"
 msgid "Scrape again"
@@ -2007,7 +1999,6 @@ msgctxt "#90099"
 msgid "Filter by Source Type"
 msgstr ""
 
-# BluRay/UHD
 msgctxt "#90100"
 msgid "Include BluRay/UHD sources"
 msgstr ""
@@ -2016,7 +2007,6 @@ msgctxt "#90105"
 msgid "Includes releases such as: BluRay, BluRay REMUX, BRRip, BDRip, UHDRip, REMUX"
 msgstr ""
 
-# WEB/HD
 msgctxt "#90101"
 msgid "Include WEB/HD sources"
 msgstr ""
@@ -2025,7 +2015,6 @@ msgctxt "#90106"
 msgid "Includes releases such as: WEB-DL, WEB-DLRip, WEBRip, HDRip, WEBMux"
 msgstr ""
 
-# DVD/TV/SAT
 msgctxt "#90102"
 msgid "Include DVD/TV/SAT sources"
 msgstr ""
@@ -2034,7 +2023,6 @@ msgctxt "#90107"
 msgid "Includes releases such as: DVD, DVDRip, HDTV, SATRip, TVRip, PPVRip, PDTV"
 msgstr ""
 
-# CAM/Screener
 msgctxt "#90103"
 msgid "Include CAM/Screener sources"
 msgstr ""
@@ -2043,7 +2031,6 @@ msgctxt "#90108"
 msgid "Includes releases such as: CAM, TeleSync, TeleCine, SCR"
 msgstr ""
 
-# Unknown
 msgctxt "#90104"
 msgid "Include Unknown sources"
 msgstr ""
@@ -2605,12 +2592,12 @@ msgid "Subtitles Loaded"
 msgstr "Subtitles Loaded"
 
 msgctxt "#90258"
-msgid "Backup"
-msgstr "Backup"
+msgid "Plugin Preferences Backup"
+msgstr ""
 
 msgctxt "#90259"
-msgid "Export Backup"
-msgstr "Export Backup"
+msgid "Export Plugin Preferences Backup"
+msgstr ""
 
 msgctxt "#90260"
 msgid "Export addon settings and custom Stremio addons to a JSON backup file."
@@ -2685,8 +2672,8 @@ msgid "Restore cancelled"
 msgstr "Restore cancelled"
 
 msgctxt "#90278"
-msgid "Reset All Settings"
-msgstr "Reset All Settings"
+msgid "Reset Plugin Preferences"
+msgstr ""
 
 msgctxt "#90279"
 msgid "This will reset all addon settings to their defaults and remove your custom Stremio addons. Continue?"
@@ -2713,8 +2700,8 @@ msgid "Reset every addon setting back to its default value and clear custom Stre
 msgstr "Reset every addon setting back to its default value and clear custom Stremio addons."
 
 msgctxt "#90285"
-msgid "Factory Reset"
-msgstr "Factory Reset"
+msgid "Clear Plugin Data"
+msgstr ""
 
 msgctxt "#90286"
 msgid "This will reset settings, clear caches, remove custom Stremio addons, and wipe local addon history/database data. Continue?"
@@ -2817,8 +2804,8 @@ msgid "Choose Torrent Client"
 msgstr "Choose Torrent Client"
 
 msgctxt "#90342"
-msgid "Clear Database Cache"
-msgstr "Clear Database Cache"
+msgid "Clear Local Browse & File History"
+msgstr ""
 
 msgctxt "#90343"
 msgid "Clear Stremio Cache"
@@ -4232,10 +4219,6 @@ msgctxt "#90736"
 msgid "Edit title"
 msgstr "Edit title"
 
-msgctxt "#90512"
-msgid "Season"
-msgstr "Season"
-
 msgctxt "#90737"
 msgid "Invalid season"
 msgstr "Invalid season"
@@ -4560,14 +4543,6 @@ msgctxt "#90814"
 msgid "Choose original languages to hide from TMDB listings"
 msgstr ""
 
-
-
-
-
-
-
-
-
 msgctxt "#90819"
 msgid "Rename Stremio add-on"
 msgstr ""
@@ -4722,6 +4697,7 @@ msgstr "Clear Continue Watching"
 
 msgctxt "#91001"
 msgid "Continue Watching cleared"
+msgstr ""
 
 msgctxt "#91002"
 msgid "Nuvio: Account"
@@ -4942,3 +4918,1963 @@ msgstr "This collection source is not supported yet."
 msgctxt "#91056"
 msgid "No results found."
 msgstr "No results found."
+
+msgctxt "#91100"
+msgid "Interface & Appearance"
+msgstr ""
+
+msgctxt "#91101"
+msgid "Home & Navigation"
+msgstr ""
+
+msgctxt "#91102"
+msgid "Playback & Subtitles"
+msgstr ""
+
+msgctxt "#91103"
+msgid "Content & Source Preferences"
+msgstr ""
+
+msgctxt "#91104"
+msgid "Network & Devices"
+msgstr ""
+
+msgctxt "#91105"
+msgid "System & Maintenance"
+msgstr ""
+
+msgctxt "#91106"
+msgid "Same-Release Auto-Continue & Prefetch"
+msgstr ""
+
+msgctxt "#91107"
+msgid "Auto-continue only verified same-release 115 next episodes. Stops when no reliable match exists without downgrading quality or skipping episodes."
+msgstr ""
+
+msgctxt "#91108"
+msgid "None"
+msgstr ""
+
+msgctxt "#91109"
+msgid "English"
+msgstr ""
+
+msgctxt "#91110"
+msgid "Spanish"
+msgstr ""
+
+msgctxt "#91111"
+msgid "Portuguese"
+msgstr ""
+
+msgctxt "#91112"
+msgid "German"
+msgstr ""
+
+msgctxt "#91113"
+msgid "French"
+msgstr ""
+
+msgctxt "#91114"
+msgid "Italian"
+msgstr ""
+
+msgctxt "#91115"
+msgid "Dutch"
+msgstr ""
+
+msgctxt "#91116"
+msgid "Polish"
+msgstr ""
+
+msgctxt "#91117"
+msgid "Russian"
+msgstr ""
+
+msgctxt "#91118"
+msgid "Turkish"
+msgstr ""
+
+msgctxt "#91119"
+msgid "Greek"
+msgstr ""
+
+msgctxt "#91120"
+msgid "Hindi"
+msgstr ""
+
+msgctxt "#91121"
+msgid "Indonesian"
+msgstr ""
+
+msgctxt "#91122"
+msgid "Japanese"
+msgstr ""
+
+msgctxt "#91123"
+msgid "Korean"
+msgstr ""
+
+msgctxt "#91124"
+msgid "Ukrainian"
+msgstr ""
+
+msgctxt "#91125"
+msgid "Chinese"
+msgstr ""
+
+msgctxt "#91126"
+msgid "Arabic"
+msgstr ""
+
+msgctxt "#91127"
+msgid "Bengali"
+msgstr ""
+
+msgctxt "#91128"
+msgid "Bulgarian"
+msgstr ""
+
+msgctxt "#91129"
+msgid "Chinese"
+msgstr ""
+
+msgctxt "#91130"
+msgid "Croatian"
+msgstr ""
+
+msgctxt "#91131"
+msgid "Czech"
+msgstr ""
+
+msgctxt "#91132"
+msgid "Danish"
+msgstr ""
+
+msgctxt "#91133"
+msgid "Dutch"
+msgstr ""
+
+msgctxt "#91134"
+msgid "English"
+msgstr ""
+
+msgctxt "#91135"
+msgid "Finnish"
+msgstr ""
+
+msgctxt "#91136"
+msgid "French"
+msgstr ""
+
+msgctxt "#91137"
+msgid "German"
+msgstr ""
+
+msgctxt "#91138"
+msgid "Greek"
+msgstr ""
+
+msgctxt "#91139"
+msgid "Hebrew"
+msgstr ""
+
+msgctxt "#91140"
+msgid "Hindi"
+msgstr ""
+
+msgctxt "#91141"
+msgid "Hungarian"
+msgstr ""
+
+msgctxt "#91142"
+msgid "Indonesian"
+msgstr ""
+
+msgctxt "#91143"
+msgid "Italian"
+msgstr ""
+
+msgctxt "#91144"
+msgid "Japanese"
+msgstr ""
+
+msgctxt "#91145"
+msgid "Kannada"
+msgstr ""
+
+msgctxt "#91146"
+msgid "Korean"
+msgstr ""
+
+msgctxt "#91147"
+msgid "Malayalam"
+msgstr ""
+
+msgctxt "#91148"
+msgid "Norwegian"
+msgstr ""
+
+msgctxt "#91149"
+msgid "Persian"
+msgstr ""
+
+msgctxt "#91150"
+msgid "Polish"
+msgstr ""
+
+msgctxt "#91151"
+msgid "Portuguese"
+msgstr ""
+
+msgctxt "#91152"
+msgid "Punjabi"
+msgstr ""
+
+msgctxt "#91153"
+msgid "Romanian"
+msgstr ""
+
+msgctxt "#91154"
+msgid "Russian"
+msgstr ""
+
+msgctxt "#91155"
+msgid "Serbian"
+msgstr ""
+
+msgctxt "#91156"
+msgid "Spanish"
+msgstr ""
+
+msgctxt "#91157"
+msgid "Swedish"
+msgstr ""
+
+msgctxt "#91158"
+msgid "Tamil"
+msgstr ""
+
+msgctxt "#91159"
+msgid "Telugu"
+msgstr ""
+
+msgctxt "#91160"
+msgid "Thai"
+msgstr ""
+
+msgctxt "#91161"
+msgid "Turkish"
+msgstr ""
+
+msgctxt "#91162"
+msgid "Ukrainian"
+msgstr ""
+
+msgctxt "#91163"
+msgid "Vietnamese"
+msgstr ""
+
+msgctxt "#91165"
+msgid "Error reading file."
+msgstr ""
+
+msgctxt "#91166"
+msgid "No compatible modules found"
+msgstr ""
+
+msgctxt "#91167"
+msgid "Choose External Scraper"
+msgstr ""
+
+msgctxt "#91168"
+msgid "The selected module is not compatible. Please choose a different one."
+msgstr ""
+
+msgctxt "#91169"
+msgid "Success!\n%s set as External Scraper"
+msgstr ""
+
+msgctxt "#91170"
+msgid "No external scraper selected"
+msgstr ""
+
+msgctxt "#91171"
+msgid "Unable to open settings: %s"
+msgstr ""
+
+msgctxt "#91172"
+msgid "Chinese-Subtitled Sources Only"
+msgstr ""
+
+msgctxt "#91173"
+msgid "Quality"
+msgstr ""
+
+msgctxt "#91174"
+msgid "Release Group"
+msgstr ""
+
+msgctxt "#91175"
+msgid "Indexer"
+msgstr ""
+
+msgctxt "#91176"
+msgid "Language"
+msgstr ""
+
+msgctxt "#91177"
+msgid "Exact Release Group Match"
+msgstr ""
+
+msgctxt "#91178"
+msgid "Torrent Sources Only"
+msgstr ""
+
+msgctxt "#91179"
+msgid "Debrid Sources Only"
+msgstr ""
+
+msgctxt "#91180"
+msgid "Clear Filters (Show All)"
+msgstr ""
+
+msgctxt "#91181"
+msgid "Searching Sources"
+msgstr ""
+
+msgctxt "#91182"
+msgid "Select a source to start playback"
+msgstr ""
+
+msgctxt "#91183"
+msgid "Querying enabled providers…"
+msgstr ""
+
+msgctxt "#91184"
+msgid "%d candidates found"
+msgstr ""
+
+msgctxt "#91185"
+msgid "Episode Finished"
+msgstr ""
+
+msgctxt "#91186"
+msgid "Playback Ended"
+msgstr ""
+
+msgctxt "#91187"
+msgid "No verified same-release next episode found. Browse episodes to choose manually."
+msgstr ""
+
+msgctxt "#91188"
+msgid "Return to source selection to retry; releases are never switched automatically."
+msgstr ""
+
+msgctxt "#91189"
+msgid "Worth Watching This Week"
+msgstr ""
+
+msgctxt "#91190"
+msgid "Popular Anime"
+msgstr ""
+
+msgctxt "#91191"
+msgid "Popular Movies"
+msgstr ""
+
+msgctxt "#91192"
+msgid "Popular Series"
+msgstr ""
+
+msgctxt "#91193"
+msgid "Popular Anime Movies"
+msgstr ""
+
+msgctxt "#91194"
+msgid "Search Movies & TV"
+msgstr ""
+
+msgctxt "#91195"
+msgid "Search TV Series"
+msgstr ""
+
+msgctxt "#91196"
+msgid "Search Movies"
+msgstr ""
+
+msgctxt "#91197"
+msgid "Search Anime"
+msgstr ""
+
+msgctxt "#91198"
+msgid "Search Anime Movies"
+msgstr ""
+
+msgctxt "#91199"
+msgid " · Preview"
+msgstr ""
+
+msgctxt "#91200"
+msgid "List truncated"
+msgstr ""
+
+msgctxt "#91201"
+msgid "Playback Control"
+msgstr ""
+
+msgctxt "#91202"
+msgid "Action applied"
+msgstr ""
+
+msgctxt "#91203"
+msgid "Action queued; waiting for player confirmation"
+msgstr ""
+
+msgctxt "#91204"
+msgid "Action result pending; reopen the panel shortly — will not resend"
+msgstr ""
+
+msgctxt "#91205"
+msgid "Playback state changed; reopen the panel"
+msgstr ""
+
+msgctxt "#91206"
+msgid "Player did not complete the action"
+msgstr ""
+
+msgctxt "#91207"
+msgid "Cannot safely control this playback right now; retry shortly"
+msgstr ""
+
+msgctxt "#91208"
+msgid "Action currently unavailable"
+msgstr ""
+
+msgctxt "#91209"
+msgid "Stop playback?"
+msgstr ""
+
+msgctxt "#91210"
+msgid "Jump to second"
+msgstr ""
+
+msgctxt "#91211"
+msgid "Jump to second (current %d s)"
+msgstr ""
+
+msgctxt "#91212"
+msgid "Chapters"
+msgstr ""
+
+msgctxt "#91213"
+msgid " (list truncated)"
+msgstr ""
+
+msgctxt "#91214"
+msgid "%s  ·  %d s"
+msgstr ""
+
+msgctxt "#91215"
+msgid "Local file history temporarily unavailable"
+msgstr ""
+
+msgctxt "#91216"
+msgid "Cloud"
+msgstr ""
+
+msgctxt "#91217"
+msgid "Torrent"
+msgstr ""
+
+msgctxt "#91218"
+msgid "Direct"
+msgstr ""
+
+msgctxt "#91219"
+msgid "Nothing in Continue Watching yet"
+msgstr ""
+
+msgctxt "#91220"
+msgid "Watch history temporarily unavailable"
+msgstr ""
+
+msgctxt "#91221"
+msgid "History changed; please reselect the title"
+msgstr ""
+
+msgctxt "#91222"
+msgid "Browse All Episodes"
+msgstr ""
+
+msgctxt "#91223"
+msgid "Progress for reference only · Plays from start after re-verification"
+msgstr ""
+
+msgctxt "#91224"
+msgid "Browse File Versions for This Work"
+msgstr ""
+
+msgctxt "#91225"
+msgid "Play from Start"
+msgstr ""
+
+msgctxt "#91226"
+msgid "Remove from Continue Watching"
+msgstr ""
+
+msgctxt "#91227"
+msgid "Personal file watch history temporarily unavailable"
+msgstr ""
+
+msgctxt "#91228"
+msgid "Choose Another Source"
+msgstr ""
+
+msgctxt "#91229"
+msgid "Clear Continue Watching"
+msgstr ""
+
+msgctxt "#91230"
+msgid "Home My Library View"
+msgstr ""
+
+msgctxt "#91231"
+msgid "Manage This Saved View"
+msgstr ""
+
+msgctxt "#91232"
+msgid "No Saved Views Yet"
+msgstr ""
+
+msgctxt "#91233"
+msgid "Open Library Filters first, then choose \"Save as Saved View\""
+msgstr ""
+
+msgctxt "#91234"
+msgid "Restore Default Home Library"
+msgstr ""
+
+msgctxt "#91235"
+msgid "Save as New Saved View"
+msgstr ""
+
+msgctxt "#91236"
+msgid "Update: %s"
+msgstr ""
+
+msgctxt "#91237"
+msgid "Save Current Filters"
+msgstr ""
+
+msgctxt "#91238"
+msgid "Saved View Name (max 80 chars)"
+msgstr ""
+
+msgctxt "#91239"
+msgid "Update Saved View?"
+msgstr ""
+
+msgctxt "#91240"
+msgid "Replace \"%s\" with current source and filters. Original files and watch history are kept."
+msgstr ""
+
+msgctxt "#91241"
+msgid "Saved View Updated"
+msgstr ""
+
+msgctxt "#91242"
+msgid "Set as Home My Library View"
+msgstr ""
+
+msgctxt "#91243"
+msgid "Rename"
+msgstr ""
+
+msgctxt "#91244"
+msgid "Move Up"
+msgstr ""
+
+msgctxt "#91245"
+msgid "Move Down"
+msgstr ""
+
+msgctxt "#91246"
+msgid "Delete Saved View"
+msgstr ""
+
+msgctxt "#91247"
+msgid "Delete Saved View?"
+msgstr ""
+
+msgctxt "#91248"
+msgid "Deletes only the filter preset; original files and watch history are kept."
+msgstr ""
+
+msgctxt "#91249"
+msgid "Bonus"
+msgstr ""
+
+msgctxt "#91250"
+msgid "Interview"
+msgstr ""
+
+msgctxt "#91251"
+msgid "Deleted Scene"
+msgstr ""
+
+msgctxt "#91252"
+msgid "Trailer"
+msgstr ""
+
+msgctxt "#91253"
+msgid "Other Extra"
+msgstr ""
+
+msgctxt "#91254"
+msgid "Entire Work (Any Release)"
+msgstr ""
+
+msgctxt "#91255"
+msgid "Next Page"
+msgstr ""
+
+msgctxt "#91256"
+msgid "No Main Works Available"
+msgstr ""
+
+msgctxt "#91257"
+msgid "Organize the main work as a movie, series, or custom title before linking extras."
+msgstr ""
+
+msgctxt "#91258"
+msgid "Personal Extra Link"
+msgstr ""
+
+msgctxt "#91259"
+msgid "Link / Change Main Work & Release"
+msgstr ""
+
+msgctxt "#91260"
+msgid "Remove Extra Link"
+msgstr ""
+
+msgctxt "#91261"
+msgid "Undo Last Edit"
+msgstr ""
+
+msgctxt "#91262"
+msgid "Find main work or custom title (optional)"
+msgstr ""
+
+msgctxt "#91263"
+msgid "Select Main Work"
+msgstr ""
+
+msgctxt "#91264"
+msgid "Link Entire Work or Specific File Version"
+msgstr ""
+
+msgctxt "#91265"
+msgid "Organize Main Work First"
+msgstr ""
+
+msgctxt "#91266"
+msgid "Unorganized files cannot be main works; assign a custom title or confirm as movie/series first."
+msgstr ""
+
+msgctxt "#91267"
+msgid "Extra Type"
+msgstr ""
+
+msgctxt "#91268"
+msgid "Extra Title (max 160 chars)"
+msgstr ""
+
+msgctxt "#91269"
+msgid "Authorizes only this registered source and namespace, not other mounts or cloud accounts.\nSource: %s\nNamespace: %s\n"
+msgstr ""
+
+msgctxt "#91270"
+msgid "Authorizes only the current native cloud account.\n"
+msgstr ""
+
+msgctxt "#91271"
+msgid "Allow Phone Management for Current Library?"
+msgstr ""
+
+msgctxt "#91272"
+msgid "Use only on a trusted LAN. Anyone scanning can view this library index, organize works, and cancel scans, without playing media or reading cloud logins. Expires in 15 min; closing this QR window revokes access immediately without canceling scans."
+msgstr ""
+
+msgctxt "#91273"
+msgid "Phone Permissions (This Session Only)"
+msgstr ""
+
+msgctxt "#91274"
+msgid "Organize Library Only"
+msgstr ""
+
+msgctxt "#91275"
+msgid "Library + View Now Playing"
+msgstr ""
+
+msgctxt "#91276"
+msgid "Library + View & Control Now Playing"
+msgstr ""
+
+msgctxt "#91277"
+msgid "Allow Phone Control of Current Playback?"
+msgstr ""
+
+msgctxt "#91278"
+msgid "Anyone scanning can view audio/subtitles and seek or switch tracks. Applies only to confirmed playback under this authorized account; unsupported kernels will not expose control. Closing the QR window revokes access immediately."
+msgstr ""
+
+msgctxt "#91279"
+msgid "Phone Management Temporarily Unavailable"
+msgstr ""
+
+msgctxt "#91280"
+msgid "Port may already be in use. Close any active phone management window and retry."
+msgstr ""
+
+msgctxt "#91281"
+msgid "Phone Library Management · Close to Revoke"
+msgstr ""
+
+msgctxt "#91282"
+msgid "Allow Phone Management of Stremio Add-ons?"
+msgstr ""
+
+msgctxt "#91283"
+msgid "Use only on a trusted LAN. Anyone scanning can view, add, toggle, or remove custom Stremio add-ons without echoing saved URL credentials. Expires in 15 min; closing this QR window revokes access immediately."
+msgstr ""
+
+msgctxt "#91284"
+msgid "Allow Phone Upload of Config File?"
+msgstr ""
+
+msgctxt "#91285"
+msgid "Use only on a trusted LAN. Anyone scanning can upload a JSON config up to 2 MB for diagnosis; saving to your library still requires confirmation on the TV. Closing this QR window revokes access and cleans temporary chunks."
+msgstr ""
+
+msgctxt "#91286"
+msgid "Phone Upload Temporarily Unavailable"
+msgstr ""
+
+msgctxt "#91287"
+msgid "Phone Config Upload · Press Back After Upload to Confirm"
+msgstr ""
+
+msgctxt "#91288"
+msgid "Config Diagnosis (Library Unchanged)"
+msgstr ""
+
+msgctxt "#91289"
+msgid "No usable type-4 sites found."
+msgstr ""
+
+msgctxt "#91290"
+msgid "Suggested Next Steps"
+msgstr ""
+
+msgctxt "#91291"
+msgid "Skip for Now (Keep Library Unchanged)"
+msgstr ""
+
+msgctxt "#91292"
+msgid "Connect Native WebDAV / AList Instead"
+msgstr ""
+
+msgctxt "#91293"
+msgid "Connect Native Emby / Jellyfin Instead"
+msgstr ""
+
+msgctxt "#91294"
+msgid "Add \"%s\""
+msgstr ""
+
+msgctxt "#91295"
+msgid "%s\nSaved on this device only."
+msgstr ""
+
+msgctxt "#91296"
+msgid "Available %d sites"
+msgstr ""
+
+msgctxt "#91297"
+msgid "Import Phone-Uploaded T4 Sites?"
+msgstr ""
+
+msgctxt "#91298"
+msgid "%s\nAllow on-demand connections:\n%s"
+msgstr ""
+
+msgctxt "#91299"
+msgid "T4 Sites Saved"
+msgstr ""
+
+msgctxt "#91300"
+msgid "bobbi TV · Library Organizer"
+msgstr ""
+
+msgctxt "#91301"
+msgid "Organizing edits local descriptions only and never alters cloud files. Playback viewing/control requires TV approval. Closing the TV QR window revokes access."
+msgstr ""
+
+msgctxt "#91302"
+msgid "Connecting to current TV session…"
+msgstr ""
+
+msgctxt "#91303"
+msgid "Organize Works"
+msgstr ""
+
+msgctxt "#91304"
+msgid "Sources"
+msgstr ""
+
+msgctxt "#91305"
+msgid "Background Jobs"
+msgstr ""
+
+msgctxt "#91306"
+msgid "Continue Watching"
+msgstr ""
+
+msgctxt "#91307"
+msgid "Now Playing"
+msgstr ""
+
+msgctxt "#91308"
+msgid "Add-ons"
+msgstr ""
+
+msgctxt "#91309"
+msgid "Import Config"
+msgstr ""
+
+msgctxt "#91310"
+msgid "Upload Subtitle"
+msgstr ""
+
+msgctxt "#91311"
+msgid "Refresh"
+msgstr ""
+
+msgctxt "#91312"
+msgid "End Session"
+msgstr ""
+
+msgctxt "#91313"
+msgid "Search works / files / version notes"
+msgstr ""
+
+msgctxt "#91314"
+msgid "Work keyword"
+msgstr ""
+
+msgctxt "#91315"
+msgid "Search"
+msgstr ""
+
+msgctxt "#91316"
+msgid "Media type"
+msgstr ""
+
+msgctxt "#91317"
+msgid "All Types"
+msgstr ""
+
+msgctxt "#91318"
+msgid "Movies"
+msgstr ""
+
+msgctxt "#91319"
+msgid "TV Series"
+msgstr ""
+
+msgctxt "#91320"
+msgid "Unconfirmed Works"
+msgstr ""
+
+msgctxt "#91321"
+msgid "Review status"
+msgstr ""
+
+msgctxt "#91322"
+msgid "All Statuses"
+msgstr ""
+
+msgctxt "#91323"
+msgid "Unmatched"
+msgstr ""
+
+msgctxt "#91324"
+msgid "Ambiguous"
+msgstr ""
+
+msgctxt "#91325"
+msgid "Proposed"
+msgstr ""
+
+msgctxt "#91326"
+msgid "Confirmed"
+msgstr ""
+
+msgctxt "#91327"
+msgid "Ignored"
+msgstr ""
+
+msgctxt "#91328"
+msgid "Source observation"
+msgstr ""
+
+msgctxt "#91329"
+msgid "All Observations"
+msgstr ""
+
+msgctxt "#91330"
+msgid "Indexed · Verified Before Play"
+msgstr ""
+
+msgctxt "#91331"
+msgid "File Not Found in Source"
+msgstr ""
+
+msgctxt "#91332"
+msgid "Source Unavailable"
+msgstr ""
+
+msgctxt "#91333"
+msgid "Source Unverified"
+msgstr ""
+
+msgctxt "#91334"
+msgid "Sort"
+msgstr ""
+
+msgctxt "#91335"
+msgid "By Name"
+msgstr ""
+
+msgctxt "#91336"
+msgid "Recently Added"
+msgstr ""
+
+msgctxt "#91337"
+msgid "Recently Edited"
+msgstr ""
+
+msgctxt "#91338"
+msgid "Clear Filters (Keep Source)"
+msgstr ""
+
+msgctxt "#91339"
+msgid "All Authorized Sources"
+msgstr ""
+
+msgctxt "#91340"
+msgid "Authorized Source Pinned"
+msgstr ""
+
+msgctxt "#91341"
+msgid "Back to Works"
+msgstr ""
+
+msgctxt "#91342"
+msgid "Previous"
+msgstr ""
+
+msgctxt "#91343"
+msgid "Next"
+msgstr ""
+
+msgctxt "#91344"
+msgid "Pending Edits (Max 100/round, 5/batch)"
+msgstr ""
+
+msgctxt "#91345"
+msgid "Preview each item first, then submit in batches. Conflicts are never overwritten. Check original receipts after disconnects; ending session keeps sent edits (up to 20 receipts kept)."
+msgstr ""
+
+msgctxt "#91346"
+msgid "Preview All Edits"
+msgstr ""
+
+msgctxt "#91347"
+msgid "Confirm / Continue Batch Submit"
+msgstr ""
+
+msgctxt "#91348"
+msgid "Clear Current Queue"
+msgstr ""
+
+msgctxt "#91349"
+msgid "Stop Remaining Batches"
+msgstr ""
+
+msgctxt "#91350"
+msgid "Check Original Submission"
+msgstr ""
+
+msgctxt "#91351"
+msgid "Reload Current Revisions"
+msgstr ""
+
+msgctxt "#91352"
+msgid "If invalid, expired, or after an account change, reopen Phone Management on TV and scan again. Playback control applies only to the authorized instance."
+msgstr ""
+
+msgctxt "#91353"
+msgid "Queued"
+msgstr ""
+
+msgctxt "#91354"
+msgid "Scanning"
+msgstr ""
+
+msgctxt "#91355"
+msgid "Completed"
+msgstr ""
+
+msgctxt "#91356"
+msgid "Incomplete"
+msgstr ""
+
+msgctxt "#91357"
+msgid "Canceled"
+msgstr ""
+
+msgctxt "#91358"
+msgid "Interrupted"
+msgstr ""
+
+msgctxt "#91359"
+msgid "Ready"
+msgstr ""
+
+msgctxt "#91360"
+msgid "Revision conflict; refresh"
+msgstr ""
+
+msgctxt "#91361"
+msgid "Saved"
+msgstr ""
+
+msgctxt "#91362"
+msgid "Cancel requested; awaiting confirmation"
+msgstr ""
+
+msgctxt "#91363"
+msgid "Background Jobs · "
+msgstr ""
+
+msgctxt "#91364"
+msgid "Read-only summary pending refresh (open Background Jobs for live scan progress)"
+msgstr ""
+
+msgctxt "#91365"
+msgid "%s (scanned %d / found %d videos)"
+msgstr ""
+
+msgctxt "#91366"
+msgid "Active %d · %s"
+msgstr ""
+
+msgctxt "#91367"
+msgid "No active jobs · Latest: %s"
+msgstr ""
+
+msgctxt "#91368"
+msgid "No queued or running jobs"
+msgstr ""
+
+msgctxt "#91369"
+msgid "Batch exceeds 8192 bytes; reduce items or shorten text."
+msgstr ""
+
+msgctxt "#91370"
+msgid "Player applied command."
+msgstr ""
+
+msgctxt "#91371"
+msgid "Playback state changed; command not applied."
+msgstr ""
+
+msgctxt "#91372"
+msgid "Player command failed."
+msgstr ""
+
+msgctxt "#91373"
+msgid "Command queued; awaiting confirmation."
+msgstr ""
+
+msgctxt "#91374"
+msgid "Command outcome unknown; receipt pending or expired. Re-check read-only; never resent."
+msgstr ""
+
+msgctxt "#91375"
+msgid "Session ended."
+msgstr ""
+
+msgctxt "#91376"
+msgid "Request exceeds 8192 bytes; reduce items."
+msgstr ""
+
+msgctxt "#91377"
+msgid "Request timed out; outcome unconfirmed."
+msgstr ""
+
+msgctxt "#91378"
+msgid "Session expired or account changed; reopen on TV and scan again."
+msgstr ""
+
+msgctxt "#91379"
+msgid "Preview expired; preview again before submitting."
+msgstr ""
+
+msgctxt "#91380"
+msgid "Batch reply too large; reduce items and preview again."
+msgstr ""
+
+msgctxt "#91381"
+msgid "Action unconfirmed; refresh and retry (%s)."
+msgstr ""
+
+msgctxt "#91382"
+msgid "Connection interrupted; outcome unconfirmed. Reload state."
+msgstr ""
+
+msgctxt "#91383"
+msgid "Work Candidates (Preferred)"
+msgstr ""
+
+msgctxt "#91384"
+msgid "Candidate Search Keyword (sends keyword only)"
+msgstr ""
+
+msgctxt "#91385"
+msgid "Candidate Year (optional; verify remakes)"
+msgstr ""
+
+msgctxt "#91386"
+msgid "Searching public work metadata…"
+msgstr ""
+
+msgctxt "#91387"
+msgid "Results are candidates only; verify year, type, and season/episode."
+msgstr ""
+
+msgctxt "#91388"
+msgid "No candidates found; adjust keyword or enter ID manually."
+msgstr ""
+
+msgctxt "#91389"
+msgid "Year unknown"
+msgstr ""
+
+msgctxt "#91390"
+msgid "Use This Candidate (Not Saved Yet)"
+msgstr ""
+
+msgctxt "#91391"
+msgid "Candidate expired; search again."
+msgstr ""
+
+msgctxt "#91392"
+msgid "Candidate filled; not saved yet. Verify season/episode, queue, and preview."
+msgstr ""
+
+msgctxt "#91393"
+msgid "Candidate search incomplete; retry or enter ID manually."
+msgstr ""
+
+msgctxt "#91394"
+msgid "Search Candidates"
+msgstr ""
+
+msgctxt "#91395"
+msgid "Keyword changed; previous candidates invalidated."
+msgstr ""
+
+msgctxt "#91396"
+msgid "Suggest Episode Matches in Same Folder"
+msgstr ""
+
+msgctxt "#91397"
+msgid "Search and select a TV series candidate first."
+msgstr ""
+
+msgctxt "#91398"
+msgid "Check the pending submission outcome first."
+msgstr ""
+
+msgctxt "#91399"
+msgid "Select Trusted Source"
+msgstr ""
+
+msgctxt "#91400"
+msgid "File is indexed by multiple sources. Pick the trusted source containing it; scope will not expand."
+msgstr ""
+
+msgctxt "#91401"
+msgid "Next Sources"
+msgstr ""
+
+msgctxt "#91402"
+msgid "Same-Folder Suggestions · %s"
+msgstr ""
+
+msgctxt "#91403"
+msgid "Same folder does not prove same work. Verify each file and exclude remakes/packs; keep S00 for specials."
+msgstr ""
+
+msgctxt "#91404"
+msgid "Revision %d · Current: %s"
+msgstr ""
+
+msgctxt "#91405"
+msgid "Unbound"
+msgstr ""
+
+msgctxt "#91406"
+msgid "Include in Round"
+msgstr ""
+
+msgctxt "#91407"
+msgid "Season (0 for specials)"
+msgstr ""
+
+msgctxt "#91408"
+msgid "Episode (exclude multi-episode files)"
+msgstr ""
+
+msgctxt "#91409"
+msgid "Version Note (optional)"
+msgstr ""
+
+msgctxt "#91410"
+msgid "Uncertain season/episode, year/type mismatch, or ambiguity — unchecked by default."
+msgstr ""
+
+msgctxt "#91411"
+msgid "Queue Checked Items for Preview"
+msgstr ""
+
+msgctxt "#91412"
+msgid "Checked items require integer season and episode; exclude multi-episode files."
+msgstr ""
+
+msgctxt "#91413"
+msgid "Check at least one item."
+msgstr ""
+
+msgctxt "#91414"
+msgid "Queued %d suggestions. Preview all edits before confirming batched save."
+msgstr ""
+
+msgctxt "#91415"
+msgid "Next Folder Page (Keep Saved Receipts)"
+msgstr ""
+
+msgctxt "#91416"
+msgid "Loaded folder files %d–%d%s Not confirmed or submitted yet."
+msgstr ""
+
+msgctxt "#91417"
+msgid " (truncated)"
+msgstr ""
+
+msgctxt "#91418"
+msgid "%s · Rev %d"
+msgstr ""
+
+msgctxt "#91419"
+msgid "File not found in current source; local description and history kept."
+msgstr ""
+
+msgctxt "#91420"
+msgid "Action"
+msgstr ""
+
+msgctxt "#91421"
+msgid "Set Work / Custom Title"
+msgstr ""
+
+msgctxt "#91422"
+msgid "Set as Extra Video"
+msgstr ""
+
+msgctxt "#91423"
+msgid "Detach Extra Link"
+msgstr ""
+
+msgctxt "#91424"
+msgid "Unbind"
+msgstr ""
+
+msgctxt "#91425"
+msgid "Ignore Item"
+msgstr ""
+
+msgctxt "#91426"
+msgid "Undo Last Edit"
+msgstr ""
+
+msgctxt "#91427"
+msgid "Extra link: %s%s"
+msgstr ""
+
+msgctxt "#91428"
+msgid " · Parent changed, re-verify"
+msgstr ""
+
+msgctxt "#91429"
+msgid "Use as Parent Release for Extras"
+msgstr ""
+
+msgctxt "#91430"
+msgid "Selected parent \"%s\". Open an extra file and choose \"Set as Extra Video\"; not saved yet."
+msgstr ""
+
+msgctxt "#91431"
+msgid "Advanced: Manual ID / Custom Title"
+msgstr ""
+
+msgctxt "#91432"
+msgid "Description Kind"
+msgstr ""
+
+msgctxt "#91433"
+msgid "Custom Title"
+msgstr ""
+
+msgctxt "#91434"
+msgid "Movie TMDb"
+msgstr ""
+
+msgctxt "#91435"
+msgid "Series TMDb"
+msgstr ""
+
+msgctxt "#91436"
+msgid "Display Title"
+msgstr ""
+
+msgctxt "#91437"
+msgid "TMDb ID (Movie / Series only)"
+msgstr ""
+
+msgctxt "#91438"
+msgid "Season (Series, 0 for specials)"
+msgstr ""
+
+msgctxt "#91439"
+msgid "Episode (Series)"
+msgstr ""
+
+msgctxt "#91440"
+msgid "Extra Video Link"
+msgstr ""
+
+msgctxt "#91441"
+msgid "Keep Current Link"
+msgstr ""
+
+msgctxt "#91442"
+msgid "Selected Parent: %s"
+msgstr ""
+
+msgctxt "#91443"
+msgid "Shared Across Work (Uses Candidate / ID)"
+msgstr ""
+
+msgctxt "#91444"
+msgid "Link Scope"
+msgstr ""
+
+msgctxt "#91445"
+msgid "Clear Selected Parent"
+msgstr ""
+
+msgctxt "#91446"
+msgid "Extra Video Title"
+msgstr ""
+
+msgctxt "#91447"
+msgid "Add to Batch Queue"
+msgstr ""
+
+msgctxt "#91448"
+msgid "Fill in required ID and season/episode for the chosen kind."
+msgstr ""
+
+msgctxt "#91449"
+msgid "Added to batch; not written yet. Preview before confirming."
+msgstr ""
+
+msgctxt "#91450"
+msgid "Loaded on demand. Candidates are suggestions; edits still require item-by-item preview."
+msgstr ""
+
+msgctxt "#91451"
+msgid "%s · %d files · %s"
+msgstr ""
+
+msgctxt "#91452"
+msgid "Organize This File"
+msgstr ""
+
+msgctxt "#91453"
+msgid "View Seasons"
+msgstr ""
+
+msgctxt "#91454"
+msgid "View Episodes"
+msgstr ""
+
+msgctxt "#91455"
+msgid "View Files"
+msgstr ""
+
+msgctxt "#91456"
+msgid "View Extras"
+msgstr ""
+
+msgctxt "#91457"
+msgid "Scanned %d · Found %d videos"
+msgstr ""
+
+msgctxt "#91458"
+msgid "Request Cancel Scan"
+msgstr ""
+
+msgctxt "#91459"
+msgid "View This Source"
+msgstr ""
+
+msgctxt "#91460"
+msgid "Rescan Source"
+msgstr ""
+
+msgctxt "#91461"
+msgid "Watched %s%s"
+msgstr ""
+
+msgctxt "#91462"
+msgid "View File Versions"
+msgstr ""
+
+msgctxt "#91463"
+msgid "Playback not covered by this session or kernel unsupported. Operate on TV."
+msgstr ""
+
+msgctxt "#91464"
+msgid "Playback control unavailable"
+msgstr ""
+
+msgctxt "#91465"
+msgid "Pause"
+msgstr ""
+
+msgctxt "#91466"
+msgid "Resume"
+msgstr ""
+
+msgctxt "#91467"
+msgid "Stop"
+msgstr ""
+
+msgctxt "#91468"
+msgid "Playback progress"
+msgstr ""
+
+msgctxt "#91469"
+msgid "Audio Tracks"
+msgstr ""
+
+msgctxt "#91470"
+msgid "Subtitles"
+msgstr ""
+
+msgctxt "#91471"
+msgid "Hide Subtitles"
+msgstr ""
+
+msgctxt "#91472"
+msgid "Show Subtitles"
+msgstr ""
+
+msgctxt "#91473"
+msgid "Add Custom Stremio Add-on"
+msgstr ""
+
+msgctxt "#91474"
+msgid "Manifest URL (https:// or stremio://)"
+msgstr ""
+
+msgctxt "#91475"
+msgid "Validate Manifest"
+msgstr ""
+
+msgctxt "#91476"
+msgid "Add Add-on"
+msgstr ""
+
+msgctxt "#91477"
+msgid "Remove Add-on"
+msgstr ""
+
+msgctxt "#91478"
+msgid "Upload TVBox / Xiaoya T4 JSON Config"
+msgstr ""
+
+msgctxt "#91479"
+msgid "Start Chunked Upload & Diagnose"
+msgstr ""
+
+msgctxt "#91480"
+msgid "Cancel Staged Chunks"
+msgstr ""
+
+msgctxt "#91481"
+msgid "Upload External Subtitle (Bound to Selected Source)"
+msgstr ""
+
+msgctxt "#91482"
+msgid "Upload & Apply Subtitle"
+msgstr ""
+
+msgctxt "#91483"
+msgid "Cancel Upload"
+msgstr ""
+
+msgctxt "#91484"
+msgid "Reading current state from TV…"
+msgstr ""
+
+msgctxt "#91485"
+msgid "Source: %s · %s · %s · %s · %s"
+msgstr ""
+
+msgctxt "#91486"
+msgid "No works in this scope; adjust or clear filters to view current source."
+msgstr ""
+
+msgctxt "#91487"
+msgid "Works · Page %d · Up to 32/page; click a file to load review details."
+msgstr ""
+
+msgctxt "#91488"
+msgid "No records on this page. Active scans show committed items only."
+msgstr ""
+
+msgctxt "#91489"
+msgid "State loaded · Page %d. Closing browser does not cancel background jobs."
+msgstr ""
+
+msgctxt "#91490"
+msgid "Queue cleared; preview again after selecting items. Committed receipts kept."
+msgstr ""
+
+msgctxt "#91491"
+msgid "Review all %d previewed items (%d batches). Saved batches do not auto-rollback on later conflicts."
+msgstr ""
+
+msgctxt "#91492"
+msgid "Batch contains conflicts or invalid items; refresh and reselect."
+msgstr ""
+
+msgctxt "#91493"
+msgid "Submission Receipt"
+msgstr ""
+
+msgctxt "#91494"
+msgid "Continue Organizing Series"
+msgstr ""
+
+msgctxt "#91495"
+msgid "Batch saved. Refresh to read new revisions."
+msgstr ""
+
+msgctxt "#91496"
+msgid "Some items were not saved; check item results and refresh."
+msgstr ""
+
+msgctxt "#91497"
+msgid "Some outcomes still pending; known receipts kept."
+msgstr ""
+
+msgctxt "#91498"
+msgid "Saved %d/%d, pending %d, unsaved %d, unstarted %d%s"
+msgstr ""
+
+msgctxt "#91499"
+msgid "TV confirmed session ended; background jobs unchanged."
+msgstr ""
+
+msgctxt "#91550"
+msgid "Open \"My Library\" to browse and search by site."
+msgstr ""
+
+msgctxt "#91551"
+msgid "Selected Source"
+msgstr ""
+
+msgctxt "#91552"
+msgid "Keyword: %s"
+msgstr ""
+
+msgctxt "#91553"
+msgid "Current Registered Source"
+msgstr ""
+
+msgctxt "#91554"
+msgid "All Sources in Current Account"
+msgstr ""
+
+msgctxt "#91555"
+msgid "Source · %s"
+msgstr ""
+
+msgctxt "#91556"
+msgid "Keyword · %s"
+msgstr ""
+
+msgctxt "#91557"
+msgid "All Works / Files / Version Notes"
+msgstr ""
+
+msgctxt "#91558"
+msgid "Library Filter & Sort"
+msgstr ""
+
+msgctxt "#91559"
+msgid " · Current Registered Source"
+msgstr ""
+
+msgctxt "#91560"
+msgid "Apply Filters"
+msgstr ""
+
+msgctxt "#91561"
+msgid "Clear Filters (Keep Current Source)"
+msgstr ""
+
+msgctxt "#91562"
+msgid "Save as Saved View"
+msgstr ""
+
+msgctxt "#91563"
+msgid "Search Works / Files / Version Notes (max 160 chars)"
+msgstr ""
+
+msgctxt "#91564"
+msgid "Keyword Too Long or Contains Control Characters"
+msgstr ""
+
+msgctxt "#91565"
+msgid "Please use up to 160 characters. Current filters are kept."
+msgstr ""
+
+msgctxt "#91566"
+msgid "Select Source"
+msgstr ""
+
+msgctxt "#91567"
+msgid "Select %s"
+msgstr ""
+
+msgctxt "#91568"
+msgid "Saved View Unchanged"
+msgstr ""
+
+msgctxt "#91569"
+msgid "Record changed; reopen and try again."
+msgstr ""
+
+msgctxt "#91570"
+msgid "Source or record temporarily unavailable; retry, delete, or save filters again."
+msgstr ""
+
+msgctxt "#91571"
+msgid "Library Scope Changed"
+msgstr ""
+
+msgctxt "#91572"
+msgid "Go back and reselect a source. Saved edits and original files are kept."
+msgstr ""
+
+msgctxt "#91573"
+msgid "File Details & Evidence"
+msgstr ""
+
+msgctxt "#91574"
+msgid "Search Personal Library"
+msgstr ""
+
+msgctxt "#91575"
+msgid "Check Original Submission Receipt?"
+msgstr ""
+
+msgctxt "#91576"
+msgid "Result still pending verification. Queries only the original submission ID without rewriting; you can also check later from Library Management."
+msgstr ""
+
+msgctxt "#91577"
+msgid "Scan Current Registered Source?"
+msgstr ""
+
+msgctxt "#91578"
+msgid "Builds a local work index only; never moves or modifies original files."
+msgstr ""
+
+msgctxt "#91579"
+msgid "Phone management component not ready; no grant created. TV library and original file browsing remain available."
+msgstr ""
+
+msgctxt "#91580"
+msgid "My Library"
+msgstr ""
+
+msgctxt "#91581"
+msgid "Saved Views"
+msgstr ""
+
+msgctxt "#91582"
+msgid " · Local"
+msgstr ""
+
+msgctxt "#91583"
+msgid " · Network Folder (Experimental)"
+msgstr ""
+
+msgctxt "#91584"
+msgid " · CD2"
+msgstr ""
+
+msgctxt "#91585"
+msgid "Reuses existing mount · Descriptions kept, verified before play"
+msgstr ""
+
+msgctxt "#91586"
+msgid "Mount temporarily unavailable · Indexed works and jobs remain viewable"
+msgstr ""
+
+msgctxt "#91587"
+msgid " · Scan Jobs"
+msgstr ""
+
+msgctxt "#91588"
+msgid "View or cancel directly without reading mounted folder"
+msgstr ""
+
+msgctxt "#91589"
+msgid "Add or Manage Personal Cloud Drive"
+msgstr ""
+
+msgctxt "#91590"
+msgid "Existing CD2, NAS, and local videos remain browsable from their folders"
+msgstr ""
+
+msgctxt "#91591"
+msgid "Browse Original Files & Mounts"
+msgstr ""
+
+msgctxt "#91592"
+msgid "Aggregated Library"
+msgstr ""
+
+msgctxt "#91593"
+msgid "Work Not Indexed in Current Library"
+msgstr ""
+
+msgctxt "#91594"
+msgid "Current Source Indexing Status Unknown"
+msgstr ""
+
+msgctxt "#91595"
+msgid "Public catalog remains browsable; open Library to scan or organize original files."
+msgstr ""
+
+msgctxt "#91596"
+msgid "Review Workbench"
+msgstr ""
+
+msgctxt "#91597"
+msgid "Unmatched Files"
+msgstr ""
+
+msgctxt "#91598"
+msgid "Ignored Files"
+msgstr ""
+
+msgctxt "#91599"
+msgid "Filter & Sort"
+msgstr ""
+
+msgctxt "#91600"
+msgid "Manage Current Library & Check Submissions"
+msgstr ""
+
+msgctxt "#91601"
+msgid "All Works"
+msgstr ""
+
+msgctxt "#91602"
+msgid "Search Library"
+msgstr ""
+
+msgctxt "#91603"
+msgid "Scan / Update Current Registered Source"
+msgstr ""
+
+msgctxt "#91604"
+msgid "Organize Works & Scan Jobs"
+msgstr ""
+
+msgctxt "#91605"
+msgid "Library Updated"
+msgstr ""
+
+msgctxt "#91606"
+msgid "Returned to page 1; please reselect."
+msgstr ""
+
+msgctxt "#91607"
+msgid "Pending Review"
+msgstr ""
+
+msgctxt "#91608"
+msgid " · %d file versions"
+msgstr ""
+
+msgctxt "#91609"
+msgid "Local"
+msgstr ""
+
+msgctxt "#91610"
+msgid "Network Folder (Experimental)"
+msgstr ""
+
+msgctxt "#91611"
+msgid " · Plays from start; old path progress not inherited"
+msgstr ""
+
+msgctxt "#91612"
+msgid " · Plays from start; history progress for reference only"
+msgstr ""
+
+msgctxt "#91613"
+msgid "and %d sources total"
+msgstr ""
+
+msgctxt "#91614"
+msgid " · Display truncated; original record kept"
+msgstr ""
+
+msgctxt "#91615"
+msgid " · %s: %s"
+msgstr ""
+
+msgctxt "#91616"
+msgid " · Main work or release changed; please re-verify link"
+msgstr ""
+
+msgctxt "#91617"
+msgid " · %d%% watched on this file"
+msgstr ""
+
+msgctxt "#91618"
+msgid "Organize File"
+msgstr ""
+
+msgctxt "#91619"
+msgid "Play File from Start"
+msgstr ""
+
+msgctxt "#91620"
+msgid "Resume File"
+msgstr ""
+
+msgctxt "#91621"
+msgid "Play File"
+msgstr ""
+
+msgctxt "#91622"
+msgid "Select File Version"
+msgstr ""
+
+msgctxt "#91623"
+msgid "Select Episode"
+msgstr ""
+
+msgctxt "#91624"
+msgid "Select Season"
+msgstr ""
+
+msgctxt "#91625"
+msgid "View Original Files"
+msgstr ""
+
+msgctxt "#91626"
+msgid "Organize This File"
+msgstr ""
+
+msgctxt "#91627"
+msgid "View File & Media Info"
+msgstr ""
+
+msgctxt "#91628"
+msgid "Manage Extra Link"
+msgstr ""
+
+msgctxt "#91629"
+msgid "My Extras"
+msgstr ""
+
+msgctxt "#91630"
+msgid "Return to Current Source Works"
+msgstr ""
+
+msgctxt "#91631"
+msgid "No files in this group right now; organized works may have moved to a new group"
+msgstr ""
+
+msgctxt "#91632"
+msgid "Continue Organizing Current Source"
+msgstr ""
+
+msgctxt "#91633"
+msgid "No matching works · Adjust Filters"
+msgstr ""
+
+msgctxt "#91634"
+msgid "Saved View Needs Source Reselection"
+msgstr ""
+
+msgctxt "#91635"
+msgid "Sign In or Reselect Cloud Drive"
+msgstr ""
+
+msgctxt "#91636"
+msgid "Library Temporarily Unavailable · Retry"
+msgstr ""
+
+msgctxt "#91637"
+msgid "Saved view is kept; rename or delete it in Saved Views, or re-filter in the current source to update it."
+msgstr ""
+
+msgctxt "#91638"
+msgid "Account changed; return to Library and reselect."
+msgstr ""
+
+msgctxt "#91639"
+msgid "Library temporarily unavailable; original files, watch history, and saved edits are kept."
+msgstr ""
+
+msgctxt "#91640"
+msgid "Library Not Loaded"
+msgstr ""

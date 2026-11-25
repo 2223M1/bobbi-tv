@@ -65,8 +65,19 @@ def preflight(feed, commit=None, root=ROOT):
         raise ValueError('Full published source commit SHA required')
     if git('rev-parse', commit + '^{commit}') != commit:
         raise ValueError('Published commit object differs')
-    # A baseline outside candidate ancestry is not a meaningful release diff.
-    subprocess.run(['git', '-C', str(root), 'merge-base', '--is-ancestor', commit, 'HEAD'], check=True)
+    # A baseline outside candidate ancestry is not a meaningful release diff,
+    # unless a rebased/cherry-picked ancestor on HEAD carries the exact published tree SHA.
+    anc = subprocess.run(['git', '-C', str(root), 'merge-base', '--is-ancestor', commit, 'HEAD'])
+    if anc.returncode != 0:
+        published_tree = git('rev-parse', commit + '^{tree}')
+        matched_anc = None
+        for line in git('log', '--format=%H:%T', 'HEAD').splitlines():
+            cand_sha, cand_tree = line.split(':', 1)
+            if cand_tree == published_tree:
+                matched_anc = cand_sha
+                break
+        if matched_anc is None:
+            raise subprocess.CalledProcessError(anc.returncode, anc.args)
     versions = {}
     for addon in OWNED_COMPONENTS:
         path = root / 'addons' / addon / 'addon.xml'

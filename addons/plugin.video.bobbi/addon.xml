@@ -1,14 +1,14 @@
-<addon id="plugin.video.bobbi" name="bobbi Cinema · CE 候选" version="0.1.98" provider-name="bobbi TV">
+<addon id="plugin.video.bobbi" name="bobbi Cinema · CE 候选" version="0.1.99" provider-name="bobbi TV">
   <requires>
     <import addon="script.module.bobbi.core" version="0.1.89" />
-    <import addon="script.module.bobbi.mdsub" version="0.1.1" />
+    <import addon="script.module.bobbi.mdsub" version="0.1.2" />
     <import addon="script.module.bobbi.catalog" version="0.1.5" />
     <import addon="xbmc.python" version="3.0.1" />
     <import addon="script.module.requests" version="2.31.0" />
     <import addon="script.module.urllib3" version="2.2.3" />
     <import addon="script.module.routing" version="0.2.3" />
-    <import addon="plugin.video.bobbi.torrent" version="0.1.15" optional="true" />
-  <import addon="script.module.bobbi.platform" version="0.1.99" /><import addon="plugin.video.bobbi.library" version="0.1.8" /></requires>
+    <import addon="plugin.video.bobbi.torrent" version="0.1.16" optional="true" />
+  <import addon="script.module.bobbi.platform" version="0.1.100" /><import addon="plugin.video.bobbi.library" version="0.1.13" /></requires>
   <extension point="xbmc.python.pluginsource" library="bobbi.py">
     <provides>video</provides>
   </extension>
@@ -18,8 +18,12 @@
   <extension point="xbmc.addon.metadata">
     
     <reuselanguageinvoker>false</reuselanguageinvoker>
+    <summary lang="en_GB">bobbi TV cinema</summary>
     <summary lang="en">bobbi TV cinema</summary>
+    <summary lang="zh_CN">波比 TV 影院</summary>
+    <description lang="en_GB">Browse films and series, select a source and play.</description>
     <description lang="en">Browse films and series, select a source and play.</description>
+    <description lang="zh_CN">浏览电影与剧集，手动选择片源后播放。</description>
     <source>https://github.com/2223M1/bobbi-tv</source>
     <assets>
       <icon>icon.png</icon>

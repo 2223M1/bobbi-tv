@@ -1,0 +1,6876 @@
+# Kodi Media Center language file
+# Addon Name: bobbi TV
+# Addon id: plugin.video.bobbi
+# Addon Provider: bobbi TV
+msgid ""
+msgstr ""
+"Project-Id-Version: plugin.video.bobbi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: zh_CN\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgctxt "#30000"
+msgid "Players"
+msgstr "播放器"
+
+msgctxt "#30001"
+msgid "Clients"
+msgstr "客户端"
+
+msgctxt "#30002"
+msgid "Torrent Client"
+msgstr "BT 客户端"
+
+msgctxt "#30020"
+msgid "Indexers"
+msgstr "索引器"
+
+msgctxt "#30021"
+msgid "Indexer"
+msgstr "索引器"
+
+msgctxt "#30022"
+msgid "Jackett Configuration:"
+msgstr "Jackett 配置："
+
+msgctxt "#30023"
+msgid "Client Key"
+msgstr "客户端密钥"
+
+msgctxt "#30025"
+msgid "Host"
+msgstr "主机地址"
+
+msgctxt "#30026"
+msgid "Description length"
+msgstr "说明截断长度"
+
+msgctxt "#30027"
+msgid "Insecured connection"
+msgstr "非加密连接"
+
+msgctxt "#30028"
+msgid "Sort by"
+msgstr "排序方式"
+
+msgctxt "#30029"
+msgid "Total Results"
+msgstr "结果数量上限"
+
+msgctxt "#30030"
+msgid "Timeout"
+msgstr "超时时间"
+
+msgctxt "#30031"
+msgid "Timeout"
+msgstr "超时时间"
+
+msgctxt "#30050"
+msgid "Prowlarr Configuration:"
+msgstr "Prowlarr 配置："
+
+msgctxt "#30051"
+msgid "Client Key"
+msgstr "客户端密钥"
+
+msgctxt "#30052"
+msgid "Host"
+msgstr "主机地址"
+
+msgctxt "#30053"
+msgid "Indexers-Ids"
+msgstr "索引器 ID"
+
+msgctxt "#30054"
+msgid "Anime IndexersIds"
+msgstr "动漫索引器 ID"
+
+msgctxt "#30100"
+msgid "TMDB"
+msgstr "TMDB"
+
+msgctxt "#30102"
+msgid "TMDB Configuration"
+msgstr "TMDB 配置"
+
+msgctxt "#30103"
+msgid "Client Key"
+msgstr "客户端密钥"
+
+msgctxt "#30104"
+msgid "Clear tmdb cache"
+msgstr "清除 TMDB 缓存"
+
+msgctxt "#30105"
+msgid "Cache expiration hours"
+msgstr "缓存有效期（小时）"
+
+msgctxt "#30106"
+msgid "Clear Cache"
+msgstr "清除缓存"
+
+msgctxt "#30107"
+msgid "Enable Cache"
+msgstr "启用缓存"
+
+msgctxt "#30140"
+msgid "AniList"
+msgstr "AniList"
+
+msgctxt "#30142"
+msgid "AniList Configuration:"
+msgstr "AniList 配置："
+
+msgctxt "#30143"
+msgid "Client ID"
+msgstr "客户端 ID"
+
+msgctxt "#30144"
+msgid "Client Secret"
+msgstr "客户端密钥"
+
+msgctxt "#30150"
+msgid "Services"
+msgstr "账号与服务"
+
+msgctxt "#30152"
+msgid "Real Debrid Configuration"
+msgstr "Real-Debrid 配置"
+
+msgctxt "#30154"
+msgid "Token"
+msgstr "访问令牌"
+
+msgctxt "#30200"
+msgid "Fanart.TV"
+msgstr "Fanart.TV"
+
+msgctxt "#30202"
+msgid "Fanart.TV Configuration:"
+msgstr "Fanart.TV 配置："
+
+msgctxt "#30203"
+msgid "Client ID"
+msgstr "客户端 ID"
+
+msgctxt "#30221"
+msgid "No Client Key provided for"
+msgstr "尚未提供客户端密钥："
+
+msgctxt "#30223"
+msgid "You need to configure"
+msgstr "请先完成配置："
+
+msgctxt "#30228"
+msgid "The request to Torrentio failed."
+msgstr "请求 Torrentio 失败。"
+
+msgctxt "#30229"
+msgid "The request to Jackett failed."
+msgstr "请求 Jackett 失败。"
+
+msgctxt "#30230"
+msgid "The request to Prowlarr failed."
+msgstr "请求 Prowlarr 失败。"
+
+msgctxt "#30231"
+msgid "The request to Elhosted failed."
+msgstr "请求 Elfhosted 失败。"
+
+msgctxt "#30232"
+msgid "The request to Jackgram failed."
+msgstr "请求 Jackgram 失败。"
+
+msgctxt "#30233"
+msgid "The request to Mediafusion failed."
+msgstr "请求 MediaFusion 失败。"
+
+msgctxt "#30234"
+msgid "The request to Peerflix failed."
+msgstr "请求 Peerflix 失败。"
+
+msgctxt "#30235"
+msgid "Stremio"
+msgstr "Stremio"
+
+msgctxt "#30236"
+msgid "Stremio add-ons"
+msgstr "Stremio 插件源"
+
+msgctxt "#30237"
+msgid "Import your config"
+msgstr "导入配置"
+
+msgctxt "#30238"
+msgid "Manage add-ons"
+msgstr "管理插件源"
+
+msgctxt "#30240"
+msgid "TMDB cache cleared"
+msgstr "已清除 TMDB 缓存"
+
+msgctxt "#30241"
+msgid "Search on TMDB:"
+msgstr "在 TMDB 搜索："
+
+msgctxt "#30242"
+msgid "Search on AniList:"
+msgstr "在 AniList 搜索："
+
+msgctxt "#30243"
+msgid "Search for a keyword:"
+msgstr "搜索关键词："
+
+msgctxt "#30244"
+msgid "Cache cleared"
+msgstr "已清除缓存"
+
+msgctxt "#30249"
+msgid "Addon bobbi TV Burst not found - (script.bobbi.burst)"
+msgstr "未找到 bobbi TV Burst 组件 - (script.bobbi.burst)"
+
+msgctxt "#30250"
+msgid "Addon Torrest not found - (plugin.video.torrest)"
+msgstr "未找到 Torrest 插件 - (plugin.video.torrest)"
+
+msgctxt "#30251"
+msgid "No sources found to play"
+msgstr "未找到可播放的片源"
+
+msgctxt "#30252"
+msgid "Addon Elementum not found - (plugin.video.elementum)"
+msgstr "未找到 Elementum 插件 - (plugin.video.elementum)"
+
+msgctxt "#30253"
+msgid "BT playback component is not installed (plugin.video.jacktorr)"
+msgstr "尚未安装 BT 播放组件 (plugin.video.jacktorr)"
+
+msgctxt "#30254"
+msgid "Do you want to install Elementum?"
+msgstr "是否安装 Elementum？"
+
+msgctxt "#30255"
+msgid "Do you want to install the BT playback component?"
+msgstr "是否安装 BT 播放组件？"
+
+msgctxt "#30256"
+msgid "Do you want to install Torrest?"
+msgstr "是否安装 Torrest？"
+
+msgctxt "#30257"
+msgid "Do you want to install bobbi TV Burst?"
+msgstr "是否安装 bobbi TV Burst？"
+
+msgctxt "#30258"
+msgid "Invalid host for %s. Use http:// or https://"
+msgstr "%s 主机地址无效，请使用 http:// 或 https://"
+
+msgctxt "#30259"
+msgid "Test connection"
+msgstr "测试连接"
+
+msgctxt "#30260"
+msgid "Jackgram: OK"
+msgstr "Jackgram：连接正常"
+
+msgctxt "#30261"
+msgid "Host not reachable"
+msgstr "主机无法连接"
+
+msgctxt "#30262"
+msgid "Search in Telegram"
+msgstr "在 Telegram 中搜索"
+
+msgctxt "#30650"
+msgid "Queued"
+msgstr "排队中"
+
+msgctxt "#30651"
+msgid "Checking"
+msgstr "校验中"
+
+msgctxt "#30652"
+msgid "Finding"
+msgstr "查找节点中"
+
+msgctxt "#30653"
+msgid "Downloading"
+msgstr "下载中"
+
+msgctxt "#30654"
+msgid "Finished"
+msgstr "已完成"
+
+msgctxt "#30655"
+msgid "Seeding"
+msgstr "做种中"
+
+msgctxt "#30656"
+msgid "Allocating"
+msgstr "分配空间中"
+
+msgctxt "#30657"
+msgid "Checking resume data"
+msgstr "核对续传数据中"
+
+msgctxt "#30658"
+msgid "Paused"
+msgstr "已暂停"
+
+msgctxt "#30659"
+msgid "Buffering"
+msgstr "缓冲中"
+
+msgctxt "#30660"
+msgid "Unknown"
+msgstr "未知"
+
+msgctxt "#30700"
+msgid "Play Torrent"
+msgstr "播放种子"
+
+msgctxt "#30701"
+msgid "Stop downloading"
+msgstr "停止下载"
+
+msgctxt "#30702"
+msgid "Downloads"
+msgstr "下载任务"
+
+msgctxt "#30703"
+msgid "Resume"
+msgstr "继续"
+
+msgctxt "#30704"
+msgid "Pause"
+msgstr "暂停"
+
+msgctxt "#30705"
+msgid "Remove torrent"
+msgstr "移除种子记录"
+
+msgctxt "#30706"
+msgid "Remove torrent and files"
+msgstr "移除种子及文件"
+
+msgctxt "#30707"
+msgid "Torrent status"
+msgstr "种子状态"
+
+msgctxt "#30708"
+msgid "Stop"
+msgstr "停止"
+
+msgctxt "#30709"
+msgid "Drop torrent"
+msgstr "放弃种子"
+
+msgctxt "#30710"
+msgid "Include Season Packs"
+msgstr "包含整季合集包"
+
+msgctxt "#30711"
+msgid "Torrent Settings"
+msgstr "BT 设置"
+
+msgctxt "#30712"
+msgid "General"
+msgstr "常规"
+
+msgctxt "#30713"
+msgid "Enable"
+msgstr "启用"
+
+msgctxt "#30714"
+msgid "BT playback"
+msgstr "BT 播放"
+
+msgctxt "#30715"
+msgid "Torrest"
+msgstr "Torrest"
+
+msgctxt "#30716"
+msgid "Elementum"
+msgstr "Elementum"
+
+msgctxt "#30717"
+msgid "General"
+msgstr "常规"
+
+msgctxt "#30718"
+msgid "Auto-Play"
+msgstr "自动播放"
+
+msgctxt "#30719"
+msgid "Enable Next Episode Dialog"
+msgstr "启用下一集提示框"
+
+msgctxt "#30720"
+msgid "Seconds left before show Next Episode Dialog"
+msgstr "片尾剩余多少秒显示下一集提示"
+
+msgctxt "#30721"
+msgid "Cache Enabled"
+msgstr "启用缓存"
+
+msgctxt "#30722"
+msgid "Cache Expiration (hours)"
+msgstr "缓存有效期（小时）"
+
+msgctxt "#30723"
+msgid "Cache"
+msgstr "缓存"
+
+msgctxt "#30724"
+msgid "Update"
+msgstr "检查更新与恢复"
+
+msgctxt "#30725"
+msgid "Indexers Configuration"
+msgstr "索引器配置"
+
+msgctxt "#30726"
+msgid "Sort"
+msgstr "排序"
+
+msgctxt "#30727"
+msgid "Quality"
+msgstr "清晰度"
+
+msgctxt "#30938"
+msgid "Silent Resume"
+msgstr "静默续播"
+
+msgctxt "#30939"
+msgid "Auto-resume from last position without asking"
+msgstr "从上次位置自动继续播放，不再弹出询问框"
+
+msgctxt "#30940"
+msgid "Use Percentage Trigger"
+msgstr "按播放百分比触发"
+
+msgctxt "#30941"
+msgid "Show Dialog at Playback Percentage"
+msgstr "显示下一集提示的播放百分比"
+
+msgctxt "#30942"
+msgid "Trigger the next-episode dialog based on percentage of video played instead of seconds remaining."
+msgstr "按已播放百分比而非剩余秒数触发下一集提示框。"
+
+msgctxt "#30943"
+msgid "The percentage at which the next-episode dialog appears (e.g. 95 means 95% of the video)."
+msgstr "触发下一集提示框的播放进度百分比（例如 95 表示播放到 95%）。"
+
+msgctxt "#30944"
+msgid "Auto-Play Timeout"
+msgstr "自动连播倒计时（秒）"
+
+msgctxt "#30945"
+msgid "Seconds before auto-playing next episode. 0 = disabled, dialog waits for user input."
+msgstr "自动播放下一集前的等待秒数；0 表示不自动连播，等待手动确认。"
+
+msgctxt "#30946"
+msgid "Offcloud Configuration"
+msgstr "Offcloud 配置"
+
+msgctxt "#30947"
+msgid "Enable Offcloud cached torrent and cloud transfer support."
+msgstr "启用 Offcloud 云端缓存与传输支持。"
+
+msgctxt "#30948"
+msgid "Your Offcloud account username/email."
+msgstr "你的 Offcloud 账户名或邮箱。"
+
+msgctxt "#30949"
+msgid "Offcloud API key from Account API Key settings."
+msgstr "账户 API 设置中的 Offcloud 密钥。"
+
+msgctxt "#30950"
+msgid "View Offcloud account information."
+msgstr "查看 Offcloud 账户详情。"
+
+msgctxt "#30951"
+msgid "Authorize add-on to access Offcloud account."
+msgstr "授权本插件访问 Offcloud 账号。"
+
+msgctxt "#30952"
+msgid "Revoke Offcloud account access."
+msgstr "撤销 Offcloud 账号授权。"
+
+msgctxt "#30728"
+msgid "Seeds"
+msgstr "做种数"
+
+msgctxt "#30729"
+msgid "Size"
+msgstr "大小"
+
+msgctxt "#30730"
+msgid "Cached"
+msgstr "已缓存"
+
+msgctxt "#30731"
+msgid "Date"
+msgstr "日期"
+
+msgctxt "#30732"
+msgid "None"
+msgstr "无"
+
+msgctxt "#30733"
+msgid "Torrentio Configuration"
+msgstr "Torrentio 配置"
+
+msgctxt "#30734"
+msgid "Enable"
+msgstr "启用"
+
+msgctxt "#30735"
+msgid "Still Watching? Threshold"
+msgstr "“仍在观看”连续集数阈值"
+
+msgctxt "#30736"
+msgid "Subtitle Language"
+msgstr "字幕首选语言"
+
+msgctxt "#30737"
+msgid "GB"
+msgstr "GB"
+
+msgctxt "#30738"
+msgid "JP"
+msgstr "JP"
+
+msgctxt "#30739"
+msgid "RU"
+msgstr "RU"
+
+msgctxt "#30740"
+msgid "IT"
+msgstr "IT"
+
+msgctxt "#30741"
+msgid "PT"
+msgstr "PT"
+
+msgctxt "#30742"
+msgid "ES"
+msgstr "ES"
+
+msgctxt "#30743"
+msgid "MX"
+msgstr "MX"
+
+msgctxt "#30744"
+msgid "KR"
+msgstr "KR"
+
+msgctxt "#30745"
+msgid "CN"
+msgstr "CN"
+
+msgctxt "#30746"
+msgid "TW"
+msgstr "TW"
+
+msgctxt "#30747"
+msgid "FR"
+msgstr "FR"
+
+msgctxt "#30748"
+msgid "DE"
+msgstr "DE"
+
+msgctxt "#30749"
+msgid "NL"
+msgstr "NL"
+
+msgctxt "#30750"
+msgid "IN"
+msgstr "IN"
+
+msgctxt "#30751"
+msgid "PL"
+msgstr "PL"
+
+msgctxt "#30752"
+msgid "LT"
+msgstr "LT"
+
+msgctxt "#30753"
+msgid "CZ"
+msgstr "CZ"
+
+msgctxt "#30754"
+msgid "SK"
+msgstr "SK"
+
+msgctxt "#30755"
+msgid "SI"
+msgstr "SI"
+
+msgctxt "#30756"
+msgid "HU"
+msgstr "HU"
+
+msgctxt "#30757"
+msgid "RO"
+msgstr "RO"
+
+msgctxt "#30758"
+msgid "HR"
+msgstr "HR"
+
+msgctxt "#30759"
+msgid "UA"
+msgstr "UA"
+
+msgctxt "#30760"
+msgid "GR"
+msgstr "GR"
+
+msgctxt "#30761"
+msgid "DK"
+msgstr "DK"
+
+msgctxt "#30762"
+msgid "FI"
+msgstr "FI"
+
+msgctxt "#30763"
+msgid "SE"
+msgstr "SE"
+
+msgctxt "#30764"
+msgid "NO"
+msgstr "NO"
+
+msgctxt "#30765"
+msgid "TR"
+msgstr "TR"
+
+msgctxt "#30766"
+msgid "Torrentio Providers"
+msgstr "Torrentio 来源"
+
+msgctxt "#30767"
+msgid "Jackgram Configuration"
+msgstr "Jackgram 配置"
+
+msgctxt "#30768"
+msgid "Host"
+msgstr "主机地址"
+
+msgctxt "#30769"
+msgid "Elfhosted/KnightCrawler Configuration"
+msgstr "Elfhosted/KnightCrawler 配置"
+
+msgctxt "#30770"
+msgid "Language"
+msgstr "语言"
+
+msgctxt "#30771"
+msgid "Zilean Configuration"
+msgstr "Zilean 配置"
+
+msgctxt "#30772"
+msgid "Zilean Host"
+msgstr "Zilean 主机地址"
+
+msgctxt "#30773"
+msgid "Number of consecutive auto-played episodes before asking 'Still Watching?'. Set to 0 to disable."
+msgstr "连续自动播放多少集后询问“仍在观看？”（设为 0 关闭）。"
+
+msgctxt "#30774"
+msgid "Zilean Timeout"
+msgstr "Zilean 超时时间"
+
+msgctxt "#30775"
+msgid "Jackett Configuration"
+msgstr "Jackett 配置"
+
+msgctxt "#30776"
+msgid "Prowlarr Configuration"
+msgstr "Prowlarr 配置"
+
+msgctxt "#30777"
+msgid "MediaFusion configuration"
+msgstr "MediaFusion 配置"
+
+msgctxt "#30779"
+msgid "Manifest Url"
+msgstr "Manifest 地址"
+
+msgctxt "#30780"
+msgid "bobbi TV Burst Configuration"
+msgstr "bobbi TV Burst 配置"
+
+msgctxt "#30781"
+msgid "Burst Configuration"
+msgstr "Burst 搜索配置"
+
+msgctxt "#30782"
+msgid "User"
+msgstr "账号"
+
+msgctxt "#30783"
+msgid "Authorize"
+msgstr "登录授权"
+
+msgctxt "#30784"
+msgid "Remove Authorization"
+msgstr "取消授权"
+
+msgctxt "#30785"
+msgid "Premiumize Configuration"
+msgstr "Premiumize 配置"
+
+msgctxt "#30786"
+msgid "Enabled"
+msgstr "已启用"
+
+msgctxt "#30787"
+msgid "Token"
+msgstr "访问令牌"
+
+msgctxt "#30788"
+msgid "TorBox Configuration"
+msgstr "TorBox 配置"
+
+msgctxt "#30789"
+msgid "Debrider Configuration"
+msgstr "Debrider 配置"
+
+msgctxt "#30790"
+msgid "Uncached"
+msgstr "未缓存"
+
+msgctxt "#30791"
+msgid "Show uncached torrents"
+msgstr "显示未缓存种子片源"
+
+msgctxt "#30792"
+msgid "Use Kodi Language"
+msgstr "跟随 Kodi 界面语言"
+
+msgctxt "#30793"
+msgid "Trakt"
+msgstr "Trakt"
+
+msgctxt "#30794"
+msgid "Trakt Configuration"
+msgstr "Trakt 配置"
+
+msgctxt "#30795"
+msgid "Expires"
+msgstr "过期时间"
+
+msgctxt "#30796"
+msgid "Refresh"
+msgstr "刷新"
+
+msgctxt "#30797"
+msgid "Token"
+msgstr "访问令牌"
+
+msgctxt "#30798"
+msgid "Trakt Client"
+msgstr "Trakt 客户端 ID"
+
+msgctxt "#30800"
+msgid "Trakt Secret"
+msgstr "Trakt 客户端密钥"
+
+msgctxt "#30802"
+msgid "Log out"
+msgstr "退出登录"
+
+msgctxt "#30804"
+msgid "Menus"
+msgstr "菜单"
+
+msgctxt "#30805"
+msgid "Show Telegram Menu"
+msgstr "显示 Telegram 菜单"
+
+msgctxt "#30806"
+msgid "Clear cache when update"
+msgstr "更新版本后自动清缓存"
+
+msgctxt "#30807"
+msgid "Peerfix Configuration"
+msgstr "Peerflix 配置"
+
+msgctxt "#30894"
+msgid "Show Changelog"
+msgstr "查看版本更新说明"
+
+msgctxt "#30895"
+msgid "View the latest changes and updates to the addon."
+msgstr "离线查看当前已安装版本的更新记录与说明。"
+
+msgctxt "#30896"
+msgid "Calendar"
+msgstr "追剧日历"
+
+msgctxt "#30897"
+msgid "Use broadcast day adjustment"
+msgstr "启用播出日期时区修正"
+
+msgctxt "#30898"
+msgid "Adjust broadcast day based on manual offset"
+msgstr "按手动小时偏移修正剧集播出日期"
+
+msgctxt "#30899"
+msgid "Broadcast Offset (Hours)"
+msgstr "播出时间偏移（小时）"
+
+msgctxt "#30900"
+msgid "Manual hour adjustment for broadcast day simulation"
+msgstr "用于修正日历播出日期的小时偏移量"
+
+msgctxt "#30905"
+msgid "Trakt Calendar Previous Days"
+msgstr "Trakt 日历回看天数"
+
+msgctxt "#30906"
+msgid "Number of days in the past to show in the Trakt calendar."
+msgstr "在 Trakt 日历中显示过去多少天的剧集。"
+
+msgctxt "#30907"
+msgid "Trakt Calendar Future Days"
+msgstr "Trakt 日历预告天数"
+
+msgctxt "#30908"
+msgid "Number of days in the future to show in the Trakt calendar."
+msgstr "在 Trakt 日历中显示未来多少天的剧集。"
+
+msgctxt "#30909"
+msgid "Show All Shows in Calendar"
+msgstr "在日历中显示全部在播剧集"
+
+msgctxt "#30918"
+msgid "{provider} cannot directly play packed releases (.rar/.zip). Choose a source with video files instead."
+msgstr "{provider} 不支持直接播放压缩包（.rar/.zip），请选择包含视频文件的片源。"
+
+msgctxt "#30910"
+msgid "Show all airing shows instead of just your watchlist/collection."
+msgstr "显示所有在播剧集，而非仅限待看列表或收藏。"
+
+msgctxt "#30911"
+msgid "Your Torbox account username/email."
+msgstr "你的 TorBox 账户名或邮箱。"
+
+msgctxt "#30912"
+msgid "Authorize add-on to access Torbox account."
+msgstr "授权本插件访问 TorBox 账号。"
+
+msgctxt "#30913"
+msgid "Revoke Torbox account access."
+msgstr "撤销 TorBox 账号授权。"
+
+msgctxt "#30914"
+msgid "Trakt Sync Interval (minutes)"
+msgstr "Trakt 同步间隔（分钟）"
+
+msgctxt "#30915"
+msgid "How often bobbi TV checks Trakt for remote activity changes while Kodi is running."
+msgstr "Kodi 运行期间检查 Trakt 远端观看状态更新的间隔分钟数。"
+
+msgctxt "#30916"
+msgid "Account Info"
+msgstr "账户详情"
+
+msgctxt "#30917"
+msgid "View your Trakt account profile and library stats."
+msgstr "查看你的账户资料与服务状态。"
+
+msgctxt "#30924"
+msgid "Trakt List Name"
+msgstr "Trakt 片单名称"
+
+msgctxt "#30925"
+msgid "Trakt List Description"
+msgstr "Trakt 片单简介"
+
+msgctxt "#30926"
+msgid "Create Trakt List"
+msgstr "新建 Trakt 片单"
+
+msgctxt "#30927"
+msgid "Choose Trakt List"
+msgstr "选择 Trakt 片单"
+
+msgctxt "#30936"
+msgid "Enable or disable Trakt scrobbling and resume playback from the last tracked position."
+msgstr "启用或关闭 Trakt 播放状态同步及上次进度续播。"
+
+msgctxt "#30937"
+msgid "Clear cached Trakt data and force bobbi TV to fetch fresh Trakt results the next time you open a Trakt view."
+msgstr "清理缓存的 Trakt 数据，下次打开时重新拉取最新记录。"
+
+msgctxt "#90970"
+msgid "Simkl Configuration"
+msgstr "Simkl 配置"
+
+msgctxt "#90971"
+msgid "Enable Simkl"
+msgstr "启用 Simkl"
+
+msgctxt "#90972"
+msgid "Enable Simkl account integration."
+msgstr "启用 Simkl 账号同步集成。"
+
+msgctxt "#90973"
+msgid "Advanced Simkl Client ID Override"
+msgstr "自定义 Simkl 客户端 ID（高级）"
+
+msgctxt "#90974"
+msgid "Optional. Leave empty to use bobbi TV's built-in Simkl application."
+msgstr "可选项；留空则使用波比 TV 内置 Simkl 应用标识。"
+
+msgctxt "#90975"
+msgid "Authorize Simkl"
+msgstr "授权登录 Simkl"
+
+msgctxt "#90976"
+msgid "Link your Simkl account using PIN authorization."
+msgstr "通过验证码关联你的 Simkl 账号。"
+
+msgctxt "#90977"
+msgid "Reset Simkl Authorization"
+msgstr "清除 Simkl 授权"
+
+msgctxt "#90978"
+msgid "Remove the saved Simkl access token from bobbi TV."
+msgstr "从本机移除已保存的 Simkl 访问令牌。"
+
+msgctxt "#90979"
+msgid "Enable Simkl Scrobbling"
+msgstr "启用 Simkl 播放进度同步"
+
+msgctxt "#90980"
+msgid "Send movie and TV episode playback start, pause, resume, and stop events to Simkl."
+msgstr "在电影或剧集开始、暂停、继续与停止播放时向 Simkl 同步状态。"
+
+msgctxt "#90981"
+msgid "Simkl Library"
+msgstr "Simkl 追番与片库"
+
+msgctxt "#90983"
+msgid "Plan to Watch"
+msgstr "想看"
+
+msgctxt "#90984"
+msgid "Watching"
+msgstr "在看"
+
+msgctxt "#90985"
+msgid "Completed"
+msgstr "看过"
+
+msgctxt "#90986"
+msgid "On Hold"
+msgstr "搁置"
+
+msgctxt "#90987"
+msgid "Dropped"
+msgstr "弃剧"
+
+msgctxt "#90988"
+msgid "Move to %s"
+msgstr "移至「%s」"
+
+msgctxt "#90989"
+msgid "Simkl status updated."
+msgstr "已更新 Simkl 状态。"
+
+msgctxt "#90990"
+msgid "Unable to update Simkl status."
+msgstr "无法更新 Simkl 状态。"
+
+msgctxt "#90991"
+msgid "Mark as Watched on Simkl"
+msgstr "在 Simkl 标记为已看"
+
+msgctxt "#90992"
+msgid "Mark as Unwatched on Simkl"
+msgstr "在 Simkl 标记为未看"
+
+msgctxt "#90993"
+msgid "Remove Movie from Simkl?"
+msgstr "从 Simkl 移除此电影？"
+
+msgctxt "#90994"
+msgid "Removing a movie from its Simkl watch history also removes it from your Simkl library. Continue?"
+msgstr "从 Simkl 观看历史移除电影也会将其从你的 Simkl 片库移除。是否继续？"
+
+msgctxt "#90995"
+msgid "Simkl watch history updated."
+msgstr "已更新 Simkl 观看历史。"
+
+msgctxt "#90996"
+msgid "Unable to update Simkl watch history."
+msgstr "无法更新 Simkl 观看历史。"
+
+msgctxt "#90997"
+msgid "Enable and authorize Simkl in settings to access your library."
+msgstr "请先启用并登录授权 Simkl 后再访问个人片库。"
+
+msgctxt "#90998"
+msgid "Enable and authorize Trakt in settings to access your library."
+msgstr "请先启用并登录授权 Trakt 后再访问个人片库。"
+
+msgctxt "#40000"
+msgid "Arabic (United Arab Emirates)"
+msgstr "阿拉伯语（阿联酋）"
+
+msgctxt "#40001"
+msgid "Arabic (Saudi Arabia)"
+msgstr "阿拉伯语（沙特阿拉伯）"
+
+msgctxt "#40002"
+msgid "Belarusian (Belarus)"
+msgstr "白俄罗斯语（白俄罗斯）"
+
+msgctxt "#40003"
+msgid "Bulgarian (Bulgaria)"
+msgstr "保加利亚语（保加利亚）"
+
+msgctxt "#40004"
+msgid "Bengali (Bangladesh)"
+msgstr "孟加拉语（孟加拉国）"
+
+msgctxt "#40005"
+msgid "Catalan (Spain)"
+msgstr "加泰罗尼亚语（西班牙）"
+
+msgctxt "#40006"
+msgid "Chamorro (Guam)"
+msgstr "查莫罗语（关岛）"
+
+msgctxt "#40007"
+msgid "Czech (Czech Republic)"
+msgstr "捷克语（捷克）"
+
+msgctxt "#40008"
+msgid "Danish (Denmark)"
+msgstr "丹麦语（丹麦）"
+
+msgctxt "#40009"
+msgid "German (Austria)"
+msgstr "德语（奥地利）"
+
+msgctxt "#40010"
+msgid "German (Switzerland)"
+msgstr "德语（瑞士）"
+
+msgctxt "#40011"
+msgid "German (Germany)"
+msgstr "德语（德国）"
+
+msgctxt "#40012"
+msgid "Greek (Greece)"
+msgstr "希腊语（希腊）"
+
+msgctxt "#40013"
+msgid "English (Australia)"
+msgstr "英语（澳大利亚）"
+
+msgctxt "#40014"
+msgid "English (Canada)"
+msgstr "英语（加拿大）"
+
+msgctxt "#40015"
+msgid "English (United Kingdom)"
+msgstr "英语（英国）"
+
+msgctxt "#40016"
+msgid "English (Ireland)"
+msgstr "英语（爱尔兰）"
+
+msgctxt "#40017"
+msgid "English (New Zealand)"
+msgstr "英语（新西兰）"
+
+msgctxt "#40018"
+msgid "English (United States of America)"
+msgstr "英语（美国）"
+
+msgctxt "#40019"
+msgid "Esperanto (None)"
+msgstr "世界语"
+
+msgctxt "#40020"
+msgid "Spanish (Spain)"
+msgstr "西班牙语（西班牙）"
+
+msgctxt "#40021"
+msgid "Spanish (Mexico)"
+msgstr "西班牙语（墨西哥）"
+
+msgctxt "#40022"
+msgid "Estonian (Estonia)"
+msgstr "爱沙尼亚语（爱沙尼亚）"
+
+msgctxt "#40023"
+msgid "Basque (Spain)"
+msgstr "巴斯克语（西班牙）"
+
+msgctxt "#40024"
+msgid "Persian (Iran)"
+msgstr "波斯语（伊朗）"
+
+msgctxt "#40025"
+msgid "Finnish (Finland)"
+msgstr "芬兰语（芬兰）"
+
+msgctxt "#40026"
+msgid "French (Canada)"
+msgstr "法语（加拿大）"
+
+msgctxt "#40027"
+msgid "French (France)"
+msgstr "法语（法国）"
+
+msgctxt "#40028"
+msgid "Galician (Spain)"
+msgstr "加利西亚语（西班牙）"
+
+msgctxt "#40029"
+msgid "Hebrew (Israel)"
+msgstr "希伯来语（以色列）"
+
+msgctxt "#40030"
+msgid "Hindi (India)"
+msgstr "印地语（印度）"
+
+msgctxt "#40031"
+msgid "Hungarian (Hungary)"
+msgstr "匈牙利语（匈牙利）"
+
+msgctxt "#40032"
+msgid "Indonesian (Indonesia)"
+msgstr "印度尼西亚语（印度尼西亚）"
+
+msgctxt "#40033"
+msgid "Italian (Italy)"
+msgstr "意大利语（意大利）"
+
+msgctxt "#40034"
+msgid "Japanese (Japan)"
+msgstr "日语（日本）"
+
+msgctxt "#40035"
+msgid "Georgian (Georgia)"
+msgstr "格鲁吉亚语（格鲁吉亚）"
+
+msgctxt "#40036"
+msgid "Kazakh (Kazakhstan)"
+msgstr "哈萨克语（哈萨克斯坦）"
+
+msgctxt "#40037"
+msgid "Kannada (India)"
+msgstr "卡纳达语（印度）"
+
+msgctxt "#40038"
+msgid "Korean (South Korea)"
+msgstr "韩语（韩国）"
+
+msgctxt "#40039"
+msgid "Lithuanian (Lithuania)"
+msgstr "立陶宛语（立陶宛）"
+
+msgctxt "#40040"
+msgid "Latvian (Latvia)"
+msgstr "拉脱维亚语（拉脱维亚）"
+
+msgctxt "#40041"
+msgid "Malayalam (India)"
+msgstr "马拉雅拉姆语（印度）"
+
+msgctxt "#40042"
+msgid "Malay (Malaysia)"
+msgstr "马来语（马来西亚）"
+
+msgctxt "#40043"
+msgid "Malay (Singapore)"
+msgstr "马来语（新加坡）"
+
+msgctxt "#40044"
+msgid "Norwegian Bokmål (Norway)"
+msgstr "书面挪威语（挪威）"
+
+msgctxt "#40045"
+msgid "Dutch (Netherlands)"
+msgstr "荷兰语（荷兰）"
+
+msgctxt "#40046"
+msgid "Norwegian (Norway)"
+msgstr "挪威语（挪威）"
+
+msgctxt "#40047"
+msgid "Polish (Poland)"
+msgstr "波兰语（波兰）"
+
+msgctxt "#40048"
+msgid "Portuguese (Brazil)"
+msgstr "葡萄牙语（巴西）"
+
+msgctxt "#40049"
+msgid "Portuguese (Portugal)"
+msgstr "葡萄牙语（葡萄牙）"
+
+msgctxt "#40050"
+msgid "Romanian (Romania)"
+msgstr "罗马尼亚语（罗马尼亚）"
+
+msgctxt "#40051"
+msgid "Russian (Russia)"
+msgstr "俄语（俄罗斯）"
+
+msgctxt "#40052"
+msgid "Sinhalese (Sri Lanka)"
+msgstr "僧伽罗语（斯里兰卡）"
+
+msgctxt "#40053"
+msgid "Slovak (Slovakia)"
+msgstr "斯洛伐克语（斯洛伐克）"
+
+msgctxt "#40054"
+msgid "Slovenian (Slovenia)"
+msgstr "斯洛文尼亚语（斯洛文尼亚）"
+
+msgctxt "#40055"
+msgid "Serbian (Serbia)"
+msgstr "塞尔维亚语（塞尔维亚）"
+
+msgctxt "#40056"
+msgid "Swedish (Sweden)"
+msgstr "瑞典语（瑞典）"
+
+msgctxt "#40057"
+msgid "Tamil (India)"
+msgstr "泰米尔语（印度）"
+
+msgctxt "#40058"
+msgid "Telugu (India)"
+msgstr "泰卢固语（印度）"
+
+msgctxt "#40059"
+msgid "Thai (Thailand)"
+msgstr "泰语（泰国）"
+
+msgctxt "#40060"
+msgid "Tagalog (Philippines)"
+msgstr "他加禄语（菲律宾）"
+
+msgctxt "#40061"
+msgid "Turkish (Turkey)"
+msgstr "土耳其语（土耳其）"
+
+msgctxt "#40062"
+msgid "Ukrainian (Ukraine)"
+msgstr "乌克兰语（乌克兰）"
+
+msgctxt "#40063"
+msgid "Vietnamese (Vietnam)"
+msgstr "越南语（越南）"
+
+msgctxt "#40064"
+msgid "Mandarin (China)"
+msgstr "中文（中国大陆）"
+
+msgctxt "#40065"
+msgid "Mandarin (Hong Kong)"
+msgstr "中文（中国香港）"
+
+msgctxt "#40066"
+msgid "Mandarin (Taiwan)"
+msgstr "中文（中国台湾）"
+
+msgctxt "#40067"
+msgid "Zulu (South Africa)"
+msgstr "祖鲁语（南非）"
+
+msgctxt "#42418"
+msgid "Language and country"
+msgstr "元数据语言与地区"
+
+msgctxt "#42419"
+msgid "The language and country settings used when looking up data from TMDb"
+msgstr "查询 TMDb 影视海报与简介资料时使用的语言与地区偏好"
+
+msgctxt "#42420"
+msgid "EN"
+msgstr "EN"
+
+msgctxt "#30801"
+msgid "Zilean server address (include port if required)."
+msgstr "Zilean 服务器地址（如需端口请一并填写）。"
+
+msgctxt "#30803"
+msgid "Display torrents not yet cached on your debrid service."
+msgstr "在结果中同时显示尚未缓存到解限服务的种子。"
+
+msgctxt "#30808"
+msgid "Fanart.tv Client Key (for artwork)."
+msgstr "Fanart.tv 个人密钥（用于获取高清海报与背景图）。"
+
+msgctxt "#30809"
+msgid "Improve performance by caching metadata."
+msgstr "缓存元数据以提升浏览响应速度。"
+
+msgctxt "#30810"
+msgid "Seconds before Jackett requests time out (e.g., 30)."
+msgstr "Jackett 请求超时秒数（例如 30）。"
+
+msgctxt "#30811"
+msgid "Trakt client secret from OAuth application settings."
+msgstr "OAuth 应用设置中的 Trakt 客户端密钥。"
+
+msgctxt "#30812"
+msgid "Limit TV show results to specific seasons/episodes."
+msgstr "按指定季或分集筛选剧集搜索结果。"
+
+msgctxt "#30813"
+msgid "Hours before cached data is automatically refreshed (e.g., 24)."
+msgstr "缓存数据自动刷新前的保留小时数（例如 24）。"
+
+msgctxt "#30814"
+msgid "Premiumize Client Token (get from account page)."
+msgstr "Premiumize 客户端令牌（可在账户页面获取）。"
+
+msgctxt "#30815"
+msgid "Jackett server URL (e.g., http://localhost)."
+msgstr "Jackett 服务地址（例如 http://localhost）。"
+
+msgctxt "#30816"
+msgid "Display Telegram integration options in UI."
+msgstr "在界面中显示 Telegram 相关入口。"
+
+msgctxt "#30817"
+msgid "Your Real-Debrid account username/email."
+msgstr "你的 Real-Debrid 账户名或邮箱。"
+
+msgctxt "#30818"
+msgid "Trakt client ID from https://trakt.tv/oauth/apps."
+msgstr "来自 https://trakt.tv/oauth/apps 的 Trakt 客户端 ID。"
+
+msgctxt "#30819"
+msgid "Connect Trakt.tv account to sync watch progress."
+msgstr "关联 Trakt.tv 账号以同步观看进度。"
+
+msgctxt "#30820"
+msgid "Seconds before Zilean requests time out (e.g., 30)."
+msgstr "Zilean 请求超时秒数（例如 30）。"
+
+msgctxt "#30821"
+msgid "Your Jackett Client Key (found in dashboard)."
+msgstr "你的 Jackett 客户端密钥（位于控制台面板）。"
+
+msgctxt "#30822"
+msgid "Sort results by criteria (e.g., 'date', 'title', 'size')."
+msgstr "按指定条件对结果排序（如日期、清晰度、大小）。"
+
+msgctxt "#30823"
+msgid "Configure Burst mode settings and providers."
+msgstr "配置 Burst 并发搜索与站点列表。"
+
+msgctxt "#30824"
+msgid "Enable Premiumize.me cloud service."
+msgstr "启用 Premiumize.me 云端解限服务。"
+
+msgctxt "#30825"
+msgid "Truncate descriptions after [X] characters (0 for full text)."
+msgstr "超过指定字数截断说明（0 表示显示全文）。"
+
+msgctxt "#30826"
+msgid "Enable Prowlarr indexer management."
+msgstr "启用 Prowlarr 索引器聚合服务。"
+
+msgctxt "#30827"
+msgid "Jackgram server URL (e.g., http://localhost:9117)."
+msgstr "Jackgram 服务地址（例如 http://localhost:9117）。"
+
+msgctxt "#30828"
+msgid "Debrider Client Key for authentication."
+msgstr "用于身份验证的 Debrider 客户端密钥。"
+
+msgctxt "#30829"
+msgid "Delay (in seconds) before next episode dialog appears (e.g., 10)."
+msgstr "下一集提示框提前出现的秒数（例如 10）。"
+
+msgctxt "#30830"
+msgid "Specify the torrent client."
+msgstr "选择用于播放种子片源的客户端。"
+
+msgctxt "#30831"
+msgid "Enable Debrider cached torrent support."
+msgstr "启用 Debrider 缓存种子支持。"
+
+msgctxt "#30832"
+msgid "Torbox Client Token (found in account settings)."
+msgstr "TorBox 客户端令牌（位于账户设置）。"
+
+msgctxt "#30833"
+msgid "Trakt refresh token (auto-managed)."
+msgstr "Trakt 刷新令牌（自动维护）。"
+
+msgctxt "#30834"
+msgid "Show confirmation dialog before playing next episode."
+msgstr "自动播放下一集前显示确认提示框。"
+
+msgctxt "#30835"
+msgid "Authorize add-on to access Real-Debrid account."
+msgstr "授权访问你的 Real-Debrid 账号。"
+
+msgctxt "#30836"
+msgid "Enable torrent-based media content"
+msgstr "启用 BT 种子片源支持"
+
+msgctxt "#30837"
+msgid "Indicates if Real-Debrid account is linked."
+msgstr "表示 Real-Debrid 账号是否已完成关联。"
+
+msgctxt "#30838"
+msgid "Automatically play next media item when current playback ends."
+msgstr "选源后自动选择首个符合条件的片源起播。"
+
+msgctxt "#30839"
+msgid "Check for and install the latest add-on updates."
+msgstr "打开波比 TV 更新与恢复页面。"
+
+msgctxt "#30840"
+msgid "Comma-separated Prowlarr indexer IDs to use (e.g., 1,5,7)."
+msgstr "要使用的 Prowlarr 索引器 ID，以英文逗号分隔（例如 1,5,7）。"
+
+msgctxt "#30841"
+msgid "Timeout (seconds) for Prowlarr requests (e.g., 20)."
+msgstr "Prowlarr 请求超时秒数（例如 20）。"
+
+msgctxt "#30842"
+msgid "Trakt authorization expiration date (read-only)."
+msgstr "Trakt 授权到期时间（只读）。"
+
+msgctxt "#30843"
+msgid "Enable Torbox.de cloud torrent integration."
+msgstr "启用 TorBox 云端解限服务。"
+
+msgctxt "#30844"
+msgid "Trakt Access Token (auto-filled after auth)."
+msgstr "Trakt 访问令牌（授权后自动填入）。"
+
+msgctxt "#30845"
+msgid "Link Premiumize.me account to add-on."
+msgstr "将 Premiumize.me 账号关联到本插件。"
+
+msgctxt "#30846"
+msgid "Clear cached data automatically after updating the add-on."
+msgstr "插件版本更新后自动清理临时缓存数据。"
+
+msgctxt "#30847"
+msgid "Click to delete all cached data immediately."
+msgstr "立即清理临时缓存数据。"
+
+msgctxt "#30848"
+msgid "Real-Debrid Client Token (auto-filled after auth)."
+msgstr "Real-Debrid 客户端令牌（授权后自动填入）。"
+
+msgctxt "#30849"
+msgid "Enable Jackett torrent proxy support."
+msgstr "启用 Jackett 索引代理支持。"
+
+msgctxt "#30850"
+msgid "Enable Jackgram integration for enhanced search."
+msgstr "启用 Jackgram 搜索集成。"
+
+msgctxt "#30851"
+msgid "Prowlarr instance URL (e.g., http://localhost)."
+msgstr "Prowlarr 实例地址（例如 http://localhost）。"
+
+msgctxt "#30852"
+msgid "Maximum number of search results to display (e.g., 50)."
+msgstr "单次显示的最大搜索结果数（例如 50）。"
+
+msgctxt "#30853"
+msgid "Revoke Real-Debrid account access."
+msgstr "撤销 Real-Debrid 账号授权。"
+
+msgctxt "#30854"
+msgid "Prowlarr Client Key (found in Settings > General)."
+msgstr "Prowlarr 客户端密钥（位于 Settings > General）。"
+
+msgctxt "#30855"
+msgid "Trakt.tv username (auto-populated after auth)."
+msgstr "Trakt.tv 用户名（授权后自动显示）。"
+
+msgctxt "#30856"
+msgid "Disconnect Trakt.tv account from add-on."
+msgstr "断开本插件与 Trakt.tv 账号的关联。"
+
+msgctxt "#30857"
+msgid "Enable Zilean integration for metadata fetching."
+msgstr "启用 Zilean 缓存索引查询。"
+
+msgctxt "#30858"
+msgid "Your Client Key (required for metadata)"
+msgstr "你的 TMDB 客户端密钥（自定义时填写）"
+
+msgctxt "#30859"
+msgid "Enable Burst mode for accelerated searches."
+msgstr "启用 Burst 搜索扩展来源。"
+
+msgctxt "#30860"
+msgid "Others"
+msgstr "其他"
+
+msgctxt "#30861"
+msgid "Filters"
+msgstr "片源筛选"
+
+msgctxt "#30862"
+msgid "Torrent (P2P) Configuration"
+msgstr "BT (P2P) 客户端配置"
+
+msgctxt "#30863"
+msgid "Specify the torrent client"
+msgstr "选择 BT 播放客户端"
+
+msgctxt "#30864"
+msgid "Sources"
+msgstr "片源与订阅"
+
+msgctxt "#30865"
+msgid "General Filters"
+msgstr "通用筛选"
+
+msgctxt "#30866"
+msgid "Sign in to your Stremio account to access add-ons and personalized features."
+msgstr "登录你的 Stremio 账号以同步插件源与个人列表。"
+
+msgctxt "#30867"
+msgid "Sign out of your Stremio account. This will disconnect your account but won't delete your data."
+msgstr "退出 Stremio 账号登录，不会删除云端账号数据。"
+
+msgctxt "#30868"
+msgid "Log Out of Stremio"
+msgstr "退出 Stremio 登录"
+
+msgctxt "#30869"
+msgid "Enable Stremio add-ons integration."
+msgstr "启用 Stremio 插件源集成。"
+
+msgctxt "#30870"
+msgid "Select Stream Addons"
+msgstr "选择视频片源插件"
+
+msgctxt "#30871"
+msgid "Log In to Stremio"
+msgstr "登录 Stremio 账号"
+
+msgctxt "#30872"
+msgid "Enable or disable Stremio add-ons."
+msgstr "启用或停用已安装的 Stremio 插件源。"
+
+msgctxt "#30873"
+msgid "Select language for player subtitle selection"
+msgstr "选择自动查找与匹配字幕时的首选语言"
+
+msgctxt "#30874"
+msgid "Update Addons"
+msgstr "同步账号插件源"
+
+msgctxt "#30875"
+msgid "Select Catalogs Addons"
+msgstr "选择目录片单插件"
+
+msgctxt "#30876"
+msgid "Download directory"
+msgstr "下载保存目录"
+
+msgctxt "#30877"
+msgid "Enable Trakt.tv Scrobbling"
+msgstr "启用 Trakt.tv 播放进度同步"
+
+msgctxt "#30878"
+msgid "Automatically find and load subtitles"
+msgstr "播放时自动查找并加载字幕"
+
+msgctxt "#30879"
+msgid "Auto-play quality"
+msgstr "自动播放首选清晰度"
+
+msgctxt "#30880"
+msgid "1080p"
+msgstr "1080p"
+
+msgctxt "#30881"
+msgid "720p"
+msgstr "720p"
+
+msgctxt "#30882"
+msgid "4k"
+msgstr "4k"
+
+msgctxt "#30883"
+msgid "480p"
+msgstr "480p"
+
+msgctxt "#30884"
+msgid "Subtitles Configuration"
+msgstr "字幕偏好"
+
+msgctxt "#30885"
+msgid "Addon Host"
+msgstr "字幕插件地址"
+
+msgctxt "#30886"
+msgid "Subtitles"
+msgstr "字幕"
+
+msgctxt "#30887"
+msgid "Primary Language"
+msgstr "首选语言"
+
+msgctxt "#30888"
+msgid "Secondary Language"
+msgstr "备选语言"
+
+msgctxt "#30889"
+msgid "Deepl Enabled"
+msgstr "启用 DeepL 字幕翻译"
+
+msgctxt "#30890"
+msgid "Deepl Client Key"
+msgstr "DeepL API 密钥"
+
+msgctxt "#30891"
+msgid "Translator Configuration"
+msgstr "字幕翻译配置"
+
+msgctxt "#30892"
+msgid "Deepl Target Language"
+msgstr "DeepL 目标翻译语言"
+
+msgctxt "#30893"
+msgid "Stremio Subtitle Configuration"
+msgstr "Stremio 字幕来源配置"
+
+msgctxt "#90001"
+msgid "Add Custom Addon"
+msgstr "添加自定义插件源"
+
+msgctxt "#90002"
+msgid "Add a custom Stremio addon by entering its URL"
+msgstr "输入 Manifest 地址以添加自定义 Stremio 插件源"
+
+msgctxt "#90003"
+msgid "Auto-select audio when playing"
+msgstr "播放时自动选择音轨"
+
+msgctxt "#90004"
+msgid "Audio Language"
+msgstr "音轨首选语言"
+
+msgctxt "#90005"
+msgid "Select audio language for playing the video"
+msgstr "选择视频播放时优先匹配的音轨语言"
+
+msgctxt "#90006"
+msgid "Search"
+msgstr "搜索"
+
+msgctxt "#90007"
+msgid "TV Shows"
+msgstr "剧集"
+
+msgctxt "#90008"
+msgid "Movies"
+msgstr "电影"
+
+msgctxt "#90009"
+msgid "Anime"
+msgstr "动漫"
+
+msgctxt "#90010"
+msgid "Live TV"
+msgstr "直播电视"
+
+msgctxt "#90011"
+msgid "Direct Search"
+msgstr "直接搜索"
+
+msgctxt "#90012"
+msgid "Torrents"
+msgstr "种子"
+
+msgctxt "#90013"
+msgid "Telegram"
+msgstr "Telegram"
+
+msgctxt "#90014"
+msgid "Cloud"
+msgstr "云盘"
+
+msgctxt "#90015"
+msgid "Downloads"
+msgstr "下载"
+
+msgctxt "#90016"
+msgid "Settings"
+msgstr "设置"
+
+msgctxt "#90017"
+msgid "History"
+msgstr "历史记录"
+
+msgctxt "#90019"
+msgid "Recently Watched Files"
+msgstr "最近播放的文件"
+
+msgctxt "#90020"
+msgid "Recently Watched Titles"
+msgstr "最近观看的作品"
+
+msgctxt "#90021"
+msgid "TV Calendar"
+msgstr "剧集播出日历"
+
+msgctxt "#90024"
+msgid "Trending Recent"
+msgstr "近期热门"
+
+msgctxt "#90025"
+msgid "Genres"
+msgstr "类型分类"
+
+msgctxt "#90026"
+msgid "Calendar"
+msgstr "播出日历"
+
+msgctxt "#90027"
+msgid "Years"
+msgstr "按年份"
+
+msgctxt "#90028"
+msgid "Trending"
+msgstr "热门趋势"
+
+msgctxt "#90029"
+msgid "Most Watched"
+msgstr "最多观看"
+
+msgctxt "#90030"
+msgid "Most Favorited"
+msgstr "最多收藏"
+
+msgctxt "#90031"
+msgid "Popular Lists"
+msgstr "热门片单"
+
+msgctxt "#90032"
+msgid "Trending Lists"
+msgstr "趋势片单"
+
+msgctxt "#90033"
+msgid "Recomendations"
+msgstr "猜你喜欢"
+
+msgctxt "#90034"
+msgid "Watched History"
+msgstr "观看历史"
+
+msgctxt "#90035"
+msgid "Watchlist"
+msgstr "待看清单"
+
+msgctxt "#90036"
+msgid "Top 10 BoxOffice"
+msgstr "票房前十"
+
+msgctxt "#90037"
+msgid "Popular"
+msgstr "高人气"
+
+msgctxt "#90038"
+msgid "Popular Recent"
+msgstr "近期高人气"
+
+msgctxt "#90039"
+msgid "Airing"
+msgstr "正在热播"
+
+msgctxt "#90040"
+msgid "Years"
+msgstr "按年份"
+
+msgctxt "#90041"
+msgid "Genres"
+msgstr "类型分类"
+
+msgctxt "#90042"
+msgid "Top Rated"
+msgstr "高分佳作"
+
+msgctxt "#90043"
+msgid "Most Watched"
+msgstr "最多观看"
+
+msgctxt "#90044"
+msgid "Torrentio Configuration"
+msgstr "Torrentio 配置"
+
+msgctxt "#90045"
+msgid "Enable Torrentio Settings"
+msgstr "启用 Torrentio 设置"
+
+msgctxt "#90046"
+msgid "Enable or disable the Torrentio Configuration"
+msgstr "启用或停用内置 Torrentio 配置"
+
+msgctxt "#90047"
+msgid "Select Torrentio Providers"
+msgstr "选择 Torrentio 站点"
+
+msgctxt "#90048"
+msgid "Choose which providers to include in the stream request."
+msgstr "选择查询片源时包含的 Torrentio 站点。"
+
+msgctxt "#90049"
+msgid "Scrape again"
+msgstr "重新查找片源"
+
+msgctxt "#90050"
+msgid "Recommendations"
+msgstr "相关作品推荐"
+
+msgctxt "#90051"
+msgid "Similar"
+msgstr "相似作品"
+
+msgctxt "#90052"
+msgid "Thread Number"
+msgstr "并发线程数"
+
+msgctxt "#90053"
+msgid "Select the number of threads (1-30)"
+msgstr "选择后台并发工作线程数（1–30）"
+
+msgctxt "#90054"
+msgid "Kodi logs"
+msgstr "查看当前 Kodi 日志"
+
+msgctxt "#90055"
+msgid "Kodi old logs"
+msgstr "查看上次 Kodi 日志"
+
+msgctxt "#90056"
+msgid "Displays Kodi logs to help diagnose issues."
+msgstr "打开本机 Kodi 运行日志以便排查问题。"
+
+msgctxt "#90057"
+msgid "Logs"
+msgstr "运行日志"
+
+msgctxt "#90058"
+msgid "Filter by Size"
+msgstr "体积筛选"
+
+msgctxt "#90059"
+msgid "Enable Size Filter"
+msgstr "启用文件体积筛选"
+
+msgctxt "#90060"
+msgid "Minimum Size (MB)"
+msgstr "最小体积（MB）"
+
+msgctxt "#90061"
+msgid "Maximum Size (MB)"
+msgstr "最大体积（MB）"
+
+msgctxt "#90062"
+msgid "Enable Cached Search"
+msgstr "仅搜索已缓存片源"
+
+msgctxt "#90063"
+msgid "Only show cached streams from external services"
+msgstr "仅显示已在外部服务完成缓存的流媒体片源"
+
+msgctxt "#90064"
+msgid "Popular"
+msgstr "热门作品"
+
+msgctxt "#90065"
+msgid "Languages"
+msgstr "按语种"
+
+msgctxt "#90066"
+msgid "Networks"
+msgstr "出品平台与电视网"
+
+msgctxt "#90067"
+msgid "Collections"
+msgstr "系列合集"
+
+msgctxt "#90068"
+msgid "Search for collections:"
+msgstr "搜索系列合集："
+
+msgctxt "#90069"
+msgid "Main Menu"
+msgstr "主菜单"
+
+msgctxt "#90070"
+msgid "Last Titles"
+msgstr "最近浏览作品"
+
+msgctxt "#90071"
+msgid "Last Files"
+msgstr "最近播放文件"
+
+msgctxt "#90072"
+msgid "Trakt Lists"
+msgstr "Trakt 片单"
+
+msgctxt "#90073"
+msgid "Metadata"
+msgstr "影视资料与元数据"
+
+msgctxt "#90074"
+msgid "Top Lists"
+msgstr "精选榜单"
+
+msgctxt "#90075"
+msgid "User Lists"
+msgstr "个人片单"
+
+msgctxt "#90076"
+msgid "Search Lists"
+msgstr "搜索片单"
+
+msgctxt "#90077"
+msgid "MDbList Configuration"
+msgstr "MDbList 配置"
+
+msgctxt "#90078"
+msgid "People"
+msgstr "演职人员"
+
+msgctxt "#90079"
+msgid "Popular People"
+msgstr "热门影人"
+
+msgctxt "#90080"
+msgid "Latest People"
+msgstr "最新收录影人"
+
+msgctxt "#90081"
+msgid "Search People"
+msgstr "查看相关演员"
+
+msgctxt "#90082"
+msgid "Download subtitles"
+msgstr "下载字幕"
+
+msgctxt "#90083"
+msgid "Download video"
+msgstr "下载视频"
+
+msgctxt "#90084"
+msgid "Browse into"
+msgstr "进入目录"
+
+msgctxt "#90085"
+msgid "Include TV show Specials"
+msgstr "包含剧集特别篇（S00）"
+
+msgctxt "#90086"
+msgid "Airing Today"
+msgstr "今日播出"
+
+msgctxt "#90099"
+msgid "Filter by Source Type"
+msgstr "片源介质筛选"
+
+msgctxt "#90100"
+msgid "Include BluRay/UHD sources"
+msgstr "包含蓝光原盘 / UHD 片源"
+
+msgctxt "#90105"
+msgid "Includes releases such as: BluRay, BluRay REMUX, BRRip, BDRip, UHDRip, REMUX"
+msgstr "包含 BluRay、BluRay REMUX、BRRip、BDRip、UHDRip、REMUX 等版本"
+
+msgctxt "#90101"
+msgid "Include WEB/HD sources"
+msgstr "包含 WEB-DL / 高清流媒体片源"
+
+msgctxt "#90106"
+msgid "Includes releases such as: WEB-DL, WEB-DLRip, WEBRip, HDRip, WEBMux"
+msgstr "包含 WEB-DL、WEB-DLRip、WEBRip、HDRip、WEBMux 等版本"
+
+msgctxt "#90102"
+msgid "Include DVD/TV/SAT sources"
+msgstr "包含 DVD / 电视录制片源"
+
+msgctxt "#90107"
+msgid "Includes releases such as: DVD, DVDRip, HDTV, SATRip, TVRip, PPVRip, PDTV"
+msgstr "包含 DVD、DVDRip、HDTV、SATRip、TVRip、PPVRip、PDTV 等版本"
+
+msgctxt "#90103"
+msgid "Include CAM/Screener sources"
+msgstr "包含枪版 / 抢先版（CAM/SCR）"
+
+msgctxt "#90108"
+msgid "Includes releases such as: CAM, TeleSync, TeleCine, SCR"
+msgstr "包含 CAM、TeleSync、TeleCine、SCR 等低清抢先版本"
+
+msgctxt "#90104"
+msgid "Include Unknown sources"
+msgstr "包含未识别介质的片源"
+
+msgctxt "#90109"
+msgid "Includes uncategorized or unidentified sources"
+msgstr "包含未能从文件名识别介质类型的片源"
+
+msgctxt "#90110"
+msgid "Do you want to clear your watched history?."
+msgstr "确定要清空观看历史吗？"
+
+msgctxt "#90111"
+msgid "Do you want to clear your history?."
+msgstr "确定要清空历史记录吗？"
+
+msgctxt "#90112"
+msgid "Clear History"
+msgstr "清空历史记录"
+
+msgctxt "#90113"
+msgid "Click to delete all watched history immediately."
+msgstr "立即删除本插件保存的浏览与观看历史。"
+
+msgctxt "#90114"
+msgid "History cleared"
+msgstr "已清空历史记录"
+
+msgctxt "#90115"
+msgid "Source Select"
+msgstr "选择片源"
+
+msgctxt "#90116"
+msgid "Open Settings"
+msgstr "打开插件设置"
+
+msgctxt "#90117"
+msgid "Select Torrentio Providers"
+msgstr "选择 Torrentio 站点"
+
+msgctxt "#90118"
+msgid "Port"
+msgstr "端口"
+
+msgctxt "#90119"
+msgid "Jackett port (default:9117)"
+msgstr "Jackett 端口（默认 9117）"
+
+msgctxt "#90120"
+msgid "Prowlarr port (default:9696)"
+msgstr "Prowlarr 端口（默认 9696）"
+
+msgctxt "#90121"
+msgid "All Debrid Configuration"
+msgstr "AllDebrid 配置"
+
+msgctxt "#90122"
+msgid "Auto download subtitles"
+msgstr "自动下载字幕"
+
+msgctxt "#90123"
+msgid "Stremio Timeout"
+msgstr "Stremio 请求超时（秒）"
+
+msgctxt "#90124"
+msgid "Webdav Client Configuration"
+msgstr "WebDAV 客户端配置"
+
+msgctxt "#90126"
+msgid "Host"
+msgstr "主机地址"
+
+msgctxt "#90127"
+msgid "Username"
+msgstr "用户名"
+
+msgctxt "#90128"
+msgid "Password"
+msgstr "密码"
+
+msgctxt "#90129"
+msgid "Test Connection"
+msgstr "测试连接"
+
+msgctxt "#90131"
+msgid "Webdav"
+msgstr "WebDAV"
+
+msgctxt "#90132"
+msgid "Remote Path"
+msgstr "远端目录路径"
+
+msgctxt "#90133"
+msgid "The hostname or IP address of your WebDAV server (e.g., http://mywebdav.com or https://192.168.1.100)."
+msgstr "WebDAV 服务器主机名或 IP 地址（例如 http://mywebdav.com 或 https://192.168.1.100）。"
+
+msgctxt "#90134"
+msgid "The username required for authenticating with your WebDAV server"
+msgstr "登录 WebDAV 服务器所需的用户名"
+
+msgctxt "#90135"
+msgid "The password for the specified username to authenticate with your WebDAV server"
+msgstr "对应 WebDAV 账号的密码"
+
+msgctxt "#90136"
+msgid "The base path or directory on the WebDAV server where your media files are located (e.g., /movies)."
+msgstr "媒体文件所在的 WebDAV 远端根目录（例如 /movies）。"
+
+msgctxt "#90137"
+msgid "Click to verify if the WebDAV client can successfully connect to the configured server using the provided credentials."
+msgstr "使用当前填写的凭据测试能否正常连接 WebDAV 服务器。"
+
+msgctxt "#90138"
+msgid "Remove Custom Addon"
+msgstr "移除自定义插件源"
+
+msgctxt "#90139"
+msgid "Playback"
+msgstr "播放"
+
+msgctxt "#90140"
+msgid "Super quick play"
+msgstr "极速起播"
+
+msgctxt "#90141"
+msgid "Re-ask to play last played video"
+msgstr "重新询问播放上次视频"
+
+msgctxt "#90142"
+msgid "Replay Dialog"
+msgstr "重播询问框"
+
+msgctxt "#90143"
+msgid "Do you want to play last watched?"
+msgstr "是否继续播放上次观看的视频？"
+
+msgctxt "#90144"
+msgid "Could not resolve playback URL"
+msgstr "无法解析播放地址"
+
+msgctxt "#90171"
+msgid "Autoscrape Next Episode"
+msgstr "后台预解析下一集"
+
+msgctxt "#90172"
+msgid "Pre-resolve the next episode's playback URL in the background while watching."
+msgstr "观看剧集时在后台提前查找下一集候选片源。"
+
+msgctxt "#90173"
+msgid "Autoscrape Threshold"
+msgstr "预解析触发进度（%）"
+
+msgctxt "#90174"
+msgid "Percentage of playback to trigger background pre-resolution."
+msgstr "播放达到该百分比时开始后台预解析下一集。"
+
+msgctxt "#90175"
+msgid "Autoscrape Episode Count"
+msgstr "预解析后续集数"
+
+msgctxt "#90176"
+msgid "Number of upcoming episodes to pre-resolve."
+msgstr "提前预解析的后续剧集数量。"
+
+msgctxt "#90177"
+msgid "Autoscrape Cache TTL"
+msgstr "预解析缓存保留时长（小时）"
+
+msgctxt "#90178"
+msgid "Hours to keep resolved playback data in cache."
+msgstr "预解析结果在缓存中保留的小时数。"
+
+msgctxt "#30901"
+msgid "Show Only Stremio Catalogs"
+msgstr "仅显示 Stremio 目录"
+
+msgctxt "#30902"
+msgid "Hides embedded items (TMDb, Trakt, etc.) and shows only Stremio catalogs in menus."
+msgstr "隐藏内置片单（TMDb、Trakt 等），仅在菜单中显示 Stremio 目录。"
+
+msgctxt "#30903"
+msgid "Select Live TV Addons"
+msgstr "选择直播电视插件"
+
+msgctxt "#30904"
+msgid "Choose specific Stremio addons for Live TV content"
+msgstr "选择提供直播频道内容的 Stremio 插件源"
+
+msgctxt "#30920"
+msgid "Clear Trakt Cache"
+msgstr "清除 Trakt 临时缓存"
+
+msgctxt "#30921"
+msgid "Clear TMDB Cache"
+msgstr "清除 TMDB 临时缓存"
+
+msgctxt "#30922"
+msgid "Clear Providers Cache"
+msgstr "清除片源提供方缓存"
+
+msgctxt "#30923"
+msgid "Clear Settings Cache"
+msgstr "清除设置缓存"
+
+msgctxt "#90149"
+msgid "Maintenance"
+msgstr "维护"
+
+msgctxt "#90150"
+msgid "Stremio: General"
+msgstr "Stremio：常规"
+
+msgctxt "#90151"
+msgid "Stremio: Account"
+msgstr "Stremio：账号"
+
+msgctxt "#90152"
+msgid "Stremio: Addons & Catalogs"
+msgstr "Stremio：插件与目录"
+
+msgctxt "#90153"
+msgid "Stremio: Torrentio"
+msgstr "Stremio：Torrentio"
+
+msgctxt "#90154"
+msgid "Trending Recent"
+msgstr "近期热门"
+
+msgctxt "#90155"
+msgid "Stremio: Filters"
+msgstr "Stremio：筛选例外"
+
+msgctxt "#32300"
+msgid "Filter by Quality"
+msgstr "按清晰度筛选"
+
+msgctxt "#32301"
+msgid "Filter by Provider"
+msgstr "按来源站点筛选"
+
+msgctxt "#32302"
+msgid "Filter by Source"
+msgstr "按片源类型筛选"
+
+msgctxt "#32303"
+msgid "Filter by Language"
+msgstr "按语言筛选"
+
+msgctxt "#32307"
+msgid "Filter by Group"
+msgstr "按压制组筛选"
+
+msgctxt "#32304"
+msgid "Filter by Torrents"
+msgstr "按 BT 种子筛选"
+
+msgctxt "#32305"
+msgid "Filter by Debrid"
+msgstr "按解限服务筛选"
+
+msgctxt "#32306"
+msgid "Reset Filter"
+msgstr "重置筛选"
+
+msgctxt "#30930"
+msgid "Ping Addons"
+msgstr "检测插件源连通性"
+
+msgctxt "#30931"
+msgid "Check availability of addons and show only reachable ones"
+msgstr "测试各插件源可用性并筛选可正常连接的插件"
+
+msgctxt "#90164"
+msgid "Skip Intro / Recap"
+msgstr "片头与前情提要"
+
+msgctxt "#90165"
+msgid "Enable Skip Intro"
+msgstr "启用跳过片头提示"
+
+msgctxt "#90166"
+msgid "Detect intros and recaps using IntroDB and offer to skip them during playback"
+msgstr "使用 IntroDB 识别片头与前情提要，并在播放时提供跳过按钮"
+
+msgctxt "#90167"
+msgid "Auto-skip"
+msgstr "自动跳过"
+
+msgctxt "#90168"
+msgid "Automatically skip intros and recaps without showing the button"
+msgstr "自动跳过片头与前情提要，不再显示确认按钮"
+
+msgctxt "#90160"
+msgid "Skip Intro"
+msgstr "跳过片头"
+
+msgctxt "#90161"
+msgid "Skip Recap"
+msgstr "跳过前情提要"
+
+msgctxt "#90162"
+msgid "Manage from Phone"
+msgstr "手机扫码管理"
+
+msgctxt "#90163"
+msgid "Start a local web server and show a QR code to manage Stremio sources from your phone"
+msgstr "启动本机局域网管理会话并显示二维码，在手机上管理 Stremio 插件源"
+
+msgctxt "#90200"
+msgid "Continue Watching"
+msgstr "继续观看"
+
+msgctxt "#90201"
+msgid "Library"
+msgstr "媒体库"
+
+msgctxt "#90202"
+msgid "My Shows"
+msgstr "我的剧集"
+
+msgctxt "#90203"
+msgid "My Movies"
+msgstr "我的电影"
+
+msgctxt "#90204"
+msgid "Remove from Library"
+msgstr "从媒体库移除"
+
+msgctxt "#90205"
+msgid "Add to Library"
+msgstr "加入媒体库"
+
+msgctxt "#90206"
+msgid "Remove"
+msgstr "移除"
+
+msgctxt "#90207"
+msgid "Search Movies & TV"
+msgstr "搜索电影与剧集"
+
+msgctxt "#90208"
+msgid "Recent Searches"
+msgstr "最近搜索"
+
+msgctxt "#90209"
+msgid "Recent Direct Searches"
+msgstr "最近直接搜索"
+
+msgctxt "#90210"
+msgid "Clear All Search History"
+msgstr "清空全部搜索记录"
+
+msgctxt "#90211"
+msgid "Bypass Stremio Addons Native Sorting"
+msgstr "保留指定 Stremio 插件的原始排序与结果"
+
+msgctxt "#90212"
+msgid "If enabled, addons specified won't have their results re-ordered or filtered by bobbi TV's native quality and size thresholds."
+msgstr "开启后，所选 Stremio 插件返回的结果不再经过本插件的清晰度与体积过滤重排。"
+
+msgctxt "#90213"
+msgid "Select Bypassed Addons"
+msgstr "选择豁免筛选的插件"
+
+msgctxt "#90214"
+msgid "Select which Stremio addons bypass bobbi TV's native size and quality filtering."
+msgstr "选择跳过本插件体积与清晰度筛选的 Stremio 插件源。"
+
+msgctxt "#90215"
+msgid "Downgrade"
+msgstr "回退版本"
+
+msgctxt "#90671"
+msgid "Install an older published version of bobbi TV. The current version is backed up and restored automatically if the downgrade fails."
+msgstr "回退安装已发布的旧版波比 TV；若回退失败会自动恢复当前版本。"
+
+msgctxt "#30932"
+msgid "Update Action"
+msgstr "旧版更新方式（已退役）"
+
+msgctxt "#30933"
+msgid "Choose how to handle background update checks."
+msgstr "旧版后台更新提醒选项，现已由“更新与恢复 → 新版本提醒”接管。"
+
+msgctxt "#30934"
+msgid "Ask"
+msgstr "询问"
+
+msgctxt "#30935"
+msgid "Notify"
+msgstr "仅提醒"
+
+msgctxt "#90216"
+msgid "Volume Check Enabled"
+msgstr "起播高音量保护"
+
+msgctxt "#90217"
+msgid "Automatically limits volume if it is above the threshold before playback."
+msgstr "起播前若系统音量高于阈值，自动限制到安全音量。"
+
+msgctxt "#90218"
+msgid "Volume Threshold"
+msgstr "音量上限阈值（%）"
+
+msgctxt "#90219"
+msgid "The volume percentage above which the warning triggers."
+msgstr "触发音量保护的百分比阈值。"
+
+msgctxt "#90220"
+msgid "High Volume Warning"
+msgstr "高音量提醒"
+
+msgctxt "#90221"
+msgid "High volume detected. Adjusting to %s%% for safety."
+msgstr "检测到音量过高，已安全调整至 %s%%。"
+
+msgctxt "#90222"
+msgid "Fanart.tv Configuration"
+msgstr "Fanart.tv 配置"
+
+msgctxt "#90223"
+msgid "Client Key"
+msgstr "客户端密钥"
+
+msgctxt "#90224"
+msgid "Your personal Fanart.tv client key for higher quality assets."
+msgstr "填写个人 Fanart.tv 客户端密钥以获取高清艺术图。"
+
+msgctxt "#90225"
+msgid "Debrid Notifications"
+msgstr "解限服务到期提醒"
+
+msgctxt "#90226"
+msgid "Debrid Expiration Notification"
+msgstr "启用解限服务到期提醒"
+
+msgctxt "#90227"
+msgid "Enable or disable notifications when your Debrid subscription is about to expire."
+msgstr "当你的解限服务订阅即将到期时显示通知。"
+
+msgctxt "#90228"
+msgid "Expiration Threshold (Days)"
+msgstr "提前提醒天数"
+
+msgctxt "#90229"
+msgid "How many days before expiration to start notifying."
+msgstr "距离订阅到期提前多少天开始提醒。"
+
+msgctxt "#90230"
+msgid "%s expires in %d days."
+msgstr "%s 将在 %d 天后到期。"
+
+msgctxt "#90231"
+msgid "%s expires today!"
+msgstr "%s 今日到期！"
+
+msgctxt "#90232"
+msgid "Easynews"
+msgstr "Easynews"
+
+msgctxt "#90233"
+msgid "Enable EasyNews as a direct stream provider."
+msgstr "启用 Easynews 直连片源服务。"
+
+msgctxt "#90234"
+msgid "Your EasyNews username."
+msgstr "你的 Easynews 用户名。"
+
+msgctxt "#90235"
+msgid "Your EasyNews password."
+msgstr "你的 Easynews 密码。"
+
+msgctxt "#90236"
+msgid "Request timeout in seconds."
+msgstr "请求超时秒数。"
+
+msgctxt "#90237"
+msgid "Account Information"
+msgstr "账户信息"
+
+msgctxt "#90238"
+msgid "Search Dialog Style"
+msgstr "搜索状态弹窗样式"
+
+msgctxt "#90239"
+msgid "Background"
+msgstr "后台精简提示"
+
+msgctxt "#90240"
+msgid "Detailed Status"
+msgstr "详细搜索面板"
+
+msgctxt "#90241"
+msgid "Search Status"
+msgstr "搜索进度"
+
+msgctxt "#90242"
+msgid "Cancel"
+msgstr "取消"
+
+msgctxt "#90243"
+msgid "Results found: "
+msgstr "已找到结果："
+
+msgctxt "#90244"
+msgid "Pending"
+msgstr "等待中"
+
+msgctxt "#90245"
+msgid "In Progress"
+msgstr "进行中"
+
+msgctxt "#90246"
+msgid "Completed"
+msgstr "已完成"
+
+msgctxt "#90247"
+msgid "Failed"
+msgstr "失败"
+
+msgctxt "#90248"
+msgid "Cancelled"
+msgstr "已取消"
+
+msgctxt "#90249"
+msgid "Your personal Jackgram API token for authentication."
+msgstr "用于身份验证的个人 Jackgram API 令牌。"
+
+msgctxt "#90250"
+msgid "Subtitles Found"
+msgstr "已找到字幕"
+
+msgctxt "#90251"
+msgid "There are already downloaded subtitles for this video.\nDo you want to use the existing subtitles?"
+msgstr "当前视频已有已下载的本地字幕。\n是否直接使用现有字幕？"
+
+msgctxt "#90252"
+msgid "No subtitles found"
+msgstr "未找到字幕"
+
+msgctxt "#90253"
+msgid "No subtitles selected"
+msgstr "未选择字幕"
+
+msgctxt "#90254"
+msgid "Translate Subtitles"
+msgstr "翻译字幕"
+
+msgctxt "#90255"
+msgid "Do you want to also translate the selected subtitles?"
+msgstr "是否同时翻译所选字幕？"
+
+msgctxt "#90256"
+msgid "Select Subtitle to Download"
+msgstr "选择要下载的字幕"
+
+msgctxt "#90257"
+msgid "Subtitles Loaded"
+msgstr "字幕已加载"
+
+msgctxt "#90258"
+msgid "Plugin Preferences Backup"
+msgstr "插件偏好备份"
+
+msgctxt "#90259"
+msgid "Export Plugin Preferences Backup"
+msgstr "导出插件偏好备份"
+
+msgctxt "#90260"
+msgid "Export addon settings and custom Stremio addons to a JSON backup file."
+msgstr "将本插件偏好设置及自定义 Stremio 插件源导出为 JSON 备份文件（非整机备份）。"
+
+msgctxt "#90261"
+msgid "Restore Backup"
+msgstr "恢复插件偏好备份"
+
+msgctxt "#90262"
+msgid "Restore addon settings and replace custom Stremio addons from a JSON backup file."
+msgstr "从 JSON 备份文件恢复本插件偏好设置并替换自定义 Stremio 插件源。"
+
+msgctxt "#90263"
+msgid "Remove Sensitive Data"
+msgstr "导出时剥离敏感凭据"
+
+msgctxt "#90264"
+msgid "Remove API keys, passwords, usernames, emails, auth state, and custom Stremio addon URLs from exported backups."
+msgstr "从导出的备份中移除 API 密钥、密码、用户名、邮箱、登录状态及自定义 Stremio 插件 URL。"
+
+msgctxt "#90265"
+msgid "Settings backup exported"
+msgstr "插件偏好备份已导出"
+
+msgctxt "#90266"
+msgid "Settings backup restored"
+msgstr "插件偏好备份已恢复"
+
+msgctxt "#90267"
+msgid "Settings Backup Failed"
+msgstr "插件偏好备份失败"
+
+msgctxt "#90268"
+msgid "Select export folder"
+msgstr "选择备份导出目录"
+
+msgctxt "#90269"
+msgid "Select backup file"
+msgstr "选择备份文件"
+
+msgctxt "#90270"
+msgid "Backup file is invalid."
+msgstr "备份文件格式无效。"
+
+msgctxt "#90271"
+msgid "No export folder selected."
+msgstr "未选择导出目录。"
+
+msgctxt "#90272"
+msgid "No backup file selected."
+msgstr "未选择备份文件。"
+
+msgctxt "#90273"
+msgid "Unable to export settings backup."
+msgstr "无法导出插件偏好备份。"
+
+msgctxt "#90274"
+msgid "Unable to restore settings backup."
+msgstr "无法恢复插件偏好备份。"
+
+msgctxt "#90275"
+msgid "Restore Backup"
+msgstr "恢复插件偏好备份"
+
+msgctxt "#90276"
+msgid "This will overwrite your current addon settings and replace your custom Stremio addons with the backup. Continue?"
+msgstr "这将覆盖本插件当前偏好设置，并用备份内容替换你的自定义 Stremio 插件源。是否继续？"
+
+msgctxt "#90277"
+msgid "Restore cancelled"
+msgstr "已取消恢复"
+
+msgctxt "#90278"
+msgid "Reset Plugin Preferences"
+msgstr "重置插件偏好"
+
+msgctxt "#90279"
+msgid "This will reset all addon settings to their defaults and remove your custom Stremio addons. Continue?"
+msgstr "这将把本插件所有偏好恢复为默认值，并移除自定义 Stremio 插件源。是否继续？"
+
+msgctxt "#90280"
+msgid "Reset cancelled"
+msgstr "已取消重置"
+
+msgctxt "#90281"
+msgid "All addon settings reset"
+msgstr "已重置本插件全部偏好"
+
+msgctxt "#90282"
+msgid "Reset Failed"
+msgstr "重置失败"
+
+msgctxt "#90283"
+msgid "Unable to reset addon settings."
+msgstr "无法重置插件偏好。"
+
+msgctxt "#90284"
+msgid "Reset every addon setting back to its default value and clear custom Stremio addons."
+msgstr "将本插件偏好恢复默认值并移除自定义 Stremio 插件源（不影响平台网盘账号与原文件）。"
+
+msgctxt "#90285"
+msgid "Clear Plugin Data"
+msgstr "清除本插件数据"
+
+msgctxt "#90286"
+msgid "This will reset settings, clear caches, remove custom Stremio addons, and wipe local addon history/database data. Continue?"
+msgstr "这将重置本插件偏好、清理缓存、移除自定义 Stremio/Nuvio 选择并清除本插件历史数据库（不影响平台网盘账号与系统）。是否继续？"
+
+msgctxt "#90287"
+msgid "Factory reset cancelled"
+msgstr "已取消清除插件数据"
+
+msgctxt "#90288"
+msgid "Factory reset completed"
+msgstr "已清除本插件数据"
+
+msgctxt "#90289"
+msgid "Factory Reset Failed"
+msgstr "清除插件数据失败"
+
+msgctxt "#90290"
+msgid "Unable to complete factory reset."
+msgstr "无法完成插件数据清理。"
+
+msgctxt "#90291"
+msgid "Reset settings to defaults, clear caches, and wipe local addon history/database data."
+msgstr "重置本插件偏好、清理缓存并清空本插件本地历史与数据库记录（非整机恢复出厂）。"
+
+msgctxt "#90292"
+msgid "Trakt Library"
+msgstr "Trakt 媒体库"
+
+msgctxt "#90293"
+msgid "Trakt Discovery"
+msgstr "Trakt 发现"
+
+msgctxt "#90294"
+msgid "Collection"
+msgstr "个人收藏集"
+
+msgctxt "#90295"
+msgid "Favorites"
+msgstr "喜爱作品"
+
+msgctxt "#90296"
+msgid "Up Next"
+msgstr "待看下一集"
+
+msgctxt "#90297"
+msgid "My Lists"
+msgstr "我的片单"
+
+msgctxt "#90298"
+msgid "Liked Lists"
+msgstr "赞过的片单"
+
+msgctxt "#90299"
+msgid "No metadata found for this torrent"
+msgstr "未找到该种子的元数据"
+
+msgctxt "#90331"
+msgid "Stremio Addons"
+msgstr "Stremio 插件源"
+
+msgctxt "#90332"
+msgid "No addons available yet. Use Log In to Stremio or Add Custom Addon first."
+msgstr "尚无可用插件源，请先登录 Stremio 或添加自定义插件源。"
+
+msgctxt "#90333"
+msgid "Stremio Stream Addons"
+msgstr "Stremio 视频片源插件"
+
+msgctxt "#90334"
+msgid "Stremio Catalog Addons"
+msgstr "Stremio 目录片单插件"
+
+msgctxt "#90335"
+msgid "Stremio Live TV Addons"
+msgstr "Stremio 直播电视插件"
+
+msgctxt "#90336"
+msgid "Refresh addons imported from your Stremio account. Custom addons remain unchanged."
+msgstr "重新同步 Stremio 账号下的插件源，手动添加的自定义插件源保持不变。"
+
+msgctxt "#90337"
+msgid "Choose which imported or custom Stremio stream addons to use. If none are available yet, log in or add a custom addon first."
+msgstr "选择用于查找视频片源的 Stremio 插件；若列表为空，请先登录或添加自定义插件。"
+
+msgctxt "#90338"
+msgid "Choose which imported or custom Stremio catalog addons to use. If none are available yet, log in or add a custom addon first."
+msgstr "选择用于展示目录片单的 Stremio 插件；若列表为空，请先登录或添加自定义插件。"
+
+msgctxt "#90339"
+msgid "Choose which imported or custom Stremio Live TV addons to use. If none are available yet, log in or add a custom addon first."
+msgstr "选择用于直播电视的 Stremio 插件；若列表为空，请先登录或添加自定义插件。"
+
+msgctxt "#90340"
+msgid "Remove custom Stremio addons you previously added manually."
+msgstr "移除此前手动添加的自定义 Stremio 插件源。"
+
+msgctxt "#90341"
+msgid "Choose Torrent Client"
+msgstr "选择 BT 客户端"
+
+msgctxt "#90342"
+msgid "Clear Local Browse & File History"
+msgstr "清除本地浏览与文件历史"
+
+msgctxt "#90343"
+msgid "Clear Stremio Cache"
+msgstr "清除 Stremio 临时缓存"
+
+msgctxt "#90344"
+msgid "Clear Debrid Cache"
+msgstr "清除解限服务缓存"
+
+msgctxt "#90345"
+msgid "Clear MDBList Cache"
+msgstr "清除 MDbList 缓存"
+
+msgctxt "#90346"
+msgid "Restore backup from"
+msgstr "选择备份来源"
+
+msgctxt "#90347"
+msgid "File"
+msgstr "本地文件"
+
+msgctxt "#90348"
+msgid "URL"
+msgstr "网络地址 (URL)"
+
+msgctxt "#90349"
+msgid "Enter backup URL"
+msgstr "输入备份文件 URL"
+
+msgctxt "#90350"
+msgid "No backup URL provided."
+msgstr "未输入备份 URL。"
+
+msgctxt "#90351"
+msgid "Unable to download settings backup."
+msgstr "无法下载备份文件。"
+
+msgctxt "#90352"
+msgid "Source Select Style"
+msgstr "选源面板主题样式"
+
+msgctxt "#90353"
+msgid "Modern"
+msgstr "现代默认"
+
+msgctxt "#90354"
+msgid "OLED"
+msgstr "OLED 纯黑"
+
+msgctxt "#90355"
+msgid "Cyberpunk"
+msgstr "赛博霓虹"
+
+msgctxt "#90356"
+msgid "Forest"
+msgstr "森系暗绿"
+
+msgctxt "#90357"
+msgid "Gold"
+msgstr "流光暗金"
+
+msgctxt "#90358"
+msgid "No playable results found"
+msgstr "未找到可播放的结果"
+
+msgctxt "#90359"
+msgid "Add to TorrServer"
+msgstr "添加到 TorrServer"
+
+msgctxt "#90360"
+msgid "Added to TorrServer"
+msgstr "已添加到 TorrServer"
+
+msgctxt "#90361"
+msgid "Could not resolve torrent details"
+msgstr "无法解析种子详情"
+
+msgctxt "#90362"
+msgid "Added to %s cloud"
+msgstr "已添加到 %s 云端"
+
+msgctxt "#90363"
+msgid "Choose Debrid Service"
+msgstr "选择解限服务"
+
+msgctxt "#90364"
+msgid "No supported debrid service is enabled"
+msgstr "未启用受支持的解限服务"
+
+msgctxt "#90365"
+msgid "Download to Debrid"
+msgstr "离线下载到解限云端"
+
+msgctxt "#90366"
+msgid "Include Unknown quality"
+msgstr "包含未知清晰度片源"
+
+msgctxt "#90367"
+msgid "Includes releases where video quality could not be identified"
+msgstr "包含无法从文件名识别分辨率清晰度的片源"
+
+msgctxt "#90368"
+msgid "Search by Keyword"
+msgstr "按关键词搜索"
+
+msgctxt "#90369"
+msgid "Latest Movies"
+msgstr "最新电影"
+
+msgctxt "#90370"
+msgid "Latest Series"
+msgstr "最新剧集"
+
+msgctxt "#90371"
+msgid "Raw Files"
+msgstr "原始文件"
+
+msgctxt "#90372"
+msgid "MDblist"
+msgstr "MDbList"
+
+msgctxt "#90373"
+msgid "Active Downloads"
+msgstr "进行中的下载"
+
+msgctxt "#90374"
+msgid "Cancel Download"
+msgstr "取消下载"
+
+msgctxt "#90375"
+msgid "Delete File"
+msgstr "删除文件"
+
+msgctxt "#90376"
+msgid "Search Collections"
+msgstr "搜索系列合集"
+
+msgctxt "#90377"
+msgid "Popular Collections"
+msgstr "热门系列合集"
+
+msgctxt "#90378"
+msgid "Top Rated Collections"
+msgstr "高分系列合集"
+
+msgctxt "#90379"
+msgid "Recommendations"
+msgstr "相关作品推荐"
+
+msgctxt "#90380"
+msgid "Similar"
+msgstr "相似作品"
+
+msgctxt "#90381"
+msgid "Keyword: %s"
+msgstr "关键词：%s"
+
+msgctxt "#90382"
+msgid "Please set a valid Trakt Client ID Key"
+msgstr "请先填写有效的 Trakt 客户端 ID"
+
+msgctxt "#90383"
+msgid "Please set a valid Trakt Client Secret Key"
+msgstr "请先填写有效的 Trakt 客户端密钥"
+
+msgctxt "#90384"
+msgid "Trakt Error Authorizing"
+msgstr "Trakt 授权失败"
+
+msgctxt "#90385"
+msgid "Trakt Account Authorized"
+msgstr "Trakt 账号授权成功"
+
+msgctxt "#90386"
+msgid "You are now logged out from Trakt.tv"
+msgstr "已退出 Trakt.tv 账号"
+
+msgctxt "#90387"
+msgid "Failed to mark as watched"
+msgstr "标记为已看失败"
+
+msgctxt "#90388"
+msgid "Marked as watched"
+msgstr "已标记为已看"
+
+msgctxt "#90389"
+msgid "No results found"
+msgstr "未找到匹配结果"
+
+msgctxt "#90390"
+msgid "Invalid mode"
+msgstr "模式无效"
+
+msgctxt "#90391"
+msgid "No recommendations found"
+msgstr "暂无相关推荐"
+
+msgctxt "#90392"
+msgid "No similar items found"
+msgstr "暂无相似作品"
+
+msgctxt "#90393"
+msgid "TMDB metadata not found"
+msgstr "未找到 TMDB 影视资料"
+
+msgctxt "#90394"
+msgid "No TV shows found"
+msgstr "未找到相关剧集"
+
+msgctxt "#90395"
+msgid "No shows airing today"
+msgstr "今日暂无播出剧集"
+
+msgctxt "#90396"
+msgid "Invalid collection query"
+msgstr "合集查询无效"
+
+msgctxt "#90397"
+msgid "No keywords found"
+msgstr "未找到相关关键词"
+
+msgctxt "#90398"
+msgid "No keyword ID provided"
+msgstr "未提供关键词 ID"
+
+msgctxt "#90399"
+msgid "No results found for this keyword"
+msgstr "该关键词下暂无作品"
+
+msgctxt "#90400"
+msgid "No TMDB ID found"
+msgstr "未找到对应的 TMDB 编号"
+
+msgctxt "#90401"
+msgid "Unsupported media type or missing external_ids"
+msgstr "媒体类型不受支持或缺少外部编号"
+
+msgctxt "#90402"
+msgid "Refreshed Metadata"
+msgstr "影视资料已刷新"
+
+msgctxt "#90403"
+msgid "No Stremio addons selected"
+msgstr "尚未选择任何 Stremio 插件源"
+
+msgctxt "#90404"
+msgid "No suitable source found for auto play."
+msgstr "未找到符合自动播放条件的片源。"
+
+msgctxt "#90405"
+msgid "No sources found with the preferred quality."
+msgstr "未找到符合首选清晰度的片源。"
+
+msgctxt "#90406"
+msgid "No languages found"
+msgstr "未找到语种列表"
+
+msgctxt "#90407"
+msgid "Failed to resolve playback source"
+msgstr "解析播放片源失败"
+
+msgctxt "#90408"
+msgid "Trakt not authorized. Please authenticate."
+msgstr "Trakt 尚未授权，请先完成登录授权。"
+
+msgctxt "#90409"
+msgid "Added to Trakt Watchlist"
+msgstr "已加入 Trakt 待看清单"
+
+msgctxt "#90410"
+msgid "Error modifying Trakt Watchlist"
+msgstr "更新 Trakt 待看清单失败"
+
+msgctxt "#90411"
+msgid "Marked as Watched on Trakt"
+msgstr "已在 Trakt 标记为已看"
+
+msgctxt "#90412"
+msgid "Error modifying Trakt Watched status"
+msgstr "更新 Trakt 已看状态失败"
+
+msgctxt "#90413"
+msgid "Play"
+msgstr "播放"
+
+msgctxt "#90414"
+msgid "Trailer"
+msgstr "预告片"
+
+msgctxt "#90415"
+msgid "Watched"
+msgstr "已看"
+
+msgctxt "#90416"
+msgid "Refresh"
+msgstr "刷新"
+
+msgctxt "#90418"
+msgid "No credits found for this ID"
+msgstr "未找到演职人员信息"
+
+msgctxt "#90419"
+msgid "Credited People"
+msgstr "参演与主创人员"
+
+msgctxt "#90420"
+msgid "Person Details"
+msgstr "影人详情"
+
+msgctxt "#90421"
+msgid "Person not found"
+msgstr "未找到该影人信息"
+
+msgctxt "#90422"
+msgid "Jackgram not activated"
+msgstr "尚未启用 Jackgram"
+
+msgctxt "#90423"
+msgid "Not yet implemented"
+msgstr "该功能暂未提供"
+
+msgctxt "#90424"
+msgid "Unsupported debrid type"
+msgstr "不受支持的解限服务类型"
+
+msgctxt "#90425"
+msgid "Easynews credentials required"
+msgstr "请先填写 Easynews 账号凭据"
+
+msgctxt "#90426"
+msgid "No Corrupt or Missing Databases"
+msgstr "数据库状态正常，无损坏或缺失"
+
+msgctxt "#90427"
+msgid "Otaku (script.otaku.mappings) not found"
+msgstr "未找到 Otaku 映射组件 (script.otaku.mappings)"
+
+msgctxt "#90428"
+msgid "Database read error. File may be corrupted."
+msgstr "读取数据库出错，文件可能已损坏。"
+
+msgctxt "#90429"
+msgid "Failed to delete data. Database error."
+msgstr "删除数据失败：数据库错误。"
+
+msgctxt "#90430"
+msgid "Failed to clear cache. Database in use."
+msgstr "清理缓存失败：数据库正在使用中。"
+
+msgctxt "#90431"
+msgid "No items found in this list"
+msgstr "此列表中暂无条目"
+
+msgctxt "#90432"
+msgid "Databases Rebuilt"
+msgstr "数据库已重建"
+
+msgctxt "#90433"
+msgid "[B]Following Databases Rebuilt:[/B][CR][CR]%s"
+msgstr "[B]以下数据库已完成重建：[/B][CR][CR]%s"
+
+msgctxt "#90434"
+msgid "Added to Trakt watchlist"
+msgstr "已加入 Trakt 待看清单"
+
+msgctxt "#90435"
+msgid "Failed to add to Trakt watchlist"
+msgstr "加入 Trakt 待看清单失败"
+
+msgctxt "#90436"
+msgid "Removed from Trakt watchlist"
+msgstr "已从 Trakt 待看清单移除"
+
+msgctxt "#90437"
+msgid "Failed to remove from Trakt watchlist"
+msgstr "从 Trakt 待看清单移除失败"
+
+msgctxt "#90438"
+msgid "Failed to mark as watched on Trakt"
+msgstr "在 Trakt 标记已看失败"
+
+msgctxt "#90439"
+msgid "Marked as unwatched on Trakt"
+msgstr "已在 Trakt 标记为未看"
+
+msgctxt "#90440"
+msgid "Failed to mark as unwatched on Trakt"
+msgstr "在 Trakt 标记未看失败"
+
+msgctxt "#90441"
+msgid "Added to Trakt collection"
+msgstr "已加入 Trakt 收藏集"
+
+msgctxt "#90442"
+msgid "Removed from Trakt collection"
+msgstr "已从 Trakt 收藏集移除"
+
+msgctxt "#90443"
+msgid "Failed to add to Trakt collection"
+msgstr "加入 Trakt 收藏集失败"
+
+msgctxt "#90444"
+msgid "Failed to remove from Trakt collection"
+msgstr "从 Trakt 收藏集移除失败"
+
+msgctxt "#90445"
+msgid "Added to Trakt favorites"
+msgstr "已加入 Trakt 喜爱作品"
+
+msgctxt "#90446"
+msgid "Removed from Trakt favorites"
+msgstr "已从 Trakt 喜爱作品移除"
+
+msgctxt "#90447"
+msgid "Failed to add to Trakt favorites"
+msgstr "加入 Trakt 喜爱作品失败"
+
+msgctxt "#90448"
+msgid "Failed to remove from Trakt favorites"
+msgstr "从 Trakt 喜爱作品移除失败"
+
+msgctxt "#90449"
+msgid "Created Trakt list"
+msgstr "已创建 Trakt 片单"
+
+msgctxt "#90450"
+msgid "Failed to create Trakt list"
+msgstr "创建 Trakt 片单失败"
+
+msgctxt "#90451"
+msgid "Deleted Trakt list"
+msgstr "已删除 Trakt 片单"
+
+msgctxt "#90452"
+msgid "Failed to delete Trakt list"
+msgstr "删除 Trakt 片单失败"
+
+msgctxt "#90453"
+msgid "Liked Trakt list"
+msgstr "已点赞 Trakt 片单"
+
+msgctxt "#90454"
+msgid "Failed to like Trakt list"
+msgstr "点赞 Trakt 片单失败"
+
+msgctxt "#90455"
+msgid "Unliked Trakt list"
+msgstr "已取消点赞 Trakt 片单"
+
+msgctxt "#90456"
+msgid "Failed to unlike Trakt list"
+msgstr "取消点赞 Trakt 片单失败"
+
+msgctxt "#90457"
+msgid "Added to Trakt list"
+msgstr "已添加到 Trakt 片单"
+
+msgctxt "#90458"
+msgid "OpenSubtitles Stremio: No results found."
+msgstr "OpenSubtitles Stremio：未找到匹配字幕。"
+
+msgctxt "#90459"
+msgid "Failed to add to Trakt list"
+msgstr "添加到 Trakt 片单失败"
+
+msgctxt "#90460"
+msgid "Subtitle Manager: No subtitles available for this video."
+msgstr "字幕管理：当前视频暂无可用字幕。"
+
+msgctxt "#90461"
+msgid "No Trakt lists found"
+msgstr "未找到 Trakt 片单"
+
+msgctxt "#90462"
+msgid "Item not found in Trakt collection"
+msgstr "Trakt 收藏集中未找到此条目"
+
+msgctxt "#90463"
+msgid "Trakt could not match this item for collection"
+msgstr "Trakt 无法匹配此作品到收藏集"
+
+msgctxt "#90464"
+msgid "No Trakt collection changes were applied"
+msgstr "未对 Trakt 收藏集产生变更"
+
+msgctxt "#90465"
+msgid "Could not build Trakt collection payload for show"
+msgstr "无法生成该剧集的 Trakt 收藏数据"
+
+msgctxt "#90466"
+msgid "Delete this Trakt list?"
+msgstr "确定删除此 Trakt 片单吗？"
+
+msgctxt "#90468"
+msgid "Search menu"
+msgstr "搜索菜单"
+
+msgctxt "#90469"
+msgid "Continue watching menu"
+msgstr "继续观看菜单"
+
+msgctxt "#90470"
+msgid "TV Shows Items"
+msgstr "剧集栏目"
+
+msgctxt "#90471"
+msgid "Movies Items"
+msgstr "电影栏目"
+
+msgctxt "#90472"
+msgid "Anime menu"
+msgstr "动漫菜单"
+
+msgctxt "#90473"
+msgid "TV Menu"
+msgstr "直播菜单"
+
+msgctxt "#90474"
+msgid "Library menu"
+msgstr "片库菜单"
+
+msgctxt "#90475"
+msgid "Torrents Management"
+msgstr "种子管理"
+
+msgctxt "#90476"
+msgid "Telegram menu"
+msgstr "Telegram 菜单"
+
+msgctxt "#90477"
+msgid "Cloud Storage"
+msgstr "云端存储"
+
+msgctxt "#90478"
+msgid "Downloads Management"
+msgstr "下载管理"
+
+msgctxt "#90479"
+msgid "Settings Management"
+msgstr "设置管理"
+
+msgctxt "#90480"
+msgid "History Menu"
+msgstr "历史记录菜单"
+
+msgctxt "#90481"
+msgid "Files History"
+msgstr "文件播放历史"
+
+msgctxt "#90482"
+msgid "Titles History"
+msgstr "作品观看历史"
+
+msgctxt "#90483"
+msgid "Titles Calendar"
+msgstr "播出日历"
+
+msgctxt "#90484"
+msgid "My Shows"
+msgstr "我的剧集"
+
+msgctxt "#90485"
+msgid "My Movies"
+msgstr "我的电影"
+
+msgctxt "#90486"
+msgid "Upcoming Episodes"
+msgstr "即将播出剧集"
+
+msgctxt "#90487"
+msgid "Discovery List"
+msgstr "发现列表"
+
+msgctxt "#90488"
+msgid "Library List"
+msgstr "片库列表"
+
+msgctxt "#90489"
+msgid "Trakt Recommendations"
+msgstr "Trakt 个性推荐"
+
+msgctxt "#90490"
+msgid "Trending Lists"
+msgstr "趋势片单"
+
+msgctxt "#90491"
+msgid "Popular Lists"
+msgstr "热门片单"
+
+msgctxt "#90492"
+msgid "Search Lists"
+msgstr "搜索片单"
+
+msgctxt "#90493"
+msgid "Recent Activity"
+msgstr "最近动态"
+
+msgctxt "#90494"
+msgid "Downloads List"
+msgstr "下载列表"
+
+msgctxt "#90495"
+msgid "Download New"
+msgstr "新建下载"
+
+msgctxt "#90496"
+msgid "Cartoons Popular"
+msgstr "热门卡通"
+
+msgctxt "#90497"
+msgid "Animation Popular"
+msgstr "热门动画"
+
+msgctxt "#90500"
+msgid "Translating subtitle..."
+msgstr "正在翻译字幕…"
+
+msgctxt "#90501"
+msgid "Translation done."
+msgstr "字幕翻译完成。"
+
+msgctxt "#90502"
+msgid "Searching subtitles..."
+msgstr "正在搜索字幕…"
+
+msgctxt "#90503"
+msgid "No subtitles found"
+msgstr "未找到字幕"
+
+msgctxt "#90504"
+msgid "Failed to authenticate with DeepL. Please check your API key."
+msgstr "DeepL 验证失败，请检查你的 API 密钥。"
+
+msgctxt "#90505"
+msgid "DeepL API key is missing or invalid."
+msgstr "DeepL API 密钥缺失或无效。"
+
+msgctxt "#90510"
+msgid "No meta available"
+msgstr "暂无作品资料"
+
+msgctxt "#90511"
+msgid "No content available for"
+msgstr "暂无可用内容："
+
+msgctxt "#90512"
+msgid "Season"
+msgstr "季"
+
+msgctxt "#90513"
+msgid "No episodes available"
+msgstr "暂无可用分集"
+
+msgctxt "#90514"
+msgid "No videos available"
+msgstr "暂无可用视频"
+
+msgctxt "#90515"
+msgid "Next Page"
+msgstr "下一页"
+
+msgctxt "#90516"
+msgid "No metas available"
+msgstr "暂无目录条目"
+
+msgctxt "#90517"
+msgid "No seasons available"
+msgstr "暂无分季信息"
+
+msgctxt "#90518"
+msgid "Invalid query"
+msgstr "查询条件无效"
+
+msgctxt "#90519"
+msgid "No lists found"
+msgstr "未找到片单"
+
+msgctxt "#90520"
+msgid "No user lists found"
+msgstr "未找到个人片单"
+
+msgctxt "#90521"
+msgid "No top lists found"
+msgstr "未找到精选榜单"
+
+msgctxt "#90522"
+msgid "Custom Addon"
+msgstr "自定义插件源"
+
+msgctxt "#90523"
+msgid "Enter the custom Stremio addon URL"
+msgstr "输入自定义 Stremio 插件源 URL"
+
+msgctxt "#90524"
+msgid "No URL provided."
+msgstr "未填写 URL。"
+
+msgctxt "#90525"
+msgid "Failed to fetch manifest: %s"
+msgstr "获取 Manifest 失败：%s"
+
+msgctxt "#90526"
+msgid "Manifest missing 'id' or 'name'."
+msgstr "Manifest 缺少 'id' 或 'name' 字段。"
+
+msgctxt "#90527"
+msgid "Custom Stremio addon added successfully!"
+msgstr "已成功添加自定义 Stremio 插件源！"
+
+msgctxt "#90528"
+msgid "Addon does not provide 'stream' or 'catalog' resources."
+msgstr "该插件未提供 'stream' 或 'catalog' 资源。"
+
+msgctxt "#90529"
+msgid "This addon is already added to your list."
+msgstr "此插件源已在你的列表中。"
+
+msgctxt "#90530"
+msgid "Failed to add custom addon: %s"
+msgstr "添加自定义插件源失败：%s"
+
+msgctxt "#90531"
+msgid "Remove Addon"
+msgstr "移除插件源"
+
+msgctxt "#90532"
+msgid "No custom Stremio addons to remove."
+msgstr "当前没有可移除的自定义 Stremio 插件源。"
+
+msgctxt "#90533"
+msgid "Remove Stremio Addons"
+msgstr "移除 Stremio 插件源"
+
+msgctxt "#90534"
+msgid "Selected addon(s) removed."
+msgstr "已移除所选插件源。"
+
+msgctxt "#90836"
+msgid "Configure Stremio Addon"
+msgstr "配置 Stremio 插件源"
+
+msgctxt "#90837"
+msgid "This addon does not expose a standard configuration URL."
+msgstr "该插件未提供标准网页配置入口。"
+
+msgctxt "#90838"
+msgid "Unable to import the configured manifest. Check the HTTPS manifest URL and try again."
+msgstr "无法导入配置后的 Manifest，请检查 HTTPS 地址后重试。"
+
+msgctxt "#90839"
+msgid "Unable to save the configured addon."
+msgstr "无法保存配置后的插件源。"
+
+msgctxt "#90840"
+msgid "Unable to open the external configurator."
+msgstr "无法打开外部配置页面。"
+
+msgctxt "#90841"
+msgid "Open the official addon configurator, then import its configured manifest URL as a custom addon."
+msgstr "打开插件官方配置页并将配置完成的 Manifest 地址导入为自定义插件源。"
+
+msgctxt "#90535"
+msgid "Untitled List"
+msgstr "未命名片单"
+
+msgctxt "#90536"
+msgid "Removed from Trakt list"
+msgstr "已从 Trakt 片单移除"
+
+msgctxt "#90537"
+msgid "Failed to remove from Trakt list"
+msgstr "从 Trakt 片单移除失败"
+
+msgctxt "#90538"
+msgid "Resume from %.1f%%"
+msgstr "从 %.1f%% 处继续播放"
+
+msgctxt "#90539"
+msgid "Start from Beginning"
+msgstr "从头开始播放"
+
+msgctxt "#90540"
+msgid "Authorize Debrid Services"
+msgstr "授权解限服务"
+
+msgctxt "#90541"
+msgid "Navigate to: [B]%s[/B]"
+msgstr "请访问：[B]%s[/B]"
+
+msgctxt "#90542"
+msgid "Enter the following code: [COLOR orangered][B]%s[/B][/COLOR]"
+msgstr "输入以下验证码：[COLOR orangered][B]%s[/B][/COLOR]"
+
+msgctxt "#90543"
+msgid "Premiumize Auth"
+msgstr "Premiumize 授权"
+
+msgctxt "#90544"
+msgid "Success"
+msgstr "操作成功"
+
+msgctxt "#90545"
+msgid "Authentication completed."
+msgstr "登录授权已完成。"
+
+msgctxt "#90546"
+msgid "Error:"
+msgstr "错误："
+
+msgctxt "#90547"
+msgid "Error: %s"
+msgstr "错误：%s"
+
+msgctxt "#90548"
+msgid "Auth Error"
+msgstr "授权错误"
+
+msgctxt "#90549"
+msgid "Torbox authentication successful."
+msgstr "TorBox 授权成功。"
+
+msgctxt "#90554"
+msgid "Please wait..."
+msgstr "请稍候…"
+
+msgctxt "#90555"
+msgid "Go to:\n[COLOR cyan]%s[/COLOR]\nEnter code: [COLOR seagreen][B]%s[/B][/COLOR]"
+msgstr "请打开：\n[COLOR cyan]%s[/COLOR]\n输入验证码：[COLOR seagreen][B]%s[/B][/COLOR]"
+
+msgctxt "#90556"
+msgid "Go to:\n[COLOR cyan]%s[/COLOR]\n\nEnter code: [COLOR seagreen][B]%s[/B][/COLOR]"
+msgstr "请打开：\n[COLOR cyan]%s[/COLOR]\n\n输入验证码：[COLOR seagreen][B]%s[/B][/COLOR]"
+
+msgctxt "#90557"
+msgid "Pastebin Link:\n[COLOR cyan]%s[/COLOR]"
+msgstr "日志分享链接：\n[COLOR cyan]%s[/COLOR]"
+
+msgctxt "#90670"
+msgid "Local URL:\n[COLOR cyan]%s[/COLOR]"
+msgstr "局域网地址：\n[COLOR cyan]%s[/COLOR]"
+
+msgctxt "#90558"
+msgid "QR Code Authentication"
+msgstr "扫码登录授权"
+
+msgctxt "#90559"
+msgid "Kodi 20 or above required. Please update Kodi to use this addon."
+msgstr "需要 Kodi 20 或更高版本，请先升级 Kodi。"
+
+msgctxt "#90560"
+msgid "Failed to start web server. Port may be in use."
+msgstr "无法启动本机网页服务，端口可能已被占用。"
+
+msgctxt "#90561"
+msgid "Authentification Removed."
+msgstr "已移除登录授权。"
+
+msgctxt "#90562"
+msgid "WebDAV Error"
+msgstr "WebDAV 错误"
+
+msgctxt "#90563"
+msgid "Trakt Authorization"
+msgstr "Trakt 登录授权"
+
+msgctxt "#90564"
+msgid "Do you want to continue transfer in background?"
+msgstr "是否在后台继续完成云端传输？"
+
+msgctxt "#90565"
+msgid "Cloud Transfer"
+msgstr "云端传输"
+
+msgctxt "#90566"
+msgid "Kodi Logs"
+msgstr "Kodi 运行日志"
+
+msgctxt "#90567"
+msgid "Show Logs"
+msgstr "查看日志内容"
+
+msgctxt "#90568"
+msgid "Export to paste.kodi.tv"
+msgstr "导出到 paste.kodi.tv"
+
+msgctxt "#90569"
+msgid "Kodi Logs Exported"
+msgstr "已导出 Kodi 日志"
+
+msgctxt "#90570"
+msgid "Providers Selection Dialog"
+msgstr "片源站点选择"
+
+msgctxt "#90571"
+msgid "Your current Providers are: \n%s\n\nDo you want to change?"
+msgstr "当前已选站点：\n%s\n\n是否修改？"
+
+msgctxt "#90572"
+msgid "Select Providers"
+msgstr "选择站点"
+
+msgctxt "#90573"
+msgid "Selection Dialog"
+msgstr "选择列表"
+
+msgctxt "#90574"
+msgid "Successfully selected: %s"
+msgstr "已选择：%s"
+
+msgctxt "#90575"
+msgid "Selection"
+msgstr "当前选择"
+
+msgctxt "#90576"
+msgid "No providers selected"
+msgstr "未选择任何站点"
+
+msgctxt "#90577"
+msgid "Changelog"
+msgstr "版本更新说明"
+
+msgctxt "#90578"
+msgid "[B]Unable to check for updates[/B]"
+msgstr "[B]暂时无法检查更新[/B]"
+
+msgctxt "#90579"
+msgid "[B]No update available[/B]"
+msgstr "[B]当前已是最新版本[/B]"
+
+msgctxt "#90580"
+msgid "Installed: [B]%s[/B][CR]Online: [B]%s[/B][CR][CR]"
+msgstr "当前版本：[B]%s[/B][CR]在线版本：[B]%s[/B][CR][CR]"
+
+msgctxt "#90581"
+msgid "[B]Update available. Do you want to update?[/B]"
+msgstr "[B]发现新版本，是否现在更新？[/B]"
+
+msgctxt "#90582"
+msgid "[B]Update Available (v%s).[/B] [I]Check settings to update.[/I]"
+msgstr "[B]发现新版本 (v%s)。[/B] [I]可前往设置检查更新。[/I]"
+
+msgctxt "#90583"
+msgid "Error fetching versions: %s"
+msgstr "读取版本列表失败：%s"
+
+msgctxt "#90584"
+msgid "No older/different versions found."
+msgstr "未找到其他可用历史版本。"
+
+msgctxt "#90585"
+msgid "Select Version to Downgrade"
+msgstr "选择要回退的版本"
+
+msgctxt "#90586"
+msgid "Are you sure you want to downgrade/reinstall to version [B]%s[/B]?"
+msgstr "确定要回退或重新安装版本 [B]%s[/B] 吗？"
+
+msgctxt "#90587"
+msgid "[B]Downloading update...[/B]"
+msgstr "[B]正在下载更新包…[/B]"
+
+msgctxt "#90588"
+msgid "Error: Unable to download update."
+msgstr "错误：无法下载更新包。"
+
+msgctxt "#90589"
+msgid "Error saving update file: %s"
+msgstr "保存更新文件失败：%s"
+
+msgctxt "#90590"
+msgid "Error extracting update. Please install manually."
+msgstr "解压更新失败，请使用手动安装恢复。"
+
+msgctxt "#90591"
+msgid "Do you want to view the changelog for the new version?"
+msgstr "是否查看新版本的更新说明？"
+
+msgctxt "#90592"
+msgid "New Release v%s - Changelog"
+msgstr "新版本 v%s · 更新说明"
+
+msgctxt "#90593"
+msgid "[B]Update complete.[/B]"
+msgstr "[B]更新已完成。[/B]"
+
+msgctxt "#90594"
+msgid "Real Debrid Auth"
+msgstr "Real-Debrid 授权"
+
+msgctxt "#90595"
+msgid "Torbox Auth"
+msgstr "TorBox 授权"
+
+msgctxt "#90596"
+msgid "Debrider Auth"
+msgstr "Debrider 授权"
+
+msgctxt "#90597"
+msgid "Download Error"
+msgstr "下载错误"
+
+msgctxt "#90598"
+msgid "Failed to download text: %s"
+msgstr "下载文本失败：%s"
+
+msgctxt "#90599"
+msgid "General Error"
+msgstr "操作提示"
+
+msgctxt "#90600"
+msgid "Could not display text file."
+msgstr "无法显示文本文件。"
+
+msgctxt "#90601"
+msgid "Failed to export logs."
+msgstr "导出日志失败。"
+
+msgctxt "#90602"
+msgid "Error reading log: %s"
+msgstr "读取日志出错：%s"
+
+msgctxt "#90603"
+msgid "Kodi log file not found."
+msgstr "未找到 Kodi 日志文件。"
+
+msgctxt "#90604"
+msgid "%s Auth"
+msgstr "%s 授权"
+
+msgctxt "#90605"
+msgid "Ok"
+msgstr "确定"
+
+msgctxt "#90606"
+msgid "No"
+msgstr "取消"
+
+msgctxt "#90607"
+msgid "Pinging addons for availability..."
+msgstr "正在检测插件源可用性…"
+
+msgctxt "#90608"
+msgid "Pinging addons... %d/%d"
+msgstr "正在检测插件源… %d/%d"
+
+msgctxt "#90609"
+msgid "Ping Results"
+msgstr "连通性检测结果"
+
+msgctxt "#90610"
+msgid "Reachable: %d\nUnreachable: %d"
+msgstr "可连接：%d\n不可达：%d"
+
+msgctxt "#90611"
+msgid "Select Category to Filter"
+msgstr "选择要检测的插件用途"
+
+msgctxt "#90612"
+msgid "Stremio Add-ons Import"
+msgstr "导入 Stremio 账号插件源"
+
+msgctxt "#90613"
+msgid "To import your add-ons, please log in with your Stremio email and password."
+msgstr "请输入你的 Stremio 邮箱与密码以同步账号下的插件源。"
+
+msgctxt "#90614"
+msgid "Enter your Email"
+msgstr "输入你的邮箱"
+
+msgctxt "#90615"
+msgid "Enter your Password"
+msgstr "输入你的密码"
+
+msgctxt "#90616"
+msgid "Login Failed"
+msgstr "登录失败"
+
+msgctxt "#90617"
+msgid "Failed to login: %s"
+msgstr "登录未成功：%s"
+
+msgctxt "#90618"
+msgid "Add-ons Import Failed"
+msgstr "插件源同步失败"
+
+msgctxt "#90619"
+msgid "Please try again later and report the issue if the problem persists. For more details, check the log file."
+msgstr "请稍后重试；若持续失败可查看运行日志排查。"
+
+msgctxt "#90620"
+msgid "Addons Imported"
+msgstr "插件源已同步"
+
+msgctxt "#90621"
+msgid "Successfully imported addons from your account."
+msgstr "已从你的账号成功导入插件源。"
+
+msgctxt "#90622"
+msgid "Update Stremio Addons"
+msgstr "同步 Stremio 插件源"
+
+msgctxt "#90623"
+msgid "Do you want to update the Addons from your account?"
+msgstr "是否从你的账号重新同步插件源？"
+
+msgctxt "#90624"
+msgid "Log Out from Stremio"
+msgstr "退出 Stremio 账号"
+
+msgctxt "#90625"
+msgid "Are you sure you want to log out? You can continue using Stremio without logging in, but your settings will be reset to the default configuration."
+msgstr "确定要退出登录吗？退出后仍可使用自定义 Stremio 插件源，账号导入项将恢复默认。"
+
+msgctxt "#90626"
+msgid "Log Out"
+msgstr "退出登录"
+
+msgctxt "#90627"
+msgid "Use Existing"
+msgstr "使用现有字幕"
+
+msgctxt "#90628"
+msgid "Download New"
+msgstr "重新下载"
+
+msgctxt "#90629"
+msgid "Playback Failed"
+msgstr "播放未成功"
+
+msgctxt "#90630"
+msgid "The video could not be played.\nDo you want to retry?"
+msgstr "无法播放所选视频。\n是否重试？"
+
+msgctxt "#90631"
+msgid "Retry"
+msgstr "重试"
+
+msgctxt "#90632"
+msgid "Information"
+msgstr "作品信息"
+
+msgctxt "#90633"
+msgid "Review"
+msgstr "影评"
+
+msgctxt "#90634"
+msgid "Comment"
+msgstr "短评"
+
+msgctxt "#90635"
+msgid "Trivia"
+msgstr "幕后花絮"
+
+msgctxt "#90636"
+msgid "Goof"
+msgstr "穿帮镜头"
+
+msgctxt "#90637"
+msgid "Parental Guide"
+msgstr "家长指南"
+
+msgctxt "#90638"
+msgid "Converting Magnet...\n\n%s"
+msgstr "正在解析磁力链接…\n\n%s"
+
+msgctxt "#90639"
+msgid "Real Debrid Error."
+msgstr "Real-Debrid 服务返回错误。"
+
+msgctxt "#90640"
+msgid "File already cached"
+msgstr "文件已在云端缓存"
+
+msgctxt "#90641"
+msgid "Saving file to the Real Debrid Cloud"
+msgstr "正在存入 Real-Debrid 云端"
+
+msgctxt "#90642"
+msgid "File cached"
+msgstr "云端缓存就绪"
+
+msgctxt "#90643"
+msgid "Saving File to the Real Debrid Cloud...\n%s\n\n"
+msgstr "正在存入 Real-Debrid 云端…\n%s\n\n"
+
+msgctxt "#90644"
+msgid "Downloading %s GB @ %s mbps from %s peers, %s %% completed"
+msgstr "已下载 %s GB @ %s mbps（连接 %s 个节点，已完成 %s %%）"
+
+msgctxt "#90645"
+msgid "Trakt"
+msgstr "Trakt"
+
+msgctxt "#90651"
+msgid "Easynews Account Info"
+msgstr "Easynews 账户信息"
+
+msgctxt "#90652"
+msgid "DeepL API Error"
+msgstr "DeepL 接口错误"
+
+msgctxt "#90653"
+msgid "Download"
+msgstr "下载"
+
+msgctxt "#90654"
+msgid "Failed to start download: %s"
+msgstr "无法启动下载：%s"
+
+msgctxt "#90655"
+msgid "Modify Search"
+msgstr "调整搜索词"
+
+msgctxt "#90656"
+msgid "Torbox"
+msgstr "TorBox"
+
+msgctxt "#90657"
+msgid "Easy-Debrid"
+msgstr "Easy-Debrid"
+
+msgctxt "#90658"
+msgid "All-Debrid"
+msgstr "AllDebrid"
+
+msgctxt "#90659"
+msgid "Real-Debrid"
+msgstr "Real-Debrid"
+
+msgctxt "#90660"
+msgid "Getting results from providers..."
+msgstr "正在从各来源查找片源…"
+
+msgctxt "#90661"
+msgid "bobbi TV [COLOR FFFF6B00]%s[/COLOR]"
+msgstr "bobbi TV [COLOR FFFF6B00]%s[/COLOR]"
+
+msgctxt "#90662"
+msgid "Downloads Viewer"
+msgstr "下载查看器"
+
+msgctxt "#90663"
+msgid "WebDAV Text Viewer"
+msgstr "WebDAV 文本查看器"
+
+msgctxt "#90664"
+msgid "Selected Item"
+msgstr "已选条目"
+
+msgctxt "#90665"
+msgid "Subtitle No. %d"
+msgstr "字幕 #%d"
+
+msgctxt "#90666"
+msgid "Free DeepL usage available!\nCharacters left in free quota: %s\nCharacters to translate: %s\n\nDo you want to proceed with the translation?"
+msgstr "检测到可用 DeepL 免费额度！\n剩余免费字符数：%s\n本次待翻译字符数：%s\n\n是否继续翻译？"
+
+msgctxt "#90667"
+msgid "Free DeepL Usage"
+msgstr "DeepL 免费额度确认"
+
+msgctxt "#90668"
+msgid "Total characters to translate: %s\nEstimated cost: $%.2f USD\n\nDo you want to proceed with the translation?"
+msgstr "待翻译总字符数：%s\n预估费用：$%.2f USD\n\n是否继续翻译？"
+
+msgctxt "#90669"
+msgid "Translation Cost"
+msgstr "字幕翻译费用确认"
+
+msgctxt "#90672"
+msgid "Play Trailer"
+msgstr "播放预告片"
+
+msgctxt "#90673"
+msgid "Trailer unavailable"
+msgstr "暂无可用预告片"
+
+msgctxt "#90690"
+msgid "Clear All Items"
+msgstr "清空全部条目"
+
+msgctxt "#90691"
+msgid "Remove all items from this library?"
+msgstr "确定清空此列表中的全部条目吗？"
+
+msgctxt "#90692"
+msgid "Library cleared"
+msgstr "已清空列表"
+
+msgctxt "#90693"
+msgid "No items to remove"
+msgstr "当前没有可移除的条目"
+
+msgctxt "#90694"
+msgid "Added to %s cloud but still downloading. Please wait before playing."
+msgstr "已加入 %s 云端，正在离线下载中，请稍候再试。"
+
+msgctxt "#90695"
+msgid "Torrent Not Ready"
+msgstr "云端离线尚未就绪"
+
+msgctxt "#90696"
+msgid "This torrent is still downloading in %s and is not ready yet."
+msgstr "该种子仍在 %s 云端下载中，暂未完成。"
+
+msgctxt "#90697"
+msgid "Would you like to play using torrent client (may be slower) or cancel and wait for debrid to finish?"
+msgstr "是否改用本机 BT 客户端直接播放（速度视做种而定），或取消并等待云端完成？"
+
+msgctxt "#90698"
+msgid "Play with Torrent"
+msgstr "改用 BT 播放"
+
+msgctxt "#90699"
+msgid "Cancel & Wait"
+msgstr "取消并等待"
+
+msgctxt "#90712"
+msgid "Views"
+msgstr "视图模式"
+
+msgctxt "#90713"
+msgid "Set Main View"
+msgstr "设置主菜单视图"
+
+msgctxt "#90714"
+msgid "Set Movies View"
+msgstr "设置电影视图"
+
+msgctxt "#90715"
+msgid "Set TV Shows View"
+msgstr "设置剧集视图"
+
+msgctxt "#90716"
+msgid "Set Seasons View"
+msgstr "设置分季视图"
+
+msgctxt "#90717"
+msgid "Set Episodes View"
+msgstr "设置分集视图"
+
+msgctxt "#90718"
+msgid "Set Library View"
+msgstr "设置片库视图"
+
+msgctxt "#90719"
+msgid "Set History View"
+msgstr "设置历史记录视图"
+
+msgctxt "#90720"
+msgid "Set Downloads View"
+msgstr "设置下载列表视图"
+
+msgctxt "#90721"
+msgid "Save Current View"
+msgstr "保存当前视图"
+
+msgctxt "#90722"
+msgid "View saved"
+msgstr "已保存当前视图"
+
+msgctxt "#90723"
+msgid "Could not detect the current view"
+msgstr "未能识别当前视图模式"
+
+msgctxt "#90724"
+msgid "Saved views reset"
+msgstr "已重置保存的视图"
+
+msgctxt "#90725"
+msgid "Reset Saved Views"
+msgstr "重置已保存视图"
+
+msgctxt "#90726"
+msgid "Open this screen, change the Kodi view manually, then select Save Current View."
+msgstr "进入对应页面切换 Kodi 视图样式后，点击“保存当前视图”。"
+
+msgctxt "#90742"
+msgid "Addon Settings"
+msgstr "插件设置"
+
+msgctxt "#90743"
+msgid "Set Views"
+msgstr "保存视图样式"
+
+msgctxt "#90730"
+msgid "Search with title + year"
+msgstr "按当前片名 + 年份搜索"
+
+msgctxt "#90731"
+msgid "Search with original title"
+msgstr "按原版片名搜索"
+
+msgctxt "#90732"
+msgid "Search with original title + year"
+msgstr "按原版片名 + 年份搜索"
+
+msgctxt "#90733"
+msgid "Search modes"
+msgstr "选择搜索方式"
+
+msgctxt "#90734"
+msgid "Enter year"
+msgstr "输入年份"
+
+msgctxt "#90735"
+msgid "Invalid year"
+msgstr "年份无效"
+
+msgctxt "#90736"
+msgid "Edit title"
+msgstr "编辑搜索片名"
+
+msgctxt "#90737"
+msgid "Invalid season"
+msgstr "季号无效"
+
+msgctxt "#90738"
+msgid "Episode"
+msgstr "分集"
+
+msgctxt "#90739"
+msgid "Invalid episode"
+msgstr "集号无效"
+
+msgctxt "#90740"
+msgid "Search with current title"
+msgstr "按当前片名搜索"
+
+msgctxt "#90741"
+msgid "Search with original title"
+msgstr "按原版片名搜索"
+
+msgctxt "#90773"
+msgid "Search full show with title + year"
+msgstr "按片名 + 年份搜索全剧合集"
+
+msgctxt "#90744"
+msgid "Upload Subtitle"
+msgstr "上传外挂字幕"
+
+msgctxt "#90745"
+msgid "Select Subtitle File"
+msgstr "选择字幕文件"
+
+msgctxt "#90746"
+msgid "Local File"
+msgstr "从本机存储选择"
+
+msgctxt "#90747"
+msgid "Upload from Browser"
+msgstr "手机浏览器扫码上传"
+
+msgctxt "#90748"
+msgid "Upload subtitle from your browser"
+msgstr "从手机浏览器上传字幕"
+
+msgctxt "#90749"
+msgid "Scan the QR code or open the URL (%s) in your browser to upload a subtitle file"
+msgstr "用手机扫描二维码或在浏览器打开 (%s) 上传当前片源字幕"
+
+msgctxt "#90750"
+msgid "Search Title Language"
+msgstr "片源搜索片名语言策略"
+
+msgctxt "#90751"
+msgid "Controls how Easynews/Jackett/Prowlarr title queries are prioritized for context searches."
+msgstr "控制向 Easynews/Jackett/Prowlarr 发起搜索时使用的片名语种优先级。"
+
+msgctxt "#90752"
+msgid "English first"
+msgstr "英文片名优先"
+
+msgctxt "#90753"
+msgid "English only"
+msgstr "仅用英文片名"
+
+msgctxt "#90754"
+msgid "Localized first"
+msgstr "本地化片名优先"
+
+msgctxt "#90755"
+msgid "Manage Sources"
+msgstr "管理片源来源"
+
+msgctxt "#90756"
+msgid "No sources available"
+msgstr "暂无可用片源来源"
+
+msgctxt "#90179"
+msgid "Stinger Notifications"
+msgstr "片尾彩蛋提醒"
+
+msgctxt "#90180"
+msgid "Show a notification when a movie has post-credit scenes."
+msgstr "影片包含片尾彩蛋时显示提醒。"
+
+msgctxt "#90181"
+msgid "Stinger Notification Time"
+msgstr "彩蛋提醒提前秒数"
+
+msgctxt "#90182"
+msgid "Seconds before the end to show the stinger notification."
+msgstr "距离影片结束多少秒时显示彩蛋提醒。"
+
+msgctxt "#90183"
+msgid "Stay tuned after the credits!"
+msgstr "片尾有彩蛋，请稍候观看！"
+
+msgctxt "#90757"
+msgid "Image Resolution"
+msgstr "海报图片清晰度"
+
+msgctxt "#90758"
+msgid "Low"
+msgstr "低"
+
+msgctxt "#90759"
+msgid "Medium"
+msgstr "中"
+
+msgctxt "#90760"
+msgid "High"
+msgstr "高"
+
+msgctxt "#90761"
+msgid "Original"
+msgstr "原图"
+
+msgctxt "#90762"
+msgid "Enable RPDB Posters"
+msgstr "启用 RPDB 评分海报"
+
+msgctxt "#90763"
+msgid "RPDB API Key"
+msgstr "RPDB API 密钥"
+
+msgctxt "#90764"
+msgid "Get your API key at ratingposterdb.com"
+msgstr "可在 ratingposterdb.com 获取你的 API 密钥"
+
+msgctxt "#90765"
+msgid "Filter by Codecs"
+msgstr "视频编码筛选"
+
+msgctxt "#90766"
+msgid "Filter by HDR"
+msgstr "HDR 动态范围筛选"
+
+msgctxt "#90767"
+msgid "Include HEVC / H.265"
+msgstr "包含 HEVC / H.265"
+
+msgctxt "#90768"
+msgid "Include AV1"
+msgstr "包含 AV1"
+
+msgctxt "#90769"
+msgid "Include H.264"
+msgstr "包含 H.264"
+
+msgctxt "#90770"
+msgid "Include Dolby Vision"
+msgstr "包含杜比视界 (Dolby Vision)"
+
+msgctxt "#90771"
+msgid "Include HDR10 / HDR10+"
+msgstr "包含 HDR10 / HDR10+"
+
+msgctxt "#90772"
+msgid "Include HDR (generic)"
+msgstr "包含通用 HDR"
+
+msgctxt "#90774"
+msgid "Organize downloads by type"
+msgstr "按影视类型分目录保存下载"
+
+msgctxt "#90775"
+msgid "Movies folder name"
+msgstr "电影子目录名称"
+
+msgctxt "#90776"
+msgid "TV Shows folder name"
+msgstr "剧集子目录名称"
+
+msgctxt "#90777"
+msgid "Pause"
+msgstr "暂停"
+
+msgctxt "#90778"
+msgid "Resume"
+msgstr "继续"
+
+msgctxt "#90779"
+msgid "Downloading"
+msgstr "下载中"
+
+msgctxt "#90780"
+msgid "Paused"
+msgstr "已暂停"
+
+msgctxt "#90781"
+msgid "Completed"
+msgstr "已完成"
+
+msgctxt "#90782"
+msgid "Delete"
+msgstr "删除"
+
+msgctxt "#90783"
+msgid "Startup"
+msgstr "启动行为"
+
+msgctxt "#90784"
+msgid "Auto-start bobbi TV on Kodi boot"
+msgstr "Kodi 启动时自动打开波比 TV"
+
+msgctxt "#90785"
+msgid "Automatically open bobbi TV when Kodi starts"
+msgstr "启动 Kodi 后自动进入波比 TV 页面"
+
+msgctxt "#90786"
+msgid "Widgets"
+msgstr "首页栏目刷新"
+
+msgctxt "#90787"
+msgid "Widget refresh interval (minutes)"
+msgstr "栏目自动刷新间隔（分钟）"
+
+msgctxt "#90788"
+msgid "Set to 0 to disable automatic widget refresh"
+msgstr "设为 0 表示关闭后台定时刷新"
+
+msgctxt "#90789"
+msgid "Show refresh notification"
+msgstr "刷新时显示提示通知"
+
+msgctxt "#90790"
+msgid "Display a notification when widgets are refreshed"
+msgstr "首页栏目完成刷新时在右上角显示提示"
+
+msgctxt "#90791"
+msgid "Download to Device"
+msgstr "下载到本机存储"
+
+msgctxt "#90792"
+msgid "Download Manager"
+msgstr "下载管理"
+
+msgctxt "#90793"
+msgid "No active downloads"
+msgstr "当前无进行中的下载任务"
+
+msgctxt "#90794"
+msgid "Progress"
+msgstr "进度"
+
+msgctxt "#90795"
+msgid "Speed"
+msgstr "速度"
+
+msgctxt "#90796"
+msgid "ETA"
+msgstr "预计剩余"
+
+msgctxt "#90797"
+msgid "Size"
+msgstr "大小"
+
+msgctxt "#90798"
+msgid "Pause"
+msgstr "暂停"
+
+msgctxt "#90799"
+msgid "Resume"
+msgstr "继续"
+
+msgctxt "#90800"
+msgid "Cancel"
+msgstr "取消"
+
+msgctxt "#90801"
+msgid "Delete"
+msgstr "删除"
+
+msgctxt "#90802"
+msgid "Clear Completed"
+msgstr "清理已完成记录"
+
+msgctxt "#90803"
+msgid "Download not yet completed"
+msgstr "文件尚未下载完成"
+
+msgctxt "#90804"
+msgid "File not found"
+msgstr "未找到本地文件"
+
+msgctxt "#90805"
+msgid "Download Manager"
+msgstr "下载管理"
+
+msgctxt "#90806"
+msgid "My Downloads"
+msgstr "我的下载"
+
+msgctxt "#90807"
+msgid "Connecting..."
+msgstr "正在连接…"
+
+msgctxt "#90808"
+msgid "Close"
+msgstr "关闭"
+
+msgctxt "#90809"
+msgid "Delete download?"
+msgstr "删除已下载文件？"
+
+msgctxt "#90810"
+msgid "This will permanently delete the downloaded file. Are you sure?"
+msgstr "这将永久删除本地已下载的视频文件，是否继续？"
+
+msgctxt "#90811"
+msgid "Completed"
+msgstr "已完成"
+
+msgctxt "#90812"
+msgid "Excluded TMDB Languages"
+msgstr "排除指定语种作品"
+
+msgctxt "#90813"
+msgid "Select languages to exclude"
+msgstr "选择要在发现片单中隐藏的原始语种"
+
+msgctxt "#90814"
+msgid "Choose original languages to hide from TMDB listings"
+msgstr "在 TMDb 发现与浏览列表中隐藏所选原始语言的作品"
+
+msgctxt "#90819"
+msgid "Rename Stremio add-on"
+msgstr "重命名 Stremio 插件显示名"
+
+msgctxt "#90820"
+msgid "Enter add-on alias."
+msgstr "输入插件显示别名。"
+
+msgctxt "#90821"
+msgid "Stremio alias"
+msgstr "Stremio 别名"
+
+msgctxt "#90822"
+msgid "Alias saved."
+msgstr "已保存显示别名。"
+
+msgctxt "#90823"
+msgid "Alias cleared."
+msgstr "已清除显示别名。"
+
+msgctxt "#90824"
+msgid "Rename Stremio catalog"
+msgstr "重命名 Stremio 目录名称"
+
+msgctxt "#90825"
+msgid "Select catalog"
+msgstr "选择目录"
+
+msgctxt "#90826"
+msgid "Enter catalog alias."
+msgstr "输入目录显示别名。"
+
+msgctxt "#90827"
+msgid "Set a Kodi-only display alias for a Stremio add-on."
+msgstr "为 Stremio 插件源设置仅在 Kodi 内显示的自定义名称。"
+
+msgctxt "#90828"
+msgid "Set a Kodi-only display alias for a Stremio catalog."
+msgstr "为 Stremio 目录设置仅在 Kodi 内显示的自定义名称。"
+
+msgctxt "#90829"
+msgid "Edit"
+msgstr "编辑别名"
+
+msgctxt "#90830"
+msgid "Clear"
+msgstr "清除别名"
+
+msgctxt "#90831"
+msgid "This item already has an alias. Do you want to clear it?"
+msgstr "此条目已设置显示别名，是否清除？"
+
+msgctxt "#90832"
+msgid "Stremio: Addons Management"
+msgstr "Stremio：插件源管理"
+
+msgctxt "#90833"
+msgid "Stremio: Catalogs & Visibility"
+msgstr "Stremio：目录与可见性"
+
+msgctxt "#90834"
+msgid "Stremio: Rename & Customization"
+msgstr "Stremio：重命名与个性化"
+
+msgctxt "#90835"
+msgid "Stremio: Search & Behavior"
+msgstr "Stremio：搜索与缓存"
+
+msgctxt "#90300"
+msgid "External Scraper"
+msgstr "外部抓取器"
+
+msgctxt "#90301"
+msgid "Enable external scraper module integration."
+msgstr "启用已安装的外部 Python 抓取模块参与片源搜索。"
+
+msgctxt "#90302"
+msgid "Choose External Scraper Module"
+msgstr "选择外部抓取器模块"
+
+msgctxt "#90303"
+msgid "Select an external scraper addon module to use for torrent search."
+msgstr "选择一个兼容的已启用外部抓取模块用于种子搜索。"
+
+msgctxt "#90304"
+msgid "Choose External Scraper"
+msgstr "选择外部抓取器"
+
+msgctxt "#90305"
+msgid "Selected Module"
+msgstr "当前所选模块"
+
+msgctxt "#90306"
+msgid "Open External Scraper Settings"
+msgstr "打开外部抓取器设置"
+
+msgctxt "#90307"
+msgid "Open the settings for the selected external scraper module."
+msgstr "打开当前所选外部抓取模块自身的设置页面。"
+
+msgctxt "#30953"
+msgid "Select subtitle addons"
+msgstr "选择字幕插件来源"
+
+msgctxt "#30954"
+msgid "Choose which installed Stremio addons to query for subtitles."
+msgstr "选择用于查询外挂字幕的已安装 Stremio 插件。"
+
+msgctxt "#30955"
+msgid "No subtitle-capable addons found."
+msgstr "未找到支持字幕的插件。"
+
+msgctxt "#30956"
+msgid "Use integrated OpenSubtitles"
+msgstr "使用内置 OpenSubtitles 字幕查询"
+
+msgctxt "#30957"
+msgid "Queries the integrated OpenSubtitles service with the current video ID and, when available, filename, size, and video hash. Disable this to prevent those requests."
+msgstr "使用当前视频标识及文件名、大小和哈希向内置 OpenSubtitles 查询字幕；关闭后不再发起该请求。"
+
+msgctxt "#90958"
+msgid "Yamtrack"
+msgstr "Yamtrack"
+
+msgctxt "#90959"
+msgid "Sync completed playback to Yamtrack"
+msgstr "播放完成后同步记录到 Yamtrack"
+
+msgctxt "#90960"
+msgid "Yamtrack base URL"
+msgstr "Yamtrack 服务地址"
+
+msgctxt "#90961"
+msgid "Yamtrack webhook token"
+msgstr "Yamtrack Webhook 令牌"
+
+msgctxt "#90962"
+msgid "MDbList"
+msgstr "MDbList"
+
+msgctxt "#90963"
+msgid "Uncategorized"
+msgstr "未分类"
+
+msgctxt "#90964"
+msgid "The installed version is newer than the version published in the repository."
+msgstr "当前已安装版本高于仓库中已发布的公开版本。"
+
+msgctxt "#90999"
+msgid "Clear Continue Watching"
+msgstr "清空继续观看"
+
+msgctxt "#91001"
+msgid "Continue Watching cleared"
+msgstr "已清空继续观看记录"
+
+msgctxt "#91002"
+msgid "Nuvio: Account"
+msgstr "Nuvio：账号连接"
+
+msgctxt "#91003"
+msgid "Enable"
+msgstr "启用"
+
+msgctxt "#91004"
+msgid "Push your bobbi TV movie and TV episode watch progress to Nuvio when playback stops."
+msgstr "播放停止时将电影与剧集观看进度同步至 Nuvio。"
+
+msgctxt "#91005"
+msgid "Connect Nuvio with QR Code"
+msgstr "扫码连接 Nuvio"
+
+msgctxt "#91006"
+msgid "Scan the QR code with a signed-in Nuvio device, then select the profile that receives watch-progress updates."
+msgstr "使用已登录 Nuvio 的手机扫码，并选择接收观看进度的个人资料。"
+
+msgctxt "#91007"
+msgid "Sign Out of Nuvio"
+msgstr "退出 Nuvio 登录"
+
+msgctxt "#91008"
+msgid "Remove the saved Nuvio session and selected profile from bobbi TV."
+msgstr "从本机移除已保存的 Nuvio 会话与所选个人资料。"
+
+msgctxt "#91009"
+msgid "Nuvio connection cancelled."
+msgstr "已取消 Nuvio 连接。"
+
+msgctxt "#91010"
+msgid "Nuvio authorization expired. Start the QR connection again."
+msgstr "Nuvio 扫码已过期，请重新发起扫码。"
+
+msgctxt "#91011"
+msgid "Nuvio authorization was already used or cancelled. Start the QR connection again."
+msgstr "该 Nuvio 授权码已使用或已取消，请重新扫码。"
+
+msgctxt "#91012"
+msgid "Nuvio could not start QR authorization. Please try again."
+msgstr "无法启动 Nuvio 扫码授权，请稍后重试。"
+
+msgctxt "#91013"
+msgid "Nuvio authorization check failed. Please try again."
+msgstr "检查 Nuvio 授权状态失败，请稍后重试。"
+
+msgctxt "#91014"
+msgid "Nuvio authorization exchange failed. Please try again."
+msgstr "获取 Nuvio 登录凭据失败，请稍后重试。"
+
+msgctxt "#91015"
+msgid "Unable to load Nuvio profiles. Please try again."
+msgstr "无法读取 Nuvio 个人资料列表，请稍后重试。"
+
+msgctxt "#91016"
+msgid "Nuvio watch-progress sync connected."
+msgstr "Nuvio 观看进度同步已连接。"
+
+msgctxt "#91017"
+msgid "Choose Nuvio profile"
+msgstr "选择 Nuvio 个人资料"
+
+msgctxt "#91018"
+msgid "Nuvio: Addons Management"
+msgstr "Nuvio：插件源管理"
+
+msgctxt "#91019"
+msgid "Select Nuvio Addons"
+msgstr "选择 Nuvio 插件源"
+
+msgctxt "#91020"
+msgid "Select the enabled Nuvio addons to use for stream searches."
+msgstr "选择用于片源搜索的已启用 Nuvio 插件源。"
+
+msgctxt "#91021"
+msgid "No usable Nuvio addons are available."
+msgstr "当前没有可用的 Nuvio 插件源。"
+
+msgctxt "#91022"
+msgid "Nuvio addons could not be loaded. Your saved selection was not changed."
+msgstr "无法加载 Nuvio 插件源列表，原有选择保持不变。"
+
+msgctxt "#91023"
+msgid "Nuvio: Watch Progress"
+msgstr "Nuvio：继续观看"
+
+msgctxt "#91024"
+msgid "Nuvio: Watch History"
+msgstr "Nuvio：观看历史"
+
+msgctxt "#91025"
+msgid "No Nuvio watch progress available."
+msgstr "暂无 Nuvio 继续观看记录。"
+
+msgctxt "#91026"
+msgid "No Nuvio watch history available."
+msgstr "暂无 Nuvio 观看历史。"
+
+msgctxt "#91027"
+msgid "Remove from Nuvio"
+msgstr "从 Nuvio 移除"
+
+msgctxt "#91028"
+msgid "Removed from Nuvio Continue Watching"
+msgstr "已从 Nuvio 继续观看中移除"
+
+msgctxt "#91029"
+msgid "Could not remove Nuvio watch progress."
+msgstr "无法移除 Nuvio 观看进度。"
+
+msgctxt "#91030"
+msgid "About"
+msgstr "关于"
+
+msgctxt "#91031"
+msgid "Version"
+msgstr "当前版本"
+
+msgctxt "#91032"
+msgid "My Nuvio Movies"
+msgstr "我的 Nuvio 电影"
+
+msgctxt "#91033"
+msgid "My Nuvio Shows"
+msgstr "我的 Nuvio 剧集"
+
+msgctxt "#91034"
+msgid "No Nuvio library items available."
+msgstr "Nuvio 片库暂无条目。"
+
+msgctxt "#91035"
+msgid "Nuvio: Library Sync"
+msgstr "Nuvio：片库同步"
+
+msgctxt "#91036"
+msgid "Sync interval (minutes)"
+msgstr "同步间隔（分钟）"
+
+msgctxt "#91037"
+msgid "How often Nuvio library changes are pulled, in minutes (minimum 1)."
+msgstr "拉取 Nuvio 片库变更的间隔分钟数（最小 1 分钟）。"
+
+msgctxt "#91038"
+msgid "Nuvio"
+msgstr "Nuvio"
+
+msgctxt "#91039"
+msgid "Add to Nuvio Library"
+msgstr "加入 Nuvio 片库"
+
+msgctxt "#91040"
+msgid "Remove from Nuvio Library"
+msgstr "从 Nuvio 片库移除"
+
+msgctxt "#91041"
+msgid "Added to Nuvio Library"
+msgstr "已加入 Nuvio 片库"
+
+msgctxt "#91042"
+msgid "Removed from Nuvio Library"
+msgstr "已从 Nuvio 片库移除"
+
+msgctxt "#91043"
+msgid "Could not update the Nuvio library."
+msgstr "无法更新 Nuvio 片库。"
+
+msgctxt "#91044"
+msgid "Mark as Watched on Nuvio"
+msgstr "在 Nuvio 标记为已看"
+
+msgctxt "#91045"
+msgid "Mark as Unwatched on Nuvio"
+msgstr "在 Nuvio 标记为未看"
+
+msgctxt "#91046"
+msgid "Marked as watched on Nuvio."
+msgstr "已在 Nuvio 标记为已看。"
+
+msgctxt "#91047"
+msgid "Removed from Nuvio history."
+msgstr "已从 Nuvio 历史中移除。"
+
+msgctxt "#91048"
+msgid "Could not update Nuvio history."
+msgstr "无法更新 Nuvio 观看历史。"
+
+msgctxt "#91049"
+msgid "Remove from Nuvio History?"
+msgstr "从 Nuvio 观看历史移除？"
+
+msgctxt "#91050"
+msgid "This removes the item from your Nuvio watch history. Continue?"
+msgstr "这将从你的 Nuvio 观看历史中移除该条目，是否继续？"
+
+msgctxt "#91051"
+msgid "Collections"
+msgstr "系列合集"
+
+msgctxt "#91052"
+msgid "No Nuvio collections available."
+msgstr "暂无 Nuvio 系列合集。"
+
+msgctxt "#91053"
+msgid "Addon not installed"
+msgstr "未安装对应插件源"
+
+msgctxt "#91054"
+msgid "This catalog's addon is not installed in Nuvio."
+msgstr "该目录所属插件尚未在 Nuvio 中安装。"
+
+msgctxt "#91055"
+msgid "This collection source is not supported yet."
+msgstr "暂不支持该合集来源。"
+
+msgctxt "#91056"
+msgid "No results found."
+msgstr "未找到匹配结果。"
+
+msgctxt "#91100"
+msgid "Interface & Appearance"
+msgstr "界面与语言"
+
+msgctxt "#91101"
+msgid "Home & Navigation"
+msgstr "首页与导航"
+
+msgctxt "#91102"
+msgid "Playback & Subtitles"
+msgstr "播放与字幕"
+
+msgctxt "#91103"
+msgid "Content & Source Preferences"
+msgstr "内容与来源偏好"
+
+msgctxt "#91104"
+msgid "Network & Devices"
+msgstr "网络与设备"
+
+msgctxt "#91105"
+msgid "System & Maintenance"
+msgstr "系统维护"
+
+msgctxt "#91106"
+msgid "Same-Release Auto-Continue & Prefetch"
+msgstr "同版本自动续播与提前读取"
+
+msgctxt "#91107"
+msgid "Auto-continue only verified same-release 115 next episodes. Stops when no reliable match exists without downgrading quality or skipping episodes."
+msgstr "仅续播已确认同版本的 115 下一集。没有可靠匹配时停止，不降画质、不跳集。"
+
+msgctxt "#91108"
+msgid "None"
+msgstr "无"
+
+msgctxt "#91109"
+msgid "English"
+msgstr "英语"
+
+msgctxt "#91110"
+msgid "Spanish"
+msgstr "西班牙语"
+
+msgctxt "#91111"
+msgid "Portuguese"
+msgstr "葡萄牙语"
+
+msgctxt "#91112"
+msgid "German"
+msgstr "德语"
+
+msgctxt "#91113"
+msgid "French"
+msgstr "法语"
+
+msgctxt "#91114"
+msgid "Italian"
+msgstr "意大利语"
+
+msgctxt "#91115"
+msgid "Dutch"
+msgstr "荷兰语"
+
+msgctxt "#91116"
+msgid "Polish"
+msgstr "波兰语"
+
+msgctxt "#91117"
+msgid "Russian"
+msgstr "俄语"
+
+msgctxt "#91118"
+msgid "Turkish"
+msgstr "土耳其语"
+
+msgctxt "#91119"
+msgid "Greek"
+msgstr "希腊语"
+
+msgctxt "#91120"
+msgid "Hindi"
+msgstr "印地语"
+
+msgctxt "#91121"
+msgid "Indonesian"
+msgstr "印尼语"
+
+msgctxt "#91122"
+msgid "Japanese"
+msgstr "日语"
+
+msgctxt "#91123"
+msgid "Korean"
+msgstr "韩语"
+
+msgctxt "#91124"
+msgid "Ukrainian"
+msgstr "乌克兰语"
+
+msgctxt "#91125"
+msgid "Chinese"
+msgstr "中文"
+
+msgctxt "#91126"
+msgid "Arabic"
+msgstr "阿拉伯语"
+
+msgctxt "#91127"
+msgid "Bengali"
+msgstr "孟加拉语"
+
+msgctxt "#91128"
+msgid "Bulgarian"
+msgstr "保加利亚语"
+
+msgctxt "#91129"
+msgid "Chinese"
+msgstr "中文"
+
+msgctxt "#91130"
+msgid "Croatian"
+msgstr "克罗地亚语"
+
+msgctxt "#91131"
+msgid "Czech"
+msgstr "捷克语"
+
+msgctxt "#91132"
+msgid "Danish"
+msgstr "丹麦语"
+
+msgctxt "#91133"
+msgid "Dutch"
+msgstr "荷兰语"
+
+msgctxt "#91134"
+msgid "English"
+msgstr "英语"
+
+msgctxt "#91135"
+msgid "Finnish"
+msgstr "芬兰语"
+
+msgctxt "#91136"
+msgid "French"
+msgstr "法语"
+
+msgctxt "#91137"
+msgid "German"
+msgstr "德语"
+
+msgctxt "#91138"
+msgid "Greek"
+msgstr "希腊语"
+
+msgctxt "#91139"
+msgid "Hebrew"
+msgstr "希伯来语"
+
+msgctxt "#91140"
+msgid "Hindi"
+msgstr "印地语"
+
+msgctxt "#91141"
+msgid "Hungarian"
+msgstr "匈牙利语"
+
+msgctxt "#91142"
+msgid "Indonesian"
+msgstr "印尼语"
+
+msgctxt "#91143"
+msgid "Italian"
+msgstr "意大利语"
+
+msgctxt "#91144"
+msgid "Japanese"
+msgstr "日语"
+
+msgctxt "#91145"
+msgid "Kannada"
+msgstr "卡纳达语"
+
+msgctxt "#91146"
+msgid "Korean"
+msgstr "韩语"
+
+msgctxt "#91147"
+msgid "Malayalam"
+msgstr "马拉雅拉姆语"
+
+msgctxt "#91148"
+msgid "Norwegian"
+msgstr "挪威语"
+
+msgctxt "#91149"
+msgid "Persian"
+msgstr "波斯语"
+
+msgctxt "#91150"
+msgid "Polish"
+msgstr "波兰语"
+
+msgctxt "#91151"
+msgid "Portuguese"
+msgstr "葡萄牙语"
+
+msgctxt "#91152"
+msgid "Punjabi"
+msgstr "旁遮普语"
+
+msgctxt "#91153"
+msgid "Romanian"
+msgstr "罗马尼亚语"
+
+msgctxt "#91154"
+msgid "Russian"
+msgstr "俄语"
+
+msgctxt "#91155"
+msgid "Serbian"
+msgstr "塞尔维亚语"
+
+msgctxt "#91156"
+msgid "Spanish"
+msgstr "西班牙语"
+
+msgctxt "#91157"
+msgid "Swedish"
+msgstr "瑞典语"
+
+msgctxt "#91158"
+msgid "Tamil"
+msgstr "泰米尔语"
+
+msgctxt "#91159"
+msgid "Telugu"
+msgstr "泰卢固语"
+
+msgctxt "#91160"
+msgid "Thai"
+msgstr "泰语"
+
+msgctxt "#91161"
+msgid "Turkish"
+msgstr "土耳其语"
+
+msgctxt "#91162"
+msgid "Ukrainian"
+msgstr "乌克兰语"
+
+msgctxt "#91163"
+msgid "Vietnamese"
+msgstr "越南语"
+
+msgctxt "#91165"
+msgid "Error reading file."
+msgstr "读取文件出错。"
+
+msgctxt "#91166"
+msgid "No compatible modules found"
+msgstr "未找到兼容的外部抓取模块"
+
+msgctxt "#91167"
+msgid "Choose External Scraper"
+msgstr "选择外部抓取模块"
+
+msgctxt "#91168"
+msgid "The selected module is not compatible. Please choose a different one."
+msgstr "所选模块不兼容，请选择其他模块。"
+
+msgctxt "#91169"
+msgid "Success!\n%s set as External Scraper"
+msgstr "已启用！\n%s 已设为外部抓取模块"
+
+msgctxt "#91170"
+msgid "No external scraper selected"
+msgstr "尚未选择外部抓取模块"
+
+msgctxt "#91171"
+msgid "Unable to open settings: %s"
+msgstr "无法打开模块设置：%s"
+
+msgctxt "#91172"
+msgid "Chinese-Subtitled Sources Only"
+msgstr "仅看标注中文字幕的片源"
+
+msgctxt "#91173"
+msgid "Quality"
+msgstr "清晰度"
+
+msgctxt "#91174"
+msgid "Release Group"
+msgstr "压制组"
+
+msgctxt "#91175"
+msgid "Indexer"
+msgstr "来源站点"
+
+msgctxt "#91176"
+msgid "Language"
+msgstr "语言"
+
+msgctxt "#91177"
+msgid "Exact Release Group Match"
+msgstr "精确匹配压制组"
+
+msgctxt "#91178"
+msgid "Torrent Sources Only"
+msgstr "仅看 BT 片源"
+
+msgctxt "#91179"
+msgid "Debrid Sources Only"
+msgstr "仅看解限服务片源"
+
+msgctxt "#91180"
+msgid "Clear Filters (Show All)"
+msgstr "清除筛选，显示全部"
+
+msgctxt "#91181"
+msgid "Searching Sources"
+msgstr "正在搜索片源"
+
+msgctxt "#91182"
+msgid "Select a source to start playback"
+msgstr "选择片源后开始播放"
+
+msgctxt "#91183"
+msgid "Querying enabled providers…"
+msgstr "正在查询各个来源…"
+
+msgctxt "#91184"
+msgid "%d candidates found"
+msgstr "已找到 %d 个候选"
+
+msgctxt "#91185"
+msgid "Episode Finished"
+msgstr "本集已播完"
+
+msgctxt "#91186"
+msgid "Playback Ended"
+msgstr "播放已结束"
+
+msgctxt "#91187"
+msgid "No verified same-release next episode found. Browse episodes to choose manually."
+msgstr "未找到可靠的同版下一集，可查看分集手动选择。"
+
+msgctxt "#91188"
+msgid "Return to source selection to retry; releases are never switched automatically."
+msgstr "可返回选源重试，不会自动更换版本。"
+
+msgctxt "#91189"
+msgid "Worth Watching This Week"
+msgstr "本周值得看"
+
+msgctxt "#91190"
+msgid "Popular Anime"
+msgstr "热门番剧"
+
+msgctxt "#91191"
+msgid "Popular Movies"
+msgstr "热门电影"
+
+msgctxt "#91192"
+msgid "Popular Series"
+msgstr "热门剧集"
+
+msgctxt "#91193"
+msgid "Popular Anime Movies"
+msgstr "热门动漫电影"
+
+msgctxt "#91194"
+msgid "Search Movies & TV"
+msgstr "搜索影视"
+
+msgctxt "#91195"
+msgid "Search TV Series"
+msgstr "搜索电视剧"
+
+msgctxt "#91196"
+msgid "Search Movies"
+msgstr "搜索电影"
+
+msgctxt "#91197"
+msgid "Search Anime"
+msgstr "搜索动漫"
+
+msgctxt "#91198"
+msgid "Search Anime Movies"
+msgstr "搜索动漫电影"
+
+msgctxt "#91199"
+msgid " · Preview"
+msgstr " · 片单预览"
+
+msgctxt "#91200"
+msgid "List truncated"
+msgstr "列表已截短"
+
+msgctxt "#91201"
+msgid "Playback Control"
+msgstr "播放控制"
+
+msgctxt "#91202"
+msgid "Action applied"
+msgstr "操作已生效"
+
+msgctxt "#91203"
+msgid "Action queued; waiting for player confirmation"
+msgstr "操作已提交，等待播放器确认"
+
+msgctxt "#91204"
+msgid "Action result pending; reopen the panel shortly — will not resend"
+msgstr "操作结果待确认，请稍后重新打开面板；不会重复发送"
+
+msgctxt "#91205"
+msgid "Playback state changed; reopen the panel"
+msgstr "播放状态已变化，请重新打开面板"
+
+msgctxt "#91206"
+msgid "Player did not complete the action"
+msgstr "播放器未完成操作"
+
+msgctxt "#91207"
+msgid "Cannot safely control this playback right now; retry shortly"
+msgstr "当前无法安全控制此播放，请稍后重试"
+
+msgctxt "#91208"
+msgid "Action currently unavailable"
+msgstr "当前操作不可用"
+
+msgctxt "#91209"
+msgid "Stop playback?"
+msgstr "确定关闭播放吗？"
+
+msgctxt "#91210"
+msgid "Jump to second"
+msgstr "跳转到第几秒"
+
+msgctxt "#91211"
+msgid "Jump to second (current %d s)"
+msgstr "跳转到第几秒（当前 %d 秒）"
+
+msgctxt "#91212"
+msgid "Chapters"
+msgstr "章节"
+
+msgctxt "#91213"
+msgid " (list truncated)"
+msgstr "（列表已截短）"
+
+msgctxt "#91214"
+msgid "%s  ·  %d s"
+msgstr "%s  ·  %d 秒"
+
+msgctxt "#91215"
+msgid "Local file history temporarily unavailable"
+msgstr "本地文件记录暂不可用"
+
+msgctxt "#91216"
+msgid "Cloud"
+msgstr "网盘"
+
+msgctxt "#91217"
+msgid "Torrent"
+msgstr "种子"
+
+msgctxt "#91218"
+msgid "Direct"
+msgstr "直链"
+
+msgctxt "#91219"
+msgid "Nothing in Continue Watching yet"
+msgstr "还没有在看的影片"
+
+msgctxt "#91220"
+msgid "Watch history temporarily unavailable"
+msgstr "暂时无法读取观看记录"
+
+msgctxt "#91221"
+msgid "History changed; please reselect the title"
+msgstr "记录已变化，请重新选择影片"
+
+msgctxt "#91222"
+msgid "Browse All Episodes"
+msgstr "查看全剧分集"
+
+msgctxt "#91223"
+msgid "Progress for reference only · Plays from start after re-verification"
+msgstr "历史进度仅供查看 · 重新核验后从头播放，不自动续播"
+
+msgctxt "#91224"
+msgid "Browse File Versions for This Work"
+msgstr "查看此作品的文件版本"
+
+msgctxt "#91225"
+msgid "Play from Start"
+msgstr "从头播放"
+
+msgctxt "#91226"
+msgid "Remove from Continue Watching"
+msgstr "从继续观看中移除"
+
+msgctxt "#91227"
+msgid "Personal file watch history temporarily unavailable"
+msgstr "个人文件观看记录暂不可用"
+
+msgctxt "#91228"
+msgid "Choose Another Source"
+msgstr "选择其他片源"
+
+msgctxt "#91229"
+msgid "Clear Continue Watching"
+msgstr "清空继续观看"
+
+msgctxt "#91230"
+msgid "Home My Library View"
+msgstr "首页我的片库视图"
+
+msgctxt "#91231"
+msgid "Manage This Saved View"
+msgstr "管理这个常用视图"
+
+msgctxt "#91232"
+msgid "No Saved Views Yet"
+msgstr "尚无常用视图"
+
+msgctxt "#91233"
+msgid "Open Library Filters first, then choose \"Save as Saved View\""
+msgstr "先进入片库筛选，再选择“保存为常用视图”"
+
+msgctxt "#91234"
+msgid "Restore Default Home Library"
+msgstr "恢复默认首页片库"
+
+msgctxt "#91235"
+msgid "Save as New Saved View"
+msgstr "保存为新的常用视图"
+
+msgctxt "#91236"
+msgid "Update: %s"
+msgstr "更新：%s"
+
+msgctxt "#91237"
+msgid "Save Current Filters"
+msgstr "保存当前筛选"
+
+msgctxt "#91238"
+msgid "Saved View Name (max 80 chars)"
+msgstr "常用视图名称（最多 80 字）"
+
+msgctxt "#91239"
+msgid "Update Saved View?"
+msgstr "更新常用视图？"
+
+msgctxt "#91240"
+msgid "Replace \"%s\" with current source and filters. Original files and watch history are kept."
+msgstr "用当前来源和筛选替换“%s”。原文件与观看记录不变。"
+
+msgctxt "#91241"
+msgid "Saved View Updated"
+msgstr "已保存常用视图"
+
+msgctxt "#91242"
+msgid "Set as Home My Library View"
+msgstr "设为首页我的片库视图"
+
+msgctxt "#91243"
+msgid "Rename"
+msgstr "重命名"
+
+msgctxt "#91244"
+msgid "Move Up"
+msgstr "上移"
+
+msgctxt "#91245"
+msgid "Move Down"
+msgstr "下移"
+
+msgctxt "#91246"
+msgid "Delete Saved View"
+msgstr "删除常用视图"
+
+msgctxt "#91247"
+msgid "Delete Saved View?"
+msgstr "删除常用视图？"
+
+msgctxt "#91248"
+msgid "Deletes only the filter preset; original files and watch history are kept."
+msgstr "只删除筛选描述，原文件与观看记录均保留。"
+
+msgctxt "#91249"
+msgid "Bonus"
+msgstr "花絮"
+
+msgctxt "#91250"
+msgid "Interview"
+msgstr "访谈"
+
+msgctxt "#91251"
+msgid "Deleted Scene"
+msgstr "删减片段"
+
+msgctxt "#91252"
+msgid "Trailer"
+msgstr "预告"
+
+msgctxt "#91253"
+msgid "Other Extra"
+msgstr "其他补充内容"
+
+msgctxt "#91254"
+msgid "Entire Work (Any Release)"
+msgstr "整个作品（不限某个版本）"
+
+msgctxt "#91255"
+msgid "Next Page"
+msgstr "下一页"
+
+msgctxt "#91256"
+msgid "No Main Works Available"
+msgstr "尚无可选主作品"
+
+msgctxt "#91257"
+msgid "Organize the main work as a movie, series, or custom title before linking extras."
+msgstr "请先把主作品整理为电影、剧集或人工自建名称，再关联补充文件。"
+
+msgctxt "#91258"
+msgid "Personal Extra Link"
+msgstr "个人补充内容关系"
+
+msgctxt "#91259"
+msgid "Link / Change Main Work & Release"
+msgstr "关联 / 修改主作品与版本"
+
+msgctxt "#91260"
+msgid "Remove Extra Link"
+msgstr "移除补充内容关联"
+
+msgctxt "#91261"
+msgid "Undo Last Edit"
+msgstr "撤回上次修改"
+
+msgctxt "#91262"
+msgid "Find main work or custom title (optional)"
+msgstr "查找主作品或自建名称（可留空）"
+
+msgctxt "#91263"
+msgid "Select Main Work"
+msgstr "选择主作品"
+
+msgctxt "#91264"
+msgid "Link Entire Work or Specific File Version"
+msgstr "关联整个作品或指定文件版本"
+
+msgctxt "#91265"
+msgid "Organize Main Work First"
+msgstr "请先整理主作品"
+
+msgctxt "#91266"
+msgid "Unorganized files cannot be main works; assign a custom title or confirm as movie/series first."
+msgstr "未整理的原文件不能当作主作品；请先填写人工自建名称，或确认为电影、剧集。"
+
+msgctxt "#91267"
+msgid "Extra Type"
+msgstr "补充内容类型"
+
+msgctxt "#91268"
+msgid "Extra Title (max 160 chars)"
+msgstr "补充内容名称（最多 160 字）"
+
+msgctxt "#91269"
+msgid "Authorizes only this registered source and namespace, not other mounts or cloud accounts.\nSource: %s\nNamespace: %s\n"
+msgstr "仅授权此已登记本地来源及其 namespace，不授权其他挂载或网盘账号。\n来源：%s\n范围：%s\n"
+
+msgctxt "#91270"
+msgid "Authorizes only the current native cloud account.\n"
+msgstr "仅授权当前原生网盘账号。\n"
+
+msgctxt "#91271"
+msgid "Allow Phone Management for Current Library?"
+msgstr "允许手机管理当前片库？"
+
+msgctxt "#91272"
+msgid "Use only on a trusted LAN. Anyone scanning can view this library index, organize works, and cancel scans, without playing media or reading cloud logins. Expires in 15 min; closing this QR window revokes access immediately without canceling scans."
+msgstr "仅在可信局域网使用。扫码者可查看所选片库的本地索引、整理作品和取消扫描，不能播放或读取网盘登录。授权最多 15 分钟，关闭此二维码窗口立即撤销；后台扫描不会被取消。"
+
+msgctxt "#91273"
+msgid "Phone Permissions (This Session Only)"
+msgstr "手机权限（仅本次授权）"
+
+msgctxt "#91274"
+msgid "Organize Library Only"
+msgstr "仅整理片库"
+
+msgctxt "#91275"
+msgid "Library + View Now Playing"
+msgstr "片库 + 查看当前播放"
+
+msgctxt "#91276"
+msgid "Library + View & Control Now Playing"
+msgstr "片库 + 查看并控制当前播放"
+
+msgctxt "#91277"
+msgid "Allow Phone Control of Current Playback?"
+msgstr "允许手机控制当前播放？"
+
+msgctxt "#91278"
+msgid "Anyone scanning can view audio/subtitles and seek or switch tracks. Applies only to confirmed playback under this authorized account; unsupported kernels will not expose control. Closing the QR window revokes access immediately."
+msgstr "扫码者可查看当前音轨和字幕，并拖动进度、切换音轨或字幕。仅对当前授权账号的已确认播放生效；旧内核不支持时不会开放控制。关闭二维码窗口立即撤销。"
+
+msgctxt "#91279"
+msgid "Phone Management Temporarily Unavailable"
+msgstr "手机管理暂不可用"
+
+msgctxt "#91280"
+msgid "Port may already be in use. Close any active phone management window and retry."
+msgstr "端口可能已被使用，请关闭原手机管理窗口后重试。"
+
+msgctxt "#91281"
+msgid "Phone Library Management · Close to Revoke"
+msgstr "手机片库管理 · 关闭即撤销"
+
+msgctxt "#91282"
+msgid "Allow Phone Management of Stremio Add-ons?"
+msgstr "允许手机管理 Stremio 插件源？"
+
+msgctxt "#91283"
+msgid "Use only on a trusted LAN. Anyone scanning can view, add, toggle, or remove custom Stremio add-ons without echoing saved URL credentials. Expires in 15 min; closing this QR window revokes access immediately."
+msgstr "仅在可信局域网使用。扫码者可在当前配置下查看、添加、启用/停用或移除自定义 Stremio 插件源，不会回显已保存 URL 中的完整凭据。授权最多 15 分钟，关闭此二维码窗口立即撤销。"
+
+msgctxt "#91284"
+msgid "Allow Phone Upload of Config File?"
+msgstr "允许手机扫码上传配置文件？"
+
+msgctxt "#91285"
+msgid "Use only on a trusted LAN. Anyone scanning can upload a JSON config up to 2 MB for diagnosis; saving to your library still requires confirmation on the TV. Closing this QR window revokes access and cleans temporary chunks."
+msgstr "仅在可信局域网使用。扫码者可分片上传一份最多 2 MB 的 JSON 配置文件进行诊断；写入片库前仍须在电视上确认。关闭此二维码窗口立即撤销授权并清理临时分片。"
+
+msgctxt "#91286"
+msgid "Phone Upload Temporarily Unavailable"
+msgstr "手机上传暂不可用"
+
+msgctxt "#91287"
+msgid "Phone Config Upload · Press Back After Upload to Confirm"
+msgstr "手机上传配置 · 上传完成后按返回确认"
+
+msgctxt "#91288"
+msgid "Config Diagnosis (Library Unchanged)"
+msgstr "配置文件诊断（未修改片库）"
+
+msgctxt "#91289"
+msgid "No usable type-4 sites found."
+msgstr "没有可用的 type-4 站点。"
+
+msgctxt "#91290"
+msgid "Suggested Next Steps"
+msgstr "后续操作建议"
+
+msgctxt "#91291"
+msgid "Skip for Now (Keep Library Unchanged)"
+msgstr "暂不添加（保持原片库不变）"
+
+msgctxt "#91292"
+msgid "Connect Native WebDAV / AList Instead"
+msgstr "改连原生 WebDAV / AList 网盘"
+
+msgctxt "#91293"
+msgid "Connect Native Emby / Jellyfin Instead"
+msgstr "改连原生 Emby / Jellyfin 媒体服"
+
+msgctxt "#91294"
+msgid "Add \"%s\""
+msgstr "添加“%s”"
+
+msgctxt "#91295"
+msgid "%s\nSaved on this device only."
+msgstr "%s\n仅保存到本机。"
+
+msgctxt "#91296"
+msgid "Available %d sites"
+msgstr "可用 %d 个站点"
+
+msgctxt "#91297"
+msgid "Import Phone-Uploaded T4 Sites?"
+msgstr "确认导入手机上传的 T4 站点？"
+
+msgctxt "#91298"
+msgid "%s\nAllow on-demand connections:\n%s"
+msgstr "%s\n允许按需连接：\n%s"
+
+msgctxt "#91299"
+msgid "T4 Sites Saved"
+msgstr "T4 站点已保存"
+
+msgctxt "#91300"
+msgid "bobbi TV · Library Organizer"
+msgstr "波比 TV · 片库整理"
+
+msgctxt "#91301"
+msgid "Organizing edits local descriptions only and never alters cloud files. Playback viewing/control requires TV approval. Closing the TV QR window revokes access."
+msgstr "片库整理只修改本地描述，不更改云端文件。播放查看与控制需在电视上单独授权。关闭电视上的二维码窗口即撤销手机授权。"
+
+msgctxt "#91302"
+msgid "Connecting to current TV session…"
+msgstr "正在连接当前电视授权…"
+
+msgctxt "#91303"
+msgid "Organize Works"
+msgstr "作品整理"
+
+msgctxt "#91304"
+msgid "Sources"
+msgstr "目录来源"
+
+msgctxt "#91305"
+msgid "Background Jobs"
+msgstr "后台任务"
+
+msgctxt "#91306"
+msgid "Continue Watching"
+msgstr "继续观看摘要"
+
+msgctxt "#91307"
+msgid "Now Playing"
+msgstr "当前播放"
+
+msgctxt "#91308"
+msgid "Add-ons"
+msgstr "插件扩展"
+
+msgctxt "#91309"
+msgid "Import Config"
+msgstr "导入配置"
+
+msgctxt "#91310"
+msgid "Upload Subtitle"
+msgstr "上传字幕"
+
+msgctxt "#91311"
+msgid "Refresh"
+msgstr "刷新"
+
+msgctxt "#91312"
+msgid "End Session"
+msgstr "结束授权"
+
+msgctxt "#91313"
+msgid "Search works / files / version notes"
+msgstr "搜索作品 / 原文件 / 版本备注"
+
+msgctxt "#91314"
+msgid "Work keyword"
+msgstr "作品关键词"
+
+msgctxt "#91315"
+msgid "Search"
+msgstr "搜索"
+
+msgctxt "#91316"
+msgid "Media type"
+msgstr "作品类型"
+
+msgctxt "#91317"
+msgid "All Types"
+msgstr "全部类型"
+
+msgctxt "#91318"
+msgid "Movies"
+msgstr "电影"
+
+msgctxt "#91319"
+msgid "TV Series"
+msgstr "剧集"
+
+msgctxt "#91320"
+msgid "Unconfirmed Works"
+msgstr "尚未确认作品"
+
+msgctxt "#91321"
+msgid "Review status"
+msgstr "整理状态"
+
+msgctxt "#91322"
+msgid "All Statuses"
+msgstr "全部状态"
+
+msgctxt "#91323"
+msgid "Unmatched"
+msgstr "待匹配"
+
+msgctxt "#91324"
+msgid "Ambiguous"
+msgstr "身份不明确"
+
+msgctxt "#91325"
+msgid "Proposed"
+msgstr "待确认建议"
+
+msgctxt "#91326"
+msgid "Confirmed"
+msgstr "人工确认"
+
+msgctxt "#91327"
+msgid "Ignored"
+msgstr "已忽略"
+
+msgctxt "#91328"
+msgid "Source observation"
+msgstr "来源观察"
+
+msgctxt "#91329"
+msgid "All Observations"
+msgstr "全部观察状态"
+
+msgctxt "#91330"
+msgid "Indexed · Verified Before Play"
+msgstr "已收录 · 播放前核验"
+
+msgctxt "#91331"
+msgid "File Not Found in Source"
+msgstr "来源未发现此文件"
+
+msgctxt "#91332"
+msgid "Source Unavailable"
+msgstr "来源暂不可用"
+
+msgctxt "#91333"
+msgid "Source Unverified"
+msgstr "待确认来源"
+
+msgctxt "#91334"
+msgid "Sort"
+msgstr "排序"
+
+msgctxt "#91335"
+msgid "By Name"
+msgstr "按名称"
+
+msgctxt "#91336"
+msgid "Recently Added"
+msgstr "最近加入"
+
+msgctxt "#91337"
+msgid "Recently Edited"
+msgstr "最近整理"
+
+msgctxt "#91338"
+msgid "Clear Filters (Keep Source)"
+msgstr "清除筛选（保留当前来源）"
+
+msgctxt "#91339"
+msgid "All Authorized Sources"
+msgstr "当前授权全部来源"
+
+msgctxt "#91340"
+msgid "Authorized Source Pinned"
+msgstr "当前授权已固定来源"
+
+msgctxt "#91341"
+msgid "Back to Works"
+msgstr "返回作品"
+
+msgctxt "#91342"
+msgid "Previous"
+msgstr "上一页"
+
+msgctxt "#91343"
+msgid "Next"
+msgstr "下一页"
+
+msgctxt "#91344"
+msgid "Pending Edits (Max 100/round, 5/batch)"
+msgstr "待提交修改（每轮最多 100 项，每批最多 5 项）"
+
+msgctxt "#91345"
+msgid "Preview each item first, then submit in batches. Conflicts are never overwritten. Check original receipts after disconnects; ending session keeps sent edits (up to 20 receipts kept)."
+msgstr "先逐项预览，再确认分批提交。版本冲突不会自动覆盖。断网不代表未保存，请核对原提交；结束授权不会撤回已发修改。当前页面保留最近 20 批回执。"
+
+msgctxt "#91346"
+msgid "Preview All Edits"
+msgstr "预览全部修改"
+
+msgctxt "#91347"
+msgid "Confirm / Continue Batch Submit"
+msgstr "确认 / 继续分批提交"
+
+msgctxt "#91348"
+msgid "Clear Current Queue"
+msgstr "清空本轮编辑"
+
+msgctxt "#91349"
+msgid "Stop Remaining Batches"
+msgstr "停止后续批次"
+
+msgctxt "#91350"
+msgid "Check Original Submission"
+msgstr "核对原提交"
+
+msgctxt "#91351"
+msgid "Reload Current Revisions"
+msgstr "读取当前修订重新核对"
+
+msgctxt "#91352"
+msgid "If invalid, expired, or after an account change, reopen Phone Management on TV and scan again. Playback control applies only to the authorized instance."
+msgstr "无效、过期或账号变更时，请在电视重新打开“手机详细管理”并扫码。播放控制只对本次明确授权的当前实例生效。"
+
+msgctxt "#91353"
+msgid "Queued"
+msgstr "排队中"
+
+msgctxt "#91354"
+msgid "Scanning"
+msgstr "扫描中"
+
+msgctxt "#91355"
+msgid "Completed"
+msgstr "扫描完成"
+
+msgctxt "#91356"
+msgid "Incomplete"
+msgstr "未完整完成"
+
+msgctxt "#91357"
+msgid "Canceled"
+msgstr "已取消"
+
+msgctxt "#91358"
+msgid "Interrupted"
+msgstr "已中断"
+
+msgctxt "#91359"
+msgid "Ready"
+msgstr "可提交"
+
+msgctxt "#91360"
+msgid "Revision conflict; refresh"
+msgstr "版本冲突，请刷新"
+
+msgctxt "#91361"
+msgid "Saved"
+msgstr "已保存"
+
+msgctxt "#91362"
+msgid "Cancel requested; awaiting confirmation"
+msgstr "已请求取消，等待后台确认"
+
+msgctxt "#91363"
+msgid "Background Jobs · "
+msgstr "后台任务 · "
+
+msgctxt "#91364"
+msgid "Read-only summary pending refresh (open Background Jobs for live scan progress)"
+msgstr "只读摘要待刷新（点击「后台任务」查看实时扫描进度）"
+
+msgctxt "#91365"
+msgid "%s (scanned %d / found %d videos)"
+msgstr "%s（已扫描 %d 项 / 发现 %d 个视频）"
+
+msgctxt "#91366"
+msgid "Active %d · %s"
+msgstr "进行中 %d 项 · %s"
+
+msgctxt "#91367"
+msgid "No active jobs · Latest: %s"
+msgstr "当前无运行中任务 · 最近状态：%s"
+
+msgctxt "#91368"
+msgid "No queued or running jobs"
+msgstr "当前无排队或扫描中任务"
+
+msgctxt "#91369"
+msgid "Batch exceeds 8192 bytes; reduce items or shorten text."
+msgstr "本批完整请求超过 8192 字节，请减少条目或缩短描述。"
+
+msgctxt "#91370"
+msgid "Player applied command."
+msgstr "原生播放器已执行。"
+
+msgctxt "#91371"
+msgid "Playback state changed; command not applied."
+msgstr "播放状态已变化，操作未执行。"
+
+msgctxt "#91372"
+msgid "Player command failed."
+msgstr "播放器执行失败。"
+
+msgctxt "#91373"
+msgid "Command queued; awaiting confirmation."
+msgstr "原操作已排队，结果尚未确认。"
+
+msgctxt "#91374"
+msgid "Command outcome unknown; receipt pending or expired. Re-check read-only; never resent."
+msgstr "原操作结果未知；回执可能尚未到达或已过期。可只读核对，同实例不会重复提交。"
+
+msgctxt "#91375"
+msgid "Session ended."
+msgstr "授权已结束。"
+
+msgctxt "#91376"
+msgid "Request exceeds 8192 bytes; reduce items."
+msgstr "完整请求超过 8192 字节，请减少条目。"
+
+msgctxt "#91377"
+msgid "Request timed out; outcome unconfirmed."
+msgstr "请求超时，尚未取得结果。"
+
+msgctxt "#91378"
+msgid "Session expired or account changed; reopen on TV and scan again."
+msgstr "授权已失效或账号已变化，请在电视重新开启并扫码。"
+
+msgctxt "#91379"
+msgid "Preview expired; preview again before submitting."
+msgstr "预览已过期，请重新预览后再提交。"
+
+msgctxt "#91380"
+msgid "Batch reply too large; reduce items and preview again."
+msgstr "本批信息过长，请减少条目后重新预览。"
+
+msgctxt "#91381"
+msgid "Action unconfirmed; refresh and retry (%s)."
+msgstr "操作未确认，请刷新状态后重试（%s）。"
+
+msgctxt "#91382"
+msgid "Connection interrupted; outcome unconfirmed. Reload state."
+msgstr "连接中断，结果未确认。请重新读取状态。"
+
+msgctxt "#91383"
+msgid "Work Candidates (Preferred)"
+msgstr "作品候选（优先）"
+
+msgctxt "#91384"
+msgid "Candidate Search Keyword (sends keyword only)"
+msgstr "候选搜索关键词（仅发送此关键词）"
+
+msgctxt "#91385"
+msgid "Candidate Year (optional; verify remakes)"
+msgstr "候选年份（可选，重制版需核对）"
+
+msgctxt "#91386"
+msgid "Searching public work metadata…"
+msgstr "正在搜索公开作品信息…"
+
+msgctxt "#91387"
+msgid "Results are candidates only; verify year, type, and season/episode."
+msgstr "搜索结果只是候选，请核对年份、类型和季集。"
+
+msgctxt "#91388"
+msgid "No candidates found; adjust keyword or enter ID manually."
+msgstr "没有找到候选，可修改关键词或使用手动编号。"
+
+msgctxt "#91389"
+msgid "Year unknown"
+msgstr "年份未知"
+
+msgctxt "#91390"
+msgid "Use This Candidate (Not Saved Yet)"
+msgstr "采用此候选（尚未保存）"
+
+msgctxt "#91391"
+msgid "Candidate expired; search again."
+msgstr "候选已过期，请重新搜索。"
+
+msgctxt "#91392"
+msgid "Candidate filled; not saved yet. Verify season/episode, queue, and preview."
+msgstr "已填入候选，尚未修改记录。请核对季集，再加入修改并预览。"
+
+msgctxt "#91393"
+msgid "Candidate search incomplete; retry or enter ID manually."
+msgstr "候选搜索未完成，可重试或使用手动编号。"
+
+msgctxt "#91394"
+msgid "Search Candidates"
+msgstr "搜索作品候选"
+
+msgctxt "#91395"
+msgid "Keyword changed; previous candidates invalidated."
+msgstr "关键词已变化，旧候选失效。"
+
+msgctxt "#91396"
+msgid "Suggest Episode Matches in Same Folder"
+msgstr "查看同目录逐集整理建议"
+
+msgctxt "#91397"
+msgid "Search and select a TV series candidate first."
+msgstr "请先搜索并采用一个剧集候选。"
+
+msgctxt "#91398"
+msgid "Check the pending submission outcome first."
+msgstr "请先核对原提交结果。"
+
+msgctxt "#91399"
+msgid "Select Trusted Source"
+msgstr "请选择可信来源"
+
+msgctxt "#91400"
+msgid "File is indexed by multiple sources. Pick the trusted source containing it; scope will not expand."
+msgstr "此文件被多个目录来源收录。请明确选择包含该文件的可信来源；不会扩大到其他目录或账号。"
+
+msgctxt "#91401"
+msgid "Next Sources"
+msgstr "下一页来源"
+
+msgctxt "#91402"
+msgid "Same-Folder Suggestions · %s"
+msgstr "同目录逐项建议 · %s"
+
+msgctxt "#91403"
+msgid "Same folder does not prove same work. Verify each file and exclude remakes/packs; keep S00 for specials."
+msgstr "同目录不证明同一作品。请核对每个文件，排除重制版、合集和多集文件；特别篇保留 S00。只有勾选项加入计划。"
+
+msgctxt "#91404"
+msgid "Revision %d · Current: %s"
+msgstr "当前修订 %d · 原描述 %s"
+
+msgctxt "#91405"
+msgid "Unbound"
+msgstr "未绑定"
+
+msgctxt "#91406"
+msgid "Include in Round"
+msgstr "加入本轮"
+
+msgctxt "#91407"
+msgid "Season (0 for specials)"
+msgstr "拟绑定季号（特别篇为 0）"
+
+msgctxt "#91408"
+msgid "Episode (exclude multi-episode files)"
+msgstr "拟绑定集号（多集文件请排除）"
+
+msgctxt "#91409"
+msgid "Version Note (optional)"
+msgstr "版本备注（可选，不作为续播证明）"
+
+msgctxt "#91410"
+msgid "Uncertain season/episode, year/type mismatch, or ambiguity — unchecked by default."
+msgstr "存在未知季集、年份 / 类型差异或身份疑点，默认未选。请人工核对。"
+
+msgctxt "#91411"
+msgid "Queue Checked Items for Preview"
+msgstr "将勾选项加入分批预览"
+
+msgctxt "#91412"
+msgid "Checked items require integer season and episode; exclude multi-episode files."
+msgstr "勾选项必须明确季号和集号；多集文件请排除。"
+
+msgctxt "#91413"
+msgid "Check at least one item."
+msgstr "请至少勾选一项。"
+
+msgctxt "#91414"
+msgid "Queued %d suggestions. Preview all edits before confirming batched save."
+msgstr "已加入 %d 项建议。请预览全部逐项修改后，再确认分批保存。"
+
+msgctxt "#91415"
+msgid "Next Folder Page (Keep Saved Receipts)"
+msgstr "下一轮同目录文件（保留已保存回执）"
+
+msgctxt "#91416"
+msgid "Loaded folder files %d–%d%s Not confirmed or submitted yet."
+msgstr "已读取本轮第 %d–%d 个同目录文件%s尚未自动确认或提交。"
+
+msgctxt "#91417"
+msgid " (truncated)"
+msgstr "（显示已截短）"
+
+msgctxt "#91418"
+msgid "%s · Rev %d"
+msgstr "%s · 修订 %d"
+
+msgctxt "#91419"
+msgid "File not found in current source; local description and history kept."
+msgstr "当前来源未发现此文件；本地描述和观看记录仍保留。"
+
+msgctxt "#91420"
+msgid "Action"
+msgstr "操作"
+
+msgctxt "#91421"
+msgid "Set Work / Custom Title"
+msgstr "设置作品 / 自定义名称"
+
+msgctxt "#91422"
+msgid "Set as Extra Video"
+msgstr "设为补充视频"
+
+msgctxt "#91423"
+msgid "Detach Extra Link"
+msgstr "解除补充关系"
+
+msgctxt "#91424"
+msgid "Unbind"
+msgstr "解除绑定"
+
+msgctxt "#91425"
+msgid "Ignore Item"
+msgstr "忽略此项"
+
+msgctxt "#91426"
+msgid "Undo Last Edit"
+msgstr "撤回上次修改"
+
+msgctxt "#91427"
+msgid "Extra link: %s%s"
+msgstr "补充关系：%s%s"
+
+msgctxt "#91428"
+msgid " · Parent changed, re-verify"
+msgstr " · 父版本已变化，需重新核对"
+
+msgctxt "#91429"
+msgid "Use as Parent Release for Extras"
+msgstr "选作补充视频的父版本"
+
+msgctxt "#91430"
+msgid "Selected parent \"%s\". Open an extra file and choose \"Set as Extra Video\"; not saved yet."
+msgstr "已选父版本「%s」。返回并整理补充视频，选择“设为补充视频”；尚未保存关系。"
+
+msgctxt "#91431"
+msgid "Advanced: Manual ID / Custom Title"
+msgstr "高级：手填编号 / 自定义名称"
+
+msgctxt "#91432"
+msgid "Description Kind"
+msgstr "描述类型"
+
+msgctxt "#91433"
+msgid "Custom Title"
+msgstr "自定义名称"
+
+msgctxt "#91434"
+msgid "Movie TMDb"
+msgstr "电影 TMDb"
+
+msgctxt "#91435"
+msgid "Series TMDb"
+msgstr "剧集 TMDb"
+
+msgctxt "#91436"
+msgid "Display Title"
+msgstr "显示名称"
+
+msgctxt "#91437"
+msgid "TMDb ID (Movie / Series only)"
+msgstr "TMDb 编号（仅电影 / 剧集）"
+
+msgctxt "#91438"
+msgid "Season (Series, 0 for specials)"
+msgstr "季号（剧集，特别篇为 0）"
+
+msgctxt "#91439"
+msgid "Episode (Series)"
+msgstr "集号（剧集）"
+
+msgctxt "#91440"
+msgid "Extra Video Link"
+msgstr "补充视频关系"
+
+msgctxt "#91441"
+msgid "Keep Current Link"
+msgstr "保留当前关联"
+
+msgctxt "#91442"
+msgid "Selected Parent: %s"
+msgstr "已选父版本：%s"
+
+msgctxt "#91443"
+msgid "Shared Across Work (Uses Candidate / ID)"
+msgstr "作品共有（使用作品候选 / 编号）"
+
+msgctxt "#91444"
+msgid "Link Scope"
+msgstr "关联范围"
+
+msgctxt "#91445"
+msgid "Clear Selected Parent"
+msgstr "清除已选父版本"
+
+msgctxt "#91446"
+msgid "Extra Video Title"
+msgstr "补充视频名称"
+
+msgctxt "#91447"
+msgid "Add to Batch Queue"
+msgstr "加入本批修改"
+
+msgctxt "#91448"
+msgid "Fill in required ID and season/episode for the chosen kind."
+msgstr "请填写所选描述需要的编号与季集。"
+
+msgctxt "#91449"
+msgid "Added to batch; not written yet. Preview before confirming."
+msgstr "已加入本批，尚未写入。请预览后确认。"
+
+msgctxt "#91450"
+msgid "Loaded on demand. Candidates are suggestions; edits still require item-by-item preview."
+msgstr "仅按需读取此原文件。候选只是建议，修改仍需逐项预览。"
+
+msgctxt "#91451"
+msgid "%s · %d files · %s"
+msgstr "%s · %d 个原文件 · %s"
+
+msgctxt "#91452"
+msgid "Organize This File"
+msgstr "整理此文件"
+
+msgctxt "#91453"
+msgid "View Seasons"
+msgstr "查看季"
+
+msgctxt "#91454"
+msgid "View Episodes"
+msgstr "查看分集"
+
+msgctxt "#91455"
+msgid "View Files"
+msgstr "查看具体文件"
+
+msgctxt "#91456"
+msgid "View Extras"
+msgstr "查看补充视频"
+
+msgctxt "#91457"
+msgid "Scanned %d · Found %d videos"
+msgstr "已扫描 %d 项 · 已发现 %d 个视频"
+
+msgctxt "#91458"
+msgid "Request Cancel Scan"
+msgstr "请求取消本次扫描"
+
+msgctxt "#91459"
+msgid "View This Source"
+msgstr "查看此来源"
+
+msgctxt "#91460"
+msgid "Rescan Source"
+msgstr "重新完整扫描"
+
+msgctxt "#91461"
+msgid "Watched %s%s"
+msgstr "已观看 %s%s"
+
+msgctxt "#91462"
+msgid "View File Versions"
+msgstr "查看文件版本"
+
+msgctxt "#91463"
+msgid "Playback not covered by this session or kernel unsupported. Operate on TV."
+msgstr "当前播放不属于本次授权，或内核不支持安全控制。请在电视操作。"
+
+msgctxt "#91464"
+msgid "Playback control unavailable"
+msgstr "播放控制不可用"
+
+msgctxt "#91465"
+msgid "Pause"
+msgstr "暂停播放"
+
+msgctxt "#91466"
+msgid "Resume"
+msgstr "继续播放"
+
+msgctxt "#91467"
+msgid "Stop"
+msgstr "停止播放"
+
+msgctxt "#91468"
+msgid "Playback progress"
+msgstr "播放进度"
+
+msgctxt "#91469"
+msgid "Audio Tracks"
+msgstr "音轨"
+
+msgctxt "#91470"
+msgid "Subtitles"
+msgstr "字幕"
+
+msgctxt "#91471"
+msgid "Hide Subtitles"
+msgstr "关闭字幕"
+
+msgctxt "#91472"
+msgid "Show Subtitles"
+msgstr "显示字幕"
+
+msgctxt "#91473"
+msgid "Add Custom Stremio Add-on"
+msgstr "添加自定义 Stremio 插件源"
+
+msgctxt "#91474"
+msgid "Manifest URL (https:// or stremio://)"
+msgstr "Manifest 地址（https:// 或 stremio://）"
+
+msgctxt "#91475"
+msgid "Validate Manifest"
+msgstr "校验 Manifest"
+
+msgctxt "#91476"
+msgid "Add Add-on"
+msgstr "添加插件源"
+
+msgctxt "#91477"
+msgid "Remove Add-on"
+msgstr "移除此插件源"
+
+msgctxt "#91478"
+msgid "Upload TVBox / Xiaoya T4 JSON Config"
+msgstr "上传 TVBox / 小雅 T4 JSON 配置文件"
+
+msgctxt "#91479"
+msgid "Start Chunked Upload & Diagnose"
+msgstr "开始分片上传并诊断"
+
+msgctxt "#91480"
+msgid "Cancel Staged Chunks"
+msgstr "取消暂存分片"
+
+msgctxt "#91481"
+msgid "Upload External Subtitle (Bound to Selected Source)"
+msgstr "上传外挂字幕（仅绑定当前所选片源）"
+
+msgctxt "#91482"
+msgid "Upload & Apply Subtitle"
+msgstr "上传并应用字幕"
+
+msgctxt "#91483"
+msgid "Cancel Upload"
+msgstr "取消上传"
+
+msgctxt "#91484"
+msgid "Reading current state from TV…"
+msgstr "正在读取电视上的当前状态…"
+
+msgctxt "#91485"
+msgid "Source: %s · %s · %s · %s · %s"
+msgstr "当前来源：%s · %s · %s · %s · %s"
+
+msgctxt "#91486"
+msgid "No works in this scope; adjust or clear filters to view current source."
+msgstr "此范围暂无作品；可调整筛选，或清除筛选后查看当前来源。"
+
+msgctxt "#91487"
+msgid "Works · Page %d · Up to 32/page; click a file to load review details."
+msgstr "作品检索 · 第 %d 页 · 每页最多 32 项；点击具体文件才读取整理记录。"
+
+msgctxt "#91488"
+msgid "No records on this page. Active scans show committed items only."
+msgstr "此页暂无记录。扫描未完成时仅显示已提交部分。"
+
+msgctxt "#91489"
+msgid "State loaded · Page %d. Closing browser does not cancel background jobs."
+msgstr "已读取当前状态 · 第 %d 页。关闭浏览器不会取消后台任务。"
+
+msgctxt "#91490"
+msgid "Queue cleared; preview again after selecting items. Committed receipts kept."
+msgstr "本批已清空，重新选择后请重新预览。已提交回执仍保留。"
+
+msgctxt "#91491"
+msgid "Review all %d previewed items (%d batches). Saved batches do not auto-rollback on later conflicts."
+msgstr "请核对全部 %d 项预览，将分 %d 批保存。已保存批次不会因后续冲突自动回滚。"
+
+msgctxt "#91492"
+msgid "Batch contains conflicts or invalid items; refresh and reselect."
+msgstr "本轮包含冲突或无效条目，请刷新后重新选择。"
+
+msgctxt "#91493"
+msgid "Submission Receipt"
+msgstr "提交回执"
+
+msgctxt "#91494"
+msgid "Continue Organizing Series"
+msgstr "继续整理本剧"
+
+msgctxt "#91495"
+msgid "Batch saved. Refresh to read new revisions."
+msgstr "本批已保存。刷新可读取新修订。"
+
+msgctxt "#91496"
+msgid "Some items were not saved; check item results and refresh."
+msgstr "本批部分修改未保存，请查看逐项结果并刷新。"
+
+msgctxt "#91497"
+msgid "Some outcomes still pending; known receipts kept."
+msgstr "本批仍有提交结果待核对，已知回执已保留。"
+
+msgctxt "#91498"
+msgid "Saved %d/%d, pending %d, unsaved %d, unstarted %d%s"
+msgstr "已保存 %d/%d，待核对 %d，未保存 %d，未开始 %d%s"
+
+msgctxt "#91499"
+msgid "TV confirmed session ended; background jobs unchanged."
+msgstr "电视已确认授权结束，后台任务保持原状态。"
+
+msgctxt "#91550"
+msgid "Open \"My Library\" to browse and search by site."
+msgstr "打开“我的片库”可按站点浏览与搜索。"
+
+msgctxt "#91551"
+msgid "Selected Source"
+msgstr "已选来源"
+
+msgctxt "#91552"
+msgid "Keyword: %s"
+msgstr "关键词：%s"
+
+msgctxt "#91553"
+msgid "Current Registered Source"
+msgstr "当前已登记来源"
+
+msgctxt "#91554"
+msgid "All Sources in Current Account"
+msgstr "当前账号全部来源"
+
+msgctxt "#91555"
+msgid "Source · %s"
+msgstr "目录来源 · %s"
+
+msgctxt "#91556"
+msgid "Keyword · %s"
+msgstr "关键词 · %s"
+
+msgctxt "#91557"
+msgid "All Works / Files / Version Notes"
+msgstr "全部作品 / 原文件 / 版本备注"
+
+msgctxt "#91558"
+msgid "Library Filter & Sort"
+msgstr "片库筛选与排序"
+
+msgctxt "#91559"
+msgid " · Current Registered Source"
+msgstr " · 当前已登记来源"
+
+msgctxt "#91560"
+msgid "Apply Filters"
+msgstr "应用筛选"
+
+msgctxt "#91561"
+msgid "Clear Filters (Keep Current Source)"
+msgstr "清除筛选（保留当前来源）"
+
+msgctxt "#91562"
+msgid "Save as Saved View"
+msgstr "保存为常用视图"
+
+msgctxt "#91563"
+msgid "Search Works / Files / Version Notes (max 160 chars)"
+msgstr "搜索作品 / 原文件 / 版本备注（最多 160 字）"
+
+msgctxt "#91564"
+msgid "Keyword Too Long or Contains Control Characters"
+msgstr "关键词过长或含控制字符"
+
+msgctxt "#91565"
+msgid "Please use up to 160 characters. Current filters are kept."
+msgstr "请使用 160 字以内的关键词。当前筛选保留。"
+
+msgctxt "#91566"
+msgid "Select Source"
+msgstr "选择目录来源"
+
+msgctxt "#91567"
+msgid "Select %s"
+msgstr "选择%s"
+
+msgctxt "#91568"
+msgid "Saved View Unchanged"
+msgstr "常用视图未修改"
+
+msgctxt "#91569"
+msgid "Record changed; reopen and try again."
+msgstr "记录已变化，请重新打开后再操作。"
+
+msgctxt "#91570"
+msgid "Source or record temporarily unavailable; retry, delete, or save filters again."
+msgstr "来源或记录暂不可用，可重试、删除或重新保存筛选。"
+
+msgctxt "#91571"
+msgid "Library Scope Changed"
+msgstr "片库范围已变化"
+
+msgctxt "#91572"
+msgid "Go back and reselect a source. Saved edits and original files are kept."
+msgstr "请返回重新选择来源。已保存的整理与原文件均保留。"
+
+msgctxt "#91573"
+msgid "File Details & Evidence"
+msgstr "本文件信息与依据"
+
+msgctxt "#91574"
+msgid "Search Personal Library"
+msgstr "搜索自己的片库"
+
+msgctxt "#91575"
+msgid "Check Original Submission Receipt?"
+msgstr "查询原提交回执？"
+
+msgctxt "#91576"
+msgid "Result still pending verification. Queries only the original submission ID without rewriting; you can also check later from Library Management."
+msgstr "结果尚待核对。只查询原提交编号，不重新写入；也可稍后从片库管理继续查询。"
+
+msgctxt "#91577"
+msgid "Scan Current Registered Source?"
+msgstr "扫描当前已登记来源？"
+
+msgctxt "#91578"
+msgid "Builds a local work index only; never moves or modifies original files."
+msgstr "只建立本机作品索引，不移动或修改原文件。"
+
+msgctxt "#91579"
+msgid "Phone management component not ready; no grant created. TV library and original file browsing remain available."
+msgstr "手机管理组件未就绪；未创建授权。电视片库与原文件浏览仍可使用。"
+
+msgctxt "#91580"
+msgid "My Library"
+msgstr "我的作品片库"
+
+msgctxt "#91581"
+msgid "Saved Views"
+msgstr "常用视图"
+
+msgctxt "#91582"
+msgid " · Local"
+msgstr " · 本地"
+
+msgctxt "#91583"
+msgid " · Network Folder (Experimental)"
+msgstr " · 网络目录（实验）"
+
+msgctxt "#91584"
+msgid " · CD2"
+msgstr " · CD2"
+
+msgctxt "#91585"
+msgid "Reuses existing mount · Descriptions kept, verified before play"
+msgstr "复用已有挂载 · 描述保留，播放时复核"
+
+msgctxt "#91586"
+msgid "Mount temporarily unavailable · Indexed works and jobs remain viewable"
+msgstr "挂载暂不可用 · 已有作品和任务仍可查看"
+
+msgctxt "#91587"
+msgid " · Scan Jobs"
+msgstr " · 扫描任务"
+
+msgctxt "#91588"
+msgid "View or cancel directly without reading mounted folder"
+msgstr "直接查看或取消，无需读取挂载目录"
+
+msgctxt "#91589"
+msgid "Add or Manage Personal Cloud Drive"
+msgstr "添加或管理个人网盘"
+
+msgctxt "#91590"
+msgid "Existing CD2, NAS, and local videos remain browsable from their folders"
+msgstr "原有 CD2、NAS 和本机视频仍可从原目录浏览"
+
+msgctxt "#91591"
+msgid "Browse Original Files & Mounts"
+msgstr "浏览原文件与已有挂载"
+
+msgctxt "#91592"
+msgid "Aggregated Library"
+msgstr "已有聚合片库"
+
+msgctxt "#91593"
+msgid "Work Not Indexed in Current Library"
+msgstr "当前片库未确认收录此作品"
+
+msgctxt "#91594"
+msgid "Current Source Indexing Status Unknown"
+msgstr "当前来源收录状态未知"
+
+msgctxt "#91595"
+msgid "Public catalog remains browsable; open Library to scan or organize original files."
+msgstr "公共作品可继续浏览；可进入片库扫描或整理原文件。"
+
+msgctxt "#91596"
+msgid "Review Workbench"
+msgstr "待整理工作台"
+
+msgctxt "#91597"
+msgid "Unmatched Files"
+msgstr "未匹配原文件"
+
+msgctxt "#91598"
+msgid "Ignored Files"
+msgstr "已忽略原文件"
+
+msgctxt "#91599"
+msgid "Filter & Sort"
+msgstr "筛选与排序"
+
+msgctxt "#91600"
+msgid "Manage Current Library & Check Submissions"
+msgstr "当前片库管理与原提交查询"
+
+msgctxt "#91601"
+msgid "All Works"
+msgstr "全部作品"
+
+msgctxt "#91602"
+msgid "Search Library"
+msgstr "搜索片库"
+
+msgctxt "#91603"
+msgid "Scan / Update Current Registered Source"
+msgstr "扫描 / 更新当前已登记来源"
+
+msgctxt "#91604"
+msgid "Organize Works & Scan Jobs"
+msgstr "整理作品与扫描任务"
+
+msgctxt "#91605"
+msgid "Library Updated"
+msgstr "片库已更新"
+
+msgctxt "#91606"
+msgid "Returned to page 1; please reselect."
+msgstr "已回到第一页，请重新选择。"
+
+msgctxt "#91607"
+msgid "Pending Review"
+msgstr "待整理"
+
+msgctxt "#91608"
+msgid " · %d file versions"
+msgstr " · %d 个文件版本"
+
+msgctxt "#91609"
+msgid "Local"
+msgstr "本地"
+
+msgctxt "#91610"
+msgid "Network Folder (Experimental)"
+msgstr "网络目录（实验）"
+
+msgctxt "#91611"
+msgid " · Plays from start; old path progress not inherited"
+msgstr " · 从头播放，不继承旧路径进度"
+
+msgctxt "#91612"
+msgid " · Plays from start; history progress for reference only"
+msgstr " · 从头播放，历史进度仅供查看"
+
+msgctxt "#91613"
+msgid "and %d sources total"
+msgstr "等 %d 个来源"
+
+msgctxt "#91614"
+msgid " · Display truncated; original record kept"
+msgstr " · 显示已截短，原记录保留"
+
+msgctxt "#91615"
+msgid " · %s: %s"
+msgstr " · %s：%s"
+
+msgctxt "#91616"
+msgid " · Main work or release changed; please re-verify link"
+msgstr " · 主作品或版本已变化，请核对关联"
+
+msgctxt "#91617"
+msgid " · %d%% watched on this file"
+msgstr " · 本文件已观看 %d%%"
+
+msgctxt "#91618"
+msgid "Organize File"
+msgstr "整理原文件"
+
+msgctxt "#91619"
+msgid "Play File from Start"
+msgstr "从头播放本文件"
+
+msgctxt "#91620"
+msgid "Resume File"
+msgstr "继续播放本文件"
+
+msgctxt "#91621"
+msgid "Play File"
+msgstr "播放本文件"
+
+msgctxt "#91622"
+msgid "Select File Version"
+msgstr "选择文件版本"
+
+msgctxt "#91623"
+msgid "Select Episode"
+msgstr "选择分集"
+
+msgctxt "#91624"
+msgid "Select Season"
+msgstr "选择季集"
+
+msgctxt "#91625"
+msgid "View Original Files"
+msgstr "查看原文件"
+
+msgctxt "#91626"
+msgid "Organize This File"
+msgstr "整理这个原文件"
+
+msgctxt "#91627"
+msgid "View File & Media Info"
+msgstr "查看文件与媒体信息"
+
+msgctxt "#91628"
+msgid "Manage Extra Link"
+msgstr "整理补充内容关联"
+
+msgctxt "#91629"
+msgid "My Extras"
+msgstr "我的补充内容"
+
+msgctxt "#91630"
+msgid "Return to Current Source Works"
+msgstr "返回当前来源作品"
+
+msgctxt "#91631"
+msgid "No files in this group right now; organized works may have moved to a new group"
+msgstr "此分组暂时没有文件，整理后的作品可能已归入新分组"
+
+msgctxt "#91632"
+msgid "Continue Organizing Current Source"
+msgstr "继续整理当前来源"
+
+msgctxt "#91633"
+msgid "No matching works · Adjust Filters"
+msgstr "当前筛选没有作品 · 调整筛选"
+
+msgctxt "#91634"
+msgid "Saved View Needs Source Reselection"
+msgstr "常用视图需重新选择来源"
+
+msgctxt "#91635"
+msgid "Sign In or Reselect Cloud Drive"
+msgstr "登录或重新选择网盘"
+
+msgctxt "#91636"
+msgid "Library Temporarily Unavailable · Retry"
+msgstr "片库暂不可用 · 选择重试"
+
+msgctxt "#91637"
+msgid "Saved view is kept; rename or delete it in Saved Views, or re-filter in the current source to update it."
+msgstr "常用视图仍保留；请从常用视图管理重命名或删除，或在当前来源重新筛选并更新此视图。"
+
+msgctxt "#91638"
+msgid "Account changed; return to Library and reselect."
+msgstr "账号已变化，请返回片库重新选择。"
+
+msgctxt "#91639"
+msgid "Library temporarily unavailable; original files, watch history, and saved edits are kept."
+msgstr "片库暂不可用，原文件、观看记录与已保存的整理结果仍保留。"
+
+msgctxt "#91640"
+msgid "Library Not Loaded"
+msgstr "未读取片库"
