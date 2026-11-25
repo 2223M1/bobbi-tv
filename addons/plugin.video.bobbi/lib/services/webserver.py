@@ -254,6 +254,7 @@ def _fetch_manifest(url):
             validator=_allowed_manifest_url,
             headers=headers,
             timeout=10,
+            deadline=deadline,
             stream=True,
         )
         resp.raise_for_status()

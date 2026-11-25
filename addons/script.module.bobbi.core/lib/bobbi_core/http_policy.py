@@ -1,9 +1,11 @@
 """Shared Stremio/Nuvio protocol, cache, and bounded HTTP safety helpers."""
 
 import hashlib
+from contextvars import ContextVar
 import ipaddress
 import json
 import socket
+import ssl
 import time
 from typing import Any, Callable, Mapping, Optional
 from urllib.parse import quote, urljoin, urlsplit, urlunsplit
@@ -17,6 +19,7 @@ ALLOWED_CONTENT_ENCODINGS = frozenset(("", "identity", "gzip", "x-gzip", "deflat
 _SENSITIVE_REDIRECT_HEADERS = frozenset(
     {"authorization", "cookie", "proxy-authorization", "x-emby-token", "x-plex-token", "x-api-key"}
 )
+_VALIDATION_CONTEXT = ContextVar('bobbi_http_validation', default=None)
 
 
 def _close_quietly(response: Any) -> None:
@@ -69,6 +72,110 @@ def _apply_stream_timeout(raw_stream: Any, rem: Optional[float]) -> None:
             break
 
 
+class _BoundedReply:
+    """Give a requests response ownership of one existing bounded HTTP attempt."""
+
+    def __init__(self, reply, connection, attempt):
+        self._original_response = reply
+        self._connection = connection
+        self._attempt = attempt
+
+    def read(self, size=-1, decode_content=False):
+        return self._original_response.read(size)
+
+    def read1(self, size=-1, decode_content=False):
+        return self._original_response.read1(size)
+
+    def close(self):
+        try:
+            self._original_response.close()
+        finally:
+            try:
+                self._connection.close()
+            finally:
+                self._attempt.close()
+
+
+def _bounded_requests_get(request, url, *, deadline, cancelled, clock, strip_sensitive, vetted_addresses, kwargs):
+    """Use the existing transport for real requests GETs; keep injected callables intact.
+
+    A requests socket timeout is an idle timeout, including in response headers
+    and chunk framing. Its retry adapter also starts fresh budgets. Request
+    preparation stays with requests, while bounded_http owns DNS/TCP/TLS and
+    every read under the caller's one deadline. No transport worker is spawned.
+    """
+    import requests
+    from .bounded_http import AttemptHandle, default_tls_context, open_connection
+
+    owner = getattr(request, '__self__', None)
+    function = getattr(request, '__func__', request)
+    if not (
+        isinstance(owner, requests.Session)
+        and getattr(function, '__module__', '') == 'requests.sessions'
+        and getattr(function, '__name__', '') == 'get'
+    ):
+        return request(url, allow_redirects=False, **kwargs)
+
+    if kwargs.get('proxies') or owner.proxies:
+        raise ValueError('configured addon proxy is unsupported by bounded transport')
+    verify = kwargs.get('verify', owner.verify)
+    if verify is False:
+        raise ValueError('verified TLS is required')
+    cert = kwargs.get('cert', owner.cert)
+    tls_context = None
+    if verify not in (True, None) or cert:
+        import os
+        tls_context = ssl.create_default_context(
+            cafile=verify if verify not in (True, None) and not os.path.isdir(verify) else None,
+            capath=verify if verify not in (True, None) and os.path.isdir(verify) else None,
+        )
+        if cert:
+            tls_context.load_cert_chain(*(cert if isinstance(cert, tuple) else (cert,)))
+
+    # Do not consult ambient netrc/proxy settings for a user-entered addon URL.
+    with requests.Session() as preparation:
+        preparation.trust_env = False
+        preparation.headers.update(owner.headers)
+        preparation.cookies.update(owner.cookies)
+        preparation.auth = owner.auth
+        preparation.params = owner.params
+        prepared = preparation.prepare_request(requests.Request(
+            'GET', url, headers=kwargs.get('headers'), params=kwargs.get('params'),
+            cookies=kwargs.get('cookies'), auth=kwargs.get('auth'),
+        ))
+    if strip_sensitive:
+        for name in list(prepared.headers):
+            if name.lower() in _SENSITIVE_REDIRECT_HEADERS:
+                del prepared.headers[name]
+    attempt = AttemptHandle(deadline=deadline, cancelled=cancelled, clock=clock)
+    connection = None
+    try:
+        timeout = kwargs.get('timeout')
+        connect_cap = timeout[0] if isinstance(timeout, tuple) else timeout
+        connection, target = open_connection(
+            prepared.url, attempt, connect_cap=connect_cap,
+            ssl_context=tls_context or default_tls_context(),
+            **({'resolver': lambda *_args: vetted_addresses} if vetted_addresses else {}),
+        )
+        connection.request('GET', target, headers=dict(prepared.headers))
+        reply = connection.getresponse()
+        attempt.check()
+        response = requests.Response()
+        response.status_code = reply.status
+        response.reason = reply.reason
+        response.url = prepared.url
+        response.request = prepared
+        response.headers = requests.structures.CaseInsensitiveDict(reply.getheaders())
+        response.raw = _BoundedReply(reply, connection, attempt)
+        requests.cookies.extract_cookies_to_jar(owner.cookies, prepared, response.raw)
+        return response
+    except BaseException:
+        if connection is not None:
+            connection.close()
+        attempt.close()
+        raise
+
+
 def read_bounded_http_body(
     response: Any,
     max_bytes: int = MAX_RESOURCE_JSON_BYTES,
@@ -105,10 +212,11 @@ def read_bounded_http_body(
             while True:
                 rem = _check_budget(deadline, cancelled, clock)
                 _apply_stream_timeout(raw_stream, rem)
+                read = getattr(raw_stream, 'read1', raw_stream.read)
                 try:
-                    chunk = raw_stream.read(8192, decode_content=False)
+                    chunk = read(8192, decode_content=False)
                 except TypeError:
-                    chunk = raw_stream.read(8192)
+                    chunk = read(8192)
                 if not chunk:
                     break
                 _check_budget(deadline, cancelled, clock)
@@ -170,7 +278,23 @@ def is_safe_http_url(url: Any, resolve_dns: bool = True) -> bool:
         except ValueError:
             if not resolve_dns:
                 return True
-            addresses = [entry[4][0] for entry in socket.getaddrinfo(parts.hostname, None)]
+            from .bounded_http import AttemptHandle, resolve_addresses
+            context = _VALIDATION_CONTEXT.get()
+            attempt = context['attempt'] if context else AttemptHandle(deadline=time.monotonic() + 5)
+            port = parts.port or (443 if parts.scheme.lower() == 'https' else 80)
+            try:
+                resolved = resolve_addresses(
+                    parts.hostname, port, attempt,
+                    resolver=lambda host, port, *_: socket.getaddrinfo(host, port, 0, socket.SOCK_STREAM),
+                )
+            finally:
+                if context is None:
+                    attempt.close()
+            addresses = [entry[4][0] for entry in resolved]
+            if context is not None:
+                context['addresses'][parts.hostname] = resolved
+        if not addresses:
+            return False
         for address in addresses:
             ip = ipaddress.ip_address(address)
             if not ip.is_global:
@@ -244,13 +368,26 @@ def request_with_safe_redirects(
     seen_targets = set()
     base_headers = dict(kwargs.get("headers") or {}) if kwargs.get("headers") is not None else None
     base_timeout = kwargs.get("timeout")
+    strip_sensitive = False
 
     for hop in range(MAX_REDIRECTS + 1):
         rem = _check_budget(deadline, cancelled, clock)
         if target in seen_targets:
             raise ValueError("redirect loop")
         seen_targets.add(target)
-        if not validator(target):
+        from .bounded_http import AttemptHandle
+        validation = {'attempt': AttemptHandle(
+            deadline=deadline if deadline is not None else clock() + 5,
+            cancelled=cancelled, clock=clock,
+        ), 'addresses': {}}
+        validation_token = _VALIDATION_CONTEXT.set(validation)
+        try:
+            valid = validator(target)
+        finally:
+            _VALIDATION_CONTEXT.reset(validation_token)
+            validation['attempt'].close()
+        _check_budget(deadline, cancelled, clock)
+        if not valid:
             raise ValueError("unsafe request destination")
 
         call_kwargs = dict(kwargs)
@@ -260,7 +397,15 @@ def request_with_safe_redirects(
             else:
                 call_kwargs["timeout"] = max(0.005, rem)
 
-        response = request(target, allow_redirects=False, **call_kwargs)
+        if deadline is None:
+            response = request(target, allow_redirects=False, **call_kwargs)
+        else:
+            response = _bounded_requests_get(
+                request, target, deadline=deadline, cancelled=cancelled, clock=clock,
+                strip_sensitive=strip_sensitive,
+                vetted_addresses=validation['addresses'].get(urlsplit(target).hostname),
+                kwargs=call_kwargs,
+            )
         try:
             _check_budget(deadline, cancelled, clock)
             status = getattr(response, "status_code", None)
@@ -286,6 +431,8 @@ def request_with_safe_redirects(
                 k: v for k, v in base_headers.items() if k.lower() not in _SENSITIVE_REDIRECT_HEADERS
             }
             kwargs["headers"] = dict(base_headers)
+        if _origin_tuple(next_target) != _origin_tuple(target):
+            strip_sensitive = True
         target = next_target
 
     raise ValueError("too many redirects")
