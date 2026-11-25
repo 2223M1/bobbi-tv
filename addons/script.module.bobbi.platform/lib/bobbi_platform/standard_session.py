@@ -35,6 +35,7 @@ class StandardSession:
             account=deepcopy(row['account']),
             position=row['position'],
             duration=row['duration'],
+            observed_clock=row.get('progress_observed') is not None,
             paused=bool(row.get('last_paused', False)),
             data=deepcopy(row.get('data') or {}),
         )
@@ -144,7 +145,10 @@ class StandardSession:
                 row['checkpoint'] = FileProgressCheckpoint()
         else:
             trigger = None
-            if cur_paused != prev_paused:
+            if observed and prev_obs is None:
+                self._save(row, 'STARTED')
+                trigger = 'TimeUpdate'
+            elif cur_paused != prev_paused:
                 trigger = 'Pause' if cur_paused else 'Unpause'
             elif observed and prev_obs is not None:
                 expected_advance = 0.0 if prev_paused else max(0.0, now - prev_obs)
@@ -201,6 +205,8 @@ class StandardSession:
         return natural
 
     def _save(self, row, reason):
+        if row.get('progress_observed') is None:
+            return  # A matched item without a clock is not position zero.
         if row['data'].get('_pan_file'):
             row['data']['_file_history_sequence'] = row['data'].get('_file_history_sequence', 0) + 1
         data = deepcopy(row['data'])

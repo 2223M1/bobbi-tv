@@ -215,6 +215,9 @@ class _WSFrameStream:
                 raise _WSProtocolError(1002, 'nonzero_rsv')
             opcode = b0 & 0x0F
             masked = (b1 & 0x80) != 0
+            if masked:
+                # RFC 6455 5.1: only client-to-server frames carry masks.
+                raise _WSProtocolError(1002, 'masked_server_frame')
             plen = b1 & 0x7F
             idx = 2
             if plen == 126:
@@ -246,16 +249,12 @@ class _WSFrameStream:
                 if plen > WS_MAX_FRAME_BYTES:
                     raise _WSProtocolError(1009, 'frame_too_large')
 
-            mask_len = 4 if masked else 0
-            total_frame_len = idx + mask_len + plen
+            total_frame_len = idx + plen
             if len(self.buf) < total_frame_len:
                 break
 
-            mask = bytes(self.buf[idx:idx + 4]) if masked else b''
-            payload = bytes(self.buf[idx + mask_len:total_frame_len])
+            payload = bytes(self.buf[idx:total_frame_len])
             del self.buf[:total_frame_len]
-            if masked:
-                payload = bytes(b ^ mask[i & 3] for i, b in enumerate(payload))
 
             if opcode == 0x9:
                 events.append(('pong', payload))
@@ -407,7 +406,9 @@ class EmbyInvalidationHub:
             self._states[key] = st
             while len(self._states) > 16:
                 old_key, _ = self._states.popitem(last=False)
-                wk = self._ws_workers.pop(old_key, None)
+                # A cancelled worker still owns its in-flight connection until
+                # its finally block exits. Keep it visible to close()/Host.
+                wk = self._ws_workers.get(old_key)
                 if wk is not None:
                     wk[0].set()
         else:
@@ -422,7 +423,7 @@ class EmbyInvalidationHub:
             st['sync_state'] = 'auth_required' if state == 'AUTH_REQUIRED' else st['sync_state']
             st['revision'] += 1
             if state == 'AUTH_REQUIRED':
-                wk_to_stop = self._ws_workers.pop((source_id, generation), None)
+                wk_to_stop = self._ws_workers.get((source_id, generation))
                 if wk_to_stop is not None:
                     wk_to_stop[0].set()
             rev = st['revision']
@@ -888,7 +889,12 @@ class EmbySessionReporter:
                 if entry is None or cur_now < entry['due_at']:
                     continue
                 sess = self._sessions.get(req_id)
-                if sess is None or sess.get('sealed') or sess.get('started_sent'):
+                if sess is None or sess.get('sealed'):
+                    self._storage_retries.pop(req_id, None)
+                    continue
+                if entry['item']['event'] == 'PROGRESS':
+                    continue  # The coalesced-progress loop below owns its wake.
+                if sess.get('started_sent'):
                     self._storage_retries.pop(req_id, None)
                     continue
                 try:
@@ -903,9 +909,17 @@ class EmbySessionReporter:
             if sess is None or sess.get('sealed'):
                 self._coalesced_progress.pop(req_id, None)
                 continue
+            retry = self._storage_retries.get(req_id)
+            if retry is not None and retry['item']['event'] == 'PROGRESS':
+                cur_now = self.clock() if now is None else now
+                if not allow_retries or cur_now < retry['due_at']:
+                    continue
+                self._coalesced_progress[req_id]['storage_attempts'] = retry['item']['storage_attempts']
             try:
                 self._queue.put_nowait({'event': 'PROGRESS', 'request_id': req_id})
                 self._queued_progress_markers.add(req_id)
+                if retry is not None and retry['item']['event'] == 'PROGRESS':
+                    self._storage_retries.pop(req_id, None)
             except Full:
                 break
 
@@ -992,6 +1006,9 @@ class EmbySessionReporter:
                         break
                 if req_id in self._queued_progress_markers:
                     return True
+                retry = self._storage_retries.get(req_id)
+                if retry is not None and retry['item']['event'] == 'PROGRESS':
+                    return True  # Preserve the storage backoff while coalescing.
                 try:
                     self._queue.put_nowait({'event': 'PROGRESS', 'request_id': req_id})
                     self._queued_progress_markers.add(req_id)
@@ -1119,15 +1136,17 @@ class EmbySessionReporter:
             if sess is None:
                 return
             if event_kind == 'PROGRESS':
-                if not sess.get('sealed') and req_id not in self._coalesced_progress:
+                if sess.get('sealed'):
+                    return
+                if req_id not in self._coalesced_progress:
                     self._coalesced_progress[req_id] = item
-                return
             if event_kind == 'AV_START':
                 if sess.get('sealed') or sess.get('started_sent'):
                     return
-                attempts = int(item.get('storage_attempts') or 0) + 1
-                if attempts > 8:
+                if int(item.get('storage_attempts') or 0) >= 8:
                     return
+            if event_kind in ('AV_START', 'PROGRESS'):
+                attempts = min(8, int(item.get('storage_attempts') or 0) + 1)
                 retry_item = dict(item, storage_attempts=attempts)
                 backoff = min(1.0, 0.05 * (2 ** (attempts - 1)))
                 self._storage_retries[req_id] = {'item': retry_item, 'due_at': now + backoff}
@@ -1165,7 +1184,15 @@ class EmbySessionReporter:
                 return
             needs_playing_first = not sess.get('started_sent')
 
-        pos_ticks = seconds_to_ticks(item['position']) if item['observed_clock'] else 0
+        if not item['observed_clock'] and needs_playing_first:
+            # Player identity can be known before its clock is readable. Wait
+            # for the first real sample; inventing zero clears server resume.
+            if event_kind == 'TERMINAL':
+                with self._lock:
+                    sess['reconciled'] = 'clock_unavailable'
+            return
+        pos_ticks = (seconds_to_ticks(item['position']) if item['observed_clock']
+                     else sess['last_ticks'])
         sess['seq'] += 1
         body = {
             'ItemId': meta['item_id'],
@@ -1404,14 +1431,15 @@ class EmbySessionReporter:
                         lambda: client._item(meta['item_id']),
                     )
                     udata = fresh.get('UserData') if isinstance(fresh, dict) else None
-                    if not isinstance(udata, dict):
+                    if (not isinstance(udata, dict)
+                            or type(udata.get('PlaybackPositionTicks')) is not int
+                            or udata['PlaybackPositionTicks'] < 0
+                            or type(udata.get('Played')) is not bool):
                         with self._lock:
                             self._pending_stops.pop(req_id, None)
                         continue
-                    srv_ticks = udata.get('PlaybackPositionTicks')
-                    if srv_ticks is None:
-                        srv_ticks = 0
-                    srv_played = bool(udata.get('Played', False)) if udata.get('Played') is not None else False
+                    srv_ticks = udata['PlaybackPositionTicks']
+                    srv_played = udata['Played']
                     with self._lock:
                         sess = self._sessions.get(req_id) or {
                             'started_sent': True,
@@ -1454,7 +1482,7 @@ class EmbySessionReporter:
                         and type(baseline.get('Played')) is bool
                         and srv_played == baseline['Played']
                         and type(srv_ticks) is int
-                        and abs(srv_ticks - baseline['PlaybackPositionTicks']) <= 2 * TICKS_PER_SECOND
+                        and srv_ticks == baseline['PlaybackPositionTicks']
                     )
                     if not baseline_matches:
                         with self._lock:
