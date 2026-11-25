@@ -1,0 +1,275 @@
+{
+  "schema": 1,
+  "protocol": "bobilg-16x4-v2",
+  "renderer": "script.module.bobbi.platform/resources/renderer/ce-armhf/libbobbi_liquid_glass.so",
+  "renderer_sha256": "d09f0df617dd7be20ccb6250c920a1c1d8433aac68ccac123a53ae176d99f330",
+  "renderer_bytes": 58996,
+  "required_addons": [
+    "skin.bobbi.cinema",
+    "plugin.video.bobbi",
+    "script.module.bobbi.platform",
+    "script.module.bobbi.core"
+  ],
+  "materials": {
+    "plugin.video.bobbi/resources/skins/Default/1080i/source_select.xml": "3c04f88eabef6cd8499faa86a3c478cf4818ce0dbf4f2c4d8cee0ed08c376481",
+    "plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/cc-pill-208x96.png": "0c38b103a60814de9b466900885425f70c0a0bb0ea270eef86b433815a5f2f28",
+    "plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/cc-pill-251x112.png": "61f007bfa9e5696d13ac1d741e82bd0163c4fcff728e9afa7246a9f6a6417df0",
+    "plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/cc-power-208x208.png": "1ddbab0d677425456d5db302b1385439cfcfac8607d9f197f6ef17e979749fb2",
+    "plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/cc-power-251x242.png": "475d672900c2b3951e19db61b2279b57163579ab675494e133f15ec5d6ac881f",
+    "plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/lg-barrier-cc-backdrop.png": "6684ba2c457564872cfc13ad5629f1b8cc2f601019c3711016328286bcc926fc",
+    "plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/lg-barrier-cc.png": "bf608599e13ec270afec3575fb565a928986f9547d3c1a3ed5f0c93ef5c56960",
+    "plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/lg-barrier-hero.png": "268d356df2b92dcdbff3b7225a915740f27f6da67abd628b5a25cb440cec93a3",
+    "plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/lg-barrier-modal.png": "8bd0998ba5875b05f6a61297d384922ecdae5688283a39e3630d56af1ca7bd62",
+    "plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/lg-barrier-nav1.png": "864a3e1f8d41c1459951314dcd9de50a87afd732d4fc23eebdf81e5b8c48d5f4",
+    "plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/lg-barrier-scene.png": "8c43ebefbbd001e4831a77935aa2062c33371b3eec97a4bdf888fabf25d97599",
+    "plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/lg-barrier-sidebar.png": "fe299cbb759a663fc65df4c4eb45b58c29b7d9e6d00fd8a899f85a55e8fa7e07",
+    "plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/lg-barrier-top.png": "387033ca6f3651c57f27ac51184a15994fc8e0204811428f383c80fa9886aeba",
+    "plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/lg-card-r24.png": "bbf7ada0b5ae932c1c339aa5b9f9b4b138afa8386029079d409b16c78fe270dd",
+    "plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/lg-cc-matte-soften.png": "d7d978a595b27286fcadbe13b15aea77edab49108bd2ef74552a990fefd1bf9e",
+    "plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/lg-cc-pill.png": "716a96e409cdb355f77415e3ad710b921b54ba69359a4b2068eb7663b7fd2d96",
+    "plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/lg-cc-power-r48.png": "d5f1c404281ad6d825324a2366a04ab76f810720d999c6e2ab2ba269d6625b6f",
+    "plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/lg-cc-power-r49.png": "29833988f6579525bfe31f271c083c5e95b01fcaddbeb5fc708d7bc83a6fb9cf",
+    "plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/lg-cc-power-r56.png": "b0ab8285d0aa5c4f297316282f787dd25c0a0efd1826c2433a42204b57ab03ca",
+    "plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/lg-cc-soften.png": "1b0d82a406f04a551e86261d1b59e1c17b885bde7bcc6b83dc87663ffdc77696",
+    "plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/lg-cc-tile.png": "9aa6ea400aaa867a5736854b9e9b8a017939145273e8997324c6d0f1918234ca",
+    "plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/lg-modal-panel.png": "c782302d1edbbc74fddfbcdda793b5797e76963e5ce03f17c6548844772f1d72",
+    "plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/lg-modal-pill.png": "a46e9f49d29d8d85d968811915651d60d80c8dd3178f6f649e89a6f3d6a4832d",
+    "plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/lg-nav-pill-active.png": "fdb3d7d4115384d3829a877109638b8e392965b23ace271e21567aed046858ff",
+    "plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/lg-nav-pill.png": "3ca0a7abdb7cd1caa76566a1aa9399503a19cb12027d9d22a3c908e64cf32f5d",
+    "plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/lg-osd-pill.png": "27cb0ef06b344d3b6300602d516e0ca4a998513e17ca988de56353464d03e0d2",
+    "plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/lg-pill-active.png": "edacf398401c573d7a3bff0f98bd91ba80ea19f538d1a3e802c7077b6d2a9ba3",
+    "plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/lg-pill.png": "6b68cee242a0bb9e8c4446288cd2ea1d6aaaf1a2c84703eed3a913ed8fc0a4c1",
+    "plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/lg-sidebar.png": "b995b4a9297117d5faf2ab5ba3b0cee9ab758ab6099246ff78c6e89f32bff019",
+    "plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/sidebar-classic.png": "394b449f1995bfcf318eed6d7c4772143dd1bb900658ec7c197754c12d56310a",
+    "skin.bobbi.cinema/1080p/DialogButtonMenu.xml": "23ef058a9bc0f9a520a76439032d3d76682c2d8751d847665b21514cd1509900",
+    "skin.bobbi.cinema/1080p/Font.xml": "ed4c81100eaffa640b1b39b658ef1ac8830534cd1cf8802515c2c3ba5a4ca73f",
+    "skin.bobbi.cinema/1080p/Home.xml": "760cbca0a214fb575c749a789e1c92d8aaf76e3f01762712690112b70af7e0b6",
+    "skin.bobbi.cinema/1080p/Includes.xml": "e9857cad1f93ccef29f2b465c05f785779b18558581cf8b42ef733dec43e67dd",
+    "skin.bobbi.cinema/1080p/Includes_Home.xml": "d28b0783b8605e4a712f353755db2faa0220aae183bf3bf16629989ada12bdba",
+    "skin.bobbi.cinema/1080p/Includes_Views.xml": "f0da6eab796428e857a5b340c4c55631ad71ece94075478fc135425febb1f984",
+    "skin.bobbi.cinema/fonts/BobbiTV-CCMedium.ttf": "66f0be92e169b502b43e078a796f887f56f98a5daecdb644167d133f4d0ab49d",
+    "skin.bobbi.cinema/media/bobbi/glass/cc-pill-208x96.png": "0c38b103a60814de9b466900885425f70c0a0bb0ea270eef86b433815a5f2f28",
+    "skin.bobbi.cinema/media/bobbi/glass/cc-pill-251x112.png": "61f007bfa9e5696d13ac1d741e82bd0163c4fcff728e9afa7246a9f6a6417df0",
+    "skin.bobbi.cinema/media/bobbi/glass/cc-power-208x208.png": "1ddbab0d677425456d5db302b1385439cfcfac8607d9f197f6ef17e979749fb2",
+    "skin.bobbi.cinema/media/bobbi/glass/cc-power-251x242.png": "475d672900c2b3951e19db61b2279b57163579ab675494e133f15ec5d6ac881f",
+    "skin.bobbi.cinema/media/bobbi/glass/lg-barrier-cc-backdrop.png": "6684ba2c457564872cfc13ad5629f1b8cc2f601019c3711016328286bcc926fc",
+    "skin.bobbi.cinema/media/bobbi/glass/lg-barrier-cc.png": "bf608599e13ec270afec3575fb565a928986f9547d3c1a3ed5f0c93ef5c56960",
+    "skin.bobbi.cinema/media/bobbi/glass/lg-barrier-hero.png": "268d356df2b92dcdbff3b7225a915740f27f6da67abd628b5a25cb440cec93a3",
+    "skin.bobbi.cinema/media/bobbi/glass/lg-barrier-modal.png": "8bd0998ba5875b05f6a61297d384922ecdae5688283a39e3630d56af1ca7bd62",
+    "skin.bobbi.cinema/media/bobbi/glass/lg-barrier-nav1.png": "864a3e1f8d41c1459951314dcd9de50a87afd732d4fc23eebdf81e5b8c48d5f4",
+    "skin.bobbi.cinema/media/bobbi/glass/lg-barrier-scene.png": "8c43ebefbbd001e4831a77935aa2062c33371b3eec97a4bdf888fabf25d97599",
+    "skin.bobbi.cinema/media/bobbi/glass/lg-barrier-sidebar.png": "fe299cbb759a663fc65df4c4eb45b58c29b7d9e6d00fd8a899f85a55e8fa7e07",
+    "skin.bobbi.cinema/media/bobbi/glass/lg-barrier-top.png": "387033ca6f3651c57f27ac51184a15994fc8e0204811428f383c80fa9886aeba",
+    "skin.bobbi.cinema/media/bobbi/glass/lg-card-r24.png": "bbf7ada0b5ae932c1c339aa5b9f9b4b138afa8386029079d409b16c78fe270dd",
+    "skin.bobbi.cinema/media/bobbi/glass/lg-cc-matte-soften.png": "d7d978a595b27286fcadbe13b15aea77edab49108bd2ef74552a990fefd1bf9e",
+    "skin.bobbi.cinema/media/bobbi/glass/lg-cc-pill.png": "716a96e409cdb355f77415e3ad710b921b54ba69359a4b2068eb7663b7fd2d96",
+    "skin.bobbi.cinema/media/bobbi/glass/lg-cc-power-r48.png": "d5f1c404281ad6d825324a2366a04ab76f810720d999c6e2ab2ba269d6625b6f",
+    "skin.bobbi.cinema/media/bobbi/glass/lg-cc-power-r49.png": "29833988f6579525bfe31f271c083c5e95b01fcaddbeb5fc708d7bc83a6fb9cf",
+    "skin.bobbi.cinema/media/bobbi/glass/lg-cc-power-r56.png": "b0ab8285d0aa5c4f297316282f787dd25c0a0efd1826c2433a42204b57ab03ca",
+    "skin.bobbi.cinema/media/bobbi/glass/lg-cc-soften.png": "1b0d82a406f04a551e86261d1b59e1c17b885bde7bcc6b83dc87663ffdc77696",
+    "skin.bobbi.cinema/media/bobbi/glass/lg-cc-tile.png": "9aa6ea400aaa867a5736854b9e9b8a017939145273e8997324c6d0f1918234ca",
+    "skin.bobbi.cinema/media/bobbi/glass/lg-modal-panel.png": "c782302d1edbbc74fddfbcdda793b5797e76963e5ce03f17c6548844772f1d72",
+    "skin.bobbi.cinema/media/bobbi/glass/lg-modal-pill.png": "a46e9f49d29d8d85d968811915651d60d80c8dd3178f6f649e89a6f3d6a4832d",
+    "skin.bobbi.cinema/media/bobbi/glass/lg-nav-pill-active.png": "fdb3d7d4115384d3829a877109638b8e392965b23ace271e21567aed046858ff",
+    "skin.bobbi.cinema/media/bobbi/glass/lg-nav-pill.png": "3ca0a7abdb7cd1caa76566a1aa9399503a19cb12027d9d22a3c908e64cf32f5d",
+    "skin.bobbi.cinema/media/bobbi/glass/lg-osd-pill.png": "27cb0ef06b344d3b6300602d516e0ca4a998513e17ca988de56353464d03e0d2",
+    "skin.bobbi.cinema/media/bobbi/glass/lg-pill-active.png": "edacf398401c573d7a3bff0f98bd91ba80ea19f538d1a3e802c7077b6d2a9ba3",
+    "skin.bobbi.cinema/media/bobbi/glass/lg-pill.png": "6b68cee242a0bb9e8c4446288cd2ea1d6aaaf1a2c84703eed3a913ed8fc0a4c1",
+    "skin.bobbi.cinema/media/bobbi/glass/lg-sidebar.png": "b995b4a9297117d5faf2ab5ba3b0cee9ab758ab6099246ff78c6e89f32bff019",
+    "skin.bobbi.cinema/media/bobbi/glass/sidebar-classic.png": "394b449f1995bfcf318eed6d7c4772143dd1bb900658ec7c197754c12d56310a"
+  },
+  "tags": {
+    "lg-barrier-cc-backdrop.png": {
+      "kind": 1,
+      "slot": 1,
+      "layer": 1,
+      "blur_tier": 0,
+      "shape_or_roi": 255,
+      "crc8": 217
+    },
+    "lg-barrier-cc.png": {
+      "kind": 1,
+      "slot": 7,
+      "layer": 3,
+      "blur_tier": 1,
+      "shape_or_roi": 0,
+      "crc8": 247
+    },
+    "lg-barrier-hero.png": {
+      "kind": 1,
+      "slot": 4,
+      "layer": 0,
+      "blur_tier": 1,
+      "shape_or_roi": 2,
+      "crc8": 123
+    },
+    "lg-barrier-modal.png": {
+      "kind": 1,
+      "slot": 11,
+      "layer": 3,
+      "blur_tier": 2,
+      "shape_or_roi": 0,
+      "crc8": 35
+    },
+    "lg-barrier-nav1.png": {
+      "kind": 1,
+      "slot": 5,
+      "layer": 1,
+      "blur_tier": 1,
+      "shape_or_roi": 1,
+      "crc8": 14
+    },
+    "lg-barrier-scene.png": {
+      "kind": 1,
+      "slot": 4,
+      "layer": 0,
+      "blur_tier": 1,
+      "shape_or_roi": 0,
+      "crc8": 194
+    },
+    "lg-barrier-sidebar.png": {
+      "kind": 1,
+      "slot": 10,
+      "layer": 2,
+      "blur_tier": 2,
+      "shape_or_roi": 4,
+      "crc8": 69
+    },
+    "lg-barrier-top.png": {
+      "kind": 1,
+      "slot": 4,
+      "layer": 0,
+      "blur_tier": 1,
+      "shape_or_roi": 1,
+      "crc8": 29
+    },
+    "lg-card-r24.png": {
+      "kind": 2,
+      "slot": 0,
+      "layer": 0,
+      "blur_tier": 0,
+      "shape_or_roi": 24,
+      "crc8": 24
+    },
+    "lg-cc-matte-soften.png": {
+      "kind": 2,
+      "slot": 1,
+      "layer": 1,
+      "blur_tier": 0,
+      "shape_or_roi": 255,
+      "crc8": 91
+    },
+    "lg-cc-pill.png": {
+      "kind": 2,
+      "slot": 3,
+      "layer": 3,
+      "blur_tier": 0,
+      "shape_or_roi": 0,
+      "crc8": 134
+    },
+    "lg-cc-power-r48.png": {
+      "kind": 2,
+      "slot": 3,
+      "layer": 3,
+      "blur_tier": 0,
+      "shape_or_roi": 48,
+      "crc8": 198
+    },
+    "lg-cc-power-r49.png": {
+      "kind": 2,
+      "slot": 3,
+      "layer": 3,
+      "blur_tier": 0,
+      "shape_or_roi": 49,
+      "crc8": 25
+    },
+    "lg-cc-power-r56.png": {
+      "kind": 2,
+      "slot": 3,
+      "layer": 3,
+      "blur_tier": 0,
+      "shape_or_roi": 56,
+      "crc8": 163
+    },
+    "lg-cc-soften.png": {
+      "kind": 2,
+      "slot": 3,
+      "layer": 3,
+      "blur_tier": 0,
+      "shape_or_roi": 255,
+      "crc8": 125
+    },
+    "lg-cc-tile.png": {
+      "kind": 2,
+      "slot": 3,
+      "layer": 3,
+      "blur_tier": 0,
+      "shape_or_roi": 54,
+      "crc8": 133
+    },
+    "lg-modal-panel.png": {
+      "kind": 2,
+      "slot": 3,
+      "layer": 3,
+      "blur_tier": 0,
+      "shape_or_roi": 38,
+      "crc8": 76
+    },
+    "lg-modal-pill.png": {
+      "kind": 2,
+      "slot": 3,
+      "layer": 3,
+      "blur_tier": 0,
+      "shape_or_roi": 0,
+      "crc8": 125
+    },
+    "lg-nav-pill-active.png": {
+      "kind": 2,
+      "slot": 1,
+      "layer": 1,
+      "blur_tier": 0,
+      "shape_or_roi": 0,
+      "crc8": 10
+    },
+    "lg-nav-pill.png": {
+      "kind": 2,
+      "slot": 1,
+      "layer": 1,
+      "blur_tier": 0,
+      "shape_or_roi": 0,
+      "crc8": 184
+    },
+    "lg-osd-pill.png": {
+      "kind": 2,
+      "slot": 0,
+      "layer": 0,
+      "blur_tier": 0,
+      "shape_or_roi": 0,
+      "crc8": 218
+    },
+    "lg-pill-active.png": {
+      "kind": 2,
+      "slot": 0,
+      "layer": 0,
+      "blur_tier": 0,
+      "shape_or_roi": 0,
+      "crc8": 13
+    },
+    "lg-pill.png": {
+      "kind": 2,
+      "slot": 0,
+      "layer": 0,
+      "blur_tier": 0,
+      "shape_or_roi": 0,
+      "crc8": 73
+    },
+    "lg-sidebar.png": {
+      "kind": 2,
+      "slot": 2,
+      "layer": 2,
+      "blur_tier": 0,
+      "shape_or_roi": 41,
+      "crc8": 20
+    }
+  }
+}

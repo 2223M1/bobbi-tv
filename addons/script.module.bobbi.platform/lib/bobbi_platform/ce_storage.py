@@ -9,8 +9,9 @@ import sqlite3
 import stat
 import zipfile
 
+from .bootstrap_i18n import tr
 from .updates import UpdateError, _Lock, _safe_path, archive_rows, MAX_MANIFEST, MAX_BACKUP_RECEIPT
-from .upstream_addons import UPSTREAM_COMPONENTS
+from .upstream_addons import UPSTREAM_COMPONENTS, plan_dependencies
 
 RESERVE = 16*1024**2
 SCAN_FILES = 100000
@@ -81,6 +82,19 @@ def component_layout(data, item):
 def bundle_layout(signed):
     return [component_layout(signed.read(row['file'], row['size']), row)
             for row in signed.manifest['components']]
+
+
+def bundle_manifests(signed):
+    """Read verified addon.xml bytes per component without extracting to disk."""
+    manifests = {}
+    for row in signed.manifest['components']:
+        data = signed.read(row['file'], row['size'])
+        with zipfile.ZipFile(BytesIO(data)) as archive:
+            archive_rows(archive, row)
+            target = row['id'] + '/addon.xml'
+            if target in archive.namelist():
+                manifests[row['id']] = archive.read(target)
+    return manifests
 
 
 def tree_allocation(path, unit, budget=None, required=False):
@@ -244,11 +258,19 @@ def footprint(path, budget=None, device=None):
 def install_plan(signed, addons, work, state, managed):
     """Extra allocation, not compressed-size multipliers or existing-file copies."""
     layout = bundle_layout(signed)
+    manifests = bundle_manifests(signed)
+    dep_plan = plan_dependencies(
+        addons,
+        None,
+        managed=managed,
+        candidate_manifests=manifests,
+        strict_roots=True,
+    )
+    seedable_ids = set(dep_plan['seedable']) & set(UPSTREAM_COMPONENTS)
     # Kodi-local Installer restores with rename, unlike UpdateEngine.rollback.
     # It needs metadata headroom but no additional program-copy allocation.
     capacity = program_budget(addons, work, managed, layout, retain=False)
-    seed = capacity.layout([row for row in layout if row['id'] in UPSTREAM_COMPONENTS
-                            and not (Path(addons)/row['id']).exists()], addons, 'dependencies')
+    seed = capacity.layout([row for row in layout if row['id'] in seedable_ids], addons, 'dependencies')
     report = capacity.report()
     unit = report['filesystems'][0]['unit']
     stage = sum(row['bytes'] for row in report['parts'] if row['kind'] == 'stage')
@@ -273,20 +295,26 @@ def require_space(report):
         raise SpaceRequired(report)
 
 
-def plan_text(plan):
+def plan_text(plan, *, locale=None, host=None):
     def mib(value): return (value+1024**2-1)//1024**2
-    text = ('本次至少需要 {required} MiB，当前可用 {free} MiB。\n'
-            '已下载 {archive} MiB，解压需 {stage} MiB，补齐依赖需 {seed} MiB，另预留 {reserve} MiB。\n'
-            '另预留安装记录 {metadata} MiB；上一版恢复使用重命名，不重复复制程序。\n'
-            '现有程序 {current} MiB、备份 {backup} MiB 均保留。\n'
-            'Kodi 额外下载可能需要更多空间，安装前会再次检查。').format(
-                archive=mib(plan['archive_bytes']),stage=mib(plan['stage_bytes']),seed=mib(plan['dependency_copy_bytes']),
-                current=mib(plan['current_program_bytes']),backup=mib(plan['retained_backup_bytes']),
-                rollback=mib(plan.get('rollback_copy_bytes', 0)),metadata=mib(plan.get('metadata_bytes', 0)),
-                reserve=mib(plan['reserve_bytes']),required=mib(plan['required_bytes']),free=mib(plan['free_bytes']))
+    text = tr(
+        'storage_plan_main',
+        locale=locale,
+        host=host,
+        archive=mib(plan['archive_bytes']),
+        stage=mib(plan['stage_bytes']),
+        seed=mib(plan['dependency_copy_bytes']),
+        current=mib(plan['current_program_bytes']),
+        backup=mib(plan['retained_backup_bytes']),
+        rollback=mib(plan.get('rollback_copy_bytes', 0)),
+        metadata=mib(plan.get('metadata_bytes', 0)),
+        reserve=mib(plan['reserve_bytes']),
+        required=mib(plan['required_bytes']),
+        free=mib(plan['free_bytes']),
+    )
     if not plan['existing_sizes_complete']:
-        text += '\n部分程序与备份未统计完整，实际占用可能更多。'
-    return text + '\n空间足够时会另存完整恢复包，最多保留三个版本。未另存时，仍可使用上一版本备份。'
+        text += tr('storage_plan_incomplete', locale=locale, host=host)
+    return text + tr('storage_plan_footer', locale=locale, host=host)
 
 
 def _identity(path, root):
@@ -451,29 +479,39 @@ def show(installer, host, dialog):
     with Maintenance(installer) as storage:
         plan = storage.preview()
         size = (plan['reclaimable_bytes'] + plan['retired_transaction_bytes'] + plan['preparation_bytes'])/(1024**2)
-        detail = ('当前可用 {free:.1f} MiB。\n'
-                  '可清理下载缓存 {cache:.1f} MiB（{files} 个文件），旧安装临时文件 {retired:.1f} MiB（{transactions} 份）。\n'
-                  '另有 {kept:.1f} MiB 仍需保留，包含在用备份、未完成安装或无法确认用途的文件。\n'
-                  '清理后缓存需重新下载，无法撤销。恢复版本所需文件、账号、观看记录和媒体均保留。').format(
-                      free=plan['free_bytes']/1024**2,cache=plan['reclaimable_bytes']/1024**2,files=plan['files'],
-                      kept=plan['protected_transaction_bytes']/1024**2,
-                      retired=plan['retired_transaction_bytes']/1024**2,transactions=plan['retired_transactions'])
-        detail += '\n可安全回收未提交准备文件 {:.1f} MiB（{} 份）。'.format(
-            plan['preparation_bytes']/1024**2, plan['preparation_transactions'])
+        detail = tr(
+            'storage_preview_main',
+            host=host,
+            free=plan['free_bytes']/1024**2,
+            cache=plan['reclaimable_bytes']/1024**2,
+            files=plan['files'],
+            kept=plan['protected_transaction_bytes']/1024**2,
+            retired=plan['retired_transaction_bytes']/1024**2,
+            transactions=plan['retired_transactions'],
+        )
+        detail += tr(
+            'storage_preview_prep',
+            host=host,
+            prep=plan['preparation_bytes']/1024**2,
+            count=plan['preparation_transactions'],
+        )
         if plan['protected_unknown_transactions']:
-            detail += '\n{} 份旧临时目录归属未确认，保留不动。'.format(plan['protected_unknown_transactions'])
+            detail += tr('storage_preview_unknown', host=host, unknown=plan['protected_unknown_transactions'])
         if not plan['protected_sizes_complete']:
-            detail += '\n部分目录未统计完整，实际占用可能更多；这些目录不会清理。'
-        dialog.textviewer('存储空间与清理', detail)
+            detail += tr('storage_preview_incomplete', host=host)
+        dialog.textviewer(tr('storage_title', host=host), detail)
         if not plan['files'] and not plan['retired_transactions'] and not plan['preparation_transactions']:
             return
         active()
-        if not dialog.yesno('清理这些文件？',
-                '将删除 {:.1f} MiB（{} 个缓存文件、{} 份旧安装临时文件），无法撤销。\n'
-                '恢复版本所需文件与个人数据保留。'.format(size, plan['files'],
-                    plan['retired_transactions'] + plan['preparation_transactions'])):
+        if not dialog.yesno(
+            tr('storage_confirm_title', host=host),
+            tr('storage_confirm_body', host=host, size=size, files=plan['files'],
+               tx=plan['retired_transactions'] + plan['preparation_transactions']),
+        ):
             return
         active()
         result = storage.clear(plan, active=active)
-        dialog.ok('清理完成', '已清理 {:.1f} MiB。当前程序、恢复文件与个人数据保留。'.format(
-            result['removed_bytes']/1024**2))
+        dialog.ok(
+            tr('storage_done_title', host=host),
+            tr('storage_done_body', host=host, removed=result['removed_bytes']/1024**2),
+        )

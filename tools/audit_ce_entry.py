@@ -61,13 +61,20 @@ def audit(path, online_bundle=None):
                         target = temporary / 'bootstrap/bobbi_platform' / filename
                         target.parent.mkdir(parents=True, exist_ok=True)
                         target.write_bytes(raw)
+                    zh_member = 'script.module.bobbi.platform/resources/language_packs/resource.language.zh_cn-11.0.105.zip'
+                    prov_member = 'script.module.bobbi.platform/resources/language_packs/provenance.json'
+                    if zh_member in source.namelist() or prov_member in source.namelist():
+                        from bobbi_platform.bootstrap_i18n import verify_zh_cn_archive
+                        verify_zh_cn_archive(source.read(zh_member), json.loads(source.read(prov_member)))
             # No installed platform/core or account state in this interpreter.
             script = ('import sys;sys.path.insert(0,sys.argv[1]);'
+                'from bobbi_platform.bootstrap_i18n import tr;'
                 'from bobbi_platform.ce_install_ui import KodiHost;'
                 'from bobbi_platform.ce_installer import Installer;'
                 'from bobbi_platform.runtime import call;'
                 'from bobbi_platform.instance_lock import InstanceLock;'
                 'from bobbi_platform.online_updates import latest, download;'
+                'assert tr("menu_online", locale="en_gb") != tr("menu_online", locale="zh_cn");'
                 'assert "bobbi_core" not in sys.modules')
             subprocess.run([sys.executable, '-I', '-B', '-c', script, str(temporary/'bootstrap')],
                            check=True, timeout=15, cwd=temporary)

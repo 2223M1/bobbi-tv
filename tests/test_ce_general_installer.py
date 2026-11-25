@@ -23,10 +23,28 @@ def signing():
         key=dict(algorithm='RSA3072-SHA256', e=65537, n=format(numbers.n, 'x')))
 
 
+ACTIVE_UPSTREAMS = frozenset(UPSTREAM_COMPONENTS - {
+    'script.skinvariables',
+    'script.module.jurialmunkey',
+    'script.module.infotagger',
+})
+
+
+def _bobbi_plugin_archive(version='1.0.0'):
+    from io import BytesIO
+    imports = ''.join(f'<import addon="{dep}" version="0.0.1"/>' for dep in sorted(ACTIVE_UPSTREAMS))
+    buf = BytesIO()
+    with zipfile.ZipFile(buf, 'w', zipfile.ZIP_DEFLATED) as out:
+        out.writestr('plugin.video.bobbi/addon.xml',
+                     f'<addon id="plugin.video.bobbi" version="{version}"><requires>{imports}</requires></addon>')
+        out.writestr('plugin.video.bobbi/code.py', f'VALUE = "{version}"\n')
+    return buf.getvalue()
+
+
 def package(path, signing, sequence=1, version='1.0.0', profile='coreelec', channel='private-candidate'):
     items, content = [], {}
     for name in sorted(FULL_COMPONENTS):
-        raw = archive(name, version)
+        raw = _bobbi_plugin_archive(version) if name == 'plugin.video.bobbi' else archive(name, version)
         filename = name + '/' + name + '-' + version + '.zip'
         content[filename] = raw
         items.append(dict(id=name, version=version, file=filename, size=len(raw),
@@ -180,7 +198,8 @@ def test_real_dependency_adapter_seeds_absent_original_without_overwriting_exist
     for name in FULL_COMPONENTS:
         target = stage / name
         target.mkdir()
-        (target / 'addon.xml').write_text('<addon id="%s" version="1.0.0"><requires/></addon>' % name)
+        reqs = ''.join(f'<import addon="{dep}" version="0.0.1"/>' for dep in sorted(ACTIVE_UPSTREAMS)) if name == 'plugin.video.bobbi' else ''
+        (target / 'addon.xml').write_text(f'<addon id="{name}" version="1.0.0"><requires>{reqs}</requires></addon>')
         (target / 'notice').write_text('original author')
     existing = live / 'script.module.requests'
     existing.mkdir()
@@ -212,12 +231,13 @@ def test_real_dependency_adapter_seeds_absent_original_without_overwriting_exist
     host = KodiHost()
     monkeypatch.setattr(host, 'details', details)
     host.dependencies(stage)
-    assert all(details(name)['enabled'] for name in UPSTREAM_COMPONENTS)
+    assert all(details(name)['enabled'] for name in ACTIVE_UPSTREAMS)
+    assert all(not (live / name).exists() for name in UPSTREAM_COMPONENTS - ACTIVE_UPSTREAMS)
     assert (existing / 'origin').read_text() == 'repository.xbmc.org'
     assert details('script.module.requests')['version'] == '99.0.0'
     assert not (existing / 'notice').exists()
     assert all((live / name / 'notice').read_text() == 'original author'
-        for name in UPSTREAM_COMPONENTS - {'script.module.requests'})
+        for name in ACTIVE_UPSTREAMS - {'script.module.requests'})
     assert not any('InstallAddon' in args[0] for args in commands)
 
 

@@ -1,0 +1,20 @@
+{
+  "source_url": "https://mirrors.kodi.tv/addons/omega/resource.language.zh_cn/resource.language.zh_cn-11.0.105.zip",
+  "file": "resource.language.zh_cn-11.0.105.zip",
+  "bytes": 169288,
+  "sha256": "3afd256581ffb40c6439c8f55f00db747459d97b0e664f97b84aab6a81821a9a",
+  "addon_id": "resource.language.zh_cn",
+  "version": "11.0.105",
+  "requires": [
+    [
+      "kodi.resource",
+      "1.0.0"
+    ]
+  ],
+  "members": [
+    "resource.language.zh_cn/icon.png",
+    "resource.language.zh_cn/addon.xml",
+    "resource.language.zh_cn/resources/langinfo.xml",
+    "resource.language.zh_cn/resources/strings.po"
+  ]
+}

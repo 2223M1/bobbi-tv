@@ -102,11 +102,18 @@ def test_direct_transitive_and_optional_dependencies_are_read_only(dependencies)
         dict(addon='script.module.requests', version='2.1.0'),))
     before = snapshot(addons), snapshot(stage)
     minimum = check_dependencies(addons, stage)
-    assert set(minimum) == UPSTREAM_COMPONENTS
+    assert set(minimum) == {
+        'script.module.requests',
+        'script.module.routing',
+        'script.module.urllib3',
+        'script.skinvariables',
+        'script.module.jurialmunkey',
+        'script.module.infotagger',
+    }
     assert minimum['script.module.requests'] == '2.1.0'
     assert minimum['script.module.urllib3'] == '3.0.0+matrix.1'
     assert minimum['script.module.infotagger'] == '2.1.0'
-    assert minimum['script.module.certifi'] == '0.0.0'
+    assert 'script.module.certifi' not in minimum
     assert (snapshot(addons), snapshot(stage)) == before
 
 
@@ -131,6 +138,7 @@ def test_missing_or_invalid_upstream_not_seeded_from_candidate(dependencies, fau
     name = 'script.module.requests'
     path = addons / name / 'addon.xml'
     install(stage, name)
+    install(stage, 'plugin.video.bobbi', requires=(dict(addon=name, version='1.0.0'),))
     if fault == 'missing':
         path.unlink()
     elif fault == 'wrong_id':
@@ -160,6 +168,7 @@ def test_unreviewed_partial_inventory_is_rejected(dependencies):
 
 def test_linked_upstream_path_is_rejected(dependencies, tmp_path):
     addons, stage = dependencies
+    install(stage, 'plugin.video.bobbi', requires=(dict(addon='script.module.requests', version='1.0.0'),))
     path = addons / 'script.module.requests' / 'addon.xml'
     outside = tmp_path / 'other.xml'
     outside.write_bytes(path.read_bytes())

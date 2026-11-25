@@ -1,5 +1,6 @@
 """Kodi-native installation UI. No SSH, HTTP control port or developer paths."""
-from pathlib import Path
+from io import BytesIO
+from pathlib import Path, PurePosixPath
 import errno
 import os
 import re
@@ -9,13 +10,40 @@ import sys
 import time
 import uuid
 import xml.etree.ElementTree as ET
+import zipfile
 from zipfile import BadZipFile
 
+from .bootstrap_i18n import (
+    ZH_CN_ADDON_ID,
+    ZH_CN_FILENAME,
+    ZH_CN_RELATIVE_DIR,
+    active_locale,
+    is_cjk_locale,
+    normalize_locale,
+    tr,
+    verify_zh_cn_archive,
+)
 from .ce_installer import Installer, MANAGED, PlaybackActive, blocked, installed_watermark
 from .kodi import rpc
+from .offline_updates import SignedBundle
 from .paths import profile
-from .updates import UpdateError, _safe_path
-from .upstream_addons import UPSTREAM_COMPONENTS, compare_versions
+from .updates import UpdateError, _atomic, _json, _safe_path, archive_rows
+from .upstream_addons import (
+    DIRECTORY_CONFLICT,
+    DISABLED,
+    HOST_COMPONENTS,
+    MISSING_HOST,
+    MISSING_SEEDABLE,
+    NEEDS_UPGRADE,
+    SATISFIED,
+    STATE_UNKNOWN,
+    UPSTREAM_COMPONENTS,
+    compare_versions,
+    kodi_version,
+    plan_dependencies,
+)
+
+LANGUAGE_MARKER = 'language-init.json'
 
 
 def check_host_crypto():
@@ -33,23 +61,30 @@ def check_host_crypto():
 
 
 class KodiHost:
-    def __init__(self):
+    def __init__(self, dialog=None):
         import xbmc
         self.xbmc = xbmc
         self.monitor = xbmc.Monitor()
+        self.dialog = dialog
 
     def skin(self):
         return rpc('Settings.GetSettingValue', {'setting': 'lookandfeel.skin'})['value']
+
+    def locale(self):
+        return rpc('Settings.GetSettingValue', {'setting': 'locale.language'}).get('value')
 
     def details(self, name):
         try:
             value = rpc('Addons.GetAddonDetails', {'addonid': name,
                 'properties': ['version', 'enabled']})['addon']
-        except RuntimeError:
+        except (RuntimeError, KeyError, TypeError, ValueError):
             # A failed detail RPC is not evidence of absence. Only a complete
             # installed-addon enumeration can prove the addon does not exist.
-            listing = rpc('Addons.GetAddons', {'enabled': 'all', 'properties': ['enabled', 'version']})
-            rows = listing.get('addons', [])
+            try:
+                listing = rpc('Addons.GetAddons', {'enabled': 'all', 'properties': ['enabled', 'version']})
+            except (RuntimeError, KeyError, TypeError, ValueError) as error:
+                raise UpdateError('ADDON_STATE_UNKNOWN:' + name) from error
+            rows = listing.get('addons', []) if isinstance(listing, dict) else None
             if not isinstance(rows, list) or any(not isinstance(r, dict) or 'addonid' not in r for r in rows):
                 raise UpdateError('ADDON_STATE_UNKNOWN:' + name)
             matches = [r for r in rows if r['addonid'] == name]
@@ -73,8 +108,6 @@ class KodiHost:
         deadline = time.monotonic() + 15
         try:
             # Synchronous executebuiltin retains the Python lock on Omega.
-            # An addon-stop job needs that lock while holding the invocation
-            # manager lock; the GUI then cannot dispatch the waiting builtin.
             # Queue a FIFO fence and yield via Monitor, never wait in SendMsg.
             self.xbmc.executebuiltin('UpdateLocalAddons', False)
             self.xbmc.executebuiltin('SetProperty(%s,ready,10000)' % key, False)
@@ -86,66 +119,153 @@ class KodiHost:
         finally:
             window.clearProperty(key)
 
-    def dependencies(self, staged):
-        minimums = dict.fromkeys(UPSTREAM_COMPONENTS, '0.0.0')
-        minimums['script.module.pycryptodome'] = '3.4.3'
-        needs = {name: set() for name in minimums}
-        for name in MANAGED | UPSTREAM_COMPONENTS:
-            for dep in ET.parse(staged / name / 'addon.xml').findall('./requires/import'):
-                key = dep.get('addon')
-                if dep.get('optional') == 'true':
-                    continue
-                if key in minimums and compare_versions(dep.get('version', '0.0.0'), minimums[key]) > 0:
-                    minimums[key] = dep.get('version', '0.0.0')
-                if name in needs and key in needs:
-                    needs[name].add(key)
-        # On an empty Kodi profile a module may be auto-disabled (or fail to
-        # enable) until its own imports are installed. Alphabetical order
-        # attempts requests before urllib3. Validate the signed graph BEFORE
-        # any copying, and leave existing repository origins/versions alone.
-        order = []
-        while needs:
-            ready = sorted(name for name, parents in needs.items() if not parents)
-            if not ready:
-                raise UpdateError('DEPENDENCY_GRAPH_INVALID')
-            for name in ready:
-                del needs[name]
-            for parents in needs.values():
-                parents.difference_update(ready)
-            order.extend(ready)
-        for name in order:
-            minimum = minimums[name]
+    def open_dependency_upgrade(self, addon_id):
+        check = getattr(self, 'check_idle', None)
+        if callable(check):
+            check()
+        self.xbmc.executebuiltin('ActivateWindow(AddonInformation,%s)' % addon_id, False)
+
+    def _capture_profile_guard(self):
+        import xbmcvfs
+        try:
+            initial = str(xbmcvfs.translatePath('special://profile/'))
+        except Exception:
+            initial = None
+
+        def ensure_active():
+            abort = getattr(self.monitor, 'abortRequested', None)
+            if callable(abort) and abort():
+                raise UpdateError('DEPENDENCY_PREPARATION_CANCELLED')
+            if initial is not None:
+                try:
+                    current = str(xbmcvfs.translatePath('special://profile/'))
+                except Exception:
+                    raise UpdateError('DEPENDENCY_PREPARATION_CANCELLED') from None
+                if current != initial:
+                    raise UpdateError('DEPENDENCY_PREPARATION_CANCELLED')
+        return ensure_active
+
+    def dependencies(self, staged, dialog=None):
+        import xbmcvfs
+        root = _safe_path(xbmcvfs.translatePath('special://home/addons'))
+        staged_path = _safe_path(staged)
+        active_dialog = dialog if dialog is not None else getattr(self, 'dialog', None)
+        ensure_active = self._capture_profile_guard()
+        ensure_active()
+
+        plan = plan_dependencies(root, staged_path, managed=MANAGED, details=self.details, strict_roots=True)
+
+        # 1. Fail closed BEFORE any disk write if any required addon's RPC state is unknown.
+        for name in plan['order']:
+            if plan['items'][name]['state'] == STATE_UNKNOWN:
+                raise UpdateError('ADDON_STATE_UNKNOWN:' + name)
+
+        # 2. Bounded single refresh & recheck for residual unregistered directory conflicts.
+        # NEVER overwrite or delete a residual user directory!
+        if any(plan['items'][name]['state'] == DIRECTORY_CONFLICT for name in plan['order']):
+            ensure_active()
+            self.refresh()
+            plan = plan_dependencies(root, staged_path, managed=MANAGED, details=self.details, strict_roots=True)
+            for name in plan['order']:
+                if plan['items'][name]['state'] == STATE_UNKNOWN:
+                    raise UpdateError('ADDON_STATE_UNKNOWN:' + name)
+                if plan['items'][name]['state'] == DIRECTORY_CONFLICT:
+                    raise UpdateError('DEPENDENCY_DIRECTORY_CONFLICT:' + name)
+
+        # 3. Handle NEEDS_UPGRADE without ever calling InstallAddon(...) on an installed addon!
+        for name in list(plan['order']):
+            item = plan['items'][name]
+            if item['state'] != NEEDS_UPGRADE:
+                continue
+            have = item['installed_version'] or '0.0.0'
+            need = item['minimum']
+            if active_dialog is not None and hasattr(active_dialog, 'yesno'):
+                while True:
+                    ensure_active()
+                    if not active_dialog.yesno(
+                        tr('dep_upgrade_title', host=self),
+                        tr('dep_upgrade_body', host=self, addon=name, have=have, need=need),
+                    ):
+                        raise UpdateError(f'DEPENDENCY_NEEDS_UPGRADE:{name}:{have}->{need}')
+                    ensure_active()
+                    self.open_dependency_upgrade(name)
+                    if not active_dialog.yesno(
+                        tr('dep_upgrade_recheck_title', host=self),
+                        tr('dep_upgrade_recheck_body', host=self, addon=name, need=need),
+                    ):
+                        raise UpdateError(f'DEPENDENCY_NEEDS_UPGRADE:{name}:{have}->{need}')
+                    ensure_active()
+                    plan = plan_dependencies(root, staged_path, managed=MANAGED, details=self.details, strict_roots=True)
+                    refreshed_item = plan['items'].get(name)
+                    if refreshed_item is None or not refreshed_item['required']:
+                        break
+                    if refreshed_item['state'] == STATE_UNKNOWN:
+                        raise UpdateError('ADDON_STATE_UNKNOWN:' + name)
+                    if refreshed_item['state'] == DIRECTORY_CONFLICT:
+                        raise UpdateError('DEPENDENCY_DIRECTORY_CONFLICT:' + name)
+                    if refreshed_item['state'] != NEEDS_UPGRADE:
+                        break
+                    have = refreshed_item['installed_version'] or have
+            else:
+                raise UpdateError(f'DEPENDENCY_NEEDS_UPGRADE:{name}:{have}->{need}')
+
+        # 4. Execute topological seeding/host-install/enabling with readback verification.
+        for name in plan['order']:
+            ensure_active()
+            item = plan['items'][name]
+            minimum = item['minimum']
+            state = item['state']
+            if state == STATE_UNKNOWN:
+                raise UpdateError('ADDON_STATE_UNKNOWN:' + name)
+            if state == DIRECTORY_CONFLICT:
+                raise UpdateError('DEPENDENCY_DIRECTORY_CONFLICT:' + name)
+            if state == NEEDS_UPGRADE:
+                have = item['installed_version'] or '0.0.0'
+                raise UpdateError(f'DEPENDENCY_NEEDS_UPGRADE:{name}:{have}->{minimum}')
+
             installed = self.details(name)
-            if not installed and name in UPSTREAM_COMPONENTS:
-                # Signed, unchanged originals are available offline. Seed only
-                # absent addons; never overwrite an installed upstream version
-                # or edit Kodi's origin database. Subsequent updates stay Kodi's.
-                import xbmcvfs
-                root = _safe_path(xbmcvfs.translatePath('special://home/addons'))
+            if state == MISSING_SEEDABLE and not installed and name in UPSTREAM_COMPONENTS:
                 target = _safe_path(root / name)
-                if not target.exists():
-                    temporary = root / ('.bobbi-dependency-' + uuid.uuid4().hex)
-                    shutil.copytree(staged / name, temporary)
+                if target.exists() or target.is_symlink():
+                    raise UpdateError('DEPENDENCY_DIRECTORY_CONFLICT:' + name)
+                temporary = _safe_path(root / ('.bobbi-dependency-' + uuid.uuid4().hex))
+                try:
+                    shutil.copytree(staged_path / name, temporary)
+                    ensure_active()
                     os.rename(temporary, target)
-                    self.refresh()
-                    installed = self.details(name)
-            if not installed or compare_versions(installed['version'], minimum) < 0:
-                # Kodi resolves original repository dependencies, prompts as
-                # required and picks the actual platform ABI. Never overwrite.
+                except BaseException:
+                    if temporary.exists():
+                        shutil.rmtree(temporary, ignore_errors=True)
+                    raise
+                self.refresh()
+                installed = self.details(name)
+            elif not installed:
+                # Genuinely absent host dependency (e.g. pycryptodome): ask Kodi's installer.
                 self.xbmc.executebuiltin('InstallAddon(%s)' % name, False)
                 deadline = time.monotonic() + 15
                 while True:
+                    ensure_active()
                     installed = self.details(name)
-                    if installed and compare_versions(installed['version'], minimum) >= 0:
+                    if installed is not None:
                         break
-                    if self.monitor.waitForAbort(.1) or time.monotonic() >= deadline:
+                    if self.monitor.waitForAbort(.1):
+                        raise UpdateError('DEPENDENCY_PREPARATION_CANCELLED')
+                    if time.monotonic() >= deadline:
                         raise UpdateError('DEPENDENCY_UNAVAILABLE:' + name)
+                if compare_versions(installed['version'], minimum) < 0:
+                    raise UpdateError(f'DEPENDENCY_NEEDS_UPGRADE:{name}:{installed["version"]}->{minimum}')
+
+            if installed and compare_versions(installed['version'], minimum) < 0:
+                raise UpdateError(f'DEPENDENCY_NEEDS_UPGRADE:{name}:{installed["version"]}->{minimum}')
+
             if installed and not installed.get('enabled'):
+                ensure_active()
                 try:
                     rpc('Addons.SetAddonEnabled', {'addonid': name, 'enabled': True})
                 except RuntimeError as error:
                     raise UpdateError('DEPENDENCY_ENABLE_FAILED:' + name) from error
                 installed = self.details(name)
+
             if (not installed or not installed.get('enabled')
                     or compare_versions(installed['version'], minimum) < 0):
                 raise UpdateError('DEPENDENCY_UNAVAILABLE:' + name)
@@ -163,9 +283,6 @@ class KodiHost:
         target = 'skin.estuary'
         if rpc('Settings.SetSettingValue', {'setting': 'lookandfeel.skin', 'value': target}) is not True:
             raise UpdateError('INSTALL_SKIN_NOT_CONFIRMED')
-        # On Omega SetSettingValue posts ReloadSkin(confirm). The setting changes
-        # BEFORE the GUI loads; declining or timing out reverts it ten seconds
-        # later. Never press Yes on behalf of the user (or on another dialog).
         deadline = time.monotonic() + 28
         loaded = None
         saw_dialog = False
@@ -187,16 +304,12 @@ class KodiHost:
                 raise UpdateError('INSTALL_SKIN_NOT_CONFIRMED')
 
     def quiesce(self):
-        # Recheck after staging: a preflight is not an exclusive playback lease.
         self.check_idle()
         if self.skin() == 'skin.bobbi.cinema':
-            self.prepare_install_skin()  # Also covers recovery of older journals.
+            self.prepare_install_skin()
         from .runtime import call
         runtime = profile(name='runtime.json')
         until = time.monotonic() + 15
-        # Ask an upgraded host to drain BEFORE Kodi holds its addon/service
-        # locks and starts a five-second forced Python abort. Acknowledgement
-        # is only acceptance; the OS lease remains the replacement barrier.
         legacy = False
         if runtime.is_file():
             try:
@@ -207,15 +320,10 @@ class KodiHost:
                 try:
                     reply = call('quiesce', {'protocol': 1}, timeout=1)
                 except OSError:
-                    # A lost reply can follow a real drain. Reconcile through
-                    # the same exclusive OS lease below; never send it again.
                     pass
                 else:
                     if reply != {'accepted': True}:
                         raise UpdateError('CINEMA_STOP_NOT_ACCEPTED')
-            # Only a complete live pre-protocol reply authorizes the old Kodi
-            # stop path. Missing IPC/marker can mean a modern owner is STILL
-            # draining after a failed close, including across installer objects.
             legacy = (isinstance(status, dict) and 'quiesce_protocol' not in status
                       and status.get('ready') is True and status.get('version') == '0.1.0'
                       and all(type(status.get(key)) is bool for key in
@@ -226,9 +334,6 @@ class KodiHost:
         for name in ('plugin.video.bobbi', 'plugin.video.bobbi.torrent'):
             if (self.details(name) or {}).get('enabled'):
                 rpc('Addons.SetAddonEnabled', {'addonid': name, 'enabled': False})
-        # A registration can survive os._exit. Acquire the stable OS lease,
-        # recheck disabled state, then remove only that dead host's marker.
-        # Retain the lease through file replacement, until activate/restore.
         self._acquire_runtime_lease(runtime, until)
         if any((self.details(n) or {}).get('enabled') for n in
                ('plugin.video.bobbi', 'plugin.video.bobbi.torrent')):
@@ -258,8 +363,6 @@ class KodiHost:
             actual = self.details(name)
             if not actual or actual['version'] != version:
                 raise UpdateError('COMPONENT_REGISTRATION_FAILED:' + name)
-        # Registering XML alone is insufficient: check the host's real Python
-        # ABI dependency and the standard RPC surface before opening cinema.
         check_host_crypto()
         from .capabilities import probe
         capabilities = probe(rpc, 'kodi')
@@ -268,7 +371,6 @@ class KodiHost:
 
     def activate(self, versions):
         self.close()
-        # Enable the provider/service last, after all modules have registered.
         for name in sorted(versions, key=lambda n: n == 'plugin.video.bobbi'):
             if not (self.details(name) or {}).get('enabled'):
                 try:
@@ -280,8 +382,6 @@ class KodiHost:
 
     def restore(self, skin, enabled):
         self.close()
-        # Restore the entire managed enable vector, not just its True entries.
-        # Never touch unrelated addons or their origin / user settings.
         for name in sorted(MANAGED, key=lambda n: n == 'plugin.video.bobbi'):
             actual = self.details(name)
             desired = name in enabled
@@ -316,14 +416,9 @@ class KodiHost:
                 try:
                     lease.acquire()
                 except OSError:
-                    pass  # A live owner may still be completing initialization.
+                    pass
                 else:
                     try:
-                        # A path RunScript has neither addon context nor a
-                        # ServiceAddonManager handle. Restart only this enabled
-                        # provider via a real managed state transition. Keep
-                        # the lease until disabled is confirmed; an initializing
-                        # old invocation cannot acquire replacement ownership.
                         name = 'plugin.video.bobbi'
                         if not (self.details(name) or {}).get('enabled'):
                             raise UpdateError('CINEMA_PROVIDER_NOT_ENABLED')
@@ -332,15 +427,330 @@ class KodiHost:
                             raise UpdateError('CINEMA_DISABLE_NOT_CONFIRMED')
                     finally:
                         lease.close()
-                    # The transaction remains pending if enabling or readiness
-                    # fails. Retrying restores its complete desired vector.
                     rpc('Addons.SetAddonEnabled', {'addonid': name, 'enabled': True})
                     launched = True
             if self.monitor.waitForAbort(.1) or time.monotonic() >= deadline:
                 raise UpdateError('CINEMA_SERVICE_NOT_READY')
 
 
-def recover_interactive(installer, dialog, report=None):
+def _read_language_marker(work):
+    path = _safe_path(Path(work) / LANGUAGE_MARKER)
+    if not path.exists():
+        return None
+    try:
+        if not path.is_file() or path.stat().st_size > 16384:
+            return None
+        data = _json(path.read_bytes())
+        if isinstance(data, dict) and data.get('schema') == 1 and data.get('initialized') is True:
+            return data
+    except (OSError, ValueError, UpdateError):
+        pass
+    return None
+
+
+def _write_language_marker(work, decision, locale):
+    path = _safe_path(Path(work) / LANGUAGE_MARKER)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    _atomic(path, dict(schema=1, initialized=True, decision=decision, locale=locale))
+
+
+def _guisettings_locale_state(userdata_root):
+    """Inspect userdata/guisettings.xml read-only to distinguish default vs explicit en_gb."""
+    if userdata_root is None:
+        return 'absent'
+    try:
+        gui = _safe_path(Path(userdata_root) / 'guisettings.xml')
+    except UpdateError:
+        return 'ambiguous'
+    if not gui.exists():
+        return 'absent'
+    try:
+        if not gui.is_file() or gui.stat().st_size > 2 * 1024 * 1024:
+            return 'ambiguous'
+        raw = gui.read_bytes()
+        if b'<!DOCTYPE' in raw.upper() or b'<!ENTITY' in raw.upper():
+            return 'ambiguous'
+        root = ET.fromstring(raw)
+        matches = [n for n in root.findall('./setting') if n.get('id') == 'locale.language']
+        if not matches:
+            return 'ambiguous'
+        node = matches[0]
+        if node.get('default') == 'true':
+            return 'default'
+        return 'explicit'
+    except (OSError, ET.ParseError):
+        return 'ambiguous'
+
+
+def _has_historical_kodi_footprint(addons_root, userdata_root):
+    """Return True if existing third-party addons or user sources indicate a non-fresh Kodi."""
+    from .upstream_addons import OWNED_COMPONENTS
+    if userdata_root is not None:
+        u = Path(userdata_root)
+        if (u / 'sources.xml').is_file() or (u / 'mediasources.xml').is_file():
+            return True
+    if addons_root is not None and Path(addons_root).is_dir():
+        allowed = OWNED_COMPONENTS | {'packages', 'temp'}
+        for child in Path(addons_root).iterdir():
+            if child.name.startswith('.'):
+                continue
+            if child.name not in allowed:
+                return True
+    return False
+
+
+def classify_language_profile(current_locale, *, work, addons_root=None, userdata_root=None, bobbi_installed=False):
+    """Classify host language initialization state without modifying any setting."""
+    marker = _read_language_marker(work)
+    if marker is not None:
+        return 'already_initialized'
+    loc = (current_locale or '').strip()
+    if loc and loc.lower() not in ('resource.language.en_gb', 'default'):
+        return 'explicit_existing'
+    if bobbi_installed:
+        return 'explicit_existing'
+    gui_state = _guisettings_locale_state(userdata_root)
+    if gui_state == 'explicit':
+        return 'explicit_existing'
+    fresh_receipt = _safe_path(Path(work) / 'fresh-profile.json')
+    if fresh_receipt.is_file():
+        return 'fresh_managed'
+    if gui_state in ('absent', 'default') and not _has_historical_kodi_footprint(addons_root, userdata_root):
+        return 'fresh_managed'
+    return 'ambiguous_historical'
+
+
+def load_verified_zh_cn_pack(*, addons_root=None, payload=None, trust=None, host_resource_version='1.0.0'):
+    """Locate and cryptographically verify official resource.language.zh_cn-11.0.105.zip."""
+    candidates = []
+    if addons_root is not None:
+        pack_dir = Path(addons_root) / 'script.module.bobbi.platform' / ZH_CN_RELATIVE_DIR
+        candidates.append(pack_dir)
+    here = Path(__file__).resolve().parents[2] / ZH_CN_RELATIVE_DIR
+    candidates.append(here)
+
+    for folder in candidates:
+        try:
+            zip_path = _safe_path(folder / ZH_CN_FILENAME)
+            prov_path = _safe_path(folder / 'provenance.json')
+            if zip_path.is_file() and prov_path.is_file():
+                raw = zip_path.read_bytes()
+                prov = _json(prov_path.read_bytes())
+                verify_zh_cn_archive(raw, prov, host_resource_version=host_resource_version)
+                return raw
+        except (OSError, ValueError, UpdateError):
+            continue
+
+    if payload is not None and Path(payload).is_file():
+        from .offline_updates import load_trust
+        active_trust = trust or load_trust()
+        with SignedBundle(payload, active_trust, 'coreelec') as signed:
+            manifest = signed.check_all()
+            plat_row = next((r for r in manifest['components'] if r['id'] == 'script.module.bobbi.platform'), None)
+            if plat_row is not None:
+                plat_bytes = signed.read(plat_row['file'], plat_row['size'])
+                with zipfile.ZipFile(BytesIO(plat_bytes)) as plat_zf:
+                    archive_rows(plat_zf, plat_row)
+                    z_member = 'script.module.bobbi.platform/' + (ZH_CN_RELATIVE_DIR / ZH_CN_FILENAME).as_posix()
+                    p_member = 'script.module.bobbi.platform/' + (ZH_CN_RELATIVE_DIR / 'provenance.json').as_posix()
+                    if z_member in plat_zf.namelist() and p_member in plat_zf.namelist():
+                        raw = plat_zf.read(z_member)
+                        prov = _json(plat_zf.read(p_member))
+                        verify_zh_cn_archive(raw, prov, host_resource_version=host_resource_version)
+                        return raw
+    return None
+
+
+def ensure_zh_cn_ready_and_selected(host, addons_root, dialog, *, payload=None, trust=None, rpc_fn=None):
+    """Ensure resource.language.zh_cn is installed/enabled and locale.language readback matches."""
+    call_rpc = rpc_fn or rpc
+    addons_path = _safe_path(addons_root)
+
+    # Check host kodi.resource version if reported by Kodi
+    host_res_ver = '1.0.0'
+    try:
+        kr = host.details('kodi.resource')
+        if isinstance(kr, dict) and isinstance(kr.get('version'), str):
+            kodi_version(kr['version'])
+            host_res_ver = kr['version']
+    except UpdateError as err:
+        if str(err).startswith('ADDON_STATE_UNKNOWN:'):
+            return dict(ok=False, reason='addon_state_unknown')
+        return dict(ok=False, reason='host_resource_invalid')
+
+    try:
+        installed = host.details(ZH_CN_ADDON_ID)
+    except UpdateError:
+        return dict(ok=False, reason='addon_state_unknown')
+
+    if installed is not None:
+        # Compatible existing pack (including newer versions): reuse without downgrading!
+        try:
+            kodi_version(installed['version'])
+            live_xml = addons_path / ZH_CN_ADDON_ID / 'addon.xml'
+            if live_xml.exists():
+                _safe_path(live_xml)
+                root = ET.fromstring(live_xml.read_bytes())
+                if root.get('id') != ZH_CN_ADDON_ID or root.find('./extension[@point="kodi.resource.language"]') is None:
+                    return dict(ok=False, reason='installed_pack_invalid')
+        except (OSError, ET.ParseError, UpdateError):
+            return dict(ok=False, reason='installed_pack_invalid')
+    else:
+        target = _safe_path(addons_path / ZH_CN_ADDON_ID)
+        if target.exists() or target.is_symlink():
+            # Unregistered residual directory: try one bounded refresh, never overwrite/delete!
+            host.refresh()
+            installed = host.details(ZH_CN_ADDON_ID)
+            if installed is None:
+                return dict(ok=False, reason='directory_conflict')
+        else:
+            raw_pack = None
+            try:
+                raw_pack = load_verified_zh_cn_pack(
+                    addons_root=addons_path,
+                    payload=payload,
+                    trust=trust,
+                    host_resource_version=host_res_ver,
+                )
+            except UpdateError as err:
+                return dict(ok=False, reason=str(err))
+
+            if raw_pack is not None:
+                temp_dir = _safe_path(addons_path / ('.bobbi-lang-' + uuid.uuid4().hex))
+                try:
+                    with zipfile.ZipFile(BytesIO(raw_pack)) as zf:
+                        rows = archive_rows(zf, {'id': ZH_CN_ADDON_ID})
+                        for row in rows:
+                            rel_parts = PurePosixPath(row.filename).parts[1:]
+                            if not rel_parts:
+                                continue
+                            dest = temp_dir.joinpath(*rel_parts)
+                            if row.is_dir():
+                                dest.mkdir(parents=True, exist_ok=True)
+                            else:
+                                dest.parent.mkdir(parents=True, exist_ok=True)
+                                dest.write_bytes(zf.read(row))
+                    os.rename(temp_dir, target)
+                except BaseException:
+                    if temp_dir.exists():
+                        shutil.rmtree(temp_dir, ignore_errors=True)
+                    raise
+                host.refresh()
+                installed = host.details(ZH_CN_ADDON_ID)
+            elif hasattr(host, 'xbmc') and hasattr(host.xbmc, 'executebuiltin'):
+                host.xbmc.executebuiltin('InstallAddon(%s)' % ZH_CN_ADDON_ID, False)
+                deadline = time.monotonic() + 15
+                while True:
+                    installed = host.details(ZH_CN_ADDON_ID)
+                    if installed is not None:
+                        break
+                    if host.monitor.waitForAbort(.1) or time.monotonic() >= deadline:
+                        return dict(ok=False, reason='pack_unavailable')
+
+    if not installed:
+        return dict(ok=False, reason='pack_not_registered')
+
+    if not installed.get('enabled'):
+        try:
+            call_rpc('Addons.SetAddonEnabled', {'addonid': ZH_CN_ADDON_ID, 'enabled': True})
+        except RuntimeError:
+            return dict(ok=False, reason='pack_enable_failed')
+        installed = host.details(ZH_CN_ADDON_ID)
+        if not installed or not installed.get('enabled'):
+            return dict(ok=False, reason='pack_enable_unconfirmed')
+
+    # Verify CJK font readability BEFORE switching UI to Chinese
+    if not readable_text(host, dialog, locale=ZH_CN_ADDON_ID, cjk_needed=True, rpc_fn=call_rpc):
+        return dict(ok=False, reason='cjk_font_declined_or_unconfirmed')
+
+    check = getattr(host, 'check_idle', None)
+    if callable(check):
+        check()
+
+    changed = call_rpc('Settings.SetSettingValue', {'setting': 'locale.language', 'value': ZH_CN_ADDON_ID})
+    actual_locale = (call_rpc('Settings.GetSettingValue', {'setting': 'locale.language'}) or {}).get('value')
+    actual_addon = host.details(ZH_CN_ADDON_ID)
+    if changed is not True or actual_locale != ZH_CN_ADDON_ID or not actual_addon or not actual_addon.get('enabled'):
+        return dict(ok=False, reason='locale_readback_failed')
+
+    return dict(ok=True, locale=actual_locale, version=actual_addon['version'])
+
+
+def ensure_host_language(host, installer, dialog, *, payload=None, rpc_fn=None):
+    """Apply first-use / upgrade host language policy without unsolicited resets."""
+    if not callable(getattr(host, 'locale', None)) or not callable(getattr(host, 'details', None)):
+        return dict(action='skipped_unmanaged_host')
+
+    call_rpc = rpc_fn or rpc
+    try:
+        current_locale = host.locale()
+    except Exception:
+        return dict(action='skipped_locale_unreadable')
+
+    state = installer._read()
+    try:
+        bobbi_installed = state is not None or host.details('plugin.video.bobbi') is not None
+    except UpdateError:
+        return dict(action='skipped_addon_state_unknown')
+
+    category = classify_language_profile(
+        current_locale,
+        work=installer.work,
+        addons_root=installer.addons,
+        userdata_root=getattr(installer, 'userdata', None),
+        bobbi_installed=bobbi_installed,
+    )
+    if category == 'already_initialized':
+        return dict(action='already_initialized', locale=current_locale)
+
+    if category == 'explicit_existing':
+        _write_language_marker(installer.work, 'preserved_existing', current_locale or 'resource.language.en_gb')
+        return dict(action='preserved_existing', locale=current_locale)
+
+    if category == 'fresh_managed':
+        result = ensure_zh_cn_ready_and_selected(
+            host, installer.addons, dialog, payload=payload, trust=installer.trust, rpc_fn=call_rpc
+        )
+        if result['ok']:
+            _write_language_marker(installer.work, 'default_zh_cn', ZH_CN_ADDON_ID)
+            return dict(action='default_zh_cn', locale=ZH_CN_ADDON_ID, version=result['version'])
+        # Missing/corrupt pack: keep current language and NEVER write a fake completion marker!
+        if hasattr(dialog, 'ok'):
+            dialog.ok(
+                tr('lang_pack_unavailable_title', locale=current_locale),
+                tr('lang_pack_unavailable_body', locale=current_locale),
+            )
+        return dict(action='pack_unavailable', locale=current_locale, reason=result['reason'])
+
+    # category == 'ambiguous_historical': highlight Chinese as default (preselect=0), allow keeping English.
+    # Ensure prompt is readable even if Default font lacks CJK (bilingual EN/ZH options).
+    choice = dialog.select(
+        tr('lang_prompt_title', locale='en_gb'),
+        [tr('lang_opt_zh', locale='en_gb'), tr('lang_opt_keep_en', locale='en_gb')],
+        preselect=0,
+    )
+    if choice < 0:
+        # Cancelled: keep current language and NEVER write a fake completion marker!
+        return dict(action='cancelled', locale=current_locale)
+    if choice == 1:
+        _write_language_marker(installer.work, 'kept_current', current_locale or 'resource.language.en_gb')
+        return dict(action='kept_current', locale=current_locale)
+
+    result = ensure_zh_cn_ready_and_selected(
+        host, installer.addons, dialog, payload=payload, trust=installer.trust, rpc_fn=call_rpc
+    )
+    if result['ok']:
+        _write_language_marker(installer.work, 'selected_zh_cn', ZH_CN_ADDON_ID)
+        return dict(action='selected_zh_cn', locale=ZH_CN_ADDON_ID, version=result['version'])
+    if hasattr(dialog, 'ok'):
+        dialog.ok(
+            tr('lang_pack_unavailable_title', locale=current_locale),
+            tr('lang_pack_unavailable_body', locale=current_locale),
+        )
+    return dict(action='pack_unavailable', locale=current_locale, reason=result['reason'])
+
+
+def recover_interactive(installer, dialog, report=None, *, host=None):
     """Persistent host failure must never hide rollback/exit behind recover."""
     while True:
         try:
@@ -349,14 +759,17 @@ def recover_interactive(installer, dialog, report=None):
         except (OSError, ValueError, RuntimeError) as error:
             if report:
                 report('recover', error)
-            # Invalid journals still cannot be bypassed by a UI choice.
             try:
                 state = installer._read()
             except (OSError, ValueError, RuntimeError):
                 state = None
             rollback = bool(state and state['phase'] in ('activation_pending', 'complete'))
-            actions = ['重试恢复'] + (['恢复上一版本（保留个人数据）'] if rollback else []) + ['退出，稍后处理']
-            choice = dialog.select('安装未完成', actions, preselect=len(actions)-1)
+            actions = (
+                [tr('recover_retry', host=host)]
+                + ([tr('recover_prev', host=host)] if rollback else [])
+                + [tr('recover_exit', host=host)]
+            )
+            choice = dialog.select(tr('recover_title', host=host), actions, preselect=len(actions)-1)
             if choice == 0:
                 continue
             if rollback and choice == 1:
@@ -366,21 +779,24 @@ def recover_interactive(installer, dialog, report=None):
                 except (OSError, ValueError, RuntimeError) as error:
                     if report:
                         report('rollback', error)
-                    continue  # The next recovery menu remains reachable.
+                    continue
             return False
 
 
-def choose_package(dialog, payload, first):
+def choose_package(dialog, payload, first, *, host=None):
     embedded = str(payload) if payload and Path(payload).is_file() else None
     if embedded and first:
         return embedded
     if embedded:
-        choice = dialog.select('安装来源', ['选择完整安装包', '使用内附版本'])
+        choice = dialog.select(
+            tr('source_title', host=host),
+            [tr('source_browse', host=host), tr('source_embedded', host=host)],
+        )
         if choice < 0:
             return None
         if choice == 1:
             return embedded
-    return dialog.browse(1, '选择波比 TV 完整安装包', 'files', mask='.zip')
+    return dialog.browse(1, tr('source_browse_heading', host=host), 'files', mask='.zip')
 
 
 def install_online(installer, host, dialog):
@@ -392,7 +808,7 @@ def install_online(installer, host, dialog):
     progress = xbmcgui.DialogProgress()
     selected = None
     try:
-        progress.create('波比 TV 更新', '正在检查更新，可取消。')
+        progress.create(tr('online_title', host=host), tr('online_checking', host=host))
         cancelled = lambda: host.monitor.abortRequested() or progress.iscanceled()
         track, mirrors = selected_track(installer.work), {}
         offer = latest(cancelled, track=track, report=mirrors)
@@ -400,25 +816,41 @@ def install_online(installer, host, dialog):
         watermark = installed_watermark(state)
         progress.close()
         if offer['sequence'] <= watermark:
-            dialog.ok('无需重复更新', ('稳定版尚未追上已安装版本，等待同轨道后续更新；不会自动降级。\n'
-                if track == 'stable' and offer['sequence'] < watermark else '') +
-                '此版本或更新版本已安装过。需要恢复时，请选择“恢复上一版本”或“选择恢复版本”。')
+            prefix = (
+                tr('online_stable_behind', host=host)
+                if track == 'stable' and offer['sequence'] < watermark
+                else ''
+            )
+            dialog.ok(tr('online_up_to_date_title', host=host), prefix + tr('online_up_to_date_body', host=host))
             return False
-        dialog.textviewer('更新版本', '轨道 {}\n已装 {}\n候选 {}\n镜像 {}'.format(
-            '稳定版' if track == 'stable' else '预览版', state.get('sequence', '未安装'), offer['tag'].upper(),
-            {'synchronized': '已同步', 'out-of-sync': '尚未同步，使用较新版本',
-             'unavailable': '部分不可用，使用已核实镜像'}.get(mirrors.get('mirrors'), '未报告')))
-        if not dialog.yesno('安装 ' + offer['tag'].upper(),
-                '完整安装包约 %d MB，已有组件可复用。若 Kodi 询问是否保持临时皮肤，请选“是”。账号与观看记录保留。继续安装？'
-                % ((offer['size'] + 1024 * 1024 - 1) // (1024 * 1024))):
+        mirror_lbl = {
+            'synchronized': tr('mirror_sync', host=host),
+            'out-of-sync': tr('mirror_out_of_sync', host=host),
+            'unavailable': tr('mirror_unavailable', host=host),
+        }.get(mirrors.get('mirrors'), tr('mirror_unreported', host=host))
+        dialog.textviewer(
+            tr('online_offer_title', host=host),
+            tr(
+                'online_offer_body',
+                host=host,
+                track=tr('track_stable' if track == 'stable' else 'track_preview', host=host),
+                installed=state.get('sequence', tr('not_installed', host=host)),
+                tag=offer['tag'].upper(),
+                mirror=mirror_lbl,
+            ),
+        )
+        if not dialog.yesno(
+            tr('online_confirm_title', host=host, tag=offer['tag'].upper()),
+            tr('online_confirm_body', host=host, mb=(offer['size'] + 1024 * 1024 - 1) // (1024 * 1024)),
+        ):
             return False
         host.check_idle()
-        progress.create('波比 TV 更新', '正在下载更新，已有组件会复用。可随时取消。')
+        progress.create(tr('online_title', host=host), tr('online_downloading', host=host))
         selected = download(offer, installer.work / 'downloads', installer.trust,
                             cancelled, lambda percent: progress.update(percent))
         if cancelled():
             return False
-        host.check_idle()  # Playback may have started during the download.
+        host.check_idle()
         progress.close()
         installer.apply(selected)
         return True
@@ -427,45 +859,124 @@ def install_online(installer, host, dialog):
     finally:
         progress.close()
         if selected is not None:
-            # Remove only this invocation's downloaded package, never backups.
             selected.unlink(missing_ok=True)
 
 
-def failure_message(error, stage=None):
+def failure_message(error, stage=None, *, locale=None, host=None):
     """Explain existing failures without echoing URLs, paths or server bodies."""
+    lang = normalize_locale(locale) if locale is not None else active_locale(host=host, rpc_fn=rpc)
+    en = (lang == 'en_gb')
     code = str(error)
+    if code.startswith('DEPENDENCY_NEEDS_UPGRADE:'):
+        parts = code.split(':', 2)
+        comp = parts[1] if len(parts) > 1 and parts[1] in UPSTREAM_COMPONENTS | HOST_COMPONENTS else ''
+        ver_spec = parts[2] if len(parts) > 2 and re.fullmatch(r'[A-Za-z0-9.+_@~:-]+->[A-Za-z0-9.+_@~:-]+', parts[2]) else ''
+        detail_txt = f' ({comp}: {ver_spec})' if comp and ver_spec else (f' ({comp})' if comp else '')
+        return (
+            f'Installed Kodi dependency{detail_txt} is older than required (existing files are never overwritten). Update it in Kodi Add-on Information, then reopen Bobbi TV.'
+            if en else
+            f'Kodi 已安装的依赖{detail_txt}版本低于所需下限（不会私自覆盖 Kodi 组件）。请在 Kodi 插件信息页更新该组件后，再打开“开始使用”。'
+        )
+    if code.startswith('DEPENDENCY_DIRECTORY_CONFLICT:'):
+        return (
+            'An unregistered residual add-on folder conflicts with a required dependency (existing files were kept untouched). Check your Kodi addons folder or restart Kodi, then retry.'
+            if en else
+            '检测到未注册的同名插件残留目录（原目录保留未动，不会覆盖或删除）。请重启 Kodi 或在插件管理核对后再试。'
+        )
+    if code == 'DEPENDENCY_PREPARATION_CANCELLED':
+        return (
+            'Dependency preparation was cancelled or the active profile changed. Existing files and accounts remain untouched.'
+            if en else
+            '已取消依赖准备或当前配置已切换。原有组件、账号与数据保持不变。'
+        )
     if code.startswith(('DEPENDENCY_UNAVAILABLE:', 'DEPENDENCY_ENABLE_FAILED:')):
-        return 'Kodi 未能启用或满足所需依赖版本（不会私自覆盖 Kodi 组件）。请在 Kodi 插件管理中更新下方组件后，再打开“开始使用”。'
+        return (
+            'Kodi could not install or enable a required dependency (existing Kodi components are never overwritten). Update or enable the add-on below in Kodi, then reopen Start.'
+            if en else
+            'Kodi 未能启用或满足所需依赖版本（不会私自覆盖 Kodi 组件）。请在 Kodi 插件管理中更新下方组件后，再打开“开始使用”。'
+        )
     if code.startswith(('Kodi dependency too old:', 'Kodi dependency missing or invalid:')):
-        return 'Kodi 已安装的上游依赖版本过低或缺失（不会私自覆盖 Kodi 组件）。请在 Kodi 插件管理中更新对应依赖后，再打开“开始使用”。'
+        return (
+            'An upstream Kodi dependency is missing or older than required (existing Kodi components are never overwritten). Update it in Kodi Add-ons, then reopen Start.'
+            if en else
+            'Kodi 已安装的上游依赖版本过低或缺失（不会私自覆盖 Kodi 组件）。请在 Kodi 插件管理中更新对应依赖后，再打开“开始使用”。'
+        )
     if code.startswith('COMPONENT_ENABLE_FAILED:') or code == 'HOST_ACTIVATION_NOT_CONFIRMED':
-        return '影院组件尚未启用。请重新打开“开始使用”恢复，不用删除数据。'
+        return (
+            'Cinema components are not enabled yet. Reopen Start to recover without deleting data.'
+            if en else
+            '影院组件尚未启用。请重新打开“开始使用”恢复，不用删除数据。'
+        )
     if code.startswith(('ADDON_STATE_UNKNOWN:', 'COMPONENT_REGISTRATION_FAILED:')) or code == 'ADDON_REFRESH_NOT_CONFIRMED':
-        return 'Kodi 未确认组件已登记。请重启 Kodi，再打开“开始使用”恢复；不用删除个人数据。'
+        return (
+            'Kodi has not confirmed add-on registration. Restart Kodi and reopen Start to recover; personal data is kept.'
+            if en else
+            'Kodi 未确认组件已登记。请重启 Kodi，再打开“开始使用”恢复；不用删除个人数据。'
+        )
     if code == 'CRYPTO_DEPENDENCY_UNUSABLE':
-        return 'Kodi 的 PyCryptodome 模块不可用。请用本机 Kodi 仓库修复对应架构的依赖，再重试。'
+        return (
+            'Kodi PyCryptodome is unavailable. Install/repair PyCryptodome from your Kodi repository and retry.'
+            if en else
+            'Kodi 的 PyCryptodome 模块不可用。请用本机 Kodi 仓库修复对应架构的依赖，再重试。'
+        )
     if code.startswith('PLAYER_API_UNAVAILABLE:'):
-        return '当前 Kodi 未提供所需播放接口，请核对 CoreELEC 和 Kodi 版本。'
+        return (
+            'Required Kodi playback RPC interfaces are unavailable; check your CoreELEC / Kodi version.'
+            if en else
+            '当前 Kodi 未提供所需播放接口，请核对 CoreELEC 和 Kodi 版本。'
+        )
     if code == 'CINEMA_SERVICE_NOT_READY':
-        return '影院服务未就绪。请重启 Kodi 后打开“开始使用”恢复，无需重新登录。'
+        return (
+            'Cinema service is not ready yet. Restart Kodi and reopen Start; no re-login required.'
+            if en else
+            '影院服务未就绪。请重启 Kodi 后打开“开始使用”恢复，无需重新登录。'
+        )
     if code == 'INSTALL_SKIN_NOT_CONFIRMED':
-        return 'Kodi 未保留临时界面。重新开始安装，在 Kodi 的“保持皮肤？”弹窗中选“是”。'
+        return (
+            'Temporary skin switch was not confirmed. Restart installation and choose "Yes" on Kodi\'s "Keep skin?" prompt.'
+            if en else
+            'Kodi 未保留临时界面。重新开始安装，在 Kodi 的“保持皮肤？”弹窗中选“是”。'
+        )
     if code == 'CINEMA_SERVICE_NOT_STOPPED':
-        return '旧播放服务尚未退出，未取得替换许可。请停止播放，重启 Kodi 后从“开始使用”恢复。'
+        return (
+            'Previous playback service is still draining. Stop playback, restart Kodi, and reopen Start.'
+            if en else
+            '旧播放服务尚未退出，未取得替换许可。请停止播放，重启 Kodi 后从“开始使用”恢复。'
+        )
     if isinstance(error, BadZipFile):
-        return 'ZIP 文件不完整，请重新下载文件名以 script.bobbi.start- 开头的完整安装包。'
+        return (
+            'ZIP file is incomplete; re-download the full package starting with script.bobbi.start-.'
+            if en else
+            'ZIP 文件不完整，请重新下载文件名以 script.bobbi.start- 开头的完整安装包。'
+        )
     if code == 'PLAYBACK_ACTIVE':
-        return '请先停止播放，再更新程序或切换界面。'
+        return (
+            'Please stop video playback before updating or switching the interface.'
+            if en else
+            '请先停止播放，再更新程序或切换界面。'
+        )
     if code == 'INSTALLATION_SPACE_REQUIRED' or getattr(error, 'errno', None) == errno.ENOSPC:
         plan = getattr(error, 'space', None)
+        if en:
+            sizes = ('Need at least {:.1f} MiB, {:.1f} MiB free. '.format(
+                plan['required_bytes']/1024**2, plan['free_bytes']/1024**2) if plan else '')
+            return sizes + 'Insufficient storage; open "Storage and cleanup" to inspect reclaimable cache.'
         sizes = ('需新增至少 {:.1f} MiB，当前可用 {:.1f} MiB。'.format(
             plan['required_bytes']/1024**2, plan['free_bytes']/1024**2) if plan else '')
         return sizes + '空间不足，请到“存储空间与清理”查看可清理内容。'
     if isinstance(error, PermissionError) or getattr(error, 'errno', None) in (errno.EACCES, errno.EPERM, errno.EROFS):
-        return '无法写入存储设备，请检查空间和写入权限，勿删除账号或程序备份。'
+        return (
+            'Storage is not writable; check disk space and permissions without deleting accounts or backups.'
+            if en else
+            '无法写入存储设备，请检查空间和写入权限，勿删除账号或程序备份。'
+        )
     if isinstance(getattr(error, 'reason', error), ssl.SSLError):
-        return '无法建立安全连接，请检查设备时间和网络，或使用完整离线包。'
-    messages = {
+        return (
+            'Secure TLS connection failed; check device clock and network, or use the full offline ZIP.'
+            if en else
+            '无法建立安全连接，请检查设备时间和网络，或使用完整离线包。'
+        )
+    messages_zh = {
         'STORAGE_PLAN_CHANGED': '可清理内容已变化，本次已停止。请重新预览后再清理。',
         'Another update is active': '另一个安装或下载操作正在进行，请等待完成后重试。',
         'ONLINE_CANCELLED': '已取消操作。程序、备份和账号保持不变。',
@@ -490,24 +1001,61 @@ def failure_message(error, stage=None):
         'RECOVERY_POINT_INVALID': '恢复包不完整或已变化，未恢复。请改用上一版本备份或重新下载完整包。',
         'RECOVERY_STORE_LIMIT': '恢复目录需要检查，请保留文件并联系维护者。仍可尝试“恢复上一版本”。',
     }
-    if code in messages:
-        return messages[code]
+    messages_en = {
+        'STORAGE_PLAN_CHANGED': 'Reclaimable files changed during confirmation; preview again before cleaning.',
+        'Another update is active': 'Another installation or download is currently active; please wait and retry.',
+        'ONLINE_CANCELLED': 'Operation cancelled. Programs, backups and accounts remain unchanged.',
+        'ONLINE_TIMEOUT': 'Network request timed out; retry to resume or use the full offline package.',
+        'ONLINE_SHORT_READ': 'Download incomplete; retry to resume. Installed programs were not changed.',
+        'ONLINE_LENGTH_INVALID': 'Package size mismatch; nothing was installed. Re-download the full package.',
+        'ONLINE_CONTENT_INVALID': 'Package digest mismatch; nothing was installed. Re-download the full package.',
+        'ONLINE_GENERATION_MISMATCH': 'Package generation differs from the published feed; re-check for updates.',
+        'ONLINE_PACKAGE_INVALID': 'Package archive is invalid; nothing was installed.',
+        'ONLINE_RANGE_INVALID': 'Resume range was rejected; re-check for updates. Installed programs are unchanged.',
+        'ONLINE_DOWNLOAD_BUSY': 'Another update window is downloading; wait for it to finish.',
+        'ONLINE_CACHE_PATH_INVALID': 'Download cache directory is unusable; install from a full offline package.',
+        'ONLINE_OFFER_INVALID': 'Update metadata is currently unavailable; retry later or use a full offline ZIP.',
+        'ONLINE_TRACK_MISMATCH': 'Update track does not match the package; wait for a matching release.',
+        'ONLINE_LEGACY_UNVERIFIED': 'Legacy feed offer could not be verified against the stable track.',
+        'ONLINE_MIRROR_CONFLICT': 'Update mirrors reported conflicting metadata for the same sequence.',
+        'ONLINE_RESPONSE_INVALID': 'Download service returned an invalid response; retry or use offline ZIP.',
+        'ONLINE_REDIRECT_REJECTED': 'Unsupported download redirect rejected.',
+        'GENERATION_NOT_NEWER': 'Selected package is older or already installed; use recovery to roll back.',
+        'NO_PREVIOUS_PROGRAM_GENERATION': 'No previous version backup is stored on this device; accounts are kept.',
+        'CE_REGISTRY_FORMAT_REQUIRES_EXPLICIT_OFFLINE_RESTORE': 'Target version cannot read the current source registry format; data and programs were kept.',
+        'RECOVERY_POINT_INVALID': 'Recovery package is incomplete or modified; use one-step rollback or re-download.',
+        'RECOVERY_STORE_LIMIT': 'Recovery directory exceeded inspection bounds; files were preserved.',
+    }
+    table = messages_en if en else messages_zh
+    if code in table:
+        return table[code]
     if isinstance(error, UpdateError) and ('signature' in code or code.startswith('Offline ')):
-        return '安装包校验失败，请从项目下载页重新下载完整包。'
-    return ('下载未完成，请检查网络后重试，或使用完整离线包。可续传的进度已保留。'
-            if (isinstance(error, OSError) and stage in (None, 'online')) or code.startswith('ONLINE_') else
-            '安装未完成，请重新打开“波比 TV · 开始使用”恢复或重试。')
+        return (
+            'Package signature verification failed; re-download the official full ZIP.'
+            if en else
+            '安装包校验失败，请从项目下载页重新下载完整包。'
+        )
+    if (isinstance(error, OSError) and stage in (None, 'online')) or code.startswith('ONLINE_'):
+        return (
+            'Download incomplete; check network and retry (resumable progress was kept), or use the offline ZIP.'
+            if en else
+            '下载未完成，请检查网络后重试，或使用完整离线包。可续传的进度已保留。'
+        )
+    return (
+        'Installation incomplete; reopen "Bobbi TV · Start" to recover or retry.'
+        if en else
+        '安装未完成，请重新打开“波比 TV · 开始使用”恢复或重试。'
+    )
 
 
 def diagnosis(stage, error):
     """One line shared by the television and Kodi log. Never echo an exception."""
-    where = {'init': '初始化', 'font': '界面字体', 'recover': '恢复安装', 'menu': '读取状态',
+    where = {'init': '初始化', 'font': '界面字体', 'lang': '界面语言', 'recover': '恢复安装', 'menu': '读取状态',
              'storage': '存储预检', 'online': '在线更新', 'apply': '安装组件', 'rollback': '恢复程序',
              'settings': '进入设置', 'validate': '校验安装包'}.get(stage, '安装')
     reason, _, detail = str(error).partition(':')
-    # An exception string can contain URLs, account details or paths. Only
-    # product-owned codes, reviewed addon IDs and our own frame names get out.
     known = {'DEPENDENCY_UNAVAILABLE', 'DEPENDENCY_ENABLE_FAILED', 'DEPENDENCY_GRAPH_INVALID',
+             'DEPENDENCY_NEEDS_UPGRADE', 'DEPENDENCY_DIRECTORY_CONFLICT', 'DEPENDENCY_PREPARATION_CANCELLED',
              'COMPONENT_REGISTRATION_FAILED', 'COMPONENT_ENABLE_FAILED', 'HOST_ACTIVATION_NOT_CONFIRMED',
              'CRYPTO_DEPENDENCY_UNUSABLE', 'PLAYER_API_UNAVAILABLE',
              'ADDON_STATE_UNKNOWN', 'CINEMA_SERVICE_NOT_READY', 'CINEMA_SERVICE_NOT_STOPPED', 'INSTALL_SKIN_NOT_CONFIRMED',
@@ -519,12 +1067,22 @@ def diagnosis(stage, error):
              'CE_CATALOG_PROGRAM_SCHEMA_UNPROVEN', 'CE_CATALOG_OTHER_PROFILES_REQUIRE_EXPLICIT_REVIEW',
              'CE_CATALOG_SCHEMA_INCOMPATIBLE_REQUIRES_EXPLICIT_OFFLINE_RESTORE',
              'CE_REGISTRY_FORMAT_REQUIRES_EXPLICIT_OFFLINE_RESTORE', 'HOST_RESTORE_NOT_CONFIRMED'}
-    if reason in known:
+    allowed_addons = MANAGED | UPSTREAM_COMPONENTS | HOST_COMPONENTS | {ZH_CN_ADDON_ID}
+    extra_version = ''
+    if reason == 'DEPENDENCY_NEEDS_UPGRADE':
         code = reason
+        comp_part, _, ver_part = detail.partition(':')
+        detail = comp_part if comp_part in allowed_addons else ''
+        if detail and re.fullmatch(r'[A-Za-z0-9.+_@~:-]+->[A-Za-z0-9.+_@~:-]+', ver_part):
+            extra_version = ver_part
+    elif reason in known:
+        code = reason
+        first_part = detail.partition(':')[0]
+        detail = first_part if first_part in allowed_addons else ''
     elif reason in ('Kodi dependency too old', 'Kodi dependency missing or invalid'):
         code = 'DEPENDENCY_TOO_OLD' if reason == 'Kodi dependency too old' else 'DEPENDENCY_MISSING'
         candidate_comp = detail.strip().split(';', 1)[0].split()[0] if detail.strip() else ''
-        if candidate_comp in UPSTREAM_COMPONENTS | {'script.module.pycryptodome'}:
+        if candidate_comp in allowed_addons:
             detail = candidate_comp
             reason = 'DEPENDENCY_UNAVAILABLE'
         else:
@@ -542,23 +1100,35 @@ def diagnosis(stage, error):
         code = type(error).__name__
     else:
         code = 'PACKAGE_CHECK' if isinstance(error, UpdateError) else 'INSTALL_ERROR'
-    component = detail if reason in known and detail in MANAGED | UPSTREAM_COMPONENTS | {'script.module.pycryptodome'} else ''
+    component = detail if reason in known and detail in allowed_addons else ''
     tb = error.__traceback__
     frame = ''
     while tb:
         source = Path(tb.tb_frame.f_code.co_filename).stem
         if source in {'ce_installer','ce_install_ui','ce_recovery','ce_storage','kodi','updates',
-                      'offline_updates','catalog_compatibility','online_updates','upstream_addons'}:
+                      'offline_updates','catalog_compatibility','online_updates','upstream_addons','bootstrap_i18n'}:
             frame = f'{source}:{tb.tb_lineno}'
         tb = tb.tb_next
-    return ' · '.join(v for v in (where, code, component, frame) if v)
+    return ' · '.join(v for v in (where, code, component, extra_version, frame) if v)
 
 
-def readable_text(host, dialog):
-    """Offer Kodi's existing Unicode font before Chinese-only stock dialogs."""
+def readable_text(host, dialog, *, locale=None, cjk_needed=None, rpc_fn=None):
+    """Offer Kodi's built-in Unicode Arial font only when CJK text is actually needed on Estuary Default."""
     if host.skin() != 'skin.estuary':
         return True
-    if rpc('Settings.GetSettingValue', {'setting': 'lookandfeel.font'}).get('value') != 'Default':
+    if cjk_needed is False:
+        return True
+    resolved_locale = locale
+    if resolved_locale is None and cjk_needed is None and callable(getattr(host, 'locale', None)):
+        try:
+            resolved_locale = host.locale()
+        except Exception:
+            resolved_locale = None
+    if cjk_needed is None and resolved_locale is not None and not is_cjk_locale(resolved_locale):
+        # English / non-CJK UI renders English bootstrap strings cleanly on Estuary Default font.
+        return True
+    call_rpc = rpc_fn or rpc
+    if call_rpc('Settings.GetSettingValue', {'setting': 'lookandfeel.font'}).get('value') != 'Default':
         return True
     host.check_idle()
     if not dialog.yesno('Display Chinese text',
@@ -566,8 +1136,8 @@ def readable_text(host, dialog):
             'This changes only the interface font, not video subtitles. Choose No to exit.'):
         return False
     host.check_idle()
-    changed = rpc('Settings.SetSettingValue', {'setting': 'lookandfeel.font', 'value': 'Arial'})
-    actual = rpc('Settings.GetSettingValue', {'setting': 'lookandfeel.font'}).get('value')
+    changed = call_rpc('Settings.SetSettingValue', {'setting': 'lookandfeel.font', 'value': 'Arial'})
+    actual = call_rpc('Settings.GetSettingValue', {'setting': 'lookandfeel.font'}).get('value')
     if changed is not True or actual != 'Arial':
         dialog.ok('Font not changed', 'Open Settings > Interface > Skin > Fonts, select Arial, then open Bobbi TV again.')
         return False
@@ -596,54 +1166,79 @@ def main(payload=None, online=False, storage=False):
         try:
             import xbmcaddon
             version = xbmcaddon.Addon('script.bobbi.start').getAddonInfo('version')
-            kodi_version = re.match(r'^[0-9]{1,2}\.[0-9]{1,2}(?:\.[0-9]{1,2})?', xbmc.getInfoLabel('System.BuildVersion'))
-            if isinstance(version, str) and re.fullmatch(r'[0-9]{1,4}(?:\.[0-9]{1,4}){1,3}', version) and kodi_version:
-                line += ' · ZIP ' + version + ' / Kodi ' + kodi_version[0]
+            kodi_version_match = re.match(r'^[0-9]{1,2}\.[0-9]{1,2}(?:\.[0-9]{1,2})?', xbmc.getInfoLabel('System.BuildVersion'))
+            if isinstance(version, str) and re.fullmatch(r'[0-9]{1,4}(?:\.[0-9]{1,4}){1,3}', version) and kodi_version_match:
+                line += ' · ZIP ' + version + ' / Kodi ' + kodi_version_match[0]
         except (AttributeError, ImportError, OSError, RuntimeError, TypeError, ValueError):
-            pass  # A failed version lookup cannot hide the original fault.
+            pass
         if hasattr(xbmc, 'log'):
             xbmc.log('[bobbi-install] ' + line, xbmc.LOGERROR)
         if hasattr(dialog, 'ok'):
             old = str(error) in ('PREVIOUS_PROGRAM_INCOMPLETE', 'PREVIOUS_PROGRAM_SPECIAL_FILE', 'PREVIOUS_PROGRAM_RECEIPT_REQUIRED')
-            message = ('旧备份不完整或缺少核对记录。请保留备份，改用完整安装包恢复。' if old
-                       else failure_message(error, step))
-            dialog.ok('无法恢复旧版' if old else '操作未完成', message + '\n诊断（可拍照） ' + line)
+            message = (tr('report_old_backup_body', host=host) if old
+                       else failure_message(error, step, host=host))
+            title = tr('report_old_backup_title' if old else 'report_failed_title', host=host)
+            dialog.ok(title, message + tr('report_diag_prefix', host=host) + line)
     try:
-        host = KodiHost()
+        try:
+            host = KodiHost(dialog=dialog)
+        except TypeError:
+            host = KodiHost()
         try:
             diagnostic_root = profile_root()
         except (ValueError, OSError, RuntimeError, AttributeError, ImportError):
             pass
         installer = Installer(xbmcvfs.translatePath('special://home/addons'),
                               profile('script.bobbi.start'), host)
+        if not storage and callable(getattr(installer, '_read', None)):
+            try:
+                pending_state = installer._read()
+            except (OSError, ValueError, RuntimeError):
+                pending_state = 'invalid'
+            if pending_state is None or (isinstance(pending_state, dict)
+                    and not pending_state.get('host_pending')
+                    and pending_state.get('phase') in ('complete', 'restored')):
+                stage = 'lang'
+                ensure_host_language(host, installer, dialog, payload=payload)
         stage = 'font'
         if not readable_text(host, dialog):
             return
-        # Pending activation is runnable but still needs recovery/readback.
         stage = 'recover'
-        if not recover_interactive(installer, dialog, report):
+        if not recover_interactive(installer, dialog, report, host=host):
             return
         stage = 'menu'
         state = installer._read()
-        actions = ['影院设置', '安装本地完整包',
-                   '恢复上一版本', '返回 Kodi 界面', '检查在线更新', '存储空间与清理',
-                   '选择恢复版本', '更新轨道（稳定版 / 预览版）']
+        actions = [
+            tr('menu_settings', host=host),
+            tr('menu_install_local', host=host),
+            tr('menu_rollback', host=host),
+            tr('menu_return_kodi', host=host),
+            tr('menu_online', host=host),
+            tr('menu_storage', host=host),
+            tr('menu_recovery', host=host),
+            tr('menu_track', host=host),
+        ]
         first = state is None and not host.details('plugin.video.bobbi')
         choice = 5 if storage else (4 if online or (first and not (payload and Path(payload).is_file())) else (
-            1 if first else dialog.select('波比 TV', actions)))
+            1 if first else dialog.select(tr('menu_title', host=host), actions)))
         if choice == 7:
             from .online_updates import selected_track, TRACKS
             current = selected_track(installer.work)
-            selected = dialog.select('更新轨道', ['稳定版（默认）', '预览版（测试）'], preselect=TRACKS.index(current))
-            if selected in (0, 1) and (selected == 0 or dialog.yesno('使用预览版？',
-                    '预览版可能有未验证功能。切回稳定版不会自动降级。继续？')):
+            selected = dialog.select(
+                tr('track_title', host=host),
+                [tr('track_opt_stable', host=host), tr('track_opt_preview', host=host)],
+                preselect=TRACKS.index(current),
+            )
+            if selected in (0, 1) and (selected == 0 or dialog.yesno(
+                    tr('track_preview_confirm_title', host=host),
+                    tr('track_preview_confirm_body', host=host))):
                 selected_track(installer.work, TRACKS[selected])
             return
         if choice == 6:
             stage = 'rollback'
             from .ce_recovery import show
             if show(installer, host, dialog):
-                dialog.ok('版本已恢复', '请重启 Kodi 后再观看，账号与观看记录保留。')
+                dialog.ok(tr('restored_title', host=host), tr('restored_body', host=host))
             return
         if choice == 5:
             stage = 'storage'
@@ -656,35 +1251,36 @@ def main(payload=None, online=False, storage=False):
                 return
             if diagnostic_root is not None:
                 observe(diagnostic_root, 'update', 'ok', started)
-            dialog.ok('安装完成', '账号与观看记录保留。即将进入设置，观看前请重启 Kodi。')
+            dialog.ok(tr('installed_title', host=host), tr('installed_online_body', host=host))
             choice = 0
         if choice == 1:
             stage = 'validate'
-            selected = choose_package(dialog, payload, first)
+            selected = choose_package(dialog, payload, first, host=host)
             if not selected:
                 return
             from .ce_storage import plan_text, require_space
             selected = xbmcvfs.translatePath(selected)
             plan = installer.plan_space(selected)
             require_space(plan)
-            dialog.textviewer('安装所需空间', plan_text(plan))
+            dialog.textviewer(tr('space_title', host=host), plan_text(plan, host=host))
             host.check_idle()
-            if not dialog.yesno('安装波比影院',
-                    '预计需新增至少 {:.1f} MiB，当前可用 {:.1f} MiB。\n'
-                    '账号与音画设置保留。若 Kodi 询问是否保持临时皮肤，请选“是”。继续安装？'.format(
-                        plan['required_bytes']/1024**2, plan['free_bytes']/1024**2)):
+            if not dialog.yesno(
+                tr('install_confirm_title', host=host),
+                tr('install_confirm_body', host=host,
+                   required=plan['required_bytes']/1024**2, free=plan['free_bytes']/1024**2),
+            ):
                 return
             stage = 'apply'
             installer.apply(selected)
             if diagnostic_root is not None:
                 observe(diagnostic_root, 'install', 'ok', started)
-            dialog.ok('安装完成', '账号、片库与观看记录保留。即将进入设置，观看前请重启 Kodi。')
+            dialog.ok(tr('installed_title', host=host), tr('installed_offline_body', host=host))
             choice = 0
         elif choice == 2:
             stage = 'rollback'
-            if dialog.yesno('恢复上一版本？', '仅恢复程序，账号、片库与观看记录保留。完成后需重启 Kodi。'):
+            if dialog.yesno(tr('rollback_confirm_title', host=host), tr('rollback_confirm_body', host=host)):
                 installer.rollback()
-                dialog.ok('版本已恢复', '请重启 Kodi 后再观看，账号与观看记录保留。')
+                dialog.ok(tr('restored_title', host=host), tr('restored_body', host=host))
             return
         elif choice == 3:
             host.check_idle()
@@ -697,8 +1293,6 @@ def main(payload=None, online=False, storage=False):
             stage = 'settings'
             xbmc.executebuiltin('RunScript(script.bobbi.setup)')
     except Exception as error:
-        # Last presentation boundary: the transaction owns recovery. Unexpected
-        # exceptions must be photographable too, never hide a shutdown/exit.
         report(stage, error)
     finally:
         close = getattr(host, 'close', None)
