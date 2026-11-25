@@ -3,6 +3,7 @@ import json
 import os
 from pathlib import Path
 from queue import Empty, Queue
+import math
 import selectors
 import socket
 import stat
@@ -500,19 +501,49 @@ class PlaybackControlServer:
             prev_cancelled = prev_track is None or bool(prev_track.get('cancelled'))
             same_instance = obs_req == prev['request_id'] and obs_inst == prev['native_instance']
             if prev_cancelled or not same_instance:
+                from bobbi_core.playback_completion import (
+                    completion_observation as valid_completion,
+                    terminal_end,
+                )
                 reason = 'SUPERSEDED' if (obs_inst and obs_inst != prev['native_instance']) else 'STOP'
                 pos, dur = prev['position'], prev['duration']
                 obs_clock = prev['observed_clock']
                 term = getattr(self.authority.owner, 'terminal', None)
-                if isinstance(term, dict) and term.get('native_instance') == prev['native_instance']:
-                    reason = str(term.get('reason') or 'STOP')
+                matched_term = (
+                    term
+                    if isinstance(term, dict)
+                    and term.get('native_instance') == prev['native_instance']
+                    and term.get('request_id', prev['request_id']) == prev['request_id']
+                    else None
+                )
+                if matched_term is not None:
+                    reason = str(matched_term.get('reason') or 'STOP')
+                term_doc = dict(matched_term) if matched_term is not None else {'reason': reason}
                 last_nat = getattr(self.authority, 'last_native', None)
-                if isinstance(last_nat, dict) and last_nat.get('native_instance') == prev['native_instance']:
-                    comp = last_nat.get('completion_observation')
-                    if isinstance(comp, dict):
-                        cpos, cdur = comp.get('position'), comp.get('duration')
-                        if isinstance(cpos, (int, float)) and isinstance(cdur, (int, float)) and cdur > 0:
-                            pos, dur, obs_clock = float(cpos), float(cdur), True
+                if 'completion_observation' not in term_doc and isinstance(last_nat, dict):
+                    if (
+                        last_nat.get('native_instance') == prev['native_instance']
+                        and last_nat.get('request_id', prev['request_id']) == prev['request_id']
+                        and 'completion_observation' in last_nat
+                    ):
+                        term_doc['completion_observation'] = last_nat['completion_observation']
+                    elif 'completion_observation' in last_nat and last_nat.get('native_instance') != prev['native_instance']:
+                        term_doc['completion_observation'] = None
+                if 'completion_observation' in term_doc:
+                    checked_comp = valid_completion(term_doc.get('completion_observation'))
+                    if checked_comp is not None and checked_comp['valid'] and checked_comp['age_us'] <= 5_000_000:
+                        dur = checked_comp['duration_ms'] / 1000.0
+                        pos = min(checked_comp['position_ms'], checked_comp['duration_ms']) / 1000.0
+                        obs_clock = True
+                if reason == 'NATURAL_EOF':
+                    terminal_seen_at = getattr(self.authority, 'terminal_seen_at', None)
+                    seen_fresh = (
+                        terminal_seen_at is None
+                        or (isinstance(terminal_seen_at, (int, float)) and 0.0 <= now - terminal_seen_at <= 5.0)
+                    )
+                    last_clock_at = prev.get('last_clock_at', prev.get('last_obs_at')) if prev.get('observed_clock') else None
+                    if prev_cancelled or not seen_fresh or not terminal_end(term_doc, pos, dur, last_clock_at, now):
+                        reason = 'ERROR'
                 host.notify_playback_event({
                     'event': 'TERMINAL',
                     'request_id': prev['request_id'],
@@ -538,21 +569,7 @@ class PlaybackControlServer:
         if not first and now < self._owned_poll_due:
             return
         self._owned_poll_due = now + 1.0
-        pos, dur, obs_clock = 0.0, 0.0, False
-        try:
-            import xbmc
-            player = xbmc.Player()
-            if player.isPlayingVideo():
-                p_val, d_val = player.getTime(), player.getTotalTime()
-                if (
-                    isinstance(p_val, (int, float))
-                    and isinstance(d_val, (int, float))
-                    and 0 <= p_val <= d_val
-                    and 0 < d_val < 864000
-                ):
-                    pos, dur, obs_clock = float(p_val), float(d_val), True
-        except Exception:
-            pass
+        pos, dur, obs_clock, pres = self._sample_owned_clock(obs_req, obs_inst)
         cur_paused = bool(observed.get('paused', False))
         if first:
             resume_req = tracked['data'].get('_resume_offset_seconds')
@@ -584,10 +601,11 @@ class PlaybackControlServer:
                             can_attempt_now = False
                             try:
                                 from uuid import uuid4
-                                pres = self.authority.dispatch({
-                                    'operation': 'playback_presentation',
-                                    'include_owner': True,
-                                })
+                                if pres is None:
+                                    pres = self.authority.dispatch({
+                                        'operation': 'playback_presentation',
+                                        'include_owner': True,
+                                    })
                                 can_attempt_now = (
                                     isinstance(pres, dict)
                                     and bool(pres.get('available'))
@@ -632,6 +650,7 @@ class PlaybackControlServer:
                 'observed_clock': obs_clock,
                 'paused': cur_paused,
                 'last_obs_at': now,
+                'last_clock_at': now if obs_clock else None,
                 'last_emit_at': now,
             }
             host.notify_playback_event({
@@ -658,13 +677,14 @@ class PlaybackControlServer:
         st = self._owned_state
         prev_paused = st['paused']
         prev_pos = st['position']
-        prev_obs = st['last_obs_at']
+        prev_obs = st.get('last_clock_at') if st.get('last_clock_at') is not None else st['last_obs_at']
         if obs_clock:
             st['position'] = pos
             st['duration'] = dur
             st['observed_clock'] = True
+            st['last_clock_at'] = now
+            st['last_obs_at'] = now
         st['paused'] = cur_paused
-        st['last_obs_at'] = now
 
         trigger = None
         if cur_paused != prev_paused:
@@ -688,6 +708,113 @@ class PlaybackControlServer:
                 'observed_clock': st['observed_clock'],
                 'data': dict(st['data']),
             })
+
+    def _sample_owned_clock(self, obs_req, obs_inst):
+        pres = None
+        try:
+            pres = self.authority.dispatch({
+                'operation': 'playback_presentation',
+                'include_owner': True,
+            })
+        except Exception:
+            pres = None
+        if isinstance(pres, dict):
+            if pres.get('available') is True:
+                exp = pres.get('expected')
+                if (
+                    isinstance(exp, dict)
+                    and exp.get('request_id') == obs_req
+                    and exp.get('native_instance', obs_inst) == obs_inst
+                ):
+                    p_ms, d_ms = pres.get('position_ms'), pres.get('duration_ms')
+                    if (
+                        type(p_ms) is int
+                        and type(d_ms) is int
+                        and exp.get('native_instance') == obs_inst
+                        and 0 <= p_ms <= d_ms
+                        and 0 < d_ms <= 864000000
+                    ):
+                        return p_ms / 1000.0, d_ms / 1000.0, True, pres
+            elif pres.get('mode') == 'external' or pres.get('reason') == 'PLAYBACK_SCOPE_CHANGED':
+                return 0.0, 0.0, False, pres
+
+        native_iface = getattr(self, 'native', None) or getattr(self.authority, 'native', None)
+        try:
+            if native_iface is not None:
+                from bobbi_core.native_receipt import receipt as checked_receipt
+                before_state = native_iface.state()
+                res_epoch = getattr(self.authority, 'reservation_epoch', None)
+                desired = getattr(getattr(self.authority, 'owner', None), 'desired', None)
+                if (
+                    not isinstance(before_state, dict)
+                    or before_state.get('protocol') != 1
+                    or type(before_state.get('selection_epoch')) is not int
+                    or (res_epoch is not None and before_state['selection_epoch'] != res_epoch)
+                ):
+                    return 0.0, 0.0, False, pres
+                before_rec = checked_receipt(before_state.get('playback'))
+                if (
+                    before_rec is None
+                    or before_rec.get('phase') != 'AV_STARTED'
+                    or before_rec.get('request_id') != obs_req
+                    or before_rec.get('native_instance') != obs_inst
+                    or not before_rec.get('file_identity')
+                    or (
+                        isinstance(desired, dict)
+                        and desired.get('file_identity')
+                        and before_rec.get('file_identity') != desired.get('file_identity')
+                    )
+                    or before_rec.get('open_epoch') != before_state['selection_epoch']
+                ):
+                    return 0.0, 0.0, False, pres
+                import xbmc
+                player = xbmc.Player()
+                if not player.isPlayingVideo():
+                    return 0.0, 0.0, False, pres
+                p_val, d_val = player.getTime(), player.getTotalTime()
+                after_state = native_iface.state()
+                after_rec = (
+                    checked_receipt(after_state.get('playback'))
+                    if isinstance(after_state, dict)
+                    and after_state.get('protocol') == 1
+                    and after_state.get('selection_epoch') == before_state['selection_epoch']
+                    else None
+                )
+                if (
+                    after_rec is None
+                    or after_rec.get('phase') != 'AV_STARTED'
+                    or any(
+                        after_rec.get(k) != before_rec.get(k)
+                        for k in ('request_id', 'native_instance', 'file_identity', 'open_epoch')
+                    )
+                ):
+                    return 0.0, 0.0, False, pres
+            else:
+                exp = pres.get('expected') if isinstance(pres, dict) and pres.get('available') is True else None
+                if (
+                    not isinstance(exp, dict)
+                    or exp.get('request_id') != obs_req
+                    or exp.get('native_instance', obs_inst) != obs_inst
+                ):
+                    return 0.0, 0.0, False, pres
+                import xbmc
+                player = xbmc.Player()
+                if not player.isPlayingVideo():
+                    return 0.0, 0.0, False, pres
+                p_val, d_val = player.getTime(), player.getTotalTime()
+
+            if (
+                isinstance(p_val, (int, float))
+                and isinstance(d_val, (int, float))
+                and math.isfinite(p_val)
+                and math.isfinite(d_val)
+                and 0 <= p_val <= d_val
+                and 0 < d_val < 864000
+            ):
+                return float(p_val), float(d_val), True, pres
+        except Exception:
+            pass
+        return 0.0, 0.0, False, pres
 
     def _prepare_owned_next_summary(self, boot_id, epoch, request_id, native_instance, account_scope, current_data):
         host = getattr(self, 'host', None)
