@@ -22,6 +22,7 @@ from queue import Empty, Full, Queue
 import re
 import select
 import socket
+import ssl
 import struct
 from threading import Event, Lock, Thread, current_thread
 import time
@@ -104,12 +105,281 @@ def _load_emby_client(root: Path, source_id: str, generation: str, *, session_fa
     return Client('emby', saved, session=session), saved
 
 
+WS_GUID = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11'
+WS_MAX_CONTROL_BYTES = 125
+WS_MAX_FRAME_BYTES = 65536
+WS_MAX_MESSAGE_BYTES = 262144
+WS_MAX_FRAGMENTS = 32
+
+
+def ws_accept_digest(ws_key: str) -> str:
+    digest = hashlib.sha1((ws_key + WS_GUID).encode('ascii')).digest()
+    return base64.b64encode(digest).decode('ascii')
+
+
+def _header_value(reply, name: str) -> str:
+    hdrs = getattr(reply, 'headers', None)
+    if hdrs is not None and hasattr(hdrs, 'get_all'):
+        vals = hdrs.get_all(name)
+        if vals:
+            return ', '.join(str(v) for v in vals)
+    if hdrs is not None and hasattr(hdrs, 'get'):
+        for k in (name, name.lower(), name.title()):
+            val = hdrs.get(k)
+            if val is not None:
+                return str(val)
+        if hasattr(hdrs, 'items'):
+            matched = [str(v) for k, v in hdrs.items() if str(k).lower() == name.lower()]
+            if matched:
+                return ', '.join(matched)
+    getter = getattr(reply, 'getheader', None)
+    if callable(getter):
+        val = getter(name)
+        if val is not None:
+            return str(val)
+    return ''
+
+
+def verify_ws_handshake(reply, ws_key: str) -> bool:
+    """Validate RFC 6455 client opening handshake HTTP 101 + Upgrade + Connection + Sec-WebSocket-Accept."""
+    if getattr(reply, 'status', None) != 101:
+        return False
+    upgrade_tokens = [t.strip().lower() for t in _header_value(reply, 'Upgrade').split(',') if t.strip()]
+    if 'websocket' not in upgrade_tokens:
+        return False
+    conn_tokens = [t.strip().lower() for t in _header_value(reply, 'Connection').split(',') if t.strip()]
+    if 'upgrade' not in conn_tokens:
+        return False
+    accept_raw = _header_value(reply, 'Sec-WebSocket-Accept')
+    accept_parts = [p.strip() for p in accept_raw.split(',') if p.strip()]
+    if len(accept_parts) != 1 or accept_parts[0] != ws_accept_digest(ws_key):
+        return False
+    return True
+
+
+def build_ws_client_frame(opcode: int, payload: bytes = b'', *, mask_key: bytes | None = None) -> bytes:
+    """Construct a mandatory client-masked RFC 6455 frame."""
+    if not isinstance(payload, (bytes, bytearray)):
+        raise TypeError('WS payload must be bytes')
+    plen = len(payload)
+    if (opcode & 0x08) and plen > WS_MAX_CONTROL_BYTES:
+        raise ValueError('WS control frame payload exceeds 125 bytes')
+    if plen > WS_MAX_FRAME_BYTES:
+        raise ValueError('WS client frame payload exceeds limit')
+    b0 = 0x80 | (opcode & 0x0F)
+    mkey = bytes(mask_key) if (isinstance(mask_key, (bytes, bytearray)) and len(mask_key) == 4) else os.urandom(4)
+    if plen < 126:
+        header = bytes([b0, 0x80 | plen])
+    else:
+        header = bytes([b0, 0x80 | 126]) + struct.pack('!H', plen)
+    masked = bytes(b ^ mkey[i & 3] for i, b in enumerate(payload))
+    return header + mkey + masked
+
+
+def _is_valid_close_code(code: int) -> bool:
+    if 1000 <= code <= 1014:
+        return code not in (1004, 1005, 1006)
+    return 3000 <= code <= 4999
+
+
+class _WSProtocolError(Exception):
+    def __init__(self, close_code: int = 1002, reason: str = ''):
+        super().__init__(reason)
+        self.close_code = close_code
+
+
+class _WSFrameStream:
+    """Bounded RFC 6455 client frame & multi-frame UTF-8 text message decoder."""
+
+    def __init__(self):
+        self.buf = bytearray()
+        self.frag_buf: bytearray | None = None
+        self.frag_count: int = 0
+
+    def feed(self, chunk: bytes) -> list[tuple[str, bytes | str]]:
+        """Return ordered actions: ('text', str), ('pong', bytes), ('close', bytes)."""
+        if chunk:
+            self.buf.extend(chunk)
+            if len(self.buf) > WS_MAX_FRAME_BYTES + 16:
+                # Guard against a single unparsed oversized header+body accumulation
+                b1 = self.buf[1] if len(self.buf) >= 2 else 0
+                plen_hint = b1 & 0x7F
+                if plen_hint in (126, 127) and len(self.buf) > WS_MAX_FRAME_BYTES + 14:
+                    raise _WSProtocolError(1009, 'frame_buffer_exceeded')
+        events: list[tuple[str, bytes | str]] = []
+        while len(self.buf) >= 2:
+            b0, b1 = self.buf[0], self.buf[1]
+            fin = (b0 & 0x80) != 0
+            rsv = b0 & 0x70
+            if rsv != 0:
+                raise _WSProtocolError(1002, 'nonzero_rsv')
+            opcode = b0 & 0x0F
+            masked = (b1 & 0x80) != 0
+            plen = b1 & 0x7F
+            idx = 2
+            if plen == 126:
+                if len(self.buf) < 4:
+                    break
+                plen = struct.unpack('!H', self.buf[2:4])[0]
+                if plen < 126:
+                    raise _WSProtocolError(1002, 'nonminimal_length_16')
+                idx = 4
+            elif plen == 127:
+                if len(self.buf) < 10:
+                    break
+                if (self.buf[2] & 0x80) != 0:
+                    raise _WSProtocolError(1002, 'negative_length_64')
+                plen = struct.unpack('!Q', self.buf[2:10])[0]
+                if plen < 65536:
+                    raise _WSProtocolError(1002, 'nonminimal_length_64')
+                idx = 10
+
+            is_control = (opcode & 0x08) != 0
+            if is_control:
+                if opcode not in (0x8, 0x9, 0xA) or not fin or plen > WS_MAX_CONTROL_BYTES:
+                    raise _WSProtocolError(1002, 'invalid_control_frame')
+            else:
+                if opcode == 0x2:
+                    raise _WSProtocolError(1003, 'binary_unsupported')
+                if opcode not in (0x0, 0x1):
+                    raise _WSProtocolError(1002, 'invalid_data_opcode')
+                if plen > WS_MAX_FRAME_BYTES:
+                    raise _WSProtocolError(1009, 'frame_too_large')
+
+            mask_len = 4 if masked else 0
+            total_frame_len = idx + mask_len + plen
+            if len(self.buf) < total_frame_len:
+                break
+
+            mask = bytes(self.buf[idx:idx + 4]) if masked else b''
+            payload = bytes(self.buf[idx + mask_len:total_frame_len])
+            del self.buf[:total_frame_len]
+            if masked:
+                payload = bytes(b ^ mask[i & 3] for i, b in enumerate(payload))
+
+            if opcode == 0x9:
+                events.append(('pong', payload))
+                continue
+            if opcode == 0xA:
+                events.append(('pong_ack', payload))
+                continue
+            if opcode == 0x8:
+                if len(payload) == 1:
+                    raise _WSProtocolError(1002, 'invalid_close_payload')
+                if len(payload) >= 2:
+                    code = struct.unpack('!H', payload[:2])[0]
+                    if not _is_valid_close_code(code):
+                        raise _WSProtocolError(1002, 'invalid_close_code')
+                    try:
+                        payload[2:].decode('utf-8')
+                    except UnicodeDecodeError as exc:
+                        raise _WSProtocolError(1007, 'invalid_close_utf8') from exc
+                    events.append(('close', struct.pack('!H', code)))
+                else:
+                    events.append(('close', struct.pack('!H', 1000)))
+                return events
+
+            if opcode == 0x1:
+                if self.frag_buf is not None:
+                    raise _WSProtocolError(1002, 'interleaved_data_frame')
+                if fin:
+                    try:
+                        text = payload.decode('utf-8')
+                    except UnicodeDecodeError as exc:
+                        raise _WSProtocolError(1007, 'invalid_utf8') from exc
+                    events.append(('text', text))
+                else:
+                    if len(payload) > WS_MAX_MESSAGE_BYTES:
+                        raise _WSProtocolError(1009, 'message_too_large')
+                    self.frag_buf = bytearray(payload)
+                    self.frag_count = 1
+            elif opcode == 0x0:
+                if self.frag_buf is None:
+                    raise _WSProtocolError(1002, 'unexpected_continuation')
+                self.frag_count += 1
+                if self.frag_count > WS_MAX_FRAGMENTS or (len(self.frag_buf) + len(payload)) > WS_MAX_MESSAGE_BYTES:
+                    raise _WSProtocolError(1009, 'fragmented_message_too_large')
+                self.frag_buf.extend(payload)
+                if fin:
+                    raw_msg = bytes(self.frag_buf)
+                    self.frag_buf = None
+                    self.frag_count = 0
+                    try:
+                        text = raw_msg.decode('utf-8')
+                    except UnicodeDecodeError as exc:
+                        raise _WSProtocolError(1007, 'invalid_utf8') from exc
+                    events.append(('text', text))
+        return events
+
+
+def _ws_send_frame(raw_sock, frame: bytes, stop_ev: Event, global_stop: Event) -> bool:
+    deadline = time.monotonic() + 1.5
+    view = memoryview(frame)
+    sent = 0
+    try:
+        while sent < len(view):
+            if stop_ev.is_set() or global_stop.is_set():
+                break
+            rem = deadline - time.monotonic()
+            if rem <= 0:
+                return False
+            try:
+                n = raw_sock.send(view[sent:])
+            except (BlockingIOError, ssl.SSLWantWriteError):
+                select.select([], [raw_sock], [raw_sock], min(0.05, rem))
+                continue
+            except ssl.SSLWantReadError:
+                select.select([raw_sock], [], [raw_sock], min(0.05, rem))
+                continue
+            except OSError:
+                return False
+            if n <= 0:
+                return False
+            sent += n
+        return True
+    finally:
+        view.release()
+
+
+def _close_ws_resources(holder: dict) -> None:
+    attempt = holder.get('attempt')
+    if attempt is not None and hasattr(attempt, 'abort'):
+        try:
+            attempt.abort()
+        except Exception:
+            pass
+    reply = holder.get('reply')
+    if reply is not None:
+        try:
+            reply.close()
+        except Exception:
+            pass
+    conn = holder.get('conn')
+    if conn is not None:
+        try:
+            conn.close()
+        except Exception:
+            pass
+    sock = holder.get('sock')
+    if sock is not None:
+        try:
+            sock.shutdown(socket.SHUT_RDWR)
+        except Exception:
+            pass
+        try:
+            sock.close()
+        except Exception:
+            pass
+
+
 class EmbyInvalidationHub:
     """Per-(source_id, generation) directory invalidation tracker with optional WS + bounded poll."""
 
     WS_REFRESH_BUDGET_SECONDS = 5.0
     POLL_INTERVAL_SECONDS = 25.0
     POLL_READ_BUDGET_SECONDS = 5.0
+    WS_IDLE_PING_SECONDS = 60.0
+    WS_IDLE_PONG_TIMEOUT_SECONDS = 15.0
 
     def __init__(self, root: Path, *, clock=time.monotonic):
         self.root = Path(root)
@@ -117,7 +387,7 @@ class EmbyInvalidationHub:
         self._lock = Lock()
         self._states: OrderedDict[tuple[str, str], dict] = OrderedDict()
         self._stop = Event()
-        self._ws_workers: dict[tuple[str, str], tuple[Event, Thread]] = {}
+        self._ws_workers: dict[tuple[str, str], tuple[Event, Thread, dict]] = {}
 
     def _entry(self, source_id: str, generation: str) -> dict:
         key = (source_id, generation)
@@ -131,6 +401,8 @@ class EmbyInvalidationHub:
                 'auth_state': 'OK',
                 'changed_items': OrderedDict(),
                 'ws_connected': False,
+                'ws_failures': 0,
+                'next_ws_at': 0.0,
             }
             self._states[key] = st
             while len(self._states) > 16:
@@ -143,16 +415,20 @@ class EmbyInvalidationHub:
         return st
 
     def mark_auth_state(self, source_id: str, generation: str, state: str) -> int:
+        wk_to_stop = None
         with self._lock:
             st = self._entry(source_id, generation)
             st['auth_state'] = state
             st['sync_state'] = 'auth_required' if state == 'AUTH_REQUIRED' else st['sync_state']
             st['revision'] += 1
             if state == 'AUTH_REQUIRED':
-                wk = self._ws_workers.pop((source_id, generation), None)
-                if wk is not None:
-                    wk[0].set()
-            return st['revision']
+                wk_to_stop = self._ws_workers.pop((source_id, generation), None)
+                if wk_to_stop is not None:
+                    wk_to_stop[0].set()
+            rev = st['revision']
+        if wk_to_stop is not None:
+            _close_ws_resources(wk_to_stop[2])
+        return rev
 
     def auth_state(self, source_id: str, generation: str) -> str:
         with self._lock:
@@ -288,8 +564,9 @@ class EmbyInvalidationHub:
             return True
         return False
 
-    def ensure_ws_listener(self, source_id: str, generation: str, *, connect_fn=None) -> None:
+    def ensure_ws_listener(self, source_id: str, generation: str, *, connect_fn=None, force: bool = False) -> None:
         key = (source_id, generation)
+        now = self.clock()
         with self._lock:
             if self._stop.is_set():
                 return
@@ -297,26 +574,51 @@ class EmbyInvalidationHub:
             if st['auth_state'] == 'AUTH_REQUIRED':
                 return
             existing = self._ws_workers.get(key)
-            if existing is not None and existing[1].is_alive():
+            if existing is not None:
+                if existing[1].is_alive():
+                    return
+                self._ws_workers.pop(key, None)
+            if not force and connect_fn is None and now < st.get('next_ws_at', 0.0):
                 return
             stop_ev = Event()
+            holder: dict = {'attempt': None, 'conn': None, 'reply': None, 'sock': None}
             worker = Thread(
                 target=self._ws_loop,
-                args=(source_id, generation, stop_ev, connect_fn),
+                args=(source_id, generation, stop_ev, holder, connect_fn),
                 name=f'bobbi-emby-ws-{source_id[:8]}',
                 daemon=True,
             )
-            self._ws_workers[key] = (stop_ev, worker)
+            entry = (stop_ev, worker, holder)
+            self._ws_workers[key] = entry
             worker.start()
 
-    def _ws_loop(self, source_id: str, generation: str, stop_ev: Event, connect_fn=None) -> None:
+    def _ws_loop(
+        self,
+        source_id: str,
+        generation: str,
+        stop_ev: Event,
+        holder: dict,
+        connect_fn=None,
+    ) -> None:
         key = (source_id, generation)
+        upgraded = False
         try:
             _, saved = _load_emby_client(self.root, source_id, generation)
-        except PanError:
+        except PanError as exc:
+            if str(exc) == 'PAN_SERVER_UNAUTHORIZED':
+                self.mark_auth_state(source_id, generation, 'AUTH_REQUIRED')
+            with self._lock:
+                st = self._states.get(key)
+                if st is not None:
+                    fails = int(st.get('ws_failures', 0)) + 1
+                    st['ws_failures'] = fails
+                    st['next_ws_at'] = self.clock() + min(25.0, float(2 ** min(fails - 1, 4)))
+                cur = self._ws_workers.get(key)
+                if cur is not None and cur[0] is stop_ev:
+                    self._ws_workers.pop(key, None)
             return
+
         u = urlsplit(saved['location'])
-        ws_scheme = 'wss' if u.scheme == 'https' else 'ws'
         base_path = u.path.rstrip('/')
         ws_target = f'{base_path}/embywebsocket?{urlencode({"deviceId": "bobbitv-" + source_id[:16]})}'
         ws_url = f'{u.scheme}://{u.netloc}{ws_target}'
@@ -335,91 +637,146 @@ class EmbyInvalidationHub:
                 deadline=time.monotonic() + 5.0,
                 cancelled=lambda: stop_ev.is_set() or self._stop.is_set(),
             ) as attempt:
+                holder['attempt'] = attempt
                 if connect_fn is not None:
                     conn, target = connect_fn(ws_url, attempt)
                 else:
                     conn, target = open_connection(ws_url, attempt, connect_cap=4.0)
+                holder['conn'] = conn
                 conn.request('GET', target, headers=headers)
                 reply = conn.getresponse()
+                holder['reply'] = reply
                 if reply.status == 401:
-                    conn.close()
                     self.mark_auth_state(source_id, generation, 'AUTH_REQUIRED')
                     return
-                if reply.status != 101:
-                    conn.close()
+                if not verify_ws_handshake(reply, ws_key):
                     return
                 raw_sock = getattr(conn.sock, '_raw', conn.sock)
-                with self._lock:
-                    self._entry(source_id, generation)['ws_connected'] = True
-                # On reconnect, immediately mark dirty once so missed offline deltas are reconciled (R10-04).
-                self.notify_event(source_id, generation, kind='WSReconnected')
-                buf = bytearray()
-                while not stop_ev.is_set() and not self._stop.is_set():
-                    if self.auth_state(source_id, generation) == 'AUTH_REQUIRED':
-                        break
-                    rlist, _, _ = select.select([raw_sock], [], [raw_sock], 0.25)
-                    if not rlist:
+                holder['sock'] = raw_sock
+                raw_sock.setblocking(False)
+                attempt.finish()
+            # Handshake succeeded; detach 5s connect attempt while keeping socket in holder for close().
+            holder['attempt'] = None
+            upgraded = True
+
+            stream = _WSFrameStream()
+            # Drain any post-101 bytes buffered inside HTTPResponse.fp BufferedReader before raw recv!
+            fp = getattr(holder.get('reply'), 'fp', None)
+            raw_io = getattr(fp, 'raw', None) if fp is not None else None
+            if fp is not None and raw_io is not None and hasattr(fp, 'read'):
+                try:
+                    raw_io.readinto = lambda _b: 0
+                    initial_bytes = fp.read(WS_MAX_FRAME_BYTES) or b''
+                except Exception:
+                    initial_bytes = b''
+            else:
+                initial_bytes = b''
+
+            with self._lock:
+                st = self._entry(source_id, generation)
+                st['ws_connected'] = True
+                st['ws_failures'] = 0
+                st['next_ws_at'] = 0.0
+            # On reconnect, immediately mark dirty once so missed offline deltas are reconciled (R10-04).
+            self.notify_event(source_id, generation, kind='WSReconnected')
+
+            last_rx_at = self.clock()
+            ping_sent_at: float | None = None
+
+            def _handle_events(ev_list) -> bool:
+                nonlocal last_rx_at, ping_sent_at
+                for kind, data in ev_list:
+                    last_rx_at = self.clock()
+                    ping_sent_at = None
+                    if kind == 'pong':
+                        pong_frame = build_ws_client_frame(0xA, data)  # type: ignore[arg-type]
+                        if not _ws_send_frame(raw_sock, pong_frame, stop_ev, self._stop):
+                            return False
+                    elif kind == 'pong_ack':
                         continue
-                    try:
-                        chunk = raw_sock.recv(4096)
-                    except (BlockingIOError, OSError):
-                        break
-                    if not chunk:
-                        break
-                    buf.extend(chunk)
-                    while len(buf) >= 2:
-                        b0, b1 = buf[0], buf[1]
-                        opcode = b0 & 0x0F
-                        masked = (b1 & 0x80) != 0
-                        plen = b1 & 0x7F
-                        idx = 2
-                        if plen == 126:
-                            if len(buf) < 4:
-                                break
-                            plen = struct.unpack('!H', buf[2:4])[0]
-                            idx = 4
-                        elif plen == 127:
-                            if len(buf) < 10:
-                                break
-                            plen = struct.unpack('!Q', buf[2:10])[0]
-                            idx = 10
-                        if plen > 262144:
-                            return
-                        mask_len = 4 if masked else 0
-                        if len(buf) < idx + mask_len + plen:
+                    elif kind == 'close':
+                        close_frame = build_ws_client_frame(0x8, data)  # type: ignore[arg-type]
+                        _ws_send_frame(raw_sock, close_frame, stop_ev, self._stop)
+                        return False
+                    elif kind == 'text':
+                        self.ingest_ws_message(
+                            source_id,
+                            generation,
+                            saved['user_id'],
+                            data,  # type: ignore[arg-type]
+                        )
+                return True
+
+            if initial_bytes:
+                if not _handle_events(stream.feed(initial_bytes)):
+                    return
+
+            while not stop_ev.is_set() and not self._stop.is_set():
+                if self.auth_state(source_id, generation) == 'AUTH_REQUIRED':
+                    break
+                rlist, _, xlist = select.select([raw_sock], [], [raw_sock], 0.2)
+                if stop_ev.is_set() or self._stop.is_set():
+                    break
+                if xlist:
+                    break
+                if not rlist:
+                    now_c = self.clock()
+                    if ping_sent_at is not None:
+                        if (now_c - ping_sent_at) >= self.WS_IDLE_PONG_TIMEOUT_SECONDS:
                             break
-                        mask = buf[idx:idx + 4] if masked else b''
-                        payload = bytes(buf[idx + mask_len:idx + mask_len + plen])
-                        del buf[:idx + mask_len + plen]
-                        if masked:
-                            payload = bytes(b ^ mask[i % 4] for i, b in enumerate(payload))
-                        if opcode == 0x8:
-                            return
-                        if opcode == 0x1:
-                            self.ingest_ws_message(
-                                source_id,
-                                generation,
-                                saved['user_id'],
-                                payload.decode('utf-8', errors='replace'),
-                            )
-                conn.close()
+                    elif (now_c - last_rx_at) >= self.WS_IDLE_PING_SECONDS:
+                        ping_frame = build_ws_client_frame(0x9, b'hb')
+                        if not _ws_send_frame(raw_sock, ping_frame, stop_ev, self._stop):
+                            break
+                        ping_sent_at = now_c
+                    continue
+                try:
+                    chunk = raw_sock.recv(8192)
+                except (BlockingIOError, ssl.SSLWantReadError, ssl.SSLWantWriteError):
+                    continue
+                except OSError:
+                    break
+                if not chunk:
+                    break
+                if not _handle_events(stream.feed(chunk)):
+                    break
+        except _WSProtocolError as proto_err:
+            raw_sock = holder.get('sock')
+            if raw_sock is not None:
+                try:
+                    close_frame = build_ws_client_frame(0x8, struct.pack('!H', proto_err.close_code))
+                    _ws_send_frame(raw_sock, close_frame, stop_ev, self._stop)
+                except Exception:
+                    pass
         except Exception:
             pass
         finally:
+            _close_ws_resources(holder)
             with self._lock:
                 st = self._states.get(key)
                 if st is not None:
                     st['ws_connected'] = False
-            _ = ws_scheme
+                    if not stop_ev.is_set() and not self._stop.is_set():
+                        if upgraded:
+                            st['next_ws_at'] = self.clock() + 1.0
+                        else:
+                            fails = int(st.get('ws_failures', 0)) + 1
+                            st['ws_failures'] = fails
+                            st['next_ws_at'] = self.clock() + min(25.0, float(2 ** min(fails - 1, 4)))
+                cur = self._ws_workers.get(key)
+                if cur is not None and cur[0] is stop_ev:
+                    self._ws_workers.pop(key, None)
 
     def close(self) -> bool:
         self._stop.set()
         with self._lock:
             workers = list(self._ws_workers.items())
+        for _key, entry in workers:
+            entry[0].set()
+            _close_ws_resources(entry[2])
         drained = True
         for key, entry in workers:
-            ev, wk = entry[0], entry[1]
-            ev.set()
+            wk = entry[1]
             if wk is not current_thread():
                 wk.join(1.0)
             if wk.is_alive():
