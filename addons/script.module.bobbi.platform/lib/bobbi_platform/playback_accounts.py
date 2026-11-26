@@ -27,7 +27,7 @@ class _RegistrySourceAccounts:
             or not re.fullmatch(r'[0-9a-f]{64}', generation)
         ):
             return False
-        store = Registry(self.path, read_only=True, timeout=0)
+        store = Registry(self.path, read_only=True, timeout=0.25)
         try:
             if kind == 'emby_source' or (kind is None and expected.get('provider') == 'emby'):
                 source, matched_gen = store.source_session_snapshot(source_id, generation)

@@ -253,3 +253,53 @@ def test_account_rotated_while_fetching_never_publishes_old_directory(plugin, on
     plugin.module.execute(17, dict(action='emby_page', source=online.src.id, revision=online.gen, parent='recent'))
     assert len(plugin.ended) == 1 and not plugin.ended[0][1]['succeeded']
     assert not plugin.rows and not plugin.resolved
+
+
+def test_browse_account_switch_preserves_same_credential_epoch_routes_until_rotated(plugin, online):
+    """Infuse / EmbyCon / Juku continuity: switching default browse account (A <-> B)
+    never invalidates already-rendered Home shelf / folder / play URLs of unchanged A,
+    while credential rotation or source removal immediately revokes them.
+    """
+    old_rev_a = online.gen
+    store = Registry(plugin.path)
+    try:
+        src_b = Source(
+            'c' * 32, 'Second Emby', 'media_server', online.base, password='fixture-token-b',
+            metadata={'schema': 1, 'provider': 'emby', 'server_id': 's', 'user_id': 'u2'},
+        )
+        store.save(src_b, activate_emby=store.emby_binding()[1])
+        store.save(online.src, activate_emby=store.emby_binding()[1])
+        _, latest_rev_a = store.source_snapshot(online.src.id)
+        assert latest_rev_a != old_rev_a
+    finally:
+        store.close()
+
+    # Pre-switch folder & play links for A remain valid because A's credential epoch is unbroken!
+    plugin.rows.clear()
+    plugin.ended.clear()
+    plugin.module.execute(17, dict(action='emby_page', source=online.src.id, revision=old_rev_a, parent='recent'))
+    assert plugin.ended[-1][1] == dict(succeeded=True, cacheToDisc=False)
+    # Outgoing child routes carry the latest revision
+    child_params = params(plugin.rows[0][0])
+    assert child_params['revision'] == latest_rev_a
+
+    plugin.resolved.clear()
+    plugin.module.execute(17, dict(action='emby_play', source=online.src.id, revision=old_rev_a, id='ep20'))
+    assert len(plugin.resolved) == 1 and plugin.resolved[-1][:2] == (17, True)
+
+    # Rotating A's token immediately invalidates both old_rev_a and latest_rev_a!
+    store = Registry(plugin.path)
+    try:
+        rotated_a = Source(
+            online.src.id, online.src.name, online.src.kind, online.src.location,
+            password='rotated-token-value', metadata=dict(online.src.metadata),
+        )
+        store.save(rotated_a)
+    finally:
+        store.close()
+
+    plugin.resolved.clear()
+    online.dialogs.clear()
+    plugin.module.execute(17, dict(action='emby_play', source=online.src.id, revision=old_rev_a, id='ep20'))
+    assert [ok for _, ok, _ in plugin.resolved] == [False]
+    assert online.dialogs

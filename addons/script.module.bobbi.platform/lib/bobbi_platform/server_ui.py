@@ -130,6 +130,13 @@ def activate_emby_account(dialog, store, source):
                          else _t(None, '当前没有启用的默认 Emby 浏览账号。', 'No default Emby browsing account is currently active.'))
         dialog.ok(_t(None, '未确认切换结果', 'Switch Outcome Unconfirmed'), _failure(error) + '\n' + current_label)
         return False
+    try:
+        import xbmc
+        import xbmcgui
+        xbmcgui.Window(10000).setProperty('Bobbi.Emby.ActiveSource', target.id)
+        xbmc.executebuiltin('Container.Refresh')
+    except Exception:
+        pass
     dialog.ok(_t(None, '已切换当前浏览账号', 'Switched Active Browsing Account'), _t(None, '首页与默认片库已切换到', 'Home and My Library switched to ') + _q(target.name) + _t(None, '，正在播放的影片不受影响。', '; active playback is unaffected.'))
     return True
 

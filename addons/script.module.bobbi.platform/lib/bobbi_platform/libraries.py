@@ -20,23 +20,24 @@ from bobbi_core.library_contract import (
 
 class Registry:
     """SQLite serializes local UI edits; removal never contacts the source."""
-    def __init__(self, path, *, read_only=False, timeout=1):
+    def __init__(self, path, *, read_only=False, timeout=None):
         self.path = Path(path)
         self.read_only = read_only
         if any(p.is_symlink() for p in (self.path, *self.path.parents)):
             raise LibraryError('STORAGE_UNSAFE')
         self.db = None
+        eff_timeout = (0 if read_only else 1) if timeout is None else timeout
         try:
             if read_only:
                 # Owner-loop observation cannot initialize/migrate storage or
-                # wait behind a writer. A busy/absent DB remains unknown.
-                self.db = sqlite3.connect(self.path.absolute().as_uri() + '?mode=ro', uri=True, timeout=0)
+                # wait behind a writer unless caller passes an explicit small timeout.
+                self.db = sqlite3.connect(self.path.absolute().as_uri() + '?mode=ro', uri=True, timeout=eff_timeout)
             else:
                 self.path.parent.mkdir(parents=True, exist_ok=True)
                 if not self.path.exists():
                     fd = os.open(str(self.path), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
                     os.close(fd)
-                self.db = sqlite3.connect(str(self.path), timeout=timeout)
+                self.db = sqlite3.connect(str(self.path), timeout=eff_timeout)
                 self.db.execute('PRAGMA secure_delete=ON')
             version, missing = self._schema()
             if version == 0 or missing:

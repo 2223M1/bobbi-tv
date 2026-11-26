@@ -6,6 +6,7 @@ from bobbi_core.library_contract import LibraryError
 from bobbi_core.playback_request import SelectionChanged
 from bobbi_core.server_ref import identifier
 from .emby_session import TICKS_PER_SECOND, ticks_to_seconds
+from .i18n import is_english
 from .owned_playback import emby_source_scope, reserve_playback
 from .pan_accounts import PanError
 from .pan_tokens import page_number
@@ -17,6 +18,10 @@ BASE = 'plugin://plugin.video.bobbi.library/?'
 FOLDERS = {'Folder', 'CollectionFolder', 'BoxSet', 'Series', 'Season', 'UserView'}
 LEAVES = {'Movie': 'movie', 'Episode': 'episode', 'Video': 'video', 'MusicVideo': 'musicvideo',
           'Trailer': 'video'}
+
+
+def _t(zh_text: str, en_text: str) -> str:
+    return en_text if is_english() else zh_text
 
 
 def link(**params):
@@ -123,7 +128,16 @@ def execute(handle, params, store, item):
     try:
         root = binding.root()
         try:
-            source, rev = store.source_snapshot(params.get('source', ''))
+            if action == 'browse':
+                if set(params) != {'action', 'source'}:
+                    raise PanError('PAN_ROUTE_REJECTED')
+                source, rev = store.source_snapshot(params.get('source', ''))
+            else:
+                req_rev = params.get('revision', '')
+                source, matched = store.source_session_snapshot(params.get('source', ''), req_rev)
+                if not matched:
+                    raise PanError('PAN_ACCOUNT_CHANGED')
+                _, rev = store.source_snapshot(source.id)
         except LibraryError as exc:
             raise PanError('PAN_ACCOUNT_CHANGED') from exc
         if (
@@ -131,11 +145,6 @@ def execute(handle, params, store, item):
             or source.metadata.get('provider') != 'emby'
             or not source.password
         ):
-            raise PanError('PAN_ACCOUNT_CHANGED')
-        if action == 'browse':
-            if set(params) != {'action', 'source'}:
-                raise PanError('PAN_ROUTE_REJECTED')
-        elif params.get('revision') != rev:
             raise PanError('PAN_ACCOUNT_CHANGED')
 
         saved = {
@@ -156,8 +165,8 @@ def execute(handle, params, store, item):
             if xbmc.Monitor().abortRequested() or not binding.is_current():
                 return False
             try:
-                cur_src, cur_rev = store.source_snapshot(source.id)
-                return cur_src == source and cur_rev == rev
+                cur_src, ok = store.source_session_snapshot(source.id, rev)
+                return ok and cur_src == source
             except LibraryError:
                 return False
 
@@ -219,11 +228,11 @@ def execute(handle, params, store, item):
                     if mid in ids:
                         raise PanError('PAN_REPLY_INVALID')
                     ids.append(mid)
-                    labels.append(clean(media.get('Name'), 160) or clean(media.get('Container'), 50) or '原片')
+                    labels.append(clean(media.get('Name'), 160) or clean(media.get('Container'), 50) or _t('原片', 'Original'))
                 labels = ['%d · %s' % (i + 1, label) for i, label in enumerate(labels)]
                 current()
                 reservation.require_current()
-                index = 0 if len(ids) == 1 else dialog.select('选择 Emby 文件版本', labels)
+                index = 0 if len(ids) == 1 else dialog.select(_t('选择 Emby 文件版本', 'Select Emby Media Version'), labels)
                 if not 0 <= index < len(ids):
                     return
                 current()
@@ -241,8 +250,11 @@ def execute(handle, params, store, item):
                         start_over = True
                     else:
                         pick_resume = dialog.select(
-                            '选择播放起点',
-                            [f'继续观看 ({_fmt_clock(resume_sec)})', '从头播放'],
+                            _t('选择播放起点', 'Choose Playback Start'),
+                            [
+                                _t(f'继续观看 ({_fmt_clock(resume_sec)})', f'Resume from {_fmt_clock(resume_sec)}'),
+                                _t('从头播放', 'Play from Start'),
+                            ],
                         )
                         if pick_resume not in (0, 1):
                             return
@@ -364,7 +376,7 @@ def execute(handle, params, store, item):
         page_number(page, PAGE)
         term = params.get('term', '')
         if action == 'emby_search':
-            term = dialog.input('搜索 Emby 电影、剧集或单集').strip()
+            term = dialog.input(_t('搜索 Emby 电影、剧集或单集', 'Search Emby Movies, Series, or Episodes')).strip()
             if not term:
                 return
             parent = 'search'
@@ -379,9 +391,9 @@ def execute(handle, params, store, item):
             client._identity(user_scoped_read=True)
             page_rows, total = client.page_rows(query, page, PAGE, display=True)
         if parent == 'root' and page == 1:
-            rows += [item('最近新增', route('emby_page', parent='recent')),
-                     item('服务器的继续观看', route('emby_page', parent='resume')),
-                     item('搜索 Emby', route('emby_search'))]
+            rows += [item(_t('最近新增', 'Recently Added'), route('emby_page', parent='recent')),
+                     item(_t('服务器的继续观看', 'Continue Watching (Server)'), route('emby_page', parent='resume')),
+                     item(_t('搜索 Emby', 'Search Emby'), route('emby_search'))]
         from .emby_artwork import poster_factory
         poster = poster_factory(root, source.id, rev, store)
         media_types = []
@@ -394,11 +406,11 @@ def execute(handle, params, store, item):
             resume_sec, played_flag, fav_flag, _ = _user_state(record)
             label2_parts = []
             if fav_flag:
-                label2_parts.append('已收藏')
+                label2_parts.append(_t('已收藏', 'Favorite'))
             if resume_sec > 0:
-                label2_parts.append('继续 ' + _fmt_clock(resume_sec))
+                label2_parts.append(_t('继续 ', 'Resume ') + _fmt_clock(resume_sec))
             elif played_flag and not folder:
-                label2_parts.append('已看')
+                label2_parts.append(_t('已看', 'Watched'))
             target = route('emby_page', parent='folder:' + ident) if folder else route('emby_play', id=ident)
             props = {}
             if resume_sec > 0:
@@ -416,14 +428,14 @@ def execute(handle, params, store, item):
             if hasattr(row[1], 'addContextMenuItems'):
                 ctx = []
                 if not folder and resume_sec > 0:
-                    ctx.append(('从头播放', f'PlayMedia({route("emby_play", id=ident, resume_mode="start_over")})'))
+                    ctx.append((_t('从头播放', 'Play from Start'), f'PlayMedia({route("emby_play", id=ident, resume_mode="start_over")})'))
                 if not folder or record.get('Type') in ('Series', 'Season'):
                     ctx.append((
-                        '标记为未看' if played_flag else '标记为已看',
+                        _t('标记为未看', 'Mark as Unwatched') if played_flag else _t('标记为已看', 'Mark as Watched'),
                         f'RunPlugin({route("emby_mark", id=ident, op="unplayed" if played_flag else "played")})',
                     ))
                     ctx.append((
-                        '取消 Emby 收藏' if fav_flag else '加入 Emby 收藏',
+                        _t('取消 Emby 收藏', 'Remove Emby Favorite') if fav_flag else _t('加入 Emby 收藏', 'Add to Emby Favorites'),
                         f'RunPlugin({route("emby_mark", id=ident, op="unfavorite" if fav_flag else "favorite")})',
                     ))
                 if ctx:
@@ -433,7 +445,7 @@ def execute(handle, params, store, item):
             fields = dict(parent=parent, page=page + 1)
             if term:
                 fields['term'] = term
-            rows.append(item('下一页', route('emby_page', **fields), properties={'Bobbi.NextPage': 'true'}))
+            rows.append(item(_t('下一页', 'Next Page'), route('emby_page', **fields), properties={'Bobbi.NextPage': 'true'}))
         current()
         xbmcplugin.setPluginCategory(handle, source.name + ' · Emby')
         xbmcplugin.setContent(handle, 'videos' if parent == 'root' else _content_type(media_types))
@@ -450,7 +462,7 @@ def execute(handle, params, store, item):
         if isinstance(error, PanError):
             dialog.ok('Emby', _failure(error))
         else:
-            dialog.ok('Emby', '连接、账号或所选内容已变化，请返回片库重试。')
+            dialog.ok('Emby', _t('连接、账号或所选内容已变化，请返回片库重试。', 'Connection, account, or selected item changed; return to library and retry.'))
     finally:
         if play:
             if not submitted:
@@ -598,9 +610,9 @@ def execute_home_rail(handle: int, params: dict, *, registry_factory=None) -> No
                 if multi_source:
                     sub_parts.append(source.name)
                 if resume_sec > 0:
-                    sub_parts.append('继续 ' + _fmt_clock(resume_sec))
+                    sub_parts.append(_t('继续 ', 'Resume ') + _fmt_clock(resume_sec))
                 elif played_flag and not folder:
-                    sub_parts.append('已看')
+                    sub_parts.append(_t('已看', 'Watched'))
                 if sub_parts:
                     li.setLabel2(' · '.join(sub_parts))
                 props = {
