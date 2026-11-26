@@ -132,12 +132,17 @@ def execute(handle, params, store, item):
                 if set(params) != {'action', 'source'}:
                     raise PanError('PAN_ROUTE_REJECTED')
                 source, rev = store.source_snapshot(params.get('source', ''))
-            else:
+            elif hasattr(store, 'source_session_snapshot'):
                 req_rev = params.get('revision', '')
                 source, matched = store.source_session_snapshot(params.get('source', ''), req_rev)
                 if not matched:
                     raise PanError('PAN_ACCOUNT_CHANGED')
                 _, rev = store.source_snapshot(source.id)
+            else:
+                req_rev = params.get('revision', '')
+                source, rev = store.source_snapshot(params.get('source', ''))
+                if req_rev != rev:
+                    raise PanError('PAN_ACCOUNT_CHANGED')
         except LibraryError as exc:
             raise PanError('PAN_ACCOUNT_CHANGED') from exc
         if (
@@ -165,8 +170,11 @@ def execute(handle, params, store, item):
             if xbmc.Monitor().abortRequested() or not binding.is_current():
                 return False
             try:
-                cur_src, ok = store.source_session_snapshot(source.id, rev)
-                return ok and cur_src == source
+                if hasattr(store, 'source_session_snapshot'):
+                    cur_src, ok = store.source_session_snapshot(source.id, rev)
+                    return ok and cur_src == source
+                cur_src, cur_rev = store.source_snapshot(source.id)
+                return cur_src == source and cur_rev == rev
             except LibraryError:
                 return False
 

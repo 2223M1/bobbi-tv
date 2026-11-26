@@ -1178,7 +1178,7 @@
       "lib/bobbi_platform/diagnostics_ui.py": "5c34251a8b453ce9156dacba8746cd670cd42013e4bee720c1b88e9971fae68c",
       "lib/bobbi_platform/downloads.py": "323ff7ef3ba0ea5831fbfa0871fbeaf17da99fe0c4a5b1c8e3f05f4084984c8a",
       "lib/bobbi_platform/emby_artwork.py": "8b97c59d86d277b463948657ceb9c74b2aab33bb500690876a65c9d134edaa5d",
-      "lib/bobbi_platform/emby_dynamic.py": "dad45ab0b97da733c609aa2d0bd89bfd2b5a3b8441bdd8c63bcc881aeebf9d13",
+      "lib/bobbi_platform/emby_dynamic.py": "2a3fd7f2a25bc66f11b52672ff896560dba5cc406a10fcfce7ea127899e20207",
       "lib/bobbi_platform/emby_session.py": "74042891777633bedd1e1b1d26ac4fb6d28f42b6ac9bb2254a5980a3f43d58b1",
       "lib/bobbi_platform/environment.py": "5d5bc2397500dc3eebe94c1c1e382f98fa05d5a15ac4df3a471d7a65ce8012ba",
       "lib/bobbi_platform/glass_settings.py": "df6a1658eeca53d3a45cedc2d6df00aa4364f03a41b4e9b307834ef745270d60",
