@@ -11,7 +11,7 @@
   <!-- original auto-SDR behaviour; the inverted setting name is kept so saved values still apply -->
   <timer>
     <name>autovideosdr</name>
-    <start>Player.Playing + !Skin.HasSetting(autovideotosdr) + String.IsEmpty(System.SupportedHDRTypes) + !String.Contains(Player.Process(video.source.hdr.type),SDR)</start>
+    <start>Player.Playing + !Skin.HasSetting(autovideotosdr) + String.IsEmpty(System.SupportedHDRTypes) + !String.Contains(Player.Process(video.source.hdr.type),SDR) + [$EXP[BobbiHostHasVS10]]</start>
     <stop>!String.Contains(Player.Process(video.source.hdr.type),SDR) + Integer.IsGreaterOrEqual(Skin.TimerElapsedSecs(autovideosdr), 1)</stop>
     <onstop>Action(vs10.sdr)</onstop>
   </timer>

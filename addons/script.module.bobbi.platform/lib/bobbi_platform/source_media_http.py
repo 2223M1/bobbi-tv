@@ -56,6 +56,47 @@ MESSAGES = {
     'SOURCE_STREAM_CHANGED': '来源或文件已经变化，请返回重新选片。',
 }
 
+MESSAGES_EN = {
+    'POINTER_INVALID': 'STRM must be a single-line UTF-8 HTTP(S) media URL up to 16 KB.',
+    'POINTER_PROPERTY_UNSUPPORTED': 'This STRM relies on an unsupported Kodi property.',
+    'MEDIA_NOT_FINITE': 'Live streams or playlists cannot be played as finite original media.',
+    'MEDIA_TIMEOUT': 'Timed out reading media. Check your connection and try again.',
+    'MEDIA_UNAVAILABLE': 'Original media is temporarily unavailable.',
+    'MEDIA_AUTH': 'Media authorization expired or access was denied. Please reselect.',
+    'MEDIA_REDIRECT': 'The media server requested a redirect; please provide the final direct URL.',
+    'MEDIA_RANGE_UNSUPPORTED': 'This server does not support accurate byte-range reads required for original playback.',
+    'MEDIA_RANGE_INVALID': 'Server returned mismatched byte range, content length, or body size.',
+    'MEDIA_TYPE_UNSUPPORTED': 'The server returned an unsupported media content type.',
+    'MEDIA_IDENTITY_UNVERIFIED': 'Server did not provide a verifiable strong ETag for safe file identity.',
+    'SOURCE_STREAM_INVALID': 'Could not recognize this media selection.',
+
+    'T4_AUTH': 'Site authorization rejected. Check whether your subscription has expired.',
+    'T4_URL': 'Unsupported URL. Use HTTPS for remote hosts, or LAN private-IP HTTP on your home network.',
+    'T4_PHONE_LOCAL_PATH': 'This is a phone-local private path that the TV cannot read directly; use "Upload Config via Phone QR" instead.',
+    'T4_DUPLICATE': 'Configuration contains duplicate site keys; nothing was saved.',
+    'T4_NO_SITES': 'No usable type 4 sites found. Classic Spider entries require a server-side T4 endpoint.',
+    'T4_CONFIG': 'Not a T4 configuration containing sites; recursive depot lists are not supported.',
+    'T4_REDIRECT': 'The site returned a redirect; configure the final endpoint URL directly.',
+    'T4_LIMIT': 'Site response exceeded safety limits; reading stopped.',
+    'T4_TIMEOUT': 'Site request timed out. Please try again later.',
+    'T4_NETWORK': 'Could not read from site. Check your network connection and permissions.',
+    'T4_LINES': 'Playback lines and episodes do not match 1:1; no alternate version was selected.',
+    'T4_PLAY_UNSUPPORTED': 'Only finite direct HTTP(S) media is supported; web parsers, split A/V, and live streams are not supported.',
+    'T4_MEDIA_ORIGIN': 'Media is hosted outside verified site origins and cannot be played without approval.',
+    'T4_HEADERS': 'This source requires unsupported media request headers.',
+    'T4_CHANGED': 'Site, playback line, or episode list changed; please select again.',
+    'T4_TOKEN_EXPIRED': 'Selection token expired or source was updated; go back and reopen the directory.',
+    'SOURCE_HTTP_URL': 'Original media URL is outside allowed network ranges.',
+    'SOURCE_STREAM_CHANGED': 'Source or media file changed; return and select again.',
+}
+
+
+def localized_message(code):
+    from .i18n import is_english
+    if is_english() and code in MESSAGES_EN:
+        return MESSAGES_EN[code]
+    return MESSAGES.get(code)
+
 
 def connection(
     url,

@@ -6878,3 +6878,67 @@ msgstr ""
 msgctxt "#91640"
 msgid "Library Not Loaded"
 msgstr ""
+
+msgctxt "#91641"
+msgid "Search Sources Hub"
+msgstr ""
+
+msgctxt "#91642"
+msgid "1. Default Sources (Toggle / Remove / Restore)"
+msgstr ""
+
+msgctxt "#91643"
+msgid "2. Jackett Sub-Indexers (Toggle / Disable Sites)"
+msgstr ""
+
+msgctxt "#91644"
+msgid "3. Custom Search Sources (Add / Edit / Delete)"
+msgstr ""
+
+msgctxt "#91645"
+msgid "4. Source Libraries & Servers (URL / T4 / Media Server / Cloud)"
+msgstr ""
+
+msgctxt "#91646"
+msgid "5. Quick Multi-select Active Scrapers"
+msgstr ""
+
+msgctxt "#91647"
+msgid "Restore All Default Sources"
+msgstr ""
+
+msgctxt "#91648"
+msgid "Active"
+msgstr ""
+
+msgctxt "#91649"
+msgid "Removed"
+msgstr ""
+
+msgctxt "#91650"
+msgid "Disabled"
+msgstr ""
+
+msgctxt "#91651"
+msgid "Add Custom Torznab Source"
+msgstr ""
+
+msgctxt "#91652"
+msgid "Configure Jackett Host & API Key"
+msgstr ""
+
+msgctxt "#91653"
+msgid "Configure Prowlarr Host & API Key"
+msgstr ""
+
+msgctxt "#91654"
+msgid "Add Custom Stremio Addon URL"
+msgstr ""
+
+msgctxt "#91655"
+msgid "Remove Custom Stremio Addon"
+msgstr ""
+
+msgctxt "#91656"
+msgid "Default sources restored"
+msgstr ""

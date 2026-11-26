@@ -17,3 +17,11 @@ msgstr "波比 TV · 开始使用"
 msgctxt "#32001"
 msgid "Install bobbi Cinema and connect your own media step by step"
 msgstr "安装整套波比影院，跟着提示连接自己的媒体"
+
+msgctxt "#32953"
+msgid "Kodi dependency update required"
+msgstr "需要更新 Kodi 依赖"
+
+msgctxt "#32954"
+msgid "Add-on {addon} is installed at version {have}, but version {need} or newer is required (existing files are not overwritten).\nChoose \"Yes\" to open Kodi Dependencies (addons://dependencies/), select {addon} and click \"Update\", then reopen \"Bobbi TV · Get Started\" to continue."
+msgstr "组件 {addon} 当前已安装版本为 {have}，至少需要 {need}（不会覆盖现有目录）。\n选“是”将打开 Kodi“依赖项”列表（addons://dependencies/），请在其中点选 {addon} 并点击“更新”，完成后重新打开“波比 TV · 开始使用”继续安装。"

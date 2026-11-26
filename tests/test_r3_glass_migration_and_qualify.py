@@ -205,6 +205,22 @@ def populate_qualified_lib_dir(
     return lib_dir
 
 
+def populate_qualified_proc(
+    proc_dir: Path,
+    *,
+    cpu_arch: str = '8',
+    features: str = 'fp asimd evtstrm aes pmull sha1 sha2 crc32 neon',
+) -> Path:
+    proc_dir.mkdir(parents=True, exist_ok=True)
+    lines = ['Processor\t: AArch64 Processor rev 4 (aarch64)' if cpu_arch == '8' else 'Processor\t: ARMv7 Processor rev 5 (v7l)']
+    if cpu_arch is not None:
+        lines.append(f'CPU architecture: {cpu_arch}')
+    if features is not None:
+        lines.append(f'Features\t: {features}')
+    (proc_dir / 'cpuinfo').write_text('\n'.join(lines) + '\n', encoding='utf-8')
+    return proc_dir
+
+
 def stage_post_2185_install(storage: Path, *, sequence: int = 2026102186) -> tuple[Path, Path, Path]:
     addons = storage / '.kodi/addons'
     userdata = storage / '.kodi/userdata'
@@ -255,6 +271,8 @@ def stage_post_2185_install(storage: Path, *, sequence: int = 2026102186) -> tup
 def test_guard_hash_and_glass_assets_manifest_are_exact():
     boot_bytes = (ROOT / 'addons/script.module.bobbi.platform/lib/bobbi_platform/ce_glass_boot.py').read_bytes()
     assert hashlib.sha256(boot_bytes).hexdigest() == gs.GUARD_HASH
+    assert gs.N3R1_HASH in gs.OLD_UNITS
+    assert b'--opt-in\n' in gs.OLD_UNITS[gs.N3R1_HASH]
     assert gs.CE2185_HASH in gs.OLD_UNITS
     assert update_glass_assets.main(['--check']) == 0
 
@@ -266,25 +284,81 @@ def test_post_2185_generation_decoupled_from_products_with_strict_asset_and_elf_
     assert 2026102299 not in boot.PRODUCTS
 
     lib_dir = populate_qualified_lib_dir(tmp_path / 'usr_lib', include_ubo_symbol=False)
+    proc_dir = populate_qualified_proc(tmp_path / 'proc')
     exe = tmp_path / 'kodi.bin'
     exe.write_bytes(build_synthetic_elf32(e_type=2, arm_attrs=build_arm_attributes(), salt=b'other-ce-firmware'))
     assert boot.sha(exe) not in (boot.KODI, boot.STOCK_CE213_AMLOGIC_NG)
 
-    resolved = boot.verified_module(state, addons, exe, installation=journal, lib_dirs=(lib_dir,))
+    resolved = boot.verified_module(state, addons, exe, installation=journal, lib_dirs=(lib_dir,), proc_root=proc_dir)
     assert resolved == addons / boot.PACKAGED_FILE
 
     # Tampering with any material listed in glass_assets.json must immediately reject
     target_xml = addons / 'skin.bobbi.cinema/1080p/DialogButtonMenu.xml'
     orig_bytes = target_xml.read_bytes()
     target_xml.write_bytes(orig_bytes + b'<!-- drift -->')
-    assert boot.verified_module(state, addons, exe, installation=journal, lib_dirs=(lib_dir,)) is None
+    assert boot.verified_module(state, addons, exe, installation=journal, lib_dirs=(lib_dir,), proc_root=proc_dir) is None
     target_xml.write_bytes(orig_bytes)
-    assert boot.verified_module(state, addons, exe, installation=journal, lib_dirs=(lib_dir,)) == addons / boot.PACKAGED_FILE
+    assert boot.verified_module(state, addons, exe, installation=journal, lib_dirs=(lib_dir,), proc_root=proc_dir) == addons / boot.PACKAGED_FILE
+
+
+def test_cpu_abi_separation_and_host_cpu_qualification_matrix(tmp_path):
+    """N3-GL-ABI-01: Qualify real ARMv8+NEON CPU independently of 32-bit kodi.bin .ARM.attributes."""
+    glass_host.clear_qualification_cache()
+    renderer = ROOT / 'addons' / boot.PACKAGED_FILE
+    lib_dir = populate_qualified_lib_dir(tmp_path / 'libs')
+    proc_v8 = populate_qualified_proc(tmp_path / 'proc_v8')
+
+    # 1) ARMv8+NEON host + ARMv7 hard-float kodi.bin (cpu_arch=10) -> QUALIFIED!
+    exe_v7 = tmp_path / 'kodi_v7.bin'
+    exe_v7.write_bytes(build_synthetic_elf32(e_type=2, arm_attrs=build_arm_attributes(cpu_arch=10), salt=b'ce-armv7-target'))
+    r1 = glass_host.qualify_host_cached(exe_v7, renderer, lib_dirs=(lib_dir,), proc_root=proc_v8)
+    assert r1['ok'] is True
+    assert r1['reason'] == 'QUALIFIED'
+    assert r1['cpu_arch'] == 8
+    assert r1['exe_cpu_arch'] == 10
+
+    # 2) ARMv8+NEON host + stripped kodi.bin WITHOUT .ARM.attributes (non-allowlisted SHA) -> QUALIFIED!
+    exe_stripped = tmp_path / 'kodi_stripped.bin'
+    exe_stripped.write_bytes(build_synthetic_elf32(e_type=2, arm_attrs=None, salt=b'arbitrary-ce-build'))
+    assert boot.sha(exe_stripped) not in (boot.KODI, boot.STOCK_CE213_AMLOGIC_NG)
+    r2 = glass_host.qualify_host_cached(exe_stripped, renderer, lib_dirs=(lib_dir,), proc_root=proc_v8)
+    assert r2['ok'] is True
+    assert r2['reason'] == 'QUALIFIED'
+    assert r2['cpu_arch'] == 8
+    assert r2['exe_cpu_arch'] is None
+
+    # 3) Missing or empty /proc/cpuinfo -> fail closed HOST_CPU_CAPABILITY_UNKNOWN!
+    proc_missing = tmp_path / 'proc_missing'
+    proc_missing.mkdir()
+    r3_missing = glass_host.qualify_host_cached(exe_stripped, renderer, lib_dirs=(lib_dir,), proc_root=proc_missing)
+    assert r3_missing['ok'] is False and r3_missing['reason'] == 'HOST_CPU_CAPABILITY_UNKNOWN'
+
+    (proc_missing / 'cpuinfo').write_text('', encoding='utf-8')
+    r3_empty = glass_host.qualify_host_cached(exe_stripped, renderer, lib_dirs=(lib_dir,), proc_root=proc_missing)
+    assert r3_empty['ok'] is False and r3_empty['reason'] == 'HOST_CPU_CAPABILITY_UNKNOWN'
+
+    # 4) ARMv7 /proc/cpuinfo (CPU architecture: 7) even if kodi.bin lacks attributes -> HOST_CPU_ARCH_UNSUPPORTED!
+    proc_v7 = populate_qualified_proc(tmp_path / 'proc_v7', cpu_arch='7', features='half thumb fastmult vfp edsp neon vfpv3')
+    r4 = glass_host.qualify_host_cached(exe_stripped, renderer, lib_dirs=(lib_dir,), proc_root=proc_v7)
+    assert r4['ok'] is False and r4['reason'] == 'HOST_CPU_ARCH_UNSUPPORTED'
+
+    # 5) ARMv8 /proc/cpuinfo missing neon/asimd -> HOST_SIMD_MISSING!
+    proc_no_simd = populate_qualified_proc(tmp_path / 'proc_no_simd', cpu_arch='8', features='fp evtstrm aes sha2 crc32')
+    r5 = glass_host.qualify_host_cached(exe_stripped, renderer, lib_dirs=(lib_dir,), proc_root=proc_no_simd)
+    assert r5['ok'] is False and r5['reason'] == 'HOST_SIMD_MISSING'
+
+    # 6) 64-bit kodi.bin (ELFCLASS64) on ARMv8+NEON host -> ELF_NOT_32BIT!
+    exe_64 = tmp_path / 'kodi_aarch64.bin'
+    exe_64.write_bytes(build_synthetic_elf32(ei_class=2, salt=b'aarch64-kodi'))
+    r6 = glass_host.qualify_host_cached(exe_64, renderer, lib_dirs=(lib_dir,), proc_root=proc_v8)
+    assert r6['ok'] is False and r6['reason'] == 'ELF_NOT_32BIT'
 
 
 @pytest.mark.parametrize('failure_case,expected_prefix', [
     ('elf64', 'ELF_NOT_32BIT'),
-    ('armv7', 'ELF_CPU_ARCH_UNSUPPORTED'),
+    ('host_armv7', 'HOST_CPU_ARCH_UNSUPPORTED'),
+    ('host_no_simd', 'HOST_SIMD_MISSING'),
+    ('vfp_args_mismatch', 'ELF_VFP_ARGS_MISMATCH'),
     ('soft_float', 'ELF_NOT_HARD_FLOAT'),
     ('only_so2', 'MISSING_DT_NEEDED:libGLESv2.so'),
     ('old_glibc', 'MISSING_VERSION:libc.so.6:GLIBC_2.34'),
@@ -303,18 +377,23 @@ def test_elf_abi_soname_glibc_and_symbol_negative_controls_and_cache_invalidatio
         glibc_versions=(('GLIBC_2.4', 'GLIBC_2.17', 'GLIBC_2.33') if failure_case == 'old_glibc'
                         else ('GLIBC_2.4', 'GLIBC_2.17', 'GLIBC_2.34')),
     )
+    proc_dir = populate_qualified_proc(
+        tmp_path / 'proc',
+        cpu_arch=('7' if failure_case == 'host_armv7' else '8'),
+        features=('fp evtstrm crc32' if failure_case == 'host_no_simd' else 'fp asimd evtstrm aes pmull sha1 sha2 crc32 neon'),
+    )
 
     exe = tmp_path / 'kodi.bin'
     if failure_case == 'elf64':
         exe.write_bytes(build_synthetic_elf32(ei_class=2))
-    elif failure_case == 'armv7':
-        exe.write_bytes(build_synthetic_elf32(e_type=2, arm_attrs=build_arm_attributes(cpu_arch=10)))
+    elif failure_case == 'vfp_args_mismatch':
+        exe.write_bytes(build_synthetic_elf32(e_type=2, arm_attrs=build_arm_attributes(vfp_args=0)))
     elif failure_case == 'soft_float':
         exe.write_bytes(build_synthetic_elf32(e_type=2, e_flags=0x05000200, arm_attrs=build_arm_attributes()))
     else:
-        exe.write_bytes(build_synthetic_elf32(e_type=2, arm_attrs=build_arm_attributes()))
+        exe.write_bytes(build_synthetic_elf32(e_type=2, arm_attrs=build_arm_attributes(cpu_arch=10)))
 
-    res = glass_host.qualify_host_cached(exe, renderer, lib_dirs=(lib_dir,))
+    res = glass_host.qualify_host_cached(exe, renderer, lib_dirs=(lib_dir,), proc_root=proc_dir)
     assert res['ok'] is False
     assert str(res['reason']).startswith(expected_prefix)
     if failure_case == 'only_so2':
@@ -322,8 +401,9 @@ def test_elf_abi_soname_glibc_and_symbol_negative_controls_and_cache_invalidatio
 
     # Fix the host in-place -> cached entry must auto-invalidate because SHA changed!
     lib_dir_fixed = populate_qualified_lib_dir(tmp_path / 'libs_fixed')
-    exe.write_bytes(build_synthetic_elf32(e_type=2, arm_attrs=build_arm_attributes(), salt=b'upgraded'))
-    res_ok = glass_host.qualify_host_cached(exe, renderer, lib_dirs=(lib_dir_fixed,))
+    proc_fixed = populate_qualified_proc(tmp_path / 'proc_fixed')
+    exe.write_bytes(build_synthetic_elf32(e_type=2, arm_attrs=build_arm_attributes(cpu_arch=10), salt=b'upgraded'))
+    res_ok = glass_host.qualify_host_cached(exe, renderer, lib_dirs=(lib_dir_fixed,), proc_root=proc_fixed)
     assert res_ok['ok'] is True and res_ok['ubo_supported'] is True
 
     # Mutating libc.so.6 to drop GLIBC_2.34 invalidates cache immediately
@@ -331,7 +411,7 @@ def test_elf_abi_soname_glibc_and_symbol_negative_controls_and_cache_invalidatio
         arm_attrs=build_arm_attributes(),
         verdefs=('GLIBC_2.4', 'GLIBC_2.17'),
     ))
-    res_invalidated = glass_host.qualify_host_cached(exe, renderer, lib_dirs=(lib_dir_fixed,))
+    res_invalidated = glass_host.qualify_host_cached(exe, renderer, lib_dirs=(lib_dir_fixed,), proc_root=proc_fixed)
     assert res_invalidated['ok'] is False
     assert res_invalidated['reason'] == 'MISSING_VERSION:libc.so.6:GLIBC_2.34'
 
@@ -341,6 +421,7 @@ def test_verified_60_coexistence_and_85_quarantine_with_real_box_evidence_and_cr
     storage = tmp_path / 'storage'
     addons, _state, _journal = stage_post_2185_install(storage, sequence=2026102186)
     lib_dir = populate_qualified_lib_dir(tmp_path / 'usr_lib')
+    proc_dir = populate_qualified_proc(tmp_path / 'proc')
 
     drop_dir = storage / '.config/system.d/kodi.service.d'
     drop_dir.mkdir(parents=True, exist_ok=True)
@@ -393,6 +474,7 @@ def test_verified_60_coexistence_and_85_quarantine_with_real_box_evidence_and_cr
     monkeypatch.setattr(gs.HostOptics, 'exe', exe_path)
     monkeypatch.setattr(gs.HostOptics, 'running', exe_path)
     monkeypatch.setattr(gs.HostOptics, 'lib_dirs', (lib_dir,))
+    monkeypatch.setattr(gs.HostOptics, 'proc_root', proc_dir)
     monkeypatch.setattr(gs.HostOptics, 'systemctl_runner', staticmethod(lambda argv: (daemon_reloads.append(argv) or True)))
 
     host = gs.HostOptics(True)
@@ -424,7 +506,7 @@ def test_verified_60_coexistence_and_85_quarantine_with_real_box_evidence_and_cr
     runtime_dir = tmp_path / 'run_bobbi_glass'
     runtime_dir.mkdir()
     monkeypatch.delenv('LD_PRELOAD', raising=False)
-    boot.main(opt_in=True, storage=storage, exe=exe_path, runtime=runtime_dir, lib_dirs=(lib_dir,))
+    boot.main(opt_in=True, storage=storage, exe=exe_path, runtime=runtime_dir, lib_dirs=(lib_dir,), proc_root=proc_dir)
     loader_env = (runtime_dir / 'loader.env').read_text(encoding='ascii')
     assert loader_env == f'LD_PRELOAD={runtime_dir / "libbobbi_liquid_glass.so"}\n'
     assert boot.sha(runtime_dir / 'libbobbi_liquid_glass.so') == boot.REFINED_RENDERER
@@ -549,9 +631,71 @@ def test_show_window_guard_and_all_seven_runtime_status_states(tmp_path, monkeyp
     )
     assert s7b['state'] == 'status_unconfirmed' and s7b['detail'] == 'STATS_EXPIRED'
 
-    # State 5: live_active when fresh current-PID stats confirm active glass rendering
+    # blur_runs > 0 with quads == 0 MUST stay loaded_unverified (AWAITING_GLASS_DRAW), NOT live_active!
+    stats_file.write_text(json.dumps({
+        'enabled': 1, 'tags_registered': 24, 'blur_runs': 5, 'glass_quads_last_frame': 0,
+    }), encoding='utf-8')
+    os.utime(stats_file, (1700000103.0, 1700000103.0))
+    s4_no_quads = glass_host.inspect_runtime_status(
+        opted_in=True, is_coreelec=True, host_available=True, owned_86_present=True,
+        storage=storage, runtime_dir=runtime_dir, proc_root=proc_root, pid=pid, now=1700000105.0, cjk=True,
+    )
+    assert (s4_no_quads['state'], s4_no_quads['detail']) == ('loaded_unverified', 'AWAITING_GLASS_DRAW')
+
+    # State 5: live_active requires enabled == 1, tags > 0, AND quads > 0
+    stats_file.write_text(json.dumps({
+        'enabled': 1, 'tags_registered': 24, 'blur_runs': 5, 'glass_quads_last_frame': 2,
+    }), encoding='utf-8')
+    os.utime(stats_file, (1700000104.0, 1700000104.0))
     s5 = glass_host.inspect_runtime_status(
         opted_in=True, is_coreelec=True, host_available=True, owned_86_present=True,
         storage=storage, runtime_dir=runtime_dir, proc_root=proc_root, pid=pid, now=1700000105.0, cjk=True,
     )
     assert (s5['state'], s5['label'], s5['label_en']) == ('live_active', '实时玻璃已生效', 'Live glass active')
+
+    # 3. Verify sync_runtime_property(), runtime_summary_line(), and skin XML consumers (N3-GL-STATE-01)
+    home_props = {}
+    active_lang = {'val': 'resource.language.zh_cn'}
+    monkeypatch.setitem(sys.modules, 'xbmc', SimpleNamespace(
+        getInfoLabel=lambda k: active_lang['val'] if k == 'System.Language' else '',
+        getSkinDir=lambda: 'skin.bobbi.cinema',
+        getCondVisibility=lambda expr: False,
+    ))
+    monkeypatch.setitem(sys.modules, 'xbmcgui', SimpleNamespace(
+        Window=lambda wid: SimpleNamespace(
+            setProperty=lambda k, v: home_props.__setitem__((wid, k), v),
+            getProperty=lambda k: home_props.get((wid, k), ''),
+        ),
+    ))
+
+    stub_host = SimpleNamespace(
+        runtime_status=lambda **kw: glass_host.inspect_runtime_status(
+            opted_in=True, is_coreelec=True, host_available=True, owned_86_present=True,
+            storage=storage, runtime_dir=runtime_dir, proc_root=proc_root, pid=pid, now=1700000105.0,
+            cjk=kw.get('cjk'),
+        ),
+    )
+    st_zh = gs.sync_runtime_property(stub_host)
+    assert st_zh['state'] == 'live_active'
+    assert home_props[(10000, 'Bobbi.Glass.State')] == 'live_active'
+    assert home_props[(10000, 'Bobbi.Glass.StateLabel')] == '实时玻璃已生效'
+    assert gs.runtime_summary_line(stub_host) == '液态玻璃 · 实时玻璃已生效'
+
+    active_lang['val'] = 'resource.language.en_gb'
+    st_en = gs.sync_runtime_property(stub_host)
+    assert st_en['state'] == 'live_active'
+    assert home_props[(10000, 'Bobbi.Glass.StateLabel')] == 'Live glass active'
+    assert gs.runtime_summary_line(stub_host) == 'Liquid Glass · Live glass active'
+
+    vars_xml = ET.parse(ROOT / 'addons/skin.bobbi.cinema/1080p/Variables.xml').getroot()
+    short_var = vars_xml.find("./variable[@name='BobbiGlassShortState']")
+    assert short_var is not None
+    values = [(v.get('condition'), v.text) for v in short_var.findall('value')]
+    assert values[0] == (
+        '!String.IsEmpty(Window(Home).Property(Bobbi.Glass.StateLabel))',
+        '$INFO[Window(Home).Property(Bobbi.Glass.StateLabel)]',
+    )
+    for win_name in ('Settings.xml', 'SkinSettings.xml'):
+        win_root = ET.parse(ROOT / 'addons/skin.bobbi.cinema/1080p' / win_name).getroot()
+        onloads = [n.text for n in win_root.findall('onload')]
+        assert 'RunScript(script.bobbi.setup,liquid_glass_status)' in onloads

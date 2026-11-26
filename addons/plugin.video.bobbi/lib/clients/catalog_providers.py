@@ -48,13 +48,16 @@ def resolve_source(source, item):
 
 
 def submit_catalogs(manager, ids, mode, season, episode, year, aliases, release_order,
-                    movie_years=None, context=_CAPTURE):
+                    movie_years=None, context=_CAPTURE, *, disabled_providers=()):
     if context is _CAPTURE:
         from bobbi_platform.source_libraries import capture_context
         context = capture_context()
     if context is None or not context.binding.is_current():
         return
+    disabled = set(disabled_providers or ())
     for name in PROVIDERS + (('sharelib',) if context.source is not None else ()):
+        if name in disabled:
+            continue
         module = _adapter(name)
         if module is None:
             continue

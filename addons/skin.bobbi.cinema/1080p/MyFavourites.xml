@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <window>
+  <views>50</views>
   <defaultcontrol always="false">50</defaultcontrol>
   <menucontrol>9701</menucontrol>
   <onload>SetProperty(BobbiSection,favourites,Home)</onload>

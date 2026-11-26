@@ -388,6 +388,38 @@ def test_continue_watching_tr_format_guard_on_translated_strings(monkeypatch):
     assert cw._source_kind({"is_torrent": True}) == "Torrent"
 
 
+CONSOLIDATED_ACCOUNT_ACTIONS = frozenset({
+    "trakt_auth",
+    "trakt_logout",
+    "simkl_auth",
+    "simkl_logout",
+    "stremio_login",
+    "stremio_logout",
+    "stremio_update",
+    "stremio_toggle_addons",
+    "stremio_add_custom_addon",
+    "stremio_remove_custom_addon",
+    "stremio_manage_phone",
+    "stremio_toggle_catalogs",
+    "stremio_toggle_tv_addons",
+    "nuvio_auth",
+    "nuvio_logout",
+    "nuvio_toggle_addons",
+    "real_debrid_auth",
+    "real_debrid_remove_auth",
+    "alldebrid_auth",
+    "alldebrid_remove_auth",
+    "tb_auth",
+    "tb_remove_auth",
+    "oc_auth",
+    "oc_remove_auth",
+    "offcloud_info",
+    "premiumize_auth",
+    "premiumize_remove_auth",
+    "easynews_info",
+})
+
+
 def test_settings_ia_preserves_all_233_ids_45_hidden_and_53_action_routes():
     en_po = _parse_po_strict(BOBBI / "resources/language/English/strings.po")
     zh_po = _parse_po_strict(BOBBI / "resources/language/resource.language.zh_cn/strings.po")
@@ -415,7 +447,10 @@ def test_settings_ia_preserves_all_233_ids_45_hidden_and_53_action_routes():
     assert "update_action" in hidden
     assert "skip_intro_auto" in hidden
     assert "trakt_client" in hidden and "trakt_secret" in hidden
-    assert len(hidden) == 45
+    assert CONSOLIDATED_ACCOUNT_ACTIONS <= hidden
+    assert "open_accounts_center_action" not in hidden
+    assert "manage_sources_action" not in hidden
+    assert len(hidden) == 45 + len(CONSOLIDATED_ACCOUNT_ACTIONS)
 
     # Verify numeric PO labels on cinema_continuity_enabled and audio/subtitle options
     cont = settings_root.find(".//setting[@id='cinema_continuity_enabled']")
@@ -431,6 +466,7 @@ def test_settings_ia_preserves_all_233_ids_45_hidden_and_53_action_routes():
 
     route_names = {act_name for spec in ROUTE_SPECS for act_name in spec.actions}
     assert route_names, "Could not extract ROUTE_SPECS actions from router.py"
+    assert "manage_search_sources" in route_names
 
     actions = [s for s in settings if s.get("type") == "action"]
     assert len(actions) == 53
@@ -451,7 +487,7 @@ def test_settings_ia_preserves_all_233_ids_45_hidden_and_53_action_routes():
         expected_meta = json.loads(pack_json.read_text(encoding="utf-8"))["settings"]
         assert {row["id"] for row in expected_meta} == set(setting_ids)
         expected_hidden = {row["id"] for row in expected_meta if row["explicitly_hidden"]}
-        assert hidden == expected_hidden | {"update_action"}
+        assert hidden == expected_hidden | {"update_action"} | CONSOLIDATED_ACCOUNT_ACTIONS
 
 
 def test_android_helper_and_host_resources_and_staging():
@@ -561,3 +597,176 @@ def test_windows_nsis_and_win32_launcher_bilingual_resources(tmp_path):
             assert n_en > 0 and "could not start safely" in buf.value
         finally:
             kernel32.FreeLibrary(hmod)
+
+
+def test_n3_favourites_vs10_expressions_and_english_business_surfaces(monkeypatch, tmp_path):
+    skin_dir = ROOT / "addons/skin.bobbi.cinema/1080p"
+
+    # 1. MyFavourites.xml root <views>50</views>
+    fav_root = ET.parse(skin_dir / "MyFavourites.xml").getroot()
+    fav_views = {v.strip() for v in fav_root.findtext("views", "").split(",") if v.strip()}
+    assert "50" in fav_views
+
+    # 2. Shared VS10 capability expressions & OSD/Timers gating
+    inc_osd = ET.parse(skin_dir / "Includes_OSD.xml").getroot()
+    exprs = {n.get("name"): (n.text or "") for n in inc_osd.findall("expression")}
+    assert "BobbiHostHasVS10" in exprs and "amlogic.vs10.mode" in exprs["BobbiHostHasVS10"]
+    assert "BobbiSupportsVS10" in exprs and "$EXP[BobbiHostHasVS10]" in exprs["BobbiSupportsVS10"]
+
+    for xml_name in ("VideoOSD.xml", "custom_OptionsDialog.xml"):
+        xml_root = ET.parse(skin_dir / xml_name).getroot()
+        vs10_items = [it for it in xml_root.findall(".//item") if it.findtext("onclick") == "ActivateWindow(1116)"]
+        assert len(vs10_items) == 1
+        assert vs10_items[0].findtext("visible") == "$EXP[BobbiSupportsVS10]"
+
+    vs10_dialog_src = (skin_dir / "custom_1116_VS10.xml").read_text(encoding="utf-8")
+    assert "：" not in vs10_dialog_src
+    assert "$EXP[BobbiSupportsVS10]" in vs10_dialog_src
+    assert "!$EXP[BobbiSupportsVS10]" in vs10_dialog_src
+
+    timers_root = ET.parse(skin_dir / "Timers.xml").getroot()
+    sdr_timers = [t for t in timers_root.findall("timer") if t.findtext("name") == "autovideosdr"]
+    assert len(sdr_timers) == 1
+    assert "$EXP[BobbiHostHasVS10]" in sdr_timers[0].findtext("start", "")
+
+    # 3. English business surface probes across pan_ui, diagnostics_ui, cloud_hub, source_library_ui, t4_ui, setup/default.py
+    builtins_called = []
+    xbmc_stub = types.ModuleType("xbmc")
+    xbmc_stub.ISO_639_1 = 0
+    xbmc_stub.getInfoLabel = lambda k: "English" if k == "System.Language" else ""
+    xbmc_stub.getLanguage = lambda *a: "en"
+    xbmc_stub.getCondVisibility = lambda expr: False
+    xbmc_stub.executebuiltin = lambda cmd: builtins_called.append(cmd)
+    xbmc_stub.executeJSONRPC = lambda raw: json.dumps({"result": {"value": "resource.language.en_gb"}})
+    xbmc_stub.Monitor = lambda: types.SimpleNamespace(
+        abortRequested=lambda: False,
+        waitForAbort=lambda *a: False,
+    )
+    xbmc_stub.log = lambda *a, **kw: None
+    xbmc_stub.LOGERROR = 3
+
+    def _translate_path(raw_path):
+        dest = tmp_path / "kodi_vfs" / str(raw_path).replace("special://", "").replace(":", "_").strip("/\\")
+        dest.mkdir(parents=True, exist_ok=True)
+        return str(dest)
+
+    xbmcvfs_stub = types.ModuleType("xbmcvfs")
+    xbmcvfs_stub.translatePath = _translate_path
+    xbmcvfs_stub.exists = lambda p: os.path.exists(p)
+    monkeypatch.setitem(sys.modules, "xbmcvfs", xbmcvfs_stub)
+
+    class _RecordingDialog:
+        def __init__(self, selections=None, inputs=None):
+            self.selections = list(selections or [-1])
+            self.inputs = list(inputs or [""])
+            self.presented = []
+
+        def select(self, title, options, *args, **kwargs):
+            self.presented.append((str(title), [str(x) for x in options]))
+            return self.selections.pop(0) if self.selections else -1
+
+        def input(self, title, *args, **kwargs):
+            self.presented.append((str(title), []))
+            return self.inputs.pop(0) if self.inputs else ""
+
+        def textviewer(self, title, body):
+            self.presented.append((str(title), [str(body)]))
+
+        def ok(self, title, body):
+            self.presented.append((str(title), [str(body)]))
+
+        def yesno(self, title, body, **kwargs):
+            self.presented.append((str(title), [str(body)]))
+            return False
+
+    gui_stub = types.ModuleType("xbmcgui")
+    gui_stub.ALPHANUM_HIDE_INPUT = 1
+    gui_stub.Dialog = _RecordingDialog
+    monkeypatch.setitem(sys.modules, "xbmc", xbmc_stub)
+    monkeypatch.setitem(sys.modules, "xbmcgui", gui_stub)
+
+    def assert_no_cjk(dlg, label):
+        assert dlg.presented, f"{label} did not present any dialog"
+        texts = [t for h, opts in dlg.presented for t in [h, *opts]]
+        leaked = [t for t in texts if re.search(r"[\u4e00-\u9fff]", t)]
+        assert not leaked, f"{label} leaked CJK in English UI: {leaked!r}"
+
+    from bobbi_platform import (
+        bt_setup,
+        cloud_hub,
+        diagnostics_ui,
+        i18n,
+        pan_ui,
+        source_library_ui,
+        source_media_http,
+        t4_ui,
+        version_notes,
+    )
+
+    assert i18n.current_locale() == "en_gb"
+    assert not re.search(r"[\u4e00-\u9fff]", bt_setup.adapter_message("missing"))
+    assert not re.search(r"[\u4e00-\u9fff]", source_media_http.localized_message("T4_PHONE_LOCAL_PATH"))
+
+    # pan_ui.manage in English (provider names like Quark / Baidu Pan must be English)
+    monkeypatch.setattr(pan_ui.cd2_mounts, "discover", lambda: [])
+    monkeypatch.setattr(
+        pan_ui,
+        "_status",
+        lambda servers=False: [
+            {"provider": "quark", "capabilities": ["browse"], "account": {"authenticated": False, "status": "signed_out"}},
+            {"provider": "baidu", "capabilities": ["browse"], "account": {"authenticated": True, "status": "ready", "display_name": "Alice"}},
+        ],
+    )
+    dlg_pan = _RecordingDialog([-1])
+    pan_ui.manage(dlg_pan)
+    assert_no_cjk(dlg_pan, "pan_ui.manage")
+
+    # diagnostics_ui.show choice 0 includes Liquid Glass runtime_summary_line in English
+    glass_mod = types.ModuleType("bobbi_platform.glass_settings")
+    glass_mod.runtime_summary_line = lambda: "Liquid Glass: Active (EGL live refraction)"
+    synced_calls = []
+    glass_mod.sync_runtime_property = lambda: synced_calls.append("synced")
+    monkeypatch.setitem(sys.modules, "bobbi_platform.glass_settings", glass_mod)
+
+    dlg_diag = _RecordingDialog([0, -1])
+    diagnostics_ui.show(dlg_diag)
+    assert_no_cjk(dlg_diag, "diagnostics_ui.show")
+    assert any("Liquid Glass: Active" in opt for _, opts in dlg_diag.presented for opt in opts)
+
+    # cloud_hub English domains + index 5 manage_search_sources async handoff
+    monkeypatch.setattr(cloud_hub, "_plugin_setting", lambda _: "")
+    dlg_hub = _RecordingDialog([5, -1])
+    builtins_called.clear()
+    hub_outcome = cloud_hub.show_accounts(dlg_hub, domain="services")
+    assert hub_outcome == cloud_hub.NAVIGATED
+    assert builtins_called == ["RunPlugin(plugin://plugin.video.bobbi/?action=manage_search_sources)"]
+    assert len(dlg_hub.presented) == 1
+    assert_no_cjk(dlg_hub, "cloud_hub.services")
+
+    # source_library_ui.add and t4_ui.add in English + T4 phone QR async handoff exits immediately
+    dlg_slib = _RecordingDialog(inputs=[""])
+    source_library_ui.add(dlg_slib, store=None, source_store=types.SimpleNamespace(current=lambda: None))
+    assert_no_cjk(dlg_slib, "source_library_ui.add")
+
+    dlg_t4 = _RecordingDialog([2])
+    builtins_called.clear()
+    handoff_flag = []
+    assert t4_ui.add(dlg_t4, None, store=None, _handoff=handoff_flag) is False
+    assert handoff_flag == ["NAVIGATED"]
+    assert builtins_called == ["RunPlugin(plugin://plugin.video.bobbi/?action=source_import_manage_phone)"]
+    assert_no_cjk(dlg_t4, "t4_ui.add")
+
+    # version_notes fallback & script.bobbi.setup/default.py liquid_glass_status + English menu
+    notes = version_notes.read_installed_notes(tmp_path / "missing_changelog.md", installed_version="1.0.0")
+    assert not re.search(r"[\u4e00-\u9fff]", notes["title"] + notes["body"])
+
+    spec_setup = importlib.util.spec_from_file_location(
+        "r3_setup_default_test",
+        ROOT / "addons/script.bobbi.setup/default.py",
+    )
+    setup_mod = importlib.util.module_from_spec(spec_setup)
+    spec_setup.loader.exec_module(setup_mod)
+    monkeypatch.setattr(sys, "argv", ["default.py", "liquid_glass_status"])
+    setup_mod.main()
+    assert synced_calls == ["synced"]
+

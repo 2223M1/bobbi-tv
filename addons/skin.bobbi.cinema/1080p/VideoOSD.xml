@@ -218,7 +218,7 @@
           <item>
             <label>$LOCALIZE[32225]</label><icon>bobbi/glass/icons/sparkles.png</icon>
             <onclick>ActivateWindow(1116)</onclick>
-            <visible>System.Platform.Linux + !String.IsEmpty(Player.Process(video.source.hdr.type)) + !String.IsEqual(Player.Process(video.source.hdr.type.raw),2)</visible>
+            <visible>$EXP[BobbiSupportsVS10]</visible>
           </item>
           <item>
             <label>$LOCALIZE[32226]</label><icon>bobbi/glass/icons/clock.png</icon>

@@ -89,13 +89,17 @@ def addon_zip_bytes(addon_id: str, version: str = '1.0.0',
 
 
 def build_signed_bundle(dest: Path, key, trust: dict, *, sequence: int = 1,
-                        version: str = '1.0.0', skin_requires_skinvariables: bool = False) -> Path:
+                        version: str = '1.0.0', skin_requires_skinvariables: bool = False,
+                        requests_min: str = '0.0.1') -> Path:
     items = []
     blobs = {}
     for comp in sorted(FULL_COMPONENTS):
         reqs: tuple[dict[str, str], ...] = ()
         if comp == 'plugin.video.bobbi':
-            reqs = tuple({'addon': dep, 'version': '0.0.1'} for dep in sorted(ACTIVE_SEEDABLE_UPSTREAMS))
+            reqs = tuple(
+                {'addon': dep, 'version': requests_min if dep == 'script.module.requests' else '0.0.1'}
+                for dep in sorted(ACTIVE_SEEDABLE_UPSTREAMS)
+            )
         elif comp == 'skin.bobbi.cinema' and skin_requires_skinvariables:
             reqs = ({'addon': 'script.skinvariables', 'version': '2.2.2'},)
         elif comp == 'script.skinvariables':
@@ -216,7 +220,9 @@ def test_retained_old_skinvariables_and_user_skin_succeed_with_zero_touch(tmp_pa
     monkeypatch.setitem(sys.modules, 'xbmcgui', SimpleNamespace(
         Window=lambda _: SimpleNamespace(getProperty=lambda _: 'ready', clearProperty=lambda _: None),
     ))
-    monkeypatch.setitem(sys.modules, 'xbmcvfs', SimpleNamespace(translatePath=lambda _: str(live)))
+    monkeypatch.setitem(sys.modules, 'xbmcvfs', SimpleNamespace(
+        translatePath=lambda p: str(live) if str(p).startswith('special://') else str(p)
+    ))
     monkeypatch.setattr(ui, 'rpc', lambda method, params=None: rpc_calls.append((method, params)))
 
     host = KodiHost()
@@ -263,8 +269,8 @@ def test_retained_upstream_uses_installed_manifest_without_ghost_floor(tmp_path)
     assert plan['items']['script.module.urllib3']['state'] == SATISFIED
 
 
-def test_needs_upgrade_never_calls_fake_install_addon_and_supports_native_recheck(tmp_path, monkeypatch):
-    """DEP-08: Old requests < floor must NEVER call InstallAddon; offers AddonInformation + re-reads."""
+def test_needs_upgrade_never_calls_fake_install_addon_and_supports_native_recheck(tmp_path, monkeypatch, signing_pair):
+    """N3-INST-01 / DEP-08: Old requests < floor never calls InstallAddon; hands off to addons://dependencies/ cleanly."""
     stage, live = tmp_path / 'stage', tmp_path / 'addons'
     stage.mkdir()
     live.mkdir()
@@ -276,45 +282,131 @@ def test_needs_upgrade_never_calls_fake_install_addon_and_supports_native_rechec
     state = {'requests_ver': '2.25.1', 'enabled': True}
     commands = []
     waits = []
+    enabled_rpc = []
 
     monkeypatch.setitem(sys.modules, 'xbmc', SimpleNamespace(
         Monitor=lambda: SimpleNamespace(waitForAbort=lambda sec: (waits.append(sec) or False)),
         Player=lambda: SimpleNamespace(isPlaying=lambda: False),
-        executebuiltin=lambda cmd, wait=False: commands.append(cmd),
+        executebuiltin=lambda cmd, wait=False: commands.append((cmd, wait)),
+        LOGINFO=1,
+        LOGERROR=3,
     ))
-    monkeypatch.setitem(sys.modules, 'xbmcvfs', SimpleNamespace(translatePath=lambda _: str(live)))
+    monkeypatch.setitem(sys.modules, 'xbmcvfs', SimpleNamespace(
+        translatePath=lambda p: str(live) if str(p).startswith('special://') else str(p)
+    ))
 
-    host_fail = KodiHost()
-    host_fail.dialog = None
-    monkeypatch.setattr(host_fail, 'details', lambda aid: (
-        {'version': '3.4.3', 'enabled': True} if aid == 'script.module.pycryptodome'
-        else {'version': state['requests_ver'], 'enabled': state['enabled']} if aid == 'script.module.requests'
-        else None
-    ))
-    with pytest.raises(UpdateError, match=r'DEPENDENCY_NEEDS_UPGRADE:script\.module\.requests:2\.25\.1->2\.31\.0'):
-        host_fail.dependencies(stage)
-    assert not any('InstallAddon' in cmd for cmd in commands)
+    def fake_rpc(method, params=None):
+        if method == 'Settings.GetSettingValue' and (params or {}).get('setting') == 'locale.language':
+            return {'value': 'resource.language.en_gb'}
+        if method == 'Addons.SetAddonEnabled':
+            enabled_rpc.append((params['addonid'], params['enabled']))
+            if params['addonid'] == 'script.module.requests':
+                state['enabled'] = bool(params['enabled'])
+            return 'OK'
+        raise AssertionError((method, params))
+
+    monkeypatch.setattr(ui, 'rpc', fake_rpc)
+
+    def live_details(aid):
+        if aid == 'script.module.pycryptodome':
+            return {'version': '3.4.3', 'enabled': True}
+        if aid == 'script.module.requests':
+            return {'version': state['requests_ver'], 'enabled': state['enabled']}
+        return None
+
+    # 1) No dialog -> DEPENDENCY_NEEDS_UPGRADE, zero InstallAddon, zero ActivateWindow
+    host_no_dlg = KodiHost()
+    host_no_dlg.dialog = None
+    monkeypatch.setattr(host_no_dlg, 'details', live_details)
+    with pytest.raises(UpdateError, match=r'^DEPENDENCY_NEEDS_UPGRADE:script\.module\.requests:2\.25\.1->2\.31\.0$'):
+        host_no_dlg.dependencies(stage)
+    assert commands == []
     assert waits == []
 
-    # Interactive flow: user opens AddonInformation, upgrades requests to 2.31.0, and confirms recheck
-    prompt_calls = {'count': 0}
+    # 2) User declines yesno -> DEPENDENCY_NEEDS_UPGRADE, zero ActivateWindow, zero InstallAddon
+    prompts = []
+    host_decline = KodiHost()
+    host_decline.dialog = SimpleNamespace(yesno=lambda title, body: (prompts.append((title, body)) and False))
+    monkeypatch.setattr(host_decline, 'details', live_details)
+    with pytest.raises(UpdateError, match=r'^DEPENDENCY_NEEDS_UPGRADE:script\.module\.requests:2\.25\.1->2\.31\.0$'):
+        host_decline.dependencies(stage)
+    assert len(prompts) == 1
+    assert 'script.module.requests' in prompts[0][1]
+    assert '2.25.1' in prompts[0][1] and '2.31.0' in prompts[0][1]
+    assert 'addons://dependencies/' in prompts[0][1]
+    assert commands == []
 
-    def yesno(*args, **kwargs):
-        prompt_calls['count'] += 1
-        if prompt_calls['count'] == 1:
-            return True  # Open AddonInformation
-        state['requests_ver'] = '2.31.0'
-        (live / 'script.module.requests/addon.xml').write_text(
-            '<addon id="script.module.requests" version="2.31.0"><requires/></addon>', encoding='utf-8'
-        )
-        return True  # Completed upgrade -> re-read
+    # 3) User accepts yesno -> opens AddonBrowser at addons://dependencies/ (wait=False) & releases modal flow immediately!
+    prompts.clear()
+    host_accept = KodiHost()
+    host_accept.dialog = SimpleNamespace(yesno=lambda title, body: (prompts.append((title, body)) or True))
+    monkeypatch.setattr(host_accept, 'details', live_details)
+    with pytest.raises(UpdateError, match=r'^DEPENDENCY_HANDOFF_OPENED:script\.module\.requests:2\.25\.1->2\.31\.0$'):
+        host_accept.dependencies(stage)
+    assert len(prompts) == 1  # Never pops a second yesno on top of AddonBrowser!
+    assert commands == [('ActivateWindow(AddonBrowser,addons://dependencies/,return)', False)]
+    assert not any('InstallAddon' in cmd for cmd, _ in commands)
 
-    host_ok = KodiHost()
-    host_ok.dialog = SimpleNamespace(yesno=yesno)
-    monkeypatch.setattr(host_ok, 'details', host_fail.details)
-    host_ok.dependencies(stage)
-    assert any('ActivateWindow(AddonInformation,script.module.requests)' in cmd for cmd in commands)
-    assert not any('InstallAddon' in cmd for cmd in commands)
+    # 3b) In ce_install_ui.main(), DEPENDENCY_HANDOFF_OPENED logs INFO and exits cleanly without dialog.ok covering AddonBrowser
+    key, trust = signing_pair
+    real_bundle = build_signed_bundle(tmp_path / 'script.bobbi.start-test.zip', key, trust, sequence=1, requests_min='2.31.0')
+    work_dir = tmp_path / 'start_profile'
+    work_dir.mkdir(parents=True, exist_ok=True)
+    logs = []
+    ok_modals = []
+    commands.clear()
+    monkeypatch.setitem(sys.modules, 'xbmc', SimpleNamespace(
+        Monitor=lambda: SimpleNamespace(waitForAbort=lambda _: False, abortRequested=lambda: False),
+        Player=lambda: SimpleNamespace(isPlaying=lambda: False),
+        executebuiltin=lambda cmd, wait=False: commands.append((cmd, wait)),
+        log=lambda msg, level=1: logs.append((msg, level)),
+        LOGINFO=1,
+        LOGERROR=3,
+    ))
+    monkeypatch.setitem(sys.modules, 'xbmcgui', SimpleNamespace(
+        Dialog=lambda: SimpleNamespace(
+            yesno=lambda *a: True,
+            textviewer=lambda *a: None,
+            ok=lambda *a: ok_modals.append(a),
+            select=lambda *a, **kw: 1,
+        ),
+    ))
+    monkeypatch.setattr('bobbi_platform.android_ui.bundled_host', lambda: False)
+    monkeypatch.setattr(ui, 'profile', lambda *a, **kw: work_dir)
+    monkeypatch.setattr(ui, 'readable_text', lambda *a, **kw: True)
+    monkeypatch.setattr(ui, 'ensure_host_language', lambda *a, **kw: {'action': 'already_initialized'})
+    monkeypatch.setattr(ui, 'Installer', lambda addons_p, work_p, host_obj: Installer(addons_p, work_p, host_obj, trust=trust))
+    monkeypatch.setattr(KodiHost, 'details', lambda self, aid: live_details(aid))
+    ui.main(payload=str(real_bundle))
+    assert ok_modals == []
+    assert commands == [('ActivateWindow(AddonBrowser,addons://dependencies/,return)', False)]
+    assert any('DEPENDENCY_HANDOFF_OPENED' in msg and lvl == 1 for msg, lvl in logs)
+    assert not (work_dir / 'installation.json').exists()
+
+    # 4) User re-runs dependencies(stage) while Kodi still reports 2.25.1 -> prompts again (never bypassed!)
+    commands.clear()
+    prompts.clear()
+    with pytest.raises(UpdateError, match=r'^DEPENDENCY_HANDOFF_OPENED:script\.module\.requests:2\.25\.1->2\.31\.0$'):
+        host_accept.dependencies(stage)
+    assert len(prompts) == 1
+    assert commands == [('ActivateWindow(AddonBrowser,addons://dependencies/,return)', False)]
+
+    # 5) User upgrades script.module.requests in Kodi to 2.31.0 (even if currently disabled) and re-runs dependencies(stage)
+    commands.clear()
+    prompts.clear()
+    state['requests_ver'] = '2.31.0'
+    state['enabled'] = False
+    (live / 'script.module.requests/addon.xml').write_text(
+        '<addon id="script.module.requests" version="2.31.0"><requires/></addon>', encoding='utf-8'
+    )
+    host_recheck = KodiHost()
+    host_recheck.dialog = SimpleNamespace(yesno=lambda *a: (prompts.append(a) or True))
+    monkeypatch.setattr(host_recheck, 'details', live_details)
+    host_recheck.dependencies(stage)
+    assert prompts == []
+    assert commands == []
+    assert enabled_rpc == [('script.module.requests', True)]
+    assert state['enabled'] is True
 
 
 def test_topological_seeding_disabled_enable_and_directory_conflict_protection(tmp_path, monkeypatch):
@@ -372,7 +464,9 @@ def test_topological_seeding_disabled_enable_and_directory_conflict_protection(t
             clearProperty=lambda k: properties.pop(k, None),
         ),
     ))
-    monkeypatch.setitem(sys.modules, 'xbmcvfs', SimpleNamespace(translatePath=lambda _: str(live)))
+    monkeypatch.setitem(sys.modules, 'xbmcvfs', SimpleNamespace(
+        translatePath=lambda p: str(live) if str(p).startswith('special://') else str(p)
+    ))
     monkeypatch.setattr(ui.shutil, 'copytree', tracked_copytree)
     monkeypatch.setattr(ui, 'rpc', lambda method, params: (
         enabled_log.append(params['addonid']) or enabled_set.add(params['addonid'])
@@ -425,7 +519,9 @@ def test_rpc_detail_fallback_to_list_and_unknown_state_safety(tmp_path, monkeypa
 
     monkeypatch.setattr(ui, 'rpc', rpc_fallback)
     monkeypatch.setitem(sys.modules, 'xbmc', SimpleNamespace(Monitor=lambda: SimpleNamespace(waitForAbort=lambda _: False)))
-    monkeypatch.setitem(sys.modules, 'xbmcvfs', SimpleNamespace(translatePath=lambda _: str(live)))
+    monkeypatch.setitem(sys.modules, 'xbmcvfs', SimpleNamespace(
+        translatePath=lambda p: str(live) if str(p).startswith('special://') else str(p)
+    ))
     host = KodiHost()
     assert host.details('script.module.requests') == {'addonid': 'script.module.requests', 'version': '2.31.0', 'enabled': True}
     host.dependencies(stage)

@@ -390,6 +390,11 @@ class JacktookMOnitor(xbmc.Monitor):
         from lib.utils.tmdb_init import ensure_tmdb_init
 
         ensure_tmdb_init()
+        try:
+            from lib.portable_runtime import _sync_host_ui_properties
+            _sync_host_ui_properties(force_locale=True)
+        except Exception:
+            pass
         kodilog(
             "Cleared cached settings and refreshed TMDB language after Kodi settings change",
             level=xbmc.LOGINFO,

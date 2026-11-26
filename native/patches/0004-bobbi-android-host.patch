@@ -85,7 +85,7 @@ diff --git a/xbmc/interfaces/json-rpc/schema/methods.json b/xbmc/interfaces/json
 +    "transport": "Response",
 +    "permission": "ControlSystem",
 +    "params": [
-+      { "name": "action", "type": "string", "enum": ["info", "engine_status", "engine_start", "engine_stop", "install"], "required": true },
++      { "name": "action", "type": "string", "enum": ["info", "engine_status", "engine_start", "engine_stop", "install", "ui_locale"], "required": true },
 +      { "name": "argument", "type": "string", "default": "", "maxLength": 4096 }
 +    ],
 +    "returns": "any"

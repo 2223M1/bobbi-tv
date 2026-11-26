@@ -241,3 +241,227 @@ msgstr ""
 msgctxt "#32057"
 msgid "Player connection is ready for test playback. You can skip BT setup when using 115 or local libraries."
 msgstr ""
+
+msgctxt "#32060"
+msgid "BT Playback"
+msgstr ""
+
+msgctxt "#32061"
+msgid "Local BT Engine"
+msgstr ""
+
+msgctxt "#32062"
+msgid "Check connection"
+msgstr ""
+
+msgctxt "#32063"
+msgid "Start BT playback"
+msgstr ""
+
+msgctxt "#32064"
+msgid "Stop local BT"
+msgstr ""
+
+msgctxt "#32065"
+msgid "BT Ready"
+msgstr ""
+
+msgctxt "#32066"
+msgid "BT sources will start automatically when selected; no pairing needed."
+msgstr ""
+
+msgctxt "#32067"
+msgid "Stop playback first"
+msgstr ""
+
+msgctxt "#32068"
+msgid "Stop video playback before turning off BT."
+msgstr ""
+
+msgctxt "#32069"
+msgid "Stopping BT"
+msgstr ""
+
+msgctxt "#32070"
+msgid "Accounts & Sources Center"
+msgstr ""
+
+msgctxt "#32071"
+msgid "User Services"
+msgstr ""
+
+msgctxt "#32072"
+msgid "Media Servers"
+msgstr ""
+
+msgctxt "#32073"
+msgid "Cloud Drives & Shared Sources"
+msgstr ""
+
+msgctxt "#32074"
+msgid "Devices & Phone"
+msgstr ""
+
+msgctxt "#32075"
+msgid "Cloud Accounts & Connections"
+msgstr ""
+
+msgctxt "#32076"
+msgid "Cloud Advanced Management"
+msgstr ""
+
+msgctxt "#32077"
+msgid "Search Sources · Default & Custom Sources"
+msgstr ""
+
+msgctxt "#32078"
+msgid "Media Server · Experimental"
+msgstr ""
+
+msgctxt "#32079"
+msgid "Server Display Name"
+msgstr ""
+
+msgctxt "#32080"
+msgid "Verify and Save Server?"
+msgstr ""
+
+msgctxt "#32081"
+msgid "My Library"
+msgstr ""
+
+msgctxt "#32082"
+msgid "Add Source"
+msgstr ""
+
+msgctxt "#32083"
+msgid "Open My Library"
+msgstr ""
+
+msgctxt "#32084"
+msgid "Library Index & Tasks"
+msgstr ""
+
+msgctxt "#32085"
+msgid "Current Library Management"
+msgstr ""
+
+msgctxt "#32086"
+msgid "Scan Tasks"
+msgstr ""
+
+msgctxt "#32087"
+msgid "Native Cloud Accounts"
+msgstr ""
+
+msgctxt "#32088"
+msgid "My Cloud Files"
+msgstr ""
+
+msgctxt "#32089"
+msgid "Check & Diagnostics"
+msgstr ""
+
+msgctxt "#32090"
+msgid "Check Local Status"
+msgstr ""
+
+msgctxt "#32091"
+msgid "Local Status"
+msgstr ""
+
+msgctxt "#32092"
+msgid "Connect Source Library"
+msgstr ""
+
+msgctxt "#32093"
+msgid "Source Library API or JSON URL"
+msgstr ""
+
+msgctxt "#32094"
+msgid "Xiaoya / TVBox (T4)"
+msgstr ""
+
+msgctxt "#32095"
+msgid "About bobbi TV & Release Notes"
+msgstr ""
+
+msgctxt "#32096"
+msgid "SMB Share"
+msgstr ""
+
+msgctxt "#32097"
+msgid "NFS Share"
+msgstr ""
+
+msgctxt "#32098"
+msgid "WebDAV Cloud"
+msgstr ""
+
+msgctxt "#32099"
+msgid "Local / USB / Saved Folder"
+msgstr ""
+
+msgctxt "#32100"
+msgid "Import Direct-Link Catalog"
+msgstr ""
+
+msgctxt "#32101"
+msgid "Existing CD2 Mount (No QR Needed)"
+msgstr ""
+
+msgctxt "#32102"
+msgid "Source Library URL"
+msgstr ""
+
+msgctxt "#32103"
+msgid "Media Server · Plex / Jellyfin / Emby"
+msgstr ""
+
+msgctxt "#32104"
+msgid "NAS host and shared folder, e.g. nas.local/Movies"
+msgstr ""
+
+msgctxt "#32105"
+msgid "NFS host and export path, e.g. nas.local/volume1/video"
+msgstr ""
+
+msgctxt "#32106"
+msgid "WebDAV URL, e.g. https://nas.example/dav/"
+msgstr ""
+
+msgctxt "#32107"
+msgid "Name this connection"
+msgstr ""
+
+msgctxt "#32108"
+msgid "Save Unencrypted Connection?"
+msgstr ""
+
+msgctxt "#32109"
+msgid "HTTP sends username and password in plaintext. Use only on a trusted home network; use HTTPS for remote access."
+msgstr ""
+
+msgctxt "#32110"
+msgid "Background Tasks"
+msgstr ""
+
+msgctxt "#32111"
+msgid "Live Task Status"
+msgstr ""
+
+msgctxt "#32112"
+msgid "Phone Management"
+msgstr ""
+
+msgctxt "#32113"
+msgid "Organize Workbench"
+msgstr ""
+
+msgctxt "#32114"
+msgid "Check Pending Receipts"
+msgstr ""
+
+msgctxt "#32115"
+msgid "Manage Indexed Sources"
+msgstr ""

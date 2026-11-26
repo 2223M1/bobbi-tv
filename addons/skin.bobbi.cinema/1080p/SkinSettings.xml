@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <window>
   <defaultcontrol always="true">9000</defaultcontrol>
+  <onload>RunScript(script.bobbi.setup,liquid_glass_status)</onload>
   <include>PageOpen</include>
   <controls>
     <!-- on-device Settings warm-cool charcoal radial backdrop (zero optical shader tag) -->

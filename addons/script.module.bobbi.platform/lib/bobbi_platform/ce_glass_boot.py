@@ -548,8 +548,99 @@ def inspect_elf32_arm(path, *, require_sections=False):
     }
 
 
-def qualify_host(executable, renderer, *, lib_dirs=None, expected_renderer_sha=REFINED_RENDERER):
-    """Verify host ELF32/ARMv8/hard-float, DT_NEEDED resolution, GLIBC_2.34, and GLES2/EGL symbols."""
+def _read_proc_bytes(path, limit=256 * 1024):
+    path = Path(path)
+    if path.is_symlink() or any(p.is_symlink() for p in path.parents):
+        return None
+    try:
+        info = path.stat()
+        if not stat.S_ISREG(info.st_mode):
+            return None
+        with path.open('rb') as fd:
+            raw = fd.read(limit + 1)
+    except OSError:
+        return None
+    if not raw or len(raw) > limit:
+        return None
+    return raw
+
+
+def _inspect_auxv_arm_capability(auxv_path):
+    raw = _read_proc_bytes(auxv_path, limit=16 * 1024)
+    if not raw or len(raw) < 8 or (len(raw) % 8) != 0:
+        return None
+    hwcap = 0
+    hwcap2 = 0
+    found_nul = False
+    for off in range(0, len(raw), 8):
+        a_type, a_val = struct.unpack_from('<II', raw, off)
+        if a_type == 0:
+            found_nul = True
+            break
+        if a_type == 16:
+            hwcap = a_val
+        elif a_type == 26:
+            hwcap2 = a_val
+    if not found_nul:
+        return None
+    if (hwcap & (1 << 12)) and (hwcap2 & 0x1F):
+        return {
+            'ok': True,
+            'reason': 'OK',
+            'cpu_arch': 8,
+            'simd': True,
+            'digest': hashlib.sha256(raw).hexdigest(),
+        }
+    return None
+
+
+def inspect_host_cpu_capability(*, proc_root=Path('/proc')):
+    """Inspect host CPU architecture >= ARMv8 and NEON/ASIMD independently of 32-bit ELF build targets."""
+    proc_dir = Path(proc_root)
+    raw_cpuinfo = _read_proc_bytes(proc_dir / 'cpuinfo', limit=256 * 1024)
+    if raw_cpuinfo:
+        text = raw_cpuinfo.decode('utf-8', errors='replace')
+        arch_nums = []
+        arch_hints = False
+        feature_sets = []
+        for line in text.splitlines():
+            if ':' not in line:
+                continue
+            key, _, val = line.partition(':')
+            k = key.strip().lower()
+            v = val.strip().lower()
+            if k == 'cpu architecture':
+                m = re.match(r'^(\d+)', v)
+                if m:
+                    arch_nums.append(int(m.group(1)))
+                elif 'aarch64' in v:
+                    arch_nums.append(8)
+            elif k in ('processor', 'model name', 'hardware', 'isa', 'cpu model'):
+                if any(tok in v for tok in ('aarch64', 'armv8', 'armv9', 'v8l', 'v9l')):
+                    arch_hints = True
+            elif k in ('features', 'flags'):
+                feature_sets.append(set(v.split()))
+        if arch_nums and min(arch_nums) < 8:
+            return {'ok': False, 'reason': 'HOST_CPU_ARCH_UNSUPPORTED', 'cpu_arch': min(arch_nums)}
+        arch = max(arch_nums) if arch_nums else (8 if arch_hints else None)
+        if arch is not None and feature_sets:
+            if any(('neon' in fs or 'asimd' in fs) for fs in feature_sets):
+                return {
+                    'ok': True,
+                    'reason': 'OK',
+                    'cpu_arch': arch,
+                    'simd': True,
+                    'digest': hashlib.sha256(raw_cpuinfo).hexdigest(),
+                }
+            return {'ok': False, 'reason': 'HOST_SIMD_MISSING', 'cpu_arch': arch}
+    auxv_res = _inspect_auxv_arm_capability(proc_dir / 'self/auxv')
+    if auxv_res is not None:
+        return auxv_res
+    return {'ok': False, 'reason': 'HOST_CPU_CAPABILITY_UNKNOWN'}
+
+
+def qualify_host(executable, renderer, *, lib_dirs=None, expected_renderer_sha=REFINED_RENDERER, proc_root=Path('/proc')):
+    """Verify host ELF32/hard-float ABI, real ARMv8+NEON CPU, DT_NEEDED resolution, GLIBC_2.34, and GLES2/EGL symbols."""
     try:
         exe_path = Path(executable)
         ren_path = Path(renderer)
@@ -575,17 +666,13 @@ def qualify_host(executable, renderer, *, lib_dirs=None, expected_renderer_sha=R
         if not exe_elf['ok']:
             return {'ok': False, 'reason': exe_elf['reason']}
         exe_attrs = exe_elf['arm_attrs']
-        cpu_arch = None
-        if exe_attrs is not None:
-            cpu_arch = exe_attrs.get(6)
-            if type(cpu_arch) is not int or cpu_arch < 14:
-                return {'ok': False, 'reason': 'ELF_CPU_ARCH_UNSUPPORTED'}
-            if 12 in exe_attrs and (type(exe_attrs[12]) is not int or exe_attrs[12] < 1):
-                return {'ok': False, 'reason': 'ELF_SIMD_MISSING'}
-            if 28 in exe_attrs and exe_attrs[28] != 1:
-                return {'ok': False, 'reason': 'ELF_VFP_ARGS_MISMATCH'}
-        elif exe_elf['sha256'] not in (KODI, STOCK_CE213_AMLOGIC_NG):
-            return {'ok': False, 'reason': 'ELF_MISSING_ARM_ATTRIBUTES'}
+        exe_cpu_arch = exe_attrs.get(6) if isinstance(exe_attrs, dict) else None
+        if isinstance(exe_attrs, dict) and 28 in exe_attrs and exe_attrs[28] != 1:
+            return {'ok': False, 'reason': 'ELF_VFP_ARGS_MISMATCH', 'exe_cpu_arch': exe_cpu_arch}
+
+        host_cpu = inspect_host_cpu_capability(proc_root=proc_root)
+        if not host_cpu['ok']:
+            return {'ok': False, 'reason': host_cpu['reason'], 'exe_cpu_arch': exe_cpu_arch}
 
         needed = list(ren_elf['dt_needed'])
         for must_have in ('libGLESv2.so', 'libEGL.so', 'libc.so.6'):
@@ -644,7 +731,8 @@ def qualify_host(executable, renderer, *, lib_dirs=None, expected_renderer_sha=R
             'reason': 'QUALIFIED',
             'exe_sha256': exe_elf['sha256'],
             'renderer_sha256': ren_elf['sha256'],
-            'cpu_arch': cpu_arch,
+            'cpu_arch': host_cpu['cpu_arch'],
+            'exe_cpu_arch': exe_cpu_arch,
             'resolved_libs': resolved_libs,
             'lib_shas': lib_shas,
             'glibc_versions': sorted(lib_elfs['libc.so.6']['verdef']),
@@ -772,7 +860,7 @@ def _dropins_safe_for_boot(dropin_dir, storage):
     return True
 
 
-def verified_module(state, addons, executable, module=None, *, installation=None, lib_dirs=None):
+def verified_module(state, addons, executable, module=None, *, installation=None, lib_dirs=None, proc_root=Path('/proc')):
     """Select the renderer from one snapshot; the legacy ABI cannot draw the new tags."""
     try:
         data = _release(state, installation)
@@ -802,7 +890,7 @@ def verified_module(state, addons, executable, module=None, *, installation=None
                 return None
             if _ordinary_file(packaged, limit=512 * 1024) is None or sha(packaged) != REFINED_RENDERER:
                 return None
-            qual = qualify_host(executable, packaged, lib_dirs=lib_dirs)
+            qual = qualify_host(executable, packaged, lib_dirs=lib_dirs, proc_root=proc_root)
             if not qual['ok']:
                 return None
             if _release(state, installation) == data:
@@ -844,7 +932,8 @@ def verified_module(state, addons, executable, module=None, *, installation=None
             if not (host == KODI or completed_install):
                 return None
             if not qualify_host(executable, module, lib_dirs=lib_dirs,
-                                expected_renderer_sha=(REFINED_RENDERER if refined else RENDERER))['ok']:
+                                expected_renderer_sha=(REFINED_RENDERER if refined else RENDERER),
+                                proc_root=proc_root)['ok']:
                 return None
             if _release(state, installation) == data:
                 return module
@@ -895,7 +984,7 @@ def opted_in(userdata):
 
 
 def main(*, opt_in=False, stock_opt_in=False, storage=Path('/storage'),
-         exe=Path('/usr/lib/kodi/kodi.bin'), runtime=None, lib_dirs=None):
+         exe=Path('/usr/lib/kodi/kodi.bin'), runtime=None, lib_dirs=None, proc_root=Path('/proc')):
     runtime = Path(runtime) if runtime is not None else RUNTIME
     storage = Path(storage)
     exe = Path(exe)
@@ -916,6 +1005,7 @@ def main(*, opt_in=False, stock_opt_in=False, storage=Path('/storage'),
         exe,
         installation=storage / '.kodi/userdata/addon_data/script.bobbi.start/installation.json',
         lib_dirs=lib_dirs,
+        proc_root=proc_root,
     )
     packaged = addons / PACKAGED_FILE
     if user_opt_in and module != packaged:

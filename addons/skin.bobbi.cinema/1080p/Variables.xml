@@ -39,6 +39,7 @@
   <!-- BobbiSectionLabel and BobbiSectionIcon are generated in Includes_HomeNav.generated.xml -->
   <expression name="BobbiSectionWide">String.IsEqual(Window(Home).Property(BobbiSection),tv)</expression>
   <variable name="BobbiGlassShortState">
+    <value condition="!String.IsEmpty(Window(Home).Property(Bobbi.Glass.StateLabel))">$INFO[Window(Home).Property(Bobbi.Glass.StateLabel)]</value>
     <value condition="Skin.HasSetting(BobbiLiquidGlassEnabled)">$LOCALIZE[32129]</value>
     <value>$LOCALIZE[32130]</value>
   </variable>

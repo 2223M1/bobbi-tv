@@ -174,10 +174,12 @@ def verify_legacy_85_dropin(conf_path: Path, storage: Path = Path('/storage')) -
 
 
 def qualify_host_cached(executable: Path, renderer: Path, *,
-                        addons: Path | None = None, lib_dirs=None) -> dict[str, object]:
+                        addons: Path | None = None, lib_dirs=None,
+                        proc_root: Path = Path('/proc')) -> dict[str, object]:
     """Run ELF/ABI/SONAME/GLIBC/GLES qualification with digest-keyed cache invalidation."""
     exe_path = Path(executable)
     ren_path = Path(renderer)
+    proc_path = Path(proc_root)
     search_dirs = tuple(Path(d) for d in (lib_dirs if lib_dirs is not None else boot.DEFAULT_LIB_DIRS))
 
     def _safe_sha(p: Path) -> str:
@@ -202,6 +204,9 @@ def qualify_host_cached(executable: Path, renderer: Path, *,
         assets_path = Path(addons) / boot.GLASS_ASSETS_FILE
         assets_sha = _safe_sha(assets_path)
 
+    raw_cpuinfo = boot._read_proc_bytes(proc_path / 'cpuinfo')
+    cpuinfo_sha = hashlib.sha256(raw_cpuinfo).hexdigest() if raw_cpuinfo else 'MISSING_CPUINFO'
+
     cache_key = (
         _safe_sha(exe_path),
         _safe_sha(ren_path),
@@ -211,12 +216,13 @@ def qualify_host_cached(executable: Path, renderer: Path, *,
         _lib_sha('libm.so.6'),
         _lib_sha('ld-linux-armhf.so.3'),
         assets_sha,
+        cpuinfo_sha,
     )
     cached = _QUAL_CACHE.get(cache_key)
     if cached is not None:
         return dict(cached)
 
-    result = boot.qualify_host(exe_path, ren_path, lib_dirs=search_dirs)
+    result = boot.qualify_host(exe_path, ren_path, lib_dirs=search_dirs, proc_root=proc_path)
     result['cache_key'] = cache_key
     if 'MISSING' not in cache_key[:2]:
         _QUAL_CACHE[cache_key] = dict(result)
@@ -584,9 +590,8 @@ def inspect_runtime_status(
     blur_runs = stats_data.get('blur_runs', 0)
     quads = stats_data.get('glass_quads_last_frame', 0)
     if (stats_data.get('enabled') == 1
-            and isinstance(tags, int) and tags > 0
-            and ((isinstance(blur_runs, int) and blur_runs > 0)
-                 or (isinstance(quads, int) and quads > 0))):
+            and isinstance(tags, int) and not isinstance(tags, bool) and tags > 0
+            and isinstance(quads, int) and not isinstance(quads, bool) and quads > 0):
         return _pack(
             'live_active',
             'LIVE_RENDERING_CONFIRMED',

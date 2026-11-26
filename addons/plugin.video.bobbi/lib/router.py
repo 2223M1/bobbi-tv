@@ -550,7 +550,7 @@ ROUTE_SPECS = (
     # Source manager group
     _spec(
         "source_manager",
-        {"source_manager_toggle": "open_source_manager_dialog"},
+        {"source_manager_toggle": "open_source_manager_dialog", "manage_search_sources": "open_unified_sources_hub"},
         "lib.gui.source_manager_dialog",
         completion="script_or_dialog",
         pass_params=False,

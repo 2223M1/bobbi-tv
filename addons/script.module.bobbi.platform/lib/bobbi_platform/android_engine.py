@@ -20,7 +20,20 @@ def available():
         return False
 
 
-def configuration(cancelled=lambda: False, clock=time.monotonic, wait=None, call=request):
+def sync_ui_locale(locale_code=None, *, call=None):
+    from .i18n import current_locale, normalize_locale
+    active_call = request if call is None else call
+    target = (normalize_locale(locale_code) if locale_code is not None else current_locale()) or 'zh_cn'
+    expected = 'en' if target == 'en_gb' else 'zh'
+    reply = active_call('ui_locale', target)
+    if not isinstance(reply, dict) or reply.get('state') != 'APPLIED' or reply.get('ui_locale') != expected:
+        raise RuntimeError('ANDROID_LOCALE_SYNC_FAILED')
+    return reply
+
+
+def configuration(cancelled=lambda: False, clock=time.monotonic, wait=None, call=None):
+    use_default_call = call is None or call is request
+    active_call = request if call is None else call
     if wait is None:
         import xbmc
         monitor = xbmc.Monitor()
@@ -28,16 +41,21 @@ def configuration(cancelled=lambda: False, clock=time.monotonic, wait=None, call
     deadline = clock() + 32
     if cancelled():
         raise RuntimeError('ANDROID_ENGINE_CANCELLED')
-    status = call('engine_status')
+    if use_default_call and available():
+        try:
+            sync_ui_locale(call=active_call)
+        except Exception:
+            pass
+    status = active_call('engine_status')
     if status['state'] not in ('RUNNING', 'STARTING'):
         if status['state'] in ('STOPPING', 'STOP_UNCONFIRMED'):
             raise RuntimeError('ANDROID_ENGINE_STOPPING')
-        if call('engine_start')['state'] != 'REQUESTED':
+        if active_call('engine_start')['state'] != 'REQUESTED':
             raise RuntimeError('ANDROID_ENGINE_START_DENIED')
     while clock() < deadline:
         if cancelled():
             raise RuntimeError('ANDROID_ENGINE_CANCELLED')
-        status = call('engine_status')
+        status = active_call('engine_status')
         if status['state'] == 'RUNNING':
             path = Path(status.get('config_path', ''))
             if (not path.is_absolute() or path.name != 'engine-backend.json' or
@@ -57,16 +75,23 @@ def configuration(cancelled=lambda: False, clock=time.monotonic, wait=None, call
 
 def show(dialog):
     from .bt_setup import adapter_state, adapter_message
+    from .i18n import tr
     import xbmc
     import xbmcvfs
     existing = adapter_state(xbmcvfs.translatePath)
     if existing is not None:
-        dialog.ok('BT 播放', adapter_message(existing))
+        dialog.ok(tr(32060, 'BT 播放', 'BT Playback'), adapter_message(existing))
         return False
     try:
         state = request('engine_status')['state']
-        choice = dialog.select('本机 BT', [
-            '检查连接' if state == 'RUNNING' else '启动 BT 播放', '停止本机 BT'])
+        choice = dialog.select(
+            tr(32061, '本机 BT', 'Local BT Engine'),
+            [
+                tr(32062, '检查连接', 'Check connection') if state == 'RUNNING'
+                else tr(32063, '启动 BT 播放', 'Start BT playback'),
+                tr(32064, '停止本机 BT', 'Stop local BT'),
+            ],
+        )
         if choice == 0:
             config = configuration(cancelled=xbmc.Monitor().abortRequested)
             # Use the same control/version validation as the cinema adapter.
@@ -76,14 +101,28 @@ def show(dialog):
                 backend.ready(lambda: None)
             finally:
                 backend.close()
-            dialog.ok('BT 已就绪', '以后选择 BT 片源时会自动启动，无需配对。')
+            dialog.ok(
+                tr(32065, 'BT 已就绪', 'BT Ready'),
+                tr(32066, '以后选择 BT 片源时会自动启动，无需配对。',
+                   'BT sources will start automatically when selected; no pairing needed.'),
+            )
             return True
         if choice == 1:
             if xbmc.Player().isPlaying():
-                dialog.ok('请先停止播放', '停止影片后再关闭 BT。')
+                dialog.ok(
+                    tr(32067, '请先停止播放', 'Stop playback first'),
+                    tr(32068, '停止影片后再关闭 BT。', 'Stop video playback before turning off BT.'),
+                )
                 return False
             request('engine_stop')
-            dialog.ok('正在停止 BT', '下次选择 BT 片源时会重新启动。')
+            dialog.ok(
+                tr(32069, '正在停止 BT', 'Stopping BT'),
+                tr(None, '下次选择 BT 片源时会重新启动。', 'It will start again next time you select a BT source.'),
+            )
     except (OSError, ValueError, RuntimeError):
-        dialog.ok('BT 暂不可用', '请保持波比 TV 在前台，再试一次。已有连接设置没有更改。')
+        dialog.ok(
+            tr(None, 'BT 暂不可用', 'BT Unavailable'),
+            tr(None, '请保持波比 TV 在前台，再试一次。已有连接设置没有更改。',
+               'Keep Bobbi TV in the foreground and try again. Existing connection settings were unchanged.'),
+        )
     return False

@@ -6,7 +6,8 @@ from bobbi_core import t4
 from bobbi_core.library_contract import LibraryError, MAX_CATALOG_BYTES, _text
 from bobbi_core.playback_request import SelectionChanged
 from bobbi_core.source_endpoint import endpoint
-from .source_media_http import MESSAGES
+from .i18n import is_english, tr
+from .source_media_http import MESSAGES, localized_message
 from .t4_http import _opaque, read, selection, selection_with_play_token, selection_with_token
 from .t4_tokens import T4TokenStore
 
@@ -82,15 +83,15 @@ def export_probed_lives_playlist(raw_config: bytes, export_dir, *, index: int = 
                 m3u_lines.append(ln)
                 channel_count += 1
     else:
-        current_group = '直播'
+        current_group = 'Live' if is_english() else '直播'
         for ln in lines:
             if ln.endswith(',#genre#'):
-                current_group = _clean_label(ln[:-8], 60, '直播')
+                current_group = _clean_label(ln[:-8], 60, 'Live' if is_english() else '直播')
                 continue
             cname, sep, curl = ln.partition(',')
             curl = curl.strip()
             if sep and cname.strip() and curl.startswith(('http://', 'https://')) and ' ' not in curl:
-                safe_name = _clean_label(cname, 120, '频道')
+                safe_name = _clean_label(cname, 120, 'Channel' if is_english() else '频道')
                 m3u_lines.append(f'#EXTINF:-1 group-title="{current_group}",{safe_name}')
                 m3u_lines.append(curl)
                 channel_count += 1
@@ -112,21 +113,24 @@ def export_probed_lives_playlist(raw_config: bytes, export_dir, *, index: int = 
 
 def offer_lives_export(dialog, raw_bytes: bytes, diag: dict, export_dir, *, operation_fn=None) -> dict | None:
     """User-reachable import preview action for TVBox lives playlist export (SRC-GAP-02)."""
+    en = is_english()
     lives_subs = diag.get('lives_subscriptions') or []
     lives_cnt = (diag.get('counts') or {}).get('lives', 0)
     if lives_cnt <= 0 or not lives_subs:
         return None
     if not dialog.yesno(
-        '导出直播订阅列表？',
-        f'检测到 {lives_cnt} 个直播入口（仅代表入口数，非频道数）。是否探测格式并导出独立 M3U8 文件（不自动修改 PVR 设置）？',
+        'Export Live Playlist?' if en else '导出直播订阅列表？',
+        (f'Detected {lives_cnt} live subscription entries (entry count, not channel count). Probe format and export a standalone M3U8 file without modifying PVR settings?'
+         if en else
+         f'检测到 {lives_cnt} 个直播入口（仅代表入口数，非频道数）。是否探测格式并导出独立 M3U8 文件（不自动修改 PVR 设置）？'),
     ):
         return None
     idx = 0
     if len(lives_subs) > 1:
         picked = _pick(
             dialog,
-            '选择要导出的直播入口',
-            [(_clean_label(s.get('name'), 80, f'直播 {i + 1}'), i) for i, s in enumerate(lives_subs)],
+            'Select Live Entry to Export' if en else '选择要导出的直播入口',
+            [(_clean_label(s.get('name'), 80, f'Live {i + 1}' if en else f'直播 {i + 1}'), i) for i, s in enumerate(lives_subs)],
         )
         if picked is None:
             return None
@@ -144,8 +148,10 @@ def offer_lives_export(dialog, raw_bytes: bytes, diag: dict, export_dir, *, oper
         exported = export_probed_lives_playlist(raw_bytes, export_dir, index=idx)
     if exported:
         dialog.ok(
-            '直播列表已导出',
-            f"已探测到 {exported['channel_count']} 个频道条目，已保存至：\n{exported['path']}",
+            'Live Playlist Exported' if en else '直播列表已导出',
+            (f"Probed {exported['channel_count']} channel entries and saved to:\n{exported['path']}"
+             if en else
+             f"已探测到 {exported['channel_count']} 个频道条目，已保存至：\n{exported['path']}"),
         )
     return exported
 
@@ -166,19 +172,20 @@ def classify_t4_url_input(raw_location: str) -> str:
     return t4.endpoint(trimmed)
 
 
-def add(dialog, vfs, store, previous=None):
+def add(dialog, vfs, store, previous=None, *, _handoff=None):
     from .paths import ProfileBinding
     from .source_library_ui import operation
+    en = is_english()
     binding = ProfileBinding()
     expected = store.source_snapshot(previous.id) if previous else (None, None)
     method = _pick(
         dialog,
-        '小雅 / TVBox（T4）',
+        tr(32094, '小雅 / TVBox（T4）', 'Xiaoya / TVBox (T4)'),
         [
-            ('输入订阅网址（支持 Yatse 粘贴）', 'url'),
-            ('选择本机 / U盘 / 共享 JSON 文件', 'file'),
-            ('手机扫码上传配置文件（支持大文件分片）', 'phone'),
-            ('改连原生 WebDAV / AList 或 Emby 媒体服', 'native_handoff'),
+            ('Enter Subscription URL (supports Yatse paste)' if en else '输入订阅网址（支持 Yatse 粘贴）', 'url'),
+            ('Select Local / USB / Shared JSON File' if en else '选择本机 / U盘 / 共享 JSON 文件', 'file'),
+            ('Upload Config via Phone QR (chunked large-file support)' if en else '手机扫码上传配置文件（支持大文件分片）', 'phone'),
+            ('Connect Native WebDAV / AList or Emby Server Instead' if en else '改连原生 WebDAV / AList 或 Emby 媒体服', 'native_handoff'),
         ],
     )
     if not method:
@@ -186,24 +193,32 @@ def add(dialog, vfs, store, previous=None):
     if method == 'phone':
         import xbmc
         xbmc.executebuiltin('RunPlugin(plugin://plugin.video.bobbi/?action=source_import_manage_phone)')
+        if isinstance(_handoff, list):
+            _handoff.append('NAVIGATED')
         return False
     if method == 'native_handoff':
         from . import library_ui, server_ui
         target = _pick(
             dialog,
-            '选择原生连接方式',
-            [('WebDAV / AList 网盘', 'webdav'), ('Emby / Jellyfin 媒体服务器', 'server')],
+            'Select Native Connection Type' if en else '选择原生连接方式',
+            [
+                ('WebDAV / AList Cloud' if en else 'WebDAV / AList 网盘', 'webdav'),
+                ('Emby / Jellyfin Media Server' if en else 'Emby / Jellyfin 媒体服务器', 'server'),
+            ],
         )
         if target == 'webdav':
             src = library_ui._network(dialog, 'webdav')
-            if src is not None and dialog.yesno('添加“' + src.name + '”', src.location + '\n仅保存到本机。'):
+            if src is not None and dialog.yesno(
+                (f'Add "{src.name}"' if en else '添加“' + src.name + '”'),
+                src.location + ('\nSaved locally only.' if en else '\n仅保存到本机。'),
+            ):
                 store.save(src)
                 return True
         elif target == 'server':
             return bool(server_ui.add(dialog, store))
         return False
     if method == 'url':
-        location = dialog.input('输入 T4 配置网址（仅本机保存）')
+        location = dialog.input('Enter T4 Config URL (saved locally only)' if en else '输入 T4 配置网址（仅本机保存）')
         if not location:
             return False
         location = classify_t4_url_input(location)
@@ -216,7 +231,7 @@ def add(dialog, vfs, store, previous=None):
             return False
     else:
         location = ''
-        path = dialog.browse(1, '选择 T4 配置文件', 'files', mask='.json')
+        path = dialog.browse(1, 'Select T4 Config File' if en else '选择 T4 配置文件', 'files', mask='.json')
         if not path:
             return False
         fh = vfs.File(path)
@@ -226,12 +241,20 @@ def add(dialog, vfs, store, previous=None):
             fh.close()
     diag = t4.diagnose_config(raw_bytes, location)
     parsed = t4.preview(raw_bytes, location)
-    summary = diag.get('summary_zh') or (
-        '可用 %d 个 · 不支持的类型 %d 个 · 无效 %d 个' % (len(parsed.sites), parsed.unsupported, parsed.invalid)
-    )
+    if en:
+        summary = diag.get('summary_en') or (
+            'Usable %d · Unsupported type %d · Invalid %d' % (len(parsed.sites), parsed.unsupported, parsed.invalid)
+        )
+    else:
+        summary = diag.get('summary_zh') or (
+            '可用 %d 个 · 不支持的类型 %d 个 · 无效 %d 个' % (len(parsed.sites), parsed.unsupported, parsed.invalid)
+        )
     lives_cnt = (diag.get('counts') or {}).get('lives', 0)
     if not parsed.sites:
-        dialog.ok('未导入 T4 站点', summary + '\n' + MESSAGES['T4_NO_SITES'])
+        dialog.ok(
+            'T4 Sites Not Imported' if en else '未导入 T4 站点',
+            summary + '\n' + (localized_message('T4_NO_SITES') or MESSAGES['T4_NO_SITES']),
+        )
         if lives_cnt > 0:
             export_root = binding.root() / 'exports' if hasattr(binding, 'root') else store.path.parent / 'exports'
             offer_lives_export(dialog, raw_bytes, diag, export_root, operation_fn=operation)
@@ -239,22 +262,39 @@ def add(dialog, vfs, store, previous=None):
     # Show the actual origins (never path/query credentials), including explicitly
     # opt-in third-party site origins declared by a local or remote config.
     origins = sorted({urlsplit(s['api']).scheme + '://' + urlsplit(s['api']).netloc for s in parsed.sites})
-    if not dialog.yesno('确认导入 T4 站点？', summary + '\n允许按需连接：\n' + '\n'.join(origins)):
+    if not dialog.yesno(
+        'Import T4 Sites?' if en else '确认导入 T4 站点？',
+        summary + ('\nAllow on-demand connections to:\n' if en else '\n允许按需连接：\n') + '\n'.join(origins),
+    ):
         return False
     binding.require_current()
     store.save(parsed.source(location, previous), expected_snapshot=expected)
-    dialog.ok('T4 站点已保存', '打开“我的片库”可按站点浏览与搜索。')
+    dialog.ok(
+        'T4 Sites Saved' if en else 'T4 站点已保存',
+        'Open "My Library" to browse and search by site.' if en else '打开“我的片库”可按站点浏览与搜索。',
+    )
     if lives_cnt > 0:
         export_root = binding.root() / 'exports' if hasattr(binding, 'root') else store.path.parent / 'exports'
         offer_lives_export(dialog, raw_bytes, diag, export_root, operation_fn=operation)
     return True
 
 
-def manage(dialog, vfs, store, source):
-    action = _pick(dialog, source.name, [('重新导入配置', 'edit'), ('移除来源', 'remove')])
+def manage(dialog, vfs, store, source, *, _handoff=None):
+    en = is_english()
+    action = _pick(
+        dialog,
+        source.name,
+        [
+            ('Re-import Config' if en else '重新导入配置', 'edit'),
+            ('Remove Source' if en else '移除来源', 'remove'),
+        ],
+    )
     if action == 'edit':
-        return add(dialog, vfs, store, source)
-    if action == 'remove' and dialog.yesno('移除 T4 来源？', '不会修改远端配置或媒体。'):
+        return add(dialog, vfs, store, source, _handoff=_handoff)
+    if action == 'remove' and dialog.yesno(
+        'Remove T4 Source?' if en else '移除 T4 来源？',
+        'Remote config and media are untouched.' if en else '不会修改远端配置或媒体。',
+    ):
         if store.get(source.id) != source:
             raise LibraryError('T4_CHANGED')
         store.remove(source.id)
@@ -338,6 +378,7 @@ def execute_directory(handle, params, store, item):
     from .paths import ProfileBinding
     from .source_streams import local_media_url
 
+    en = is_english()
     binding = ProfileBinding()
     dialog = xbmcgui.Dialog()
     action = params.get('action', 'browse')
@@ -382,10 +423,10 @@ def execute_directory(handle, params, store, item):
             rows = []
             for idx, s in enumerate(sites):
                 rows.append(item(
-                    _clean_label(s['name'], 120, f'站点 {idx + 1}'),
+                    _clean_label(s['name'], 120, f'Site {idx + 1}' if en else f'站点 {idx + 1}'),
                     _route(action='t4_site', source=source.id, rev=generation, site=str(idx)),
                     True,
-                    label2='支持搜索' if s.get('searchable') else '分类浏览',
+                    label2=('Searchable' if s.get('searchable') else 'Categories') if en else ('支持搜索' if s.get('searchable') else '分类浏览'),
                 ))
             require_current()
             xbmcplugin.setPluginCategory(handle, source.name)
@@ -457,8 +498,10 @@ def execute_directory(handle, params, store, item):
                                             u_m = urlsplit(m_url)
                                             cand_origin = f'{u_m.scheme.lower()}://{u_m.netloc.lower()}'
                         if not cand_origin or not dialog.yesno(
-                            '允许连接外部媒体域名？',
-                            f'此片源位于 {cand_origin}，是否允许当前来源按需读取（不会发送站点凭据）？',
+                            'Allow External Media Origin?' if en else '允许连接外部媒体域名？',
+                            (f'This stream is hosted at {cand_origin}. Allow this source to read from it on demand (site credentials are never forwarded)?'
+                             if en else
+                             f'此片源位于 {cand_origin}，是否允许当前来源按需读取（不会发送站点凭据）？'),
                         ):
                             return
                         require_current()
@@ -520,10 +563,10 @@ def execute_directory(handle, params, store, item):
                     home = client.home()
                     if site.get('searchable'):
                         rows.append(item(
-                            '搜索本站',
+                            'Search This Site' if en else '搜索本站',
                             _route(action='t4_search', source=source.id, rev=generation, site=site_idx_str),
                             True,
-                            label2=f"在「{site['name']}」中搜索影视",
+                            label2=(f"Search titles in {site['name']}" if en else f"在「{site['name']}」中搜索影视"),
                         ))
                     cat_tokens = []
                     for cname, cid in _rows(home, 'class', 'type_id', 'type_name'):
@@ -541,7 +584,7 @@ def execute_directory(handle, params, store, item):
                             _clean_label(cname, 120),
                             _route(action='t4_cat', source=source.id, rev=generation, site=site_idx_str, cat=ctok, pg='1'),
                             True,
-                            label2='分类 · 可筛选' if facets else '分类',
+                            label2=('Category · Filterable' if facets else 'Category') if en else ('分类 · 可筛选' if facets else '分类'),
                         ))
                     _render_cards(tstore, _vod_cards(home, 'list'), pinned=tuple(cat_tokens))
 
@@ -552,11 +595,11 @@ def execute_directory(handle, params, store, item):
                         page = _positive_int(params.get('pg', '1'), 10000)
                         term = params.get('q', '').strip()
                         if not term:
-                            term = dialog.input(f"搜索 {site['name']}").strip()
+                            term = dialog.input(f"Search {site['name']}" if en else f"搜索 {site['name']}").strip()
                             if not term:
                                 return
                         data = client.search(term, page)
-                        category_label += f' · 搜索：{term}'
+                        category_label += (f' · Search: {term}' if en else f' · 搜索：{term}')
                         _render_cards(tstore, _vod_cards(data, 'list'))
                         try:
                             last_pg = int(data.get('pagecount', page))
@@ -564,14 +607,14 @@ def execute_directory(handle, params, store, item):
                             last_pg = page
                         if page > 1:
                             rows.append(item(
-                                '上一页',
+                                'Previous Page' if en else '上一页',
                                 _route(action='t4_search', source=source.id, rev=generation, site=site_idx_str, pg=str(page - 1), q=term),
                                 True,
                                 properties={'Bobbi.PrevPage': 'true'},
                             ))
                         if page < min(10000, last_pg):
                             rows.append(item(
-                                '下一页',
+                                'Next Page' if en else '下一页',
                                 _route(action='t4_search', source=source.id, rev=generation, site=site_idx_str, pg=str(page + 1), q=term),
                                 True,
                                 properties={'Bobbi.NextPage': 'true'},
@@ -597,17 +640,18 @@ def execute_directory(handle, params, store, item):
                             content = 'files'
                             pick_mode = params['pick']
                             if pick_mode == 'all':
-                                category_label += ' · 筛选条件'
+                                category_label += (' · Filters' if en else ' · 筛选条件')
                                 if active_filters:
                                     rows.append(item(
-                                        '清除全部筛选',
+                                        'Clear All Filters' if en else '清除全部筛选',
                                         _route(action='t4_cat', source=source.id, rev=generation, site=site_idx_str, cat=params['cat'], pg='1'),
                                         True,
-                                        label2='恢复默认全部结果',
+                                        label2='Restore all results' if en else '恢复默认全部结果',
                                     ))
                                 for f_idx, (fname, fkey, fvals) in enumerate(facets):
                                     cur_v = active_filters.get(fkey, '')
-                                    cur_n = next((n for n, v in fvals if v == cur_v), '全部')
+                                    all_lbl = 'All' if en else '全部'
+                                    cur_n = next((n for n, v in fvals if v == cur_v), all_lbl)
                                     f_route_kw = dict(
                                         action='t4_cat',
                                         source=source.id,
@@ -618,18 +662,20 @@ def execute_directory(handle, params, store, item):
                                     )
                                     if params.get('flt'):
                                         f_route_kw['flt'] = params['flt']
+                                    sep = ': ' if en else '：'
                                     rows.append(item(
-                                        f'{_clean_label(fname, 80, fkey)}：{_clean_label(cur_n, 80, "全部")}',
+                                        f'{_clean_label(fname, 80, fkey)}{sep}{_clean_label(cur_n, 80, all_lbl)}',
                                         _route(**f_route_kw),
                                         True,
-                                        label2='选择筛选值',
+                                        label2='Choose filter value' if en else '选择筛选值',
                                     ))
                             else:
                                 if not re.fullmatch(r'[0-9]{1,2}', pick_mode) or int(pick_mode) >= len(facets):
                                     raise LibraryError('INVALID_VALUE')
                                 fname, fkey, fvals = facets[int(pick_mode)]
-                                category_label += f' · 筛选：{_clean_label(fname, 80, fkey)}'
+                                category_label += (f' · Filter: {_clean_label(fname, 80, fkey)}' if en else f' · 筛选：{_clean_label(fname, 80, fkey)}')
                                 cur_v = active_filters.get(fkey, '')
+                                all_lbl = 'All' if en else '全部'
                                 for opt_n, opt_v in fvals:
                                     next_f = dict(active_filters)
                                     if opt_v == '':
@@ -655,10 +701,10 @@ def execute_directory(handle, params, store, item):
                                         )
                                     selected_mark = '✓ ' if opt_v == cur_v else ''
                                     rows.append(item(
-                                        selected_mark + _clean_label(opt_n, 120, opt_v or '全部'),
+                                        selected_mark + _clean_label(opt_n, 120, opt_v or all_lbl),
                                         _route(**opt_kw),
                                         True,
-                                        label2='当前已选' if opt_v == cur_v else '',
+                                        label2=('Selected' if en else '当前已选') if opt_v == cur_v else '',
                                     ))
                         else:
                             page = _positive_int(params.get('pg', '1'), 10000)
@@ -681,11 +727,16 @@ def execute_directory(handle, params, store, item):
                                 )
                                 if params.get('flt'):
                                     flt_kw['flt'] = params['flt']
+                                flt_title = (
+                                    ('Filters' + (f" ({' · '.join(summary_parts)})" if summary_parts else ''))
+                                    if en else
+                                    ('筛选条件' + (f"（{' · '.join(summary_parts)}）" if summary_parts else ''))
+                                )
                                 rows.append(item(
-                                    '筛选条件' + (f"（{' · '.join(summary_parts)}）" if summary_parts else ''),
+                                    flt_title,
                                     _route(**flt_kw),
                                     True,
-                                    label2='按条件过滤当前分类',
+                                    label2='Filter this category' if en else '按条件过滤当前分类',
                                     properties={'Bobbi.FilterEntry': 'true'},
                                 ))
                             _render_cards(tstore, _vod_cards(data, 'list'), pinned=pinned)
@@ -704,14 +755,14 @@ def execute_directory(handle, params, store, item):
                                 base_pg_kw['flt'] = params['flt']
                             if page > 1:
                                 rows.append(item(
-                                    '上一页',
+                                    'Previous Page' if en else '上一页',
                                     _route(**base_pg_kw, pg=str(page - 1)),
                                     True,
                                     properties={'Bobbi.PrevPage': 'true'},
                                 ))
                             if page < min(10000, last_pg):
                                 rows.append(item(
-                                    '下一页',
+                                    'Next Page' if en else '下一页',
                                     _route(**base_pg_kw, pg=str(page + 1)),
                                     True,
                                     properties={'Bobbi.NextPage': 'true'},
@@ -732,7 +783,6 @@ def execute_directory(handle, params, store, item):
                     category_label = vtitle
 
                     def _append_episode_batch(batch_specs):
-                        # batch_specs: list of (line_name, ep_id, full_title, disp, label2_text, ep_num)
                         ptoks = tstore.put_play_batch(
                             source.id,
                             generation,
@@ -767,9 +817,9 @@ def execute_directory(handle, params, store, item):
                         content = 'episodes'
                         batch_specs = []
                         for line_name, episodes in lines:
-                            clean_line = _clean_label(line_name, 80, '线路')
+                            clean_line = _clean_label(line_name, 80, 'Line' if en else '线路')
                             for idx, (ep_label, ep_id) in enumerate(episodes, start=1):
-                                clean_ep = _clean_label(ep_label, 160, f'第 {idx} 集')
+                                clean_ep = _clean_label(ep_label, 160, f'Episode {idx}' if en else f'第 {idx} 集')
                                 disp = f'{clean_line} · {clean_ep}' if multi_line else clean_ep
                                 batch_specs.append((
                                     line_name,
@@ -785,9 +835,9 @@ def execute_directory(handle, params, store, item):
                             raise LibraryError('INVALID_VALUE')
                         content = 'files'
                         for l_idx, (line_name, episodes) in enumerate(lines):
-                            clean_line = _clean_label(line_name, 80, f'线路 {l_idx + 1}')
+                            clean_line = _clean_label(line_name, 80, f'Line {l_idx + 1}' if en else f'线路 {l_idx + 1}')
                             rows.append(item(
-                                f'{clean_line}（共 {len(episodes)} 集）',
+                                f'{clean_line} ({len(episodes)} eps)' if en else f'{clean_line}（共 {len(episodes)} 集）',
                                 _route(
                                     action='t4_detail',
                                     source=source.id,
@@ -798,7 +848,7 @@ def execute_directory(handle, params, store, item):
                                     pg='1',
                                 ),
                                 True,
-                                label2=f'分页选集（每页 {DETAIL_PAGE_SIZE} 集）',
+                                label2=f'Paginated ({DETAIL_PAGE_SIZE} eps/page)' if en else f'分页选集（每页 {DETAIL_PAGE_SIZE} 集）',
                             ))
                     else:
                         content = 'episodes'
@@ -810,17 +860,18 @@ def execute_directory(handle, params, store, item):
                             l_idx = 0
                         page = _positive_int(params.get('pg', '1'), 1000)
                         line_name, episodes = lines[l_idx]
-                        clean_line = _clean_label(line_name, 80, '线路')
+                        clean_line = _clean_label(line_name, 80, 'Line' if en else '线路')
                         start = (page - 1) * DETAIL_PAGE_SIZE
                         if start >= len(episodes) and episodes:
                             raise LibraryError('INVALID_VALUE')
                         end = min(page * DETAIL_PAGE_SIZE, len(episodes))
                         total_pages = max(1, (len(episodes) + DETAIL_PAGE_SIZE - 1) // DETAIL_PAGE_SIZE)
-                        category_label = f'{vtitle} · {clean_line}（第 {page}/{total_pages} 页）'
+                        category_label = (f'{vtitle} · {clean_line} (Page {page}/{total_pages})'
+                                          if en else f'{vtitle} · {clean_line}（第 {page}/{total_pages} 页）')
                         batch_specs = []
                         for idx in range(start + 1, end + 1):
                             ep_label, ep_id = episodes[idx - 1]
-                            clean_ep = _clean_label(ep_label, 160, f'第 {idx} 集')
+                            clean_ep = _clean_label(ep_label, 160, f'Episode {idx}' if en else f'第 {idx} 集')
                             disp = f'{clean_line} · {clean_ep}' if multi_line else clean_ep
                             batch_specs.append((
                                 line_name,
@@ -842,14 +893,14 @@ def execute_directory(handle, params, store, item):
                             nav_base['ln'] = str(l_idx)
                         if page > 1:
                             rows.append(item(
-                                '上一页',
+                                'Previous Page' if en else '上一页',
                                 _route(**nav_base, pg=str(page - 1)),
                                 True,
                                 properties={'Bobbi.PrevPage': 'true'},
                             ))
                         if end < len(episodes):
                             rows.append(item(
-                                '下一页',
+                                'Next Page' if en else '下一页',
                                 _route(**nav_base, pg=str(page + 1)),
                                 True,
                                 properties={'Bobbi.NextPage': 'true'},
@@ -863,10 +914,10 @@ def execute_directory(handle, params, store, item):
             content = 'files'
             rows = [
                 item(
-                    '页面令牌已过期 · 返回站点首页刷新',
+                    'Page Token Expired · Return to Site Home to Refresh' if en else '页面令牌已过期 · 返回站点首页刷新',
                     _route(action='t4_site', source=source.id, rev=generation, site=site_idx_str),
                     True,
-                    label2='重新获取最新目录令牌',
+                    label2='Fetch fresh directory tokens' if en else '重新获取最新目录令牌',
                     properties={'Bobbi.ExpiredRefresh': 'true'},
                 )
             ]

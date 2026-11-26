@@ -11,6 +11,29 @@ from .pan_accounts import NAMES, ALL_NAMES, SERVER_PROVIDERS, PanError, scope
 from .runtime import call
 from .pan_providers import descriptor
 from . import cd2_mounts
+from .i18n import is_english, tr
+
+_EN_PROVIDER_NAMES = {
+    '115': '115',
+    'quark': 'Quark Drive',
+    'uc': 'UC Drive',
+    'aliyun': 'Aliyun Drive',
+    '123': '123 Pan',
+    '189': 'Tianyi Cloud',
+    '139': 'China Mobile Cloud',
+    'baidu': 'Baidu Netdisk',
+    'xunlei': 'Xunlei Drive',
+    'guangya': 'Guangya Drive',
+    'plex': 'Plex',
+    'jellyfin': 'Jellyfin',
+    'emby': 'Emby',
+}
+
+
+def provider_display_name(provider):
+    if is_english():
+        return _EN_PROVIDER_NAMES.get(provider, ALL_NAMES.get(provider, str(provider)))
+    return ALL_NAMES.get(provider, str(provider))
 
 
 def _navigation_path(provider):
@@ -73,6 +96,43 @@ def _save_navigation(expected, stack):
 
 def _failure(error):
     code = str(error) if isinstance(error, PanError) else ''
+    if is_english():
+        return {
+            'PAN_EMBY_DIRECT_AUTH_REQUIRED': 'This media requires private credentials or has no direct same-origin URL for Kodi. No transcoding or public sharing occurred.',
+            'PAN_SERVER_UNAUTHORIZED': 'Server rejected sign-in. Check your username, password, or token.',
+            'PAN_SERVER_FORBIDDEN': 'This user does not have permission to access the item.',
+            'PAN_SERVER_NOT_FOUND': 'Server endpoint not found. Check the URL and path prefix.',
+            'PAN_SERVER_RESUME_UNAVAILABLE': 'Server watch history is for reference only; choose Play from Start explicitly.',
+            'PAN_MULTIPART_RESUME_UNAVAILABLE': 'Multi-part media does not support chaining or auto-resume yet; select parts individually.',
+            'PAN_MEDIA_UNSUPPORTED': 'Only finite direct files are supported; live TV, multi-part chaining, transcoding, and HLS are not enabled.',
+            'PAN_ACCOUNT_CHANGED': 'Account changed; please reopen this cloud drive.',
+            'PAN_CREDENTIALS_CHANGED': 'Account changed; please reopen this cloud drive.',
+            'PAN_LOGIN_REQUIRED': 'Sign-in expired; scan the QR code again in Cloud Management.',
+            'PAN_QR_EXPIRED': 'QR code expired; please scan again.',
+            'PAN_ATTEMPT_EXPIRED': 'QR code expired; please scan again.',
+            'PAN_QR_FINISHED': 'This QR session has ended; reopen sign-in to try again.',
+            'PAN_LOGIN_FAILED': 'Sign-in did not complete; waiting stopped. Please try again later.',
+            'PAN_QR_EXCHANGE_FAILED': 'Cloud provider did not complete QR authorization; please scan again.',
+            'PAN_CREDENTIALS_INVALID': 'Incomplete sign-in data returned; existing saved account was kept.',
+            'PAN_ACCOUNT_ID_INVALID': 'Incomplete sign-in data returned; existing saved account was kept.',
+            'PAN_API_REJECTED': 'Cloud provider rejected the request; please try again later.',
+            'PAN_HTTP_REJECTED': 'Cloud service is temporarily rejecting connections; please try again later.',
+            'PAN_REPLY_INVALID': 'Cloud response could not be verified safely; operation stopped.',
+            'PAN_CHALLENGE_REQUIRED': 'Additional verification is required. Complete verification in the official app first, then scan again.',
+            'PAN_CRYPTO_UNAVAILABLE': 'Required sign-in component is missing; repair via Cinema Setup and retry.',
+            'PAN_ROUTE_REJECTED': 'This account region is not adapted yet; credentials were not sent to an unknown host.',
+            'PAN_REDIRECT_REJECTED': 'Cloud requested an unverified redirect; request stopped and saved sign-in is kept.',
+            'PAN_DOWNLOAD_ORIGIN_REJECTED': 'Download origin failed verification; playback stopped and saved sign-in is kept.',
+            'PAN_LOGIN_BUSY': 'Another QR sign-in is already active; close the existing QR window first.',
+            'PAN_FILE_CHANGED': 'File changed; refresh the folder and select again.',
+            'PAN_PLAY_EXPIRED': 'Selection expired; return to the folder and select the file again.',
+            'PAN_SELECTION_CANCELLED': 'Selection expired; return to the folder and select the file again.',
+            'PAN_PAGE_EXPIRED': 'Folder pagination expired; refresh the folder and try again.',
+            'PAN_INCOMPLETE_PAGE': 'Cloud returned an incomplete page; refresh the folder and try again.',
+            'PAN_ITEM_TOO_LARGE': 'Item metadata exceeded local safety limits and cannot be displayed; file was not deleted.',
+            'PAN_RATE_LIMITED': 'Cloud service rate-limited the request; retry this folder shortly.',
+            'PAN_BUDGET_EXHAUSTED': 'Read time or request budget reached; retry this position.',
+        }.get(code, 'Connection or API temporarily unavailable; saved sign-in is kept.')
     if code == 'PAN_EMBY_DIRECT_AUTH_REQUIRED':
         return '此原片需要私密凭据，或没有可直接交给 Kodi 的同源原片地址。未转码、未公开分享。'
     if code in ('PAN_SERVER_UNAUTHORIZED', 'PAN_SERVER_FORBIDDEN', 'PAN_SERVER_NOT_FOUND'):
@@ -207,44 +267,68 @@ def login(row, dialog):
     from .account_dialog import failure_details, login_dialog, render_qr
     from .login_flow import LoginFlowError, refresh_account_view
     from .environment import private_path
+    en = is_english()
     provider = row['provider']
+    disp_name = provider_display_name(provider)
     expected = scope(row['account'], provider)
     attempt = uuid4().hex
     body = dict(provider=provider, attempt=attempt)
     committed, started, runner_ref = False, False, [None]
     adapter = _NativeLogin(body, expected)
     root = private_path(xbmcvfs.translatePath, 'pan-accounts-v1.json').parent
-    instruction = ('用微信或「123 云盘」App 扫码' if provider == '123'
-                   else '用「' + NAMES[provider] + '」App 扫码')
+    if en:
+        instruction = ('Scan with WeChat or the 123 Pan app' if provider == '123'
+                       else f'Scan with the {disp_name} app')
+        win_title = f'Sign in to {disp_name}'
+    else:
+        instruction = ('用微信或「123 云盘」App 扫码' if provider == '123'
+                       else '用「' + NAMES[provider] + '」App 扫码')
+        win_title = '登录 ' + NAMES[provider]
     try:
         try:
-            with login_dialog(root, 'bobbi-pan-qr-', '登录 ' + NAMES[provider], instruction) as (window, runner, image):
+            with login_dialog(root, 'bobbi-pan-qr-', win_title, instruction) as (window, runner, image):
                 # Mark before IPC. A lost begin reply still has a known cancel ID.
                 started = True
                 runner_ref[0] = runner
                 committed = bool(runner.run(adapter, lambda state: render_qr(window, image, state)))
             if committed:
                 refresh_account_view()
-                dialog.ok('已保存 ' + NAMES[provider] + ' 登录',
-                          ('登录信息已保存，可打开“我的文件”。目录和播放会在使用时分别验证。'
-                           if 'list_files' in row.get('capabilities', []) else
-                           '目录访问仍需接通该网盘的验证流程。') +
-                          ('' if 'personal_play' in row.get('capabilities', []) else
-                           '原文件播放尚未接入当前选源流程，不能据此判断播放可用。'))
+                if en:
+                    part1 = ('Sign-in saved; you can open "My Files". Folder access and playback are verified on use.'
+                             if 'list_files' in row.get('capabilities', []) else
+                             'Folder browsing still requires provider verification.')
+                    part2 = ('' if 'personal_play' in row.get('capabilities', []) else
+                             ' Direct file playback is not wired into source selection yet.')
+                    dialog.ok(f'Saved {disp_name} Sign-In', part1 + part2)
+                else:
+                    dialog.ok('已保存 ' + NAMES[provider] + ' 登录',
+                              ('登录信息已保存，可打开“我的文件”。目录和播放会在使用时分别验证。'
+                               if 'list_files' in row.get('capabilities', []) else
+                               '目录访问仍需接通该网盘的验证流程。') +
+                              ('' if 'personal_play' in row.get('capabilities', []) else
+                               '原文件播放尚未接入当前选源流程，不能据此判断播放可用。'))
                 return True
         except Exception as error:
             # A UI boundary, not an error dump: unknown failures get only the
             # fixed fallback, never exception messages or upstream bodies.
-            message = ('二维码已失效，请重新扫码。' if isinstance(error, LoginFlowError) and error.code == 'EXPIRED'
+            message = (('QR code expired; please scan again.' if en else '二维码已失效，请重新扫码。')
+                       if isinstance(error, LoginFlowError) and error.code == 'EXPIRED'
                        else _failure(error))
             detail = '\n' + failure_details(runner_ref[0], error, provider) if runner_ref[0] is not None else ''
-            dialog.ok('未确认登录结果', message + detail + '\n请在网盘管理确认当前状态。')
+            dialog.ok(
+                tr(None, '未确认登录结果', 'Sign-In Outcome Unconfirmed'),
+                message + detail + ('\nCheck current status in Cloud Management.' if en else '\n请在网盘管理确认当前状态。'),
+            )
     finally:
         if started and not committed:
             reply = _cancel_async('pan_login_cancel', body)
             if reply is not None and reply.get('state') == 'committed':
                 refresh_account_view()
-                dialog.ok('登录已保存', '取消前后台已经完成保存，请在网盘管理确认当前账号。')
+                dialog.ok(
+                    tr(None, '登录已保存', 'Sign-In Saved'),
+                    tr(None, '取消前后台已经完成保存，请在网盘管理确认当前账号。',
+                       'Sign-in finished saving right before cancellation; verify the active account in Cloud Management.'),
+                )
     return False
 
 
@@ -272,7 +356,10 @@ def _read_directory(body, title, monitor):
                 raise PanError('PAN_NETWORK_ERROR')
             if elapsed >= .15 and progress is None:
                 progress = xbmcgui.DialogProgress()
-                progress.create('正在读取 · ' + title, '可按返回取消，不影响已保存的登录。')
+                progress.create(
+                    ('Reading · ' if is_english() else '正在读取 · ') + title,
+                    tr(None, '可按返回取消，不影响已保存的登录。', 'Press Back to cancel; saved sign-in is unaffected.'),
+                )
         if monitor.abortRequested() or progress is not None and progress.iscanceled():
             return None
         if 'error' in job:
@@ -295,8 +382,9 @@ def browse(row, dialog):
                     positions={1: dict(page=1, cursor='')}, refresh=False, focus=0)
     explicit = 'entry_parent' in row
     stack = ([frame(row['entry_parent'], row['entry_title'])] if explicit else
-             _load_navigation(expected) or [frame(row.get('root', layout.root), ALL_NAMES[row['provider']])])
+             _load_navigation(expected) or [frame(row.get('root', layout.root), provider_display_name(row['provider']))])
     while stack and not monitor.abortRequested():
+        en = is_english()
         current = stack[-1]
         parent, title, page = current['parent'], current['title'], current['page']
         try:
@@ -313,24 +401,30 @@ def browse(row, dialog):
                 return  # User cancelled; an in-flight read has no UI authority.
             current['refresh'] = False
             items = result['items']
-            labels = [('文件夹 · ' if item['directory'] else '') + item['name'] for item in items]
+            folder_prefix = 'Folder · ' if en else '文件夹 · '
+            labels = [(folder_prefix if item['directory'] else '') + item['name'] for item in items]
             actions = []
             if result['has_more']:
-                labels.append('下一页')
+                labels.append('Next Page' if en else '下一页')
                 actions.append('next')
             if page > 1:
-                labels.append('上一页')
+                labels.append('Previous Page' if en else '上一页')
                 actions.append('previous')
-            labels.append('刷新当前目录')
+            labels.append('Refresh Folder' if en else '刷新当前目录')
             actions.append('refresh')
             if not parent.startswith('view:') or row['provider'] != 'emby':
-                labels.append('将此目录加入片库')
+                labels.append('Add Folder to Library' if en else '将此目录加入片库')
                 actions.append('catalog')
             excluded = result.get('excluded_versions', {})
-            details = ''.join(' · %d 个%s' % (excluded[key], reason) for key, reason in
-                              (('unsupported', '版本暂不支持'), ('unverified', '版本资料不完整')) if key in excluded)
-            choice = dialog.select(title + (' · 目录为空' if not items else ' · 第 %d 页' % page) + details,
-                                   labels, preselect=current['focus'])
+            if en:
+                details = ''.join(' · %d %s' % (excluded[key], reason) for key, reason in
+                                  (('unsupported', 'unsupported versions'), ('unverified', 'incomplete version records')) if key in excluded)
+                page_suffix = ' · Empty folder' if not items else ' · Page %d' % page
+            else:
+                details = ''.join(' · %d 个%s' % (excluded[key], reason) for key, reason in
+                                  (('unsupported', '版本暂不支持'), ('unverified', '版本资料不完整')) if key in excluded)
+                page_suffix = ' · 目录为空' if not items else ' · 第 %d 页' % page
+            choice = dialog.select(title + page_suffix + details, labels, preselect=current['focus'])
             if choice >= 0:
                 current['focus'] = choice
             if not explicit:
@@ -347,7 +441,10 @@ def browse(row, dialog):
                     from .pan_stream import EXTENSIONS
                     if ('personal_play' in row.get('capabilities', [])
                             and item['name'].rsplit('.', 1)[-1].lower() in EXTENSIONS):
-                        action = dialog.select(item['name'], ['播放原文件', '查看文件信息'])
+                        action = dialog.select(
+                            item['name'],
+                            ['Play Original File', 'View File Info'] if en else ['播放原文件', '查看文件信息'],
+                        )
                         if action == 0:
                             result = call('pan_prepare_play', dict(expected=expected, selected=item))
                             ticket = result.get('ticket')
@@ -357,10 +454,16 @@ def browse(row, dialog):
                             return True
                         if action != 1:
                             continue
-                    detail = ('手选原文件播放，不自动匹配作品、转存或切换其他源。'
-                              if 'personal_play' in row.get('capabilities', []) else
-                              '当前仅开放浏览，播放接入尚未完成。')
-                    dialog.ok('文件信息', item['name'] + '\n大小 %d 字节\n' % item['size'] + detail)
+                    if en:
+                        detail = ('Plays the selected original file directly without auto-matching, transferring, or switching sources.'
+                                  if 'personal_play' in row.get('capabilities', []) else
+                                  'Browsing only; direct playback is not wired yet.')
+                        dialog.ok('File Info', item['name'] + '\nSize %d bytes\n' % item['size'] + detail)
+                    else:
+                        detail = ('手选原文件播放，不自动匹配作品、转存或切换其他源。'
+                                  if 'personal_play' in row.get('capabilities', []) else
+                                  '当前仅开放浏览，播放接入尚未完成。')
+                        dialog.ok('文件信息', item['name'] + '\n大小 %d 字节\n' % item['size'] + detail)
             else:
                 action = actions[choice - len(items)]
                 if action == 'next':
@@ -384,32 +487,42 @@ def browse(row, dialog):
                 return
             code = str(error) if isinstance(error, PanError) else ''
             if code in ('PAN_PAGE_EXPIRED', 'PAN_INCOMPLETE_PAGE'):
-                if dialog.select('目录分页已失效 · ' + title, ['刷新目录', '返回网盘管理']) == 0:
+                if dialog.select(
+                    ('Folder Pagination Expired · ' if en else '目录分页已失效 · ') + title,
+                    ['Refresh Folder', 'Back to Cloud Management'] if en else ['刷新目录', '返回网盘管理'],
+                ) == 0:
                     current.update(page=1, positions={1: dict(page=1, cursor='')}, refresh=True, focus=0)
                     continue
                 return
             if isinstance(error, OSError) or code in ('PAN_NETWORK_ERROR', 'PAN_OPERATION_BUSY', 'PAN_RATE_LIMITED', 'PAN_BUDGET_EXHAUSTED'):
-                choice = dialog.select('连接暂不可用 · ' + title,
-                    ['重试当前位置', '返回上级目录', '返回网盘管理'])
+                choice = dialog.select(
+                    ('Connection Temporarily Unavailable · ' if en else '连接暂不可用 · ') + title,
+                    (['Retry Current Position', 'Parent Folder', 'Back to Cloud Management']
+                     if en else ['重试当前位置', '返回上级目录', '返回网盘管理']),
+                )
                 if choice == 0:
                     continue  # Preserve folder, page, cursor and focused item.
                 if choice == 1:
                     stack.pop()
                     continue
                 return
-            dialog.ok('目录暂不可用', _failure(error))
+            dialog.ok(tr(None, '目录暂不可用', 'Folder Temporarily Unavailable'), _failure(error))
             return
 
 
 def choose_files(dialog):
     """Direct personal files, separate from account setup."""
+    en = is_english()
     try:
         mounted = bool(cd2_mounts.discover())
         rows = [r for r in _status() if 'list_files' in r['capabilities'] and r['account']['authenticated']]
         if mounted:
-            labels = ['使用已有 CD2 网盘 · 无需扫码'] + [NAMES[r['provider']] + ' · 原生登录' for r in rows]
-            labels.append('原生网盘登录 / 管理')
-            choice = dialog.select('我的网盘文件', labels)
+            labels = (
+                (['Use Existing CD2 Mount · No QR Needed'] + [provider_display_name(r['provider']) + ' · Native Sign-In' for r in rows] + ['Native Cloud Sign-In / Manage'])
+                if en else
+                (['使用已有 CD2 网盘 · 无需扫码'] + [NAMES[r['provider']] + ' · 原生登录' for r in rows] + ['原生网盘登录 / 管理'])
+            )
+            choice = dialog.select(tr(32088, '我的网盘文件', 'My Cloud Files'), labels)
             if not 0 <= choice < len(labels):
                 return
             if choice == 0:
@@ -420,15 +533,20 @@ def choose_files(dialog):
             return browse(rows[choice - 1], dialog)
         if not rows:
             return manage(dialog)
-        choice = 0 if len(rows) == 1 else dialog.select('我的网盘文件', [NAMES[r['provider']] for r in rows])
+        choice = 0 if len(rows) == 1 else dialog.select(
+            tr(32088, '我的网盘文件', 'My Cloud Files'),
+            [provider_display_name(r['provider']) for r in rows],
+        )
         if 0 <= choice < len(rows):
             return browse(rows[choice], dialog)
     except (ValueError, OSError, RuntimeError) as error:
-        dialog.ok('网盘暂不可用', _failure(error))
+        dialog.ok(tr(None, '网盘暂不可用', 'Cloud Drive Unavailable'), _failure(error))
         if cd2_mounts.discover():
             from .library_ui import open_existing_cd2
-            if dialog.select('原生连接不可用，已有挂载不受影响',
-                    ['使用已有 CD2 网盘 · 无需扫码', '返回']) == 0:
+            if dialog.select(
+                tr(None, '原生连接不可用，已有挂载不受影响', 'Native Cloud Unavailable; Existing Mounts Unaffected'),
+                (['Use Existing CD2 Mount · No QR Needed', 'Back'] if en else ['使用已有 CD2 网盘 · 无需扫码', '返回']),
+            ) == 0:
                 return open_existing_cd2(dialog)
 
 
@@ -436,24 +554,45 @@ def manage(dialog):
     import xbmc
     monitor = xbmc.Monitor()
     while not monitor.abortRequested():
+        en = is_english()
         mounted = bool(cd2_mounts.discover())
         try:
             all_rows = _status()
         except (ValueError, OSError, RuntimeError, KeyError, TypeError):
-            dialog.ok('原生网盘后台暂不可用', '原有 115 和 CD2 入口保持不变，请稍后再试。')
+            dialog.ok(
+                tr(None, '原生网盘后台暂不可用', 'Native Cloud Service Unavailable'),
+                tr(None, '原有 115 和 CD2 入口保持不变，请稍后再试。',
+                   'Existing 115 and CD2 entries remain available; please try again later.'),
+            )
             if mounted:
                 from .library_ui import open_existing_cd2
-                if dialog.select('已有挂载不受原生登录影响',
-                        ['使用已有 CD2 网盘 · 无需扫码', '返回']) == 0:
+                if dialog.select(
+                    tr(None, '已有挂载不受原生登录影响', 'Existing Mounts Unaffected by Native Sign-In'),
+                    (['Use Existing CD2 Mount · No QR Needed', 'Back'] if en else ['使用已有 CD2 网盘 · 无需扫码', '返回']),
+                ) == 0:
                     return open_existing_cd2(dialog)
             return
         rows = [row for row in all_rows if row['capabilities']]
-        labels = [NAMES[row['provider']] + ' · ' + ('原生登录已保存' if row['account']['authenticated'] else '原生未登录')
-                  + (' · 私盘实验接入，待实机验证' if row['provider'] == '115' else ' · 待实机验证') for row in rows]
-        labels.append('全部 10 类网盘的接入状态')
-        if mounted:
-            labels.append('使用已有 CD2 网盘 · 无需扫码')
-        choice = dialog.select('原生网盘账号', labels)
+        if en:
+            labels = [
+                provider_display_name(row['provider']) + ' · '
+                + ('Native sign-in saved' if row['account']['authenticated'] else 'Not signed in')
+                + (' · Personal drive experimental' if row['provider'] == '115' else ' · Experimental')
+                for row in rows
+            ]
+            labels.append('Support Status Across All 10 Cloud Providers')
+            if mounted:
+                labels.append('Use Existing CD2 Mount · No QR Needed')
+        else:
+            labels = [
+                NAMES[row['provider']] + ' · ' + ('原生登录已保存' if row['account']['authenticated'] else '原生未登录')
+                + (' · 私盘实验接入，待实机验证' if row['provider'] == '115' else ' · 待实机验证')
+                for row in rows
+            ]
+            labels.append('全部 10 类网盘的接入状态')
+            if mounted:
+                labels.append('使用已有 CD2 网盘 · 无需扫码')
+        choice = dialog.select(tr(32087, '原生网盘账号', 'Native Cloud Accounts'), labels)
         if choice < 0 or choice >= len(labels):
             return
         if mounted and choice == len(rows) + 1:
@@ -462,23 +601,46 @@ def manage(dialog):
                 return True
             continue
         if choice == len(rows):
-            dialog.textviewer('接入状态', '\n'.join(NAMES[r['provider']] + ' · ' +
-                ('原有扫码与分享播放保留；私盘目录、作品索引与原文件播放实验接入，待实机验证' if r['provider'] == '115' else
-                 '扫码、个人目录和手选原文件播放已接线，待实测；影视分享尚未接通' if 'personal_play' in r['capabilities'] else
-                 '扫码与目录浏览已接入，待实测；播放尚未接通' if 'list_files' in r['capabilities'] else
-                 '扫码已接入，待实测；目录验证与播放尚未接通' if 'qr_login' in r['capabilities'] else
-                 '尚未实现') for r in all_rows) +
-                '\n\n已保存登录不等于持续有效。未接入的网盘不会显示可登录或可播放按钮。'
-                '\n原生登录与 CD2 / WebDAV 挂载相互独立。已有挂载可直接浏览和播放，无需在这里再次扫码；挂载存在不代表账号已验证或文件可读。'
-                '\n不会自动转存或删除网盘文件。CD2 / WebDAV 挂载不计作原生支持。')
+            if en:
+                dialog.textviewer(
+                    'Support Status',
+                    '\n'.join(
+                        provider_display_name(r['provider']) + ' · ' + (
+                            'Share QR & playback active; personal folders, indexing, and original playback experimental'
+                            if r['provider'] == '115' else
+                            'QR, folders, and manual original playback wired (experimental); share links not wired'
+                            if 'personal_play' in r['capabilities'] else
+                            'QR & folder browsing wired (experimental); playback not wired yet'
+                            if 'list_files' in r['capabilities'] else
+                            'QR wired (experimental); folder verification and playback not wired yet'
+                            if 'qr_login' in r['capabilities'] else
+                            'Not implemented yet'
+                        )
+                        for r in all_rows
+                    )
+                    + '\n\nSaved sign-in does not guarantee ongoing validity. Unimplemented drives never expose sign-in or play buttons.'
+                    + '\nNative sign-in is independent from CD2 / WebDAV mounts. Existing mounts can be browsed without scanning a QR code here.'
+                    + '\nNever transfers or deletes cloud files automatically.',
+                )
+            else:
+                dialog.textviewer('接入状态', '\n'.join(NAMES[r['provider']] + ' · ' +
+                    ('原有扫码与分享播放保留；私盘目录、作品索引与原文件播放实验接入，待实机验证' if r['provider'] == '115' else
+                     '扫码、个人目录和手选原文件播放已接线，待实测；影视分享尚未接通' if 'personal_play' in r['capabilities'] else
+                     '扫码与目录浏览已接入，待实测；播放尚未接通' if 'list_files' in r['capabilities'] else
+                     '扫码已接入，待实测；目录验证与播放尚未接通' if 'qr_login' in r['capabilities'] else
+                     '尚未实现') for r in all_rows) +
+                    '\n\n已保存登录不等于持续有效。未接入的网盘不会显示可登录或可播放按钮。'
+                    '\n原生登录与 CD2 / WebDAV 挂载相互独立。已有挂载可直接浏览和播放，无需在这里再次扫码；挂载存在不代表账号已验证或文件可读。'
+                    '\n不会自动转存或删除网盘文件。CD2 / WebDAV 挂载不计作原生支持。')
             continue
         row = rows[choice]
-        actions = [('login', '扫码登录 / 切换账号')]
+        disp_name = provider_display_name(row['provider'])
+        actions = [('login', 'QR Sign-In / Switch Account' if en else '扫码登录 / 切换账号')]
         if row['account']['authenticated']:
             if 'list_files' in row['capabilities']:
-                actions.append(('browse', '浏览我的文件'))
-            actions.append(('logout', '退出此网盘'))
-        action = dialog.select(NAMES[row['provider']], [label for _, label in actions])
+                actions.append(('browse', 'Browse My Files' if en else '浏览我的文件'))
+            actions.append(('logout', 'Sign Out of This Cloud Drive' if en else '退出此网盘'))
+        action = dialog.select(disp_name, [label for _, label in actions])
         if not 0 <= action < len(actions):
             continue
         selected = actions[action][0]
@@ -491,9 +653,15 @@ def manage(dialog):
         elif selected == 'browse':
             if browse(row, dialog):
                 return True
-        elif dialog.yesno('退出 ' + NAMES[row['provider']] + '？',
-                          '仅移除此网盘在本机保存的登录，取消待登录任务；其他网盘和云端文件保留。'):
+        elif dialog.yesno(
+            (f'Sign Out of {disp_name}?' if en else '退出 ' + NAMES[row['provider']] + '？'),
+            tr(None, '仅移除此网盘在本机保存的登录，取消待登录任务；其他网盘和云端文件保留。',
+               'Removes only the saved local sign-in for this drive and cancels pending QR sessions; other drives and cloud files are kept.'),
+        ):
             try:
                 call('pan_logout', {'expected': row['account']})
             except (ValueError, OSError, RuntimeError):
-                dialog.ok('未确认退出结果', '请重新打开网盘管理查看状态。')
+                dialog.ok(
+                    tr(None, '未确认退出结果', 'Sign-Out Outcome Unconfirmed'),
+                    tr(None, '请重新打开网盘管理查看状态。', 'Reopen Cloud Management to check current status.'),
+                )

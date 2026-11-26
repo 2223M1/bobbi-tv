@@ -2696,3 +2696,238 @@ def test_u11_import_input_guards_upload_timeouts_orphan_sweep_and_handoff_lifecy
     assert mgr4.committed_import is not None
     profile_current[0] = False
     assert mgr4.committed_import is None
+
+
+def test_user_sources_persistence_jackett_subindexers_custom_torznab_and_hub(tmp_path, monkeypatch):
+    """Task 5 contract verification:
+    - Absent user_sources.json returns clean empty defaults with zero disk writes and unchanged cache scope.
+    - Atomic save/load, default source toggle/restore, Jackett sub-indexer discovery/filtering (including all-disabled graceful empty SearchResults),
+      custom Torznab CRUD & bounded RSS search, catalog_providers disabled_providers, and ZH/EN open_unified_sources_hub flows.
+    """
+    import importlib
+    import types
+
+    _setup_plugin_test_env(monkeypatch, tmp_path=tmp_path)
+    user_sources = importlib.import_module("lib.utils.user_sources")
+    catalog_providers = importlib.import_module("lib.clients.catalog_providers")
+    jackett_mod = importlib.import_module("lib.clients.jackett")
+    search_mod = importlib.import_module("lib.search")
+    hub_mod = importlib.import_module("lib.gui.source_manager_dialog")
+
+    prof = tmp_path / "user_sources_profile"
+
+    # 1. Absent file parity
+    assert user_sources.load_user_sources(prof) == {
+        "schema": 1,
+        "removed_defaults": [],
+        "disabled_jackett_indexers": [],
+        "custom_torznab_sources": [],
+    }
+    assert not prof.exists()
+    assert user_sources.user_sources_digest(prof) == ""
+
+    fake_cache = types.SimpleNamespace(get=lambda k: None)
+    scope_before = search_mod._build_search_cache_scope("", fake_cache, lambda k, d=None: False, profile_root=prof)
+
+    # 2. Toggle default sources + cache scope SHA256 invalidation + restore_all_defaults
+    removed, doc = user_sources.toggle_default_source("qqdocs", profile_root=prof)
+    assert removed is True and doc["removed_defaults"] == ["qqdocs"]
+    assert (prof / "user_sources.json").is_file()
+    scope_after_remove = search_mod._build_search_cache_scope("", fake_cache, lambda k, d=None: False, profile_root=prof)
+    assert scope_after_remove != scope_before
+
+    # catalog_providers respects disabled_providers=('qqdocs',) while preserving default ()
+    submitted_sites = []
+    fake_mgr = types.SimpleNamespace(
+        deadline=999999.0,
+        cancelled=lambda: False,
+        submit_task=lambda site, key, fn, *a, **kw: submitted_sites.append((site, key)),
+    )
+    fake_ctx = types.SimpleNamespace(binding=types.SimpleNamespace(is_current=lambda: True), source=None)
+    catalog_providers.submit_catalogs(fake_mgr, {"tmdb_id": "1"}, "movies", 1, 1, 2024, [], None, context=fake_ctx)
+    assert any(key == "qqdocs" for _, key in submitted_sites)
+    submitted_sites.clear()
+    catalog_providers.submit_catalogs(
+        fake_mgr,
+        {"tmdb_id": "1"},
+        "movies",
+        1,
+        1,
+        2024,
+        [],
+        None,
+        context=fake_ctx,
+        disabled_providers=("qqdocs",),
+    )
+    assert submitted_sites == []
+
+    restored = user_sources.restore_all_defaults(profile_root=prof)
+    assert restored["removed_defaults"] == []
+
+    # 3. Jackett sub-indexer discovery + per-indexer disable + all-disabled empty SearchResults
+    indexers_xml = (
+        b'<?xml version="1.0" encoding="UTF-8"?>'
+        b'<indexers>'
+        b'<indexer id="nyaasi" configured="true"><title>Nyaa.si</title><caps><searching><search available="yes" supportedParams="q"/></searching></caps></indexer>'
+        b'<indexer id="dmhy" configured="true"><title>DMHY</title><caps><searching><search available="yes" supportedParams="q"/></searching></caps></indexer>'
+        b'<indexer id="unconf" configured="false"><title>Ignored</title></indexer>'
+        b'</indexers>'
+    )
+    rss_empty = b'<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>ok</title></channel></rss>'
+    seen_urls = []
+
+    class _FakeResp:
+        def __init__(self, content, status_code=200, url=""):
+            self.content = content
+            self.status_code = status_code
+            self._bobbi_query_url = url
+
+        def raise_for_status(self):
+            if self.status_code >= 400:
+                raise RuntimeError(f"HTTP {self.status_code}")
+
+    class _FakeSession:
+        def __init__(self):
+            self.headers = {}
+
+        def get(self, url, timeout=None):
+            seen_urls.append(url)
+            if "t=indexers" in url:
+                return _FakeResp(indexers_xml, url=url)
+            return _FakeResp(rss_empty, url=url)
+
+        def close(self):
+            pass
+
+    found_idx = jackett_mod.discover_jackett_indexers("http://127.0.0.1", "9117", "sec", session=_FakeSession())
+    assert found_idx == [{"id": "nyaasi", "title": "Nyaa.si"}, {"id": "dmhy", "title": "DMHY"}]
+
+    # Disable dmhy -> only nyaasi queried; disable both -> clean empty SearchResults([], SearchCompletion()) without ValueError!
+    user_sources.set_jackett_indexer_disabled("dmhy", True, profile_root=prof)
+    monkeypatch.setattr(
+        "lib.clients.jackett_fanout.fetch_inventory",
+        lambda sess, url, deadline, cancelled, **kw: [sess.get(url)],
+    )
+
+    def _fake_fetch_independent(sess, plan, **kw):
+        from bobbi_core.search_completion import SearchCompletion, SearchResults
+
+        out = []
+        for u in plan:
+            r = sess.get(u)
+            if kw.get("on_response"):
+                kw["on_response"](r)
+            out.append(r)
+        return SearchResults(out, SearchCompletion(len(out), succeeded=len(out)))
+
+    monkeypatch.setattr("lib.clients.jackett_fanout.fetch_independent", _fake_fetch_independent)
+
+    seen_urls.clear()
+    j_one = jackett_mod.Jackett(
+        "http://127.0.0.1",
+        "sec",
+        "9117",
+        lambda *a, **k: None,
+        session=_FakeSession(),
+        settings_getter=lambda k, d=None: 10 if k == "jackett_timeout" else False,
+        profile_root=prof,
+    )
+    res_one = j_one._search_cinema("Frieren", "tv", 1, 1, None, None, None, "")
+    query_urls = [u for u in seen_urls if "t=indexers" not in u]
+    assert query_urls and all("/indexers/nyaasi/" in u and "/indexers/dmhy/" not in u for u in query_urls)
+    assert res_one == []
+
+    user_sources.set_jackett_indexer_disabled("nyaasi", True, profile_root=prof)
+    j_none = jackett_mod.Jackett(
+        "http://127.0.0.1",
+        "sec",
+        "9117",
+        lambda *a, **k: None,
+        session=_FakeSession(),
+        settings_getter=lambda k, d=None: 10 if k == "jackett_timeout" else False,
+        profile_root=prof,
+    )
+    res_none = j_none._search_cinema("Frieren", "tv", 1, 1, None, None, None, "")
+    assert list(res_none) == [] and res_none.completion.planned == 0
+
+    # 4. Custom Torznab validation, CRUD & search execution
+    with pytest.raises(ValueError, match="INVALID_TORZNAB_URL"):
+        user_sources.add_custom_torznab_source("Bad", "ftp://invalid.example/api", profile_root=prof)
+
+    added = user_sources.add_custom_torznab_source(
+        "Mikan Custom",
+        "https://torznab.example.invalid/api",
+        "mykey",
+        profile_root=prof,
+    )
+    assert added["name"] == "Mikan Custom" and added["enabled"] is True
+
+    torznab_item_rss = (
+        b'<?xml version="1.0" encoding="UTF-8"?>'
+        b'<rss version="2.0" xmlns:torznab="http://torznab.com/schemas/2015/feed">'
+        b'<channel><item>'
+        b'<title>Frieren S01E01 1080p</title>'
+        b'<guid>magnet:?xt=urn:btih:0123456789abcdef0123456789abcdef01234567</guid>'
+        b'<link>magnet:?xt=urn:btih:0123456789abcdef0123456789abcdef01234567</link>'
+        b'<size>104857600</size>'
+        b'<torznab:attr name="seeders" value="25"/>'
+        b'<torznab:attr name="infohash" value="0123456789abcdef0123456789abcdef01234567"/>'
+        b'</item></channel></rss>'
+    )
+
+    class _TorznabSession(_FakeSession):
+        def get(self, url, timeout=None):
+            seen_urls.append(url)
+            return _FakeResp(torznab_item_rss, url=url)
+
+    seen_urls.clear()
+    custom_res = jackett_mod.Jackett.search_custom_torznab(
+        added,
+        "Frieren",
+        "tv",
+        1,
+        1,
+        None,
+        session=_TorznabSession(),
+    )
+    assert len(custom_res) == 1
+    assert custom_res[0].provider == "Mikan Custom"
+    assert custom_res.completion.complete is True
+    assert "apikey=mykey" in seen_urls[0] and "t=tvsearch" in seen_urls[0]
+
+    # 5. Interactive open_unified_sources_hub in English (zero CJK) & CRUD mutations
+    class _HubDialog:
+        def __init__(self, selects, inputs=()):
+            self.selects = list(selects)
+            self.inputs = list(inputs)
+            self.presented = []
+
+        def select(self, title, options, *a, **kw):
+            self.presented.append((str(title), [str(o) for o in options]))
+            return self.selects.pop(0) if self.selects else -1
+
+        def input(self, title, default="", *a, **kw):
+            self.presented.append((str(title), []))
+            return self.inputs.pop(0) if self.inputs else ""
+
+        def ok(self, title, body):
+            self.presented.append((str(title), [str(body)]))
+
+    monkeypatch.setattr(hub_mod, "_is_en", lambda: True)
+    monkeypatch.setattr(hub_mod, "_t", lambda po_id, zh, en: en)
+    dlg = _HubDialog(
+        # Open Default Sources -> toggle animegarden (idx 3) -> back -> Custom Sources -> delete existing (idx 0 -> idx 2) -> back -> exit
+        selects=[0, 3, -1, 2, 0, 2, -1, -1],
+    )
+    outcome = hub_mod.open_unified_sources_hub(dlg, profile_root=prof, discover_fn=lambda *a: found_idx)
+    assert outcome == hub_mod.CHANGED
+    final_doc = user_sources.load_user_sources(prof)
+    assert "animegarden" in final_doc["removed_defaults"]
+    assert final_doc["custom_torznab_sources"] == []
+    assert not [
+        txt
+        for heading, opts in dlg.presented
+        for txt in [heading, *opts]
+        if any("\u4e00" <= ch <= "\u9fff" for ch in txt)
+    ]
+

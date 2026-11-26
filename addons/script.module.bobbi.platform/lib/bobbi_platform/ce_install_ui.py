@@ -123,7 +123,7 @@ class KodiHost:
         check = getattr(self, 'check_idle', None)
         if callable(check):
             check()
-        self.xbmc.executebuiltin('ActivateWindow(AddonInformation,%s)' % addon_id, False)
+        self.xbmc.executebuiltin('ActivateWindow(AddonBrowser,addons://dependencies/,return)', False)
 
     def _capture_profile_guard(self):
         try:
@@ -189,32 +189,15 @@ class KodiHost:
             have = item['installed_version'] or '0.0.0'
             need = item['minimum']
             if active_dialog is not None and hasattr(active_dialog, 'yesno'):
-                while True:
-                    ensure_active()
-                    if not active_dialog.yesno(
-                        tr('dep_upgrade_title', host=self),
-                        tr('dep_upgrade_body', host=self, addon=name, have=have, need=need),
-                    ):
-                        raise UpdateError(f'DEPENDENCY_NEEDS_UPGRADE:{name}:{have}->{need}')
-                    ensure_active()
-                    self.open_dependency_upgrade(name)
-                    if not active_dialog.yesno(
-                        tr('dep_upgrade_recheck_title', host=self),
-                        tr('dep_upgrade_recheck_body', host=self, addon=name, need=need),
-                    ):
-                        raise UpdateError(f'DEPENDENCY_NEEDS_UPGRADE:{name}:{have}->{need}')
-                    ensure_active()
-                    plan = plan_dependencies(root, staged_path, managed=MANAGED, details=self.details, strict_roots=True)
-                    refreshed_item = plan['items'].get(name)
-                    if refreshed_item is None or not refreshed_item['required']:
-                        break
-                    if refreshed_item['state'] == STATE_UNKNOWN:
-                        raise UpdateError('ADDON_STATE_UNKNOWN:' + name)
-                    if refreshed_item['state'] == DIRECTORY_CONFLICT:
-                        raise UpdateError('DEPENDENCY_DIRECTORY_CONFLICT:' + name)
-                    if refreshed_item['state'] != NEEDS_UPGRADE:
-                        break
-                    have = refreshed_item['installed_version'] or have
+                ensure_active()
+                if not active_dialog.yesno(
+                    tr('dep_upgrade_title', host=self),
+                    tr('dep_upgrade_body', host=self, addon=name, have=have, need=need),
+                ):
+                    raise UpdateError(f'DEPENDENCY_NEEDS_UPGRADE:{name}:{have}->{need}')
+                ensure_active()
+                self.open_dependency_upgrade(name)
+                raise UpdateError(f'DEPENDENCY_HANDOFF_OPENED:{name}:{have}->{need}')
             else:
                 raise UpdateError(f'DEPENDENCY_NEEDS_UPGRADE:{name}:{have}->{need}')
 
@@ -902,15 +885,25 @@ def failure_message(error, stage=None, *, locale=None, host=None):
     lang = normalize_locale(locale) if locale is not None else active_locale(host=host, rpc_fn=rpc)
     en = (lang == 'en_gb')
     code = str(error)
-    if code.startswith('DEPENDENCY_NEEDS_UPGRADE:'):
+    if code.startswith(('DEPENDENCY_NEEDS_UPGRADE:', 'DEPENDENCY_HANDOFF_OPENED:')):
         parts = code.split(':', 2)
         comp = parts[1] if len(parts) > 1 and parts[1] in UPSTREAM_COMPONENTS | HOST_COMPONENTS else ''
         ver_spec = parts[2] if len(parts) > 2 and re.fullmatch(r'[A-Za-z0-9.+_@~:-]+->[A-Za-z0-9.+_@~:-]+', parts[2]) else ''
-        detail_txt = f' ({comp}: {ver_spec})' if comp and ver_spec else (f' ({comp})' if comp else '')
+        have_ver, _, need_ver = ver_spec.partition('->') if ver_spec else ('', '', '')
+        if code.startswith('DEPENDENCY_HANDOFF_OPENED:'):
+            detail_en = f' for {comp} ({have_ver} -> {need_ver})' if comp and have_ver and need_ver else (f' for {comp}' if comp else '')
+            detail_zh = f' {comp}（已装 {have_ver}，需 {need_ver}）' if comp and have_ver and need_ver else (f' {comp}' if comp else '')
+            return (
+                f'Opened Kodi Dependencies (addons://dependencies/){detail_en}. Select it and click "Update", then reopen "Bobbi TV · Get Started" to continue.'
+                if en else
+                f'已打开 Kodi“依赖项”列表（addons://dependencies/）以更新{detail_zh}。请在列表中点选该组件并点击“更新”，完成后重新打开“波比 TV · 开始使用”继续。'
+            )
+        detail_en = f' ({comp}: installed {have_ver}, required {need_ver})' if comp and have_ver and need_ver else (f' ({comp})' if comp else '')
+        detail_zh = f'（{comp} 当前 {have_ver}，需至少 {need_ver}）' if comp and have_ver and need_ver else (f'（{comp}）' if comp else '')
         return (
-            f'Installed Kodi dependency{detail_txt} is older than required (existing files are never overwritten). Update it in Kodi Add-on Information, then reopen Bobbi TV.'
+            f'Installed Kodi dependency{detail_en} is older than required (existing files are never overwritten). Open Kodi Dependencies (addons://dependencies/), select {comp or "the add-on"} -> Update, then reopen "Bobbi TV · Get Started".'
             if en else
-            f'Kodi 已安装的依赖{detail_txt}版本低于所需下限（不会私自覆盖 Kodi 组件）。请在 Kodi 插件信息页更新该组件后，再打开“开始使用”。'
+            f'Kodi 已安装的依赖{detail_zh}版本低于所需下限（不会私自覆盖现有目录）。请在 Kodi“依赖项”列表（addons://dependencies/）中点选该组件并点击“更新”，完成后再打开“波比 TV · 开始使用”。'
         )
     if code.startswith('DEPENDENCY_DIRECTORY_CONFLICT:'):
         return (
@@ -1090,7 +1083,7 @@ def diagnosis(stage, error):
              'settings': '进入设置', 'validate': '校验安装包'}.get(stage, '安装')
     reason, _, detail = str(error).partition(':')
     known = {'DEPENDENCY_UNAVAILABLE', 'DEPENDENCY_ENABLE_FAILED', 'DEPENDENCY_GRAPH_INVALID',
-             'DEPENDENCY_NEEDS_UPGRADE', 'DEPENDENCY_DIRECTORY_CONFLICT', 'DEPENDENCY_PREPARATION_CANCELLED',
+             'DEPENDENCY_NEEDS_UPGRADE', 'DEPENDENCY_HANDOFF_OPENED', 'DEPENDENCY_DIRECTORY_CONFLICT', 'DEPENDENCY_PREPARATION_CANCELLED',
              'COMPONENT_REGISTRATION_FAILED', 'COMPONENT_ENABLE_FAILED', 'HOST_ACTIVATION_NOT_CONFIRMED',
              'CRYPTO_DEPENDENCY_UNUSABLE', 'PLAYER_API_UNAVAILABLE',
              'ADDON_STATE_UNKNOWN', 'CINEMA_SERVICE_NOT_READY', 'CINEMA_SERVICE_NOT_STOPPED', 'INSTALL_SKIN_NOT_CONFIRMED',
@@ -1104,7 +1097,7 @@ def diagnosis(stage, error):
              'CE_REGISTRY_FORMAT_REQUIRES_EXPLICIT_OFFLINE_RESTORE', 'HOST_RESTORE_NOT_CONFIRMED'}
     allowed_addons = MANAGED | UPSTREAM_COMPONENTS | HOST_COMPONENTS | {ZH_CN_ADDON_ID}
     extra_version = ''
-    if reason == 'DEPENDENCY_NEEDS_UPGRADE':
+    if reason in ('DEPENDENCY_NEEDS_UPGRADE', 'DEPENDENCY_HANDOFF_OPENED'):
         code = reason
         comp_part, _, ver_part = detail.partition(':')
         detail = comp_part if comp_part in allowed_addons else ''
@@ -1329,6 +1322,10 @@ def main(payload=None, online=False, storage=False):
             stage = 'settings'
             xbmc.executebuiltin('RunScript(script.bobbi.setup)')
     except Exception as error:
+        if str(error).startswith('DEPENDENCY_HANDOFF_OPENED:'):
+            if hasattr(xbmc, 'log'):
+                xbmc.log('[bobbi-install] ' + diagnosis(stage, error), getattr(xbmc, 'LOGINFO', 1))
+            return
         report(stage, error)
     finally:
         close = getattr(host, 'close', None)

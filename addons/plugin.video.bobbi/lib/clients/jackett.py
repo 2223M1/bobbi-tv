@@ -19,6 +19,53 @@ from lib.utils.kodi.utils import get_setting, notification, translation
 from lib.utils.parsers import xmltodict
 
 
+def _normalize_jackett_host(host: str) -> str:
+    cleaned = str(host or "").strip().rstrip("/")
+    if cleaned and not cleaned.startswith(("http://", "https://")):
+        cleaned = "http://" + cleaned
+    return cleaned
+
+
+def discover_jackett_indexers(
+    host: str,
+    port: str,
+    apikey: str,
+    timeout: float = 4.0,
+    session: Optional[requests.Session] = None,
+) -> List[dict]:
+    """Return configured Jackett sub-indexers as ``[{'id': ..., 'title': ...}, ...]``."""
+    norm_host = _normalize_jackett_host(host)
+    if not norm_host:
+        return []
+    clean_port = str(port or "").strip()
+    parsed_host = urlsplit(norm_host)
+    endpoint_base = f"{norm_host}:{clean_port}" if clean_port and parsed_host.port is None else norm_host
+    url = f"{endpoint_base}/api/v2.0/indexers/all/results/torznab/api?apikey={quote(str(apikey or '').strip())}&t=indexers&configured=true"
+
+    own_session = session is None
+    sess = session or requests.Session()
+    if own_session:
+        sess.headers.update(USER_AGENT_HEADER.copy())
+    try:
+        response = sess.get(url, timeout=timeout)
+        response.raise_for_status()
+        root = ET.fromstring(response.content)
+    finally:
+        if own_session:
+            sess.close()
+
+    items: List[dict] = []
+    seen = set()
+    for node in root.findall("indexer"):
+        idx_id = (node.get("id") or "").strip()
+        if node.get("configured") != "true" or not re.fullmatch(r"[a-zA-Z0-9_-]+", idx_id) or idx_id in seen:
+            continue
+        seen.add(idx_id)
+        title = (node.findtext("title") or node.get("name") or idx_id).strip() or idx_id
+        items.append({"id": idx_id, "title": title})
+    return items
+
+
 class Jackett(BaseClient):
     def __init__(
         self,
@@ -27,7 +74,7 @@ class Jackett(BaseClient):
         port: str,
         notification,
         session: Optional[requests.Session] = None,
-        *, settings_getter=None,
+        *, settings_getter=None, disabled_indexers=None, profile_root=None,
     ) -> None:
         super().__init__(host, notification)
         self.apikey = apikey
@@ -39,9 +86,98 @@ class Jackett(BaseClient):
         self._configured_indexers = None
         self._indexer_caps = {}
         self._indexer_anime_caps = {}
+        self._disabled_indexers = disabled_indexers
+        self._profile_root = profile_root
         self._setting = settings_getter or (lambda key: get_setting(key))
         self._timeout = ((lambda: int(settings_getter('jackett_timeout', 20)))
                          if settings_getter is not None else lambda: get_jackett_timeout())
+
+    def _get_disabled_indexers(self) -> frozenset:
+        if self._disabled_indexers is not None:
+            return frozenset(str(x).strip() for x in self._disabled_indexers if str(x).strip())
+        try:
+            from lib.utils.user_sources import load_user_sources
+
+            prefs = load_user_sources(self._profile_root)
+            return frozenset(prefs.get("disabled_jackett_indexers") or ())
+        except Exception:
+            return frozenset()
+
+    @classmethod
+    def search_custom_torznab(
+        cls,
+        source_spec: dict,
+        query: str,
+        mode: str,
+        season: Optional[int] = None,
+        episode: Optional[int] = None,
+        year: Optional[int] = None,
+        *,
+        title_queries=(),
+        timeout: float = 8.0,
+        deadline: Optional[float] = None,
+        cancelled=None,
+        session: Optional[requests.Session] = None,
+    ):
+        from bobbi_core.search_completion import SearchCompletion, SearchResults
+        from lib.utils.user_sources import validate_torznab_url
+
+        is_cancelled = cancelled or (lambda: False)
+        if is_cancelled() or (deadline is not None and time.monotonic() >= deadline):
+            return SearchResults([], SearchCompletion(1, timed_out=1))
+
+        try:
+            base_url = validate_torznab_url(source_spec.get("url", ""))
+        except ValueError:
+            return SearchResults([], SearchCompletion(1, failed=1))
+
+        name = str(source_spec.get("name") or "Custom Torznab").strip() or "Custom Torznab"
+        apikey = str(source_spec.get("apikey") or "").strip()
+        params = {}
+        if apikey and "apikey=" not in base_url.lower():
+            params["apikey"] = apikey
+        params["q"] = str(query or "").strip()
+        if mode == "tv" and season is not None:
+            params["t"] = "tvsearch"
+            params["season"] = season
+            if episode is not None:
+                params["ep"] = episode
+        elif mode == "movies":
+            params["t"] = "movie"
+            if year:
+                params["year"] = year
+        else:
+            params["t"] = "search"
+
+        sep = "&" if "?" in base_url else "?"
+        req_url = base_url + sep + urlencode(params)
+        remaining = (deadline - time.monotonic()) if deadline is not None else float(timeout)
+        if remaining <= 0:
+            return SearchResults([], SearchCompletion(1, timed_out=1))
+        req_timeout = max(0.2, min(float(timeout), remaining))
+
+        own_session = session is None
+        sess = session or requests.Session()
+        if own_session:
+            sess.headers.update(USER_AGENT_HEADER.copy())
+        try:
+            response = sess.get(req_url, timeout=req_timeout)
+            if response.status_code != 200:
+                return SearchResults([], SearchCompletion(1, failed=1))
+            parser = cls(host=base_url, apikey=apikey, port="", notification=lambda *a, **k: None, session=sess)
+            parsed = parser.parse_response(response)
+            if parsed is None:
+                return SearchResults([], SearchCompletion(1, failed=1))
+            for row in parsed:
+                row.provider = f"{name} · {row.provider}" if row.provider and row.provider != name else name
+            return SearchResults(parsed, SearchCompletion(1, succeeded=1))
+        except requests.Timeout:
+            return SearchResults([], SearchCompletion(1, timed_out=1))
+        except Exception:
+            return SearchResults([], SearchCompletion(1, failed=1))
+        finally:
+            if own_session:
+                sess.close()
 
     def _search_cinema(self, query, mode, season, episode, categories,
                        additional_params, year, anime_absolute_query, anime_release_query='', title_queries=(), movie_years=None, movie_tmdb_id=None, movie_imdb_id=None, anime_title_queries=(), cancelled=None, deadline=None, publish=None, query_cache=None, slot_factory=None):
@@ -93,6 +229,12 @@ class Jackett(BaseClient):
         self._configured_indexers = sorted(self._configured_indexers,
             key=lambda value: (bool(anime_absolute_query or anime_release_query)
                                and value not in ('nyaasi', 'tokyotosho'), value))
+        disabled_indexers = self._get_disabled_indexers()
+        if disabled_indexers:
+            active_indexers = [idx for idx in self._configured_indexers if idx not in disabled_indexers]
+            if not active_indexers:
+                return SearchResults([], SearchCompletion())
+            self._configured_indexers = active_indexers
         titles = list(dict.fromkeys([query] + [q for q in title_queries if isinstance(q, str) and q.strip()]))[:3]
         specs = [(title, mode, season, episode, False) for title in titles]
         include_packs = mode == 'tv' and season and self._setting('include_season_packs')

@@ -17,3 +17,267 @@ msgstr "波比 TV · 影院设置"
 msgctxt "#32001"
 msgid "Connect personal cloud drives, NAS, and local helper"
 msgstr "连接自己的网盘、NAS 与本机后台"
+
+msgctxt "#32002"
+msgid "Existing BT Backend"
+msgstr "现有 BT 后台"
+
+msgctxt "#32003"
+msgid "Pair Android Helper"
+msgstr "Android 助手配对"
+
+msgctxt "#32004"
+msgid "Usage Guide"
+msgstr "使用说明"
+
+msgctxt "#32005"
+msgid "Install CoreELEC BT Backend"
+msgstr "安装 CoreELEC BT 后台"
+
+msgctxt "#32006"
+msgid "Import Helper Pairing File"
+msgstr "导入助手配对文件"
+
+msgctxt "#32007"
+msgid "Recheck Connection"
+msgstr "重新检查连接"
+
+msgctxt "#32008"
+msgid "Configure BT Playback"
+msgstr "设置 BT 播放"
+
+msgctxt "#32009"
+msgid "Helper Pairing Code (6 digits)"
+msgstr "助手配对码（六位数字）"
+
+msgctxt "#32010"
+msgid "Helper Connected"
+msgstr "助手已连接"
+
+msgctxt "#32011"
+msgid "Open Helper and start the backend whenever you want to play BT sources."
+msgstr "以后打开助手并启动后台，就可以使用 BT 片源。"
+
+msgctxt "#32012"
+msgid "Pairing Incomplete"
+msgstr "配对未完成"
+
+msgctxt "#32013"
+msgid "Open Helper to get a new pairing code and try again. Previous pairing is kept."
+msgstr "请打开助手，获取新的配对码后重试。原有配对保留。"
+
+msgctxt "#32014"
+msgid "BT Playback Guide"
+msgstr "BT 播放说明"
+
+msgctxt "#32015"
+msgid "BT sources require a torrent backend. CoreELEC can install it here; Android uses the companion local Helper.\nSkip this if you only use 115 or local / NAS libraries."
+msgstr "看 BT 片源需要连接下载后台。CoreELEC 可在这里安装，Android 需另配兼容的本机助手。\n只看 115 或本地 / NAS 片库，可以跳过。"
+
+msgctxt "#32016"
+msgid "Stop Playback First"
+msgstr "请先停止播放"
+
+msgctxt "#32017"
+msgid "Stop video playback before installing the BT backend."
+msgstr "停止影片后再安装 BT 后台。"
+
+msgctxt "#32018"
+msgid "Install BT Backend?"
+msgstr "安装 BT 后台？"
+
+msgctxt "#32019"
+msgid "Downloads about 63 MB and runs locally only. Does not modify CD2 or system services."
+msgstr "需下载约 63 MB，仅在本机运行。不改 CD2 或系统服务。"
+
+msgctxt "#32020"
+msgid "Installing BT Backend"
+msgstr "安装 BT 后台"
+
+msgctxt "#32021"
+msgid "Downloading; you can cancel at any time."
+msgstr "正在下载，可随时取消。"
+
+msgctxt "#32022"
+msgid "BT Backend Installed"
+msgstr "BT 后台已安装"
+
+msgctxt "#32023"
+msgid "Select \"Recheck Connection\" shortly. Restart Kodi if it still has not started."
+msgstr "稍后选择“重新检查连接”。若仍未启动，请重启 Kodi。"
+
+msgctxt "#32024"
+msgid "Installation Incomplete"
+msgstr "安装未完成"
+
+msgctxt "#32025"
+msgid "Requires ARM CoreELEC and GitHub access. Check your network and retry; cloud and NAS libraries remain available."
+msgstr "此后台需要 ARM 版 CoreELEC，并能连接 GitHub。请检查网络后重试，网盘与 NAS 仍可使用。"
+
+msgctxt "#32026"
+msgid "Select Pairing File Exported by Helper"
+msgstr "选择助手导出的配对文件"
+
+msgctxt "#32027"
+msgid "Not Connected Yet"
+msgstr "尚未连接"
+
+msgctxt "#32028"
+msgid "%s\nPrevious pairing was not changed."
+msgstr "%s\n原有配对没有更改。"
+
+msgctxt "#32029"
+msgid "Invalid Pairing File"
+msgstr "配对文件不可用"
+
+msgctxt "#32030"
+msgid "Use the file exported by bobbi Helper on this device. Previous pairing was not changed."
+msgstr "请使用这台盒子上的 bobbi 助手导出的文件。原有配对没有更改。"
+
+msgctxt "#32031"
+msgid "You can return to select media. The pairing file contains credentials; do not share it."
+msgstr "可以返回选片。配对文件含登录信息，请勿分享给别人。"
+
+msgctxt "#32032"
+msgid "Connection Check"
+msgstr "连接检查"
+
+msgctxt "#32033"
+msgid "Helper is connected and ready for test playback."
+msgstr "助手已连接，可以选择视频试播。"
+
+msgctxt "#32034"
+msgid "Not connected. Open Helper and start the backend first; re-pair if Helper was reinstalled."
+msgstr "未连接。请先打开助手并启动后台；重装过助手则需重新配对。"
+
+msgctxt "#32035"
+msgid "Cinema Setup"
+msgstr "影院设置"
+
+msgctxt "#32036"
+msgid "Player Check"
+msgstr "播放器检查"
+
+msgctxt "#32037"
+msgid "Check Player First"
+msgstr "先检查播放器"
+
+msgctxt "#32038"
+msgid "Playback in Progress"
+msgstr "当前正在播放"
+
+msgctxt "#32039"
+msgid "Stop playback manually before starting test playback."
+msgstr "请先手动停止，再开始测试。"
+
+msgctxt "#32040"
+msgid "Select Video for Test Playback"
+msgstr "选择视频试播"
+
+msgctxt "#32041"
+msgid "bobbi Playback Test"
+msgstr "bobbi 播放测试"
+
+msgctxt "#32042"
+msgid "Original Audio & Subtitles"
+msgstr "原声与中文字幕"
+
+msgctxt "#32043"
+msgid "Open \"Language\" on the next screen to set Preferred Audio Language to \"Original language\" and Preferred Subtitle Language."
+msgstr "下一页进入“语言”，将音轨首选语言设为“原始语言”，字幕首选语言设为“中文”。"
+
+msgctxt "#32044"
+msgid "Posters & Search"
+msgstr "影视海报与搜索"
+
+msgctxt "#32045"
+msgid "Metadata Service · Configured"
+msgstr "影视资料服务 · 已配置"
+
+msgctxt "#32046"
+msgid "Metadata Service · Not Configured"
+msgstr "影视资料服务 · 未配置"
+
+msgctxt "#32047"
+msgid "Search & Advanced Settings"
+msgstr "搜索与高级设置"
+
+msgctxt "#32048"
+msgid "Setup Incomplete"
+msgstr "安装尚未完成"
+
+msgctxt "#32049"
+msgid "Open \"bobbi TV · Get Started\" and finish recovery before entering Cinema."
+msgstr "请打开“波比 TV · 开始使用”，完成恢复后再进入影院。"
+
+msgctxt "#32050"
+msgid "Switching skins will close the current playback screen."
+msgstr "切换皮肤会关闭当前界面。"
+
+msgctxt "#32051"
+msgid "Switch to bobbi Cinema?"
+msgstr "切换到波比影院？"
+
+msgctxt "#32052"
+msgid "Choose \"Yes\" to keep the skin after switching. Unconfirmed changes revert automatically."
+msgstr "切换后请选择“保留”。未确认会自动返回原皮肤。"
+
+msgctxt "#32053"
+msgid "Stop video playback before updating."
+msgstr "停止影片后再更新程序。"
+
+msgctxt "#32054"
+msgid "Updates & Recovery"
+msgstr "更新与恢复"
+
+msgctxt "#32055"
+msgid "Manage Kodi Dependencies"
+msgstr "管理 Kodi 依赖"
+
+msgctxt "#32056"
+msgid "Manage Installed Add-ons"
+msgstr "管理已安装插件"
+
+msgctxt "#32057"
+msgid "Local Install & Version Recovery"
+msgstr "本地安装与版本恢复"
+
+msgctxt "#32058"
+msgid "Check for bobbi TV Updates"
+msgstr "检查波比 TV 更新"
+
+msgctxt "#32059"
+msgid "Storage Space & Cleanup"
+msgstr "存储空间与清理"
+
+msgctxt "#32060"
+msgid "Update Notifications"
+msgstr "新版本提醒"
+
+msgctxt "#32061"
+msgid "Kodi Add-on Management"
+msgstr "Kodi 插件管理"
+
+msgctxt "#32062"
+msgid "Manage add-ons and dependencies on the next screen. Update bobbi Cinema using full release bundles rather than overriding individual components."
+msgstr "下一页可管理插件和依赖。波比影院请使用整包更新，勿用其他插件覆盖其组件。"
+
+msgctxt "#32063"
+msgid "Cancelled opening updates while playback is active. Try again after watching."
+msgstr "已取消打开更新页，请看完后再操作。"
+
+msgctxt "#32064"
+msgid "Notify when idle"
+msgstr "空闲时提醒"
+
+msgctxt "#32065"
+msgid "Disable notifications"
+msgstr "关闭提醒"
+
+msgctxt "#32066"
+msgid "Action Not Completed"
+msgstr "操作未完成"
+
+msgctxt "#32067"
+msgid "Reopen \"Cinema Setup\" and try again; saved settings are kept."
+msgstr "请重新打开“影院设置”重试，已保存的设置保留。"

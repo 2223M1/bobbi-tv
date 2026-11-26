@@ -1,4 +1,62 @@
 """One portable host; retain the existing native owner when actually present."""
+from pathlib import Path
+import sys
+import time
+
+_HOST_UI_STATE = {'android_locale': None}
+
+
+def _detect_vs10_support(*, sys_root=Path('/sys'), platform_name=None):
+    plat = sys.platform if platform_name is None else platform_name
+    if not str(plat).startswith('linux'):
+        return False
+    root = Path(sys_root)
+    try:
+        if (root / 'module/amdolby_vision').exists():
+            return True
+    except OSError:
+        pass
+    dv_cap = root / 'class/amhdmitx/amhdmitx0/dv_cap'
+    try:
+        if dv_cap.is_file():
+            with dv_cap.open('rb') as handle:
+                handle.read(64)
+            return True
+    except OSError:
+        pass
+    return False
+
+
+def _sync_android_locale(*, force=False):
+    try:
+        from bobbi_platform import android_engine
+        from bobbi_platform.i18n import current_locale
+        if not android_engine.available():
+            _HOST_UI_STATE['android_locale'] = None
+            return None
+        loc = current_locale()
+        if not force and _HOST_UI_STATE.get('android_locale') == loc:
+            return None
+        reply = android_engine.sync_ui_locale(loc)
+        _HOST_UI_STATE['android_locale'] = loc
+        return reply
+    except Exception:
+        return None
+
+
+def _sync_host_ui_properties(*, force_locale=True, sys_root=Path('/sys'), platform_name=None):
+    try:
+        import xbmcgui
+        supports_vs10 = _detect_vs10_support(sys_root=sys_root, platform_name=platform_name)
+        xbmcgui.Window(10000).setProperty('Bobbi.Host.SupportsVS10', 'true' if supports_vs10 else '')
+    except Exception:
+        pass
+    try:
+        from bobbi_platform.glass_settings import sync_runtime_property
+        sync_runtime_property()
+    except Exception:
+        pass
+    return _sync_android_locale(force=force_locale)
 
 
 def main(capabilities=None):
@@ -41,7 +99,12 @@ def main(capabilities=None):
     if file_history is None:
         host.report('FILE_HISTORY_UNAVAILABLE')
     presentation = revisions = None
+    next_locale_poll = [0.0]
     def tick_presentation():
+        now = time.monotonic()
+        if now >= next_locale_poll[0]:
+            next_locale_poll[0] = now + 2.0
+            _sync_android_locale(force=False)
         if presentation is not None:
             try:
                 presentation.tick()
@@ -49,6 +112,7 @@ def main(capabilities=None):
                 pass  # Optional Home presentation cannot stop either playback owner.
     try:
         host.start()
+        _sync_host_ui_properties(force_locale=True)
         try:
             import xbmcgui
             from lib.cinema.focus_anchor import HomeRailLifecycle

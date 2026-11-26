@@ -241,3 +241,227 @@ msgstr "暂时无法连接播放器，请重启 Kodi 后再检查。"
 msgctxt "#32057"
 msgid "Player connection is ready for test playback. You can skip BT setup when using 115 or local libraries."
 msgstr "播放器连接正常，可以选择视频试播。使用 115 或本地片库时，可跳过 BT 设置。"
+
+msgctxt "#32060"
+msgid "BT Playback"
+msgstr "BT 播放"
+
+msgctxt "#32061"
+msgid "Local BT Engine"
+msgstr "本机 BT"
+
+msgctxt "#32062"
+msgid "Check connection"
+msgstr "检查连接"
+
+msgctxt "#32063"
+msgid "Start BT playback"
+msgstr "启动 BT 播放"
+
+msgctxt "#32064"
+msgid "Stop local BT"
+msgstr "停止本机 BT"
+
+msgctxt "#32065"
+msgid "BT Ready"
+msgstr "BT 已就绪"
+
+msgctxt "#32066"
+msgid "BT sources will start automatically when selected; no pairing needed."
+msgstr "以后选择 BT 片源时会自动启动，无需配对。"
+
+msgctxt "#32067"
+msgid "Stop playback first"
+msgstr "请先停止播放"
+
+msgctxt "#32068"
+msgid "Stop video playback before turning off BT."
+msgstr "停止影片后再关闭 BT。"
+
+msgctxt "#32069"
+msgid "Stopping BT"
+msgstr "正在停止 BT"
+
+msgctxt "#32070"
+msgid "Accounts & Sources Center"
+msgstr "账号与来源中心"
+
+msgctxt "#32071"
+msgid "User Services"
+msgstr "用户服务"
+
+msgctxt "#32072"
+msgid "Media Servers"
+msgstr "媒体服务器"
+
+msgctxt "#32073"
+msgid "Cloud Drives & Shared Sources"
+msgstr "网盘与共享来源"
+
+msgctxt "#32074"
+msgid "Devices & Phone"
+msgstr "设备与手机"
+
+msgctxt "#32075"
+msgid "Cloud Accounts & Connections"
+msgstr "网盘账号与连接"
+
+msgctxt "#32076"
+msgid "Cloud Advanced Management"
+msgstr "网盘详细管理"
+
+msgctxt "#32077"
+msgid "Search Sources · Default & Custom Sources"
+msgstr "检索源管理 · 默认源增删 / 子站点 / 自定义源"
+
+msgctxt "#32078"
+msgid "Media Server · Experimental"
+msgstr "媒体服务器 · 实验接入"
+
+msgctxt "#32079"
+msgid "Server Display Name"
+msgstr "服务器显示名称"
+
+msgctxt "#32080"
+msgid "Verify and Save Server?"
+msgstr "核验并保存服务器？"
+
+msgctxt "#32081"
+msgid "My Library"
+msgstr "我的片库"
+
+msgctxt "#32082"
+msgid "Add Source"
+msgstr "添加来源"
+
+msgctxt "#32083"
+msgid "Open My Library"
+msgstr "打开我的片库"
+
+msgctxt "#32084"
+msgid "Library Index & Tasks"
+msgstr "片库索引与任务"
+
+msgctxt "#32085"
+msgid "Current Library Management"
+msgstr "当前片库管理"
+
+msgctxt "#32086"
+msgid "Scan Tasks"
+msgstr "扫描任务"
+
+msgctxt "#32087"
+msgid "Native Cloud Accounts"
+msgstr "原生网盘账号"
+
+msgctxt "#32088"
+msgid "My Cloud Files"
+msgstr "我的网盘文件"
+
+msgctxt "#32089"
+msgid "Check & Diagnostics"
+msgstr "检查与诊断"
+
+msgctxt "#32090"
+msgid "Check Local Status"
+msgstr "检查本机状态"
+
+msgctxt "#32091"
+msgid "Local Status"
+msgstr "本机状态"
+
+msgctxt "#32092"
+msgid "Connect Source Library"
+msgstr "连接源库"
+
+msgctxt "#32093"
+msgid "Source Library API or JSON URL"
+msgstr "源库接口或片库 JSON 网址"
+
+msgctxt "#32094"
+msgid "Xiaoya / TVBox (T4)"
+msgstr "小雅 / TVBox（T4）"
+
+msgctxt "#32095"
+msgid "About bobbi TV & Release Notes"
+msgstr "关于波比 TV 与版本说明"
+
+msgctxt "#32096"
+msgid "SMB Share"
+msgstr "SMB 共享"
+
+msgctxt "#32097"
+msgid "NFS Share"
+msgstr "NFS 共享"
+
+msgctxt "#32098"
+msgid "WebDAV Cloud"
+msgstr "WebDAV 网盘"
+
+msgctxt "#32099"
+msgid "Local / USB / Saved Folder"
+msgstr "本机 / U盘 / 已保存目录"
+
+msgctxt "#32100"
+msgid "Import Direct-Link Catalog"
+msgstr "导入直链片库"
+
+msgctxt "#32101"
+msgid "Existing CD2 Mount (No QR Needed)"
+msgstr "已有 CD2 网盘（无需扫码）"
+
+msgctxt "#32102"
+msgid "Source Library URL"
+msgstr "源库网址"
+
+msgctxt "#32103"
+msgid "Media Server · Plex / Jellyfin / Emby"
+msgstr "媒体服务器 · Plex / Jellyfin / Emby"
+
+msgctxt "#32104"
+msgid "NAS host and shared folder, e.g. nas.local/Movies"
+msgstr "NAS 地址和共享目录，例如 nas.local/Movies"
+
+msgctxt "#32105"
+msgid "NFS host and export path, e.g. nas.local/volume1/video"
+msgstr "NFS 地址和导出目录，例如 nas.local/volume1/video"
+
+msgctxt "#32106"
+msgid "WebDAV URL, e.g. https://nas.example/dav/"
+msgstr "WebDAV 地址，例如 https://nas.example/dav/"
+
+msgctxt "#32107"
+msgid "Name this connection"
+msgstr "给这个连接起名"
+
+msgctxt "#32108"
+msgid "Save Unencrypted Connection?"
+msgstr "保存未加密连接？"
+
+msgctxt "#32109"
+msgid "HTTP sends username and password in plaintext. Use only on a trusted home network; use HTTPS for remote access."
+msgstr "HTTP 会明文传输账号密码。仅建议在可信家庭网络使用，远程访问请改用 HTTPS。"
+
+msgctxt "#32110"
+msgid "Background Tasks"
+msgstr "后台任务"
+
+msgctxt "#32111"
+msgid "Live Task Status"
+msgstr "实时查看任务"
+
+msgctxt "#32112"
+msgid "Phone Management"
+msgstr "手机详细管理"
+
+msgctxt "#32113"
+msgid "Organize Workbench"
+msgstr "待整理工作台"
+
+msgctxt "#32114"
+msgid "Check Pending Receipts"
+msgstr "查询待核对的原提交"
+
+msgctxt "#32115"
+msgid "Manage Indexed Sources"
+msgstr "管理索引来源"

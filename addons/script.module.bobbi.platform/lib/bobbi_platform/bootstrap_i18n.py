@@ -126,8 +126,8 @@ STRINGS = {
     'dep_upgrade_title': (32953, '需要更新 Kodi 依赖', 'Kodi dependency update required'),
     'dep_upgrade_body': (
         32954,
-        '组件 {addon} 当前已安装版本为 {have}，需要至少 {need}。\n不会覆盖现有目录。是否打开 Kodi 原生插件信息页进行更新？',
-        'Add-on {addon} is installed at version {have}, but version {need} or newer is required.\nExisting files will not be overwritten. Open Kodi Add-on Information to update it now?',
+        '组件 {addon} 当前已安装版本为 {have}，至少需要 {need}（不会覆盖现有目录）。\n选“是”将打开 Kodi“依赖项”列表（addons://dependencies/），请在其中点选 {addon} 并点击“更新”，完成后重新打开“波比 TV · 开始使用”继续安装。',
+        'Add-on {addon} is installed at version {have}, but version {need} or newer is required (existing files are not overwritten).\nChoose "Yes" to open Kodi Dependencies (addons://dependencies/), select {addon} and click "Update", then reopen "Bobbi TV · Get Started" to continue.',
     ),
     'dep_upgrade_recheck_title': (32955, '重新检查依赖', 'Re-check dependency'),
     'dep_upgrade_recheck_body': (

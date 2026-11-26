@@ -116,6 +116,15 @@ def adapter_status(translate, cancelled=lambda: False):
 
 
 def adapter_message(state):
+    from .i18n import is_english
+    if is_english():
+        return {
+            'adapter_ready': 'Connected to the existing BT backend; ready for test playback without reinstalling.',
+            'adapter_offline': 'Cannot reach the existing BT backend. Make sure it is running and retry; no separate install needed.',
+            'adapter_invalid': 'Existing BT configuration cannot be read. Check the config; previous settings are kept.',
+            'adapter_unavailable': 'BT component is temporarily unavailable. Restart Kodi and try again; previous settings are kept.',
+            'adapter_configured': 'BT configuration saved (connection not checked yet); no re-pairing needed.',
+        }.get(state, 'BT connection needs checking; previous settings are kept.')
     return {
         'adapter_ready': '已连接现有 BT 后台，可以选择片源试播，无需重新安装。',
         'adapter_offline': '无法连接现有 BT 后台，请确认它已启动后重试，无需另装后台。',

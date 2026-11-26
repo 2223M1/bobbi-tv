@@ -866,6 +866,7 @@
                     <control type="toggle" />
                 </setting>
                 <setting id="trakt_auth" type="action" label="30783" help="30819">
+                    <visible>false</visible>
                     <data>RunPlugin(plugin://plugin.video.bobbi/?action=trakt_auth)</data>
                     <control type="button" format="action">
                         <close>false</close>
@@ -915,6 +916,7 @@
                     <control type="edit" format="string" />
                 </setting>
                 <setting id="trakt_logout" type="action" label="30802" help="30856">
+                    <visible>false</visible>
                     <data>RunPlugin(plugin://plugin.video.bobbi/?action=trakt_auth_revoke)</data>
                     <control type="button" format="action">
                         <close>false</close>
@@ -1040,6 +1042,7 @@
                     <control type="spinner" format="integer" />
                 </setting>
                 <setting id="simkl_auth" type="action" label="90975" help="90976">
+                    <visible>false</visible>
                     <data>RunPlugin(plugin://plugin.video.bobbi/?action=simkl_auth)</data>
                     <control type="button" format="action">
                         <close>false</close>
@@ -1051,6 +1054,7 @@
                     </dependencies>
                 </setting>
                 <setting id="simkl_logout" type="action" label="90977" help="90978">
+                    <visible>false</visible>
                     <data>RunPlugin(plugin://plugin.video.bobbi/?action=simkl_logout)</data>
                     <control type="button" format="action">
                         <close>false</close>
@@ -1141,6 +1145,7 @@
                     <visible>false</visible>
                 </setting>
                 <setting id="stremio_login" type="action" label="30871" help="30866">
+                    <visible>false</visible>
                     <dependencies>
                         <dependency type="visible">
                             <condition operator="is" setting="stremio_loggedin">false</condition>
@@ -1152,6 +1157,7 @@
                     </control>
                 </setting>
                 <setting id="stremio_logout" type="action" label="30868" help="30867">
+                    <visible>false</visible>
                     <dependencies>
                         <dependency type="visible">
                             <condition operator="is" setting="stremio_loggedin">true</condition>
@@ -1163,6 +1169,7 @@
                     </control>
                 </setting>
                 <setting id="stremio_update" type="action" label="30874" help="90336">
+                    <visible>false</visible>
                     <dependencies>
                         <dependency type="visible">
                             <condition operator="is" setting="stremio_loggedin">true</condition>
@@ -1176,12 +1183,14 @@
             </group>
             <group id="stremio_addons_management" label="90832">
                 <setting id="stremio_toggle_addons" type="action" label="30870" help="90337">
+                    <visible>false</visible>
                     <data>RunPlugin(plugin://plugin.video.bobbi/?action=stremio_toggle_addons)</data>
                     <control type="button" format="action">
                         <close>false</close>
                     </control>
                 </setting>
                 <setting id="stremio_add_custom_addon" type="action" label="90001" help="90002">
+                    <visible>false</visible>
                     <data>RunPlugin(plugin://plugin.video.bobbi/?action=add_custom_stremio_addon)</data>
                     <control type="button" format="action">
                         <close>false</close>
@@ -1194,12 +1203,14 @@
                     </control>
                 </setting>
                 <setting id="stremio_remove_custom_addon" type="action" label="90138" help="90340">
+                    <visible>false</visible>
                     <data>RunPlugin(plugin://plugin.video.bobbi/?action=remove_custom_stremio_addon)</data>
                     <control type="button" format="action">
                         <close>false</close>
                     </control>
                 </setting>
                 <setting id="stremio_manage_phone" type="action" label="90162" help="90163">
+                    <visible>false</visible>
                     <data>RunPlugin(plugin://plugin.video.bobbi/?action=stremio_manage_phone)</data>
                     <control type="button" format="action">
                         <close>false</close>
@@ -1212,12 +1223,14 @@
                     <control type="toggle" />
                 </setting>
                 <setting id="stremio_toggle_catalogs" type="action" label="30875" help="90338">
+                    <visible>false</visible>
                     <data>RunPlugin(plugin://plugin.video.bobbi/?action=stremio_toggle_catalogs)</data>
                     <control type="button" format="action">
                         <close>false</close>
                     </control>
                 </setting>
                 <setting id="stremio_toggle_tv_addons" type="action" label="30903" help="90339">
+                    <visible>false</visible>
                     <data>RunPlugin(plugin://plugin.video.bobbi/?action=stremio_toggle_tv_addons)</data>
                     <control type="button" format="action">
                         <close>false</close>
@@ -1308,6 +1321,7 @@
                     </control>
                 </setting>
                 <setting id="nuvio_auth" type="action" label="91005" help="91006">
+                    <visible>false</visible>
                     <data>RunPlugin(plugin://plugin.video.bobbi/?action=nuvio_auth)</data>
                     <control type="button" format="action">
                         <close>false</close>
@@ -1319,6 +1333,7 @@
                     </dependencies>
                 </setting>
                 <setting id="nuvio_logout" type="action" label="91007" help="91008">
+                    <visible>false</visible>
                     <data>RunPlugin(plugin://plugin.video.bobbi/?action=nuvio_logout)</data>
                     <control type="button" format="action">
                         <close>false</close>
@@ -1348,6 +1363,7 @@
             </group>
             <group id="nuvio_addons" label="91018">
                 <setting id="nuvio_toggle_addons" type="action" label="91019" help="91020">
+                    <visible>false</visible>
                     <data>RunPlugin(plugin://plugin.video.bobbi/?action=nuvio_toggle_addons)</data>
                     <control type="button" format="action">
                         <close>false</close>
@@ -1613,6 +1629,7 @@
                     </dependencies>
                 </setting>
                 <setting id="real_debrid_auth" type="action" label="30783" help="30835">
+                    <visible>false</visible>
                     <data>RunPlugin(plugin://plugin.video.bobbi/?action=rd_auth)</data>
                     <control type="button" format="action">
                         <close>false</close>
@@ -1624,6 +1641,7 @@
                     </dependencies>
                 </setting>
                 <setting id="real_debrid_remove_auth" type="action" label="30784" help="30853">
+                    <visible>false</visible>
                     <data>RunPlugin(plugin://plugin.video.bobbi/?action=rd_remove_auth)</data>
                     <control type="button" format="action">
                         <close>false</close>
@@ -1676,6 +1694,7 @@
                     </dependencies>
                 </setting>
                 <setting id="alldebrid_auth" type="action" label="30783" help="30845">
+                    <visible>false</visible>
                     <data>RunPlugin(plugin://plugin.video.bobbi/?action=ad_auth)</data>
                     <control type="button" format="action">
                         <close>false</close>
@@ -1687,6 +1706,7 @@
                     </dependencies>
                 </setting>
                 <setting id="alldebrid_remove_auth" type="action" label="30784" help="30853">
+                    <visible>false</visible>
                     <data>RunPlugin(plugin://plugin.video.bobbi/?action=ad_remove_auth)</data>
                     <control type="button" format="action">
                         <close>false</close>
@@ -1729,6 +1749,7 @@
                     </dependencies>
                 </setting>
                 <setting id="tb_auth" type="action" label="30783" help="30912">
+                    <visible>false</visible>
                     <data>RunPlugin(plugin://plugin.video.bobbi/?action=tb_auth)</data>
                     <control type="button" format="action">
                         <close>false</close>
@@ -1740,6 +1761,7 @@
                     </dependencies>
                 </setting>
                 <setting id="tb_remove_auth" type="action" label="30784" help="30913">
+                    <visible>false</visible>
                     <data>RunPlugin(plugin://plugin.video.bobbi/?action=tb_remove_auth)</data>
                     <control type="button" format="action">
                         <close>false</close>
@@ -1791,6 +1813,7 @@
                     </dependencies>
                 </setting>
                 <setting id="oc_auth" type="action" label="30783" help="30951">
+                    <visible>false</visible>
                     <data>RunPlugin(plugin://plugin.video.bobbi/?action=oc_auth)</data>
                     <control type="button" format="action">
                         <close>false</close>
@@ -1802,6 +1825,7 @@
                     </dependencies>
                 </setting>
                 <setting id="oc_remove_auth" type="action" label="30784" help="30952">
+                    <visible>false</visible>
                     <data>RunPlugin(plugin://plugin.video.bobbi/?action=oc_remove_auth)</data>
                     <control type="button" format="action">
                         <close>false</close>
@@ -1813,6 +1837,7 @@
                     </dependencies>
                 </setting>
                 <setting id="offcloud_info" type="action" label="30916" help="30950">
+                    <visible>false</visible>
                     <data>RunPlugin(plugin://plugin.video.bobbi/?action=offcloud_info)</data>
                     <control type="button" format="action">
                         <close>false</close>
@@ -1860,6 +1885,7 @@
                     </dependencies>
                 </setting>
                 <setting id="premiumize_auth" type="action" label="30783" help="30845">
+                    <visible>false</visible>
                     <data>RunPlugin(plugin://plugin.video.bobbi/?action=pm_auth)</data>
                     <control type="button" format="action">
                         <close>false</close>
@@ -1871,6 +1897,7 @@
                     </dependencies>
                 </setting>
                 <setting id="premiumize_remove_auth" type="action" label="30784" help="30853">
+                    <visible>false</visible>
                     <data>RunPlugin(plugin://plugin.video.bobbi/?action=pm_remove_auth)</data>
                     <control type="button" format="action">
                         <close>false</close>
@@ -1928,6 +1955,7 @@
                     </dependencies>
                 </setting>
                 <setting id="easynews_info" type="action" label="90237" help="">
+                    <visible>false</visible>
                     <data>RunPlugin(plugin://plugin.video.bobbi/?action=easynews_info)</data>
                     <control type="button" format="action">
                         <close>false</close>

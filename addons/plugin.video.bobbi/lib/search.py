@@ -97,7 +97,7 @@ class SilentProgressDialog:
         pass
 
 
-def _build_search_cache_scope(scoped_addon_url: str = "", cache_backend=..., settings_getter=None) -> str:
+def _build_search_cache_scope(scoped_addon_url: str = "", cache_backend=..., settings_getter=None, *, profile_root=None) -> str:
     setting = settings_getter or get_setting
     flags = {
         "torrent": bool(setting("torrent_enable")),
@@ -134,11 +134,11 @@ def _build_search_cache_scope(scoped_addon_url: str = "", cache_backend=..., set
     )
     if xbmc.getSkinDir() == 'skin.bobbi.cinema':
         raw_scope += '|cinema-independent-indexers-v4-catalog-candidates'
-    # Two users/instances can share a media title but not their configured
-    # private indexers. Only the fingerprint reaches the persisted cache key.
-    instance = '\0'.join(str(setting(key, '') or '') for key in
-        ('jackett_host', 'jackett_port', 'jackett_apikey'))
+    from lib.utils.user_sources import cache_scope_suffix
+    instance = '\0'.join(str(setting(key, '') or '') for key in ('jackett_host', 'jackett_port', 'jackett_apikey'))
     raw_scope += '|jackett-instance:' + hashlib.sha256(instance.encode()).hexdigest()
+    # User source customizations (removed defaults, disabled indexers, custom Torznab) scope caches when present.
+    raw_scope += cache_scope_suffix(profile_root, cache_backend=backend)
     return hashlib.sha256(raw_scope.encode("utf-8")).hexdigest()
 
 
@@ -1835,12 +1835,32 @@ def _create_source_search(params, query, ids, mode, media_type, tv_data,
         binding = None  # Failed capture never binds later from a worker/retry.
     current = binding.is_current if binding is not None else (lambda: False)
     query_root = binding.root('plugin.video.bobbi') if binding is not None else None
+    from lib.utils.user_sources import load_user_sources
+    user_prefs = (load_user_sources(query_root) if query_root is not None
+                  else {'removed_defaults': [], 'disabled_jackett_indexers': [], 'custom_torznab_sources': []})
+    removed_defaults = frozenset(user_prefs.get('removed_defaults') or ())
+    custom_torznab = tuple(
+        src for src in (user_prefs.get('custom_torznab_sources') or ())
+        if isinstance(src, dict) and src.get('enabled', True)
+    )
     settings_error = None
     try:
         setting = capture_settings(query_root, current)
     except Exception as error:
         settings_error = error
         setting = lambda key, default=None: default  # Local-only presentation defaults.
+    _removed_setting_map = {
+        'jackett_enabled': 'jackett',
+        'prowlarr_enabled': 'prowlarr',
+        'stremio_enabled': 'stremio',
+        'nuvio_enabled': 'nuvio',
+    }
+    if removed_defaults & {'jackett', 'prowlarr', 'stremio', 'nuvio'}:
+        _base_setting = setting
+        def setting(key, default=None):
+            if _removed_setting_map.get(key) in removed_defaults:
+                return False
+            return _base_setting(key, default)
     def admission():
         if not current():
             raise ValueError('PROFILE_CHANGED')
@@ -1881,11 +1901,18 @@ def _create_source_search(params, query, ids, mode, media_type, tv_data,
     if preferred:
         session.publish(session.epoch, 'preferred', _prepare_stremio_results(preferred))
     local_catalogs = not scoped_addon_url and not jackgram_only
-    if local_catalogs:
+    active_local_providers = (
+        tuple(
+            label for label, sid in (('漫迪 MDsub', 'mdsub'), ('115-local-index', '115-local-index'))
+            if sid not in removed_defaults
+        )
+        if local_catalogs else ()
+    )
+    if active_local_providers:
         # Register before starting the coordinator: cancellation can terminalize
         # these producers even while a local read/validation is still running.
         # No catalog IO belongs to the caller's pre-window construction path.
-        for provider in ('漫迪 MDsub', '115-local-index'):
+        for provider in active_local_providers:
             session.publish(session.epoch, provider, state='PENDING')
     phase('SESSION_READY')
 
@@ -1937,7 +1964,7 @@ def _create_source_search(params, query, ids, mode, media_type, tv_data,
         if manager.scope_cancelled():
             return False
         if monotonic() >= manager.deadline:
-            for provider in ('漫迪 MDsub', '115-local-index'):
+            for provider in active_local_providers:
                 session.publish(session.epoch, provider, state='TIMEOUT', error='SEARCH_DEADLINE')
             return False
         return True
@@ -1947,26 +1974,28 @@ def _create_source_search(params, query, ids, mode, media_type, tv_data,
         if manager.retrying and ready_setup:
             manager.query_result_cache.resume_cached_queries()
             return ready_setup[0](manager)
-        if local_catalogs:
+        if active_local_providers:
             if not local_live(manager):
                 return
-            from lib.clients.mdsub_provider import find_sources as mdsub_sources
-            session.publish(session.epoch, '漫迪 MDsub', state='RUNNING')
-            rows = mdsub_sources(ids, mode, season, episode, prepared_session=prepared_session)
-            if not local_live(manager):
-                return
-            session.publish(session.epoch, '漫迪 MDsub', rows)
-            from lib.clients.bobbi_library import load_index, find_sources
-            session.publish(session.epoch, '115-local-index', state='RUNNING')
-            try:
-                clouds = find_sources(load_index(session=prepared_session), ids.get('tmdb_id'), mode, season, episode)
+            if '漫迪 MDsub' in active_local_providers:
+                from lib.clients.mdsub_provider import find_sources as mdsub_sources
+                session.publish(session.epoch, '漫迪 MDsub', state='RUNNING')
+                rows = mdsub_sources(ids, mode, season, episode, prepared_session=prepared_session)
                 if not local_live(manager):
                     return
-                session.publish(session.epoch, '115-local-index', clouds)
-            except (ValueError, OSError, KeyError, TypeError, RuntimeError) as error:
-                session.publish(session.epoch, '115-local-index', state='FAILED', error=type(error).__name__)
-            if not local_live(manager):
-                return
+                session.publish(session.epoch, '漫迪 MDsub', rows)
+            if '115-local-index' in active_local_providers:
+                from lib.clients.bobbi_library import load_index, find_sources
+                session.publish(session.epoch, '115-local-index', state='RUNNING')
+                try:
+                    clouds = find_sources(load_index(session=prepared_session), ids.get('tmdb_id'), mode, season, episode)
+                    if not local_live(manager):
+                        return
+                    session.publish(session.epoch, '115-local-index', clouds)
+                except (ValueError, OSError, KeyError, TypeError, RuntimeError) as error:
+                    session.publish(session.epoch, '115-local-index', state='FAILED', error=type(error).__name__)
+                if not local_live(manager):
+                    return
         phase('LOCAL_READY')
         if not local_live(manager):
             return
@@ -1994,7 +2023,7 @@ def _create_source_search(params, query, ids, mode, media_type, tv_data,
             # configuration cannot mean "enable everything" or an empty list.
             # Already-discovered independent local rows remain available.
             raise RuntimeError('SEARCH_CONFIGURATION_UNAVAILABLE') from error
-        configuration = _build_search_cache_scope(scoped_addon_url, backend, setting)
+        configuration = _build_search_cache_scope(scoped_addon_url, backend, setting, profile_root=query_root)
         # Older snapshots discarded indexer category evidence. Re-admit from
         # fresh provider data rather than re-publishing those rows after upgrade.
         scope = configuration + ':provider-v2:' + hashlib.sha256(session.media.encode()).hexdigest()
@@ -2047,17 +2076,19 @@ def _create_source_search(params, query, ids, mode, media_type, tv_data,
         if manager.scope_cancelled():
             return
         if not scoped_addon_url and not jackgram_only and ids.get('tmdb_id'):
+            disabled_catalogs = tuple(sid for sid in ('qqdocs',) if sid in removed_defaults)
             submit_catalogs(manager,
                 ids, mode, season, episode, inferred_year, context.get('catalog_aliases', []),
                 context.get('release_order'),
-                movie_years=movie_years, context=catalog_context)
+                movie_years=movie_years, context=catalog_context,
+                **({'disabled_providers': disabled_catalogs} if disabled_catalogs else {}))
         _submit_search_tasks_managed(manager, None, query, mode, media_type, season, episode,
             ids, scoped_addon_url, ids.get('tmdb_id'), ids.get('imdb_id'), variant=variant,
             title_language_mode=title_language_mode, year=inferred_year,
             title_aliases=aliases, jackgram_only=jackgram_only, slot_factory=slot_factory,
             cache_backend=query_backends[0] if query_backends else None, settings_getter=setting)
-        if (not scoped_addon_url and not jackgram_only and mode == 'tv'
-                and 16 in (context.get('genre_ids') or [])):
+        if ('animegarden' not in removed_defaults and not scoped_addon_url and not jackgram_only
+                and mode == 'tv' and 16 in (context.get('genre_ids') or [])):
             # Raw releases supplement the existing providers. ANI-RSS preview
             # collapses same-episode versions and is not a source-selection API.
             # No BGM subject ID is promoted to trusted TMDb catalogue identity.
@@ -2066,6 +2097,24 @@ def _create_source_search(params, query, ids, mode, media_type, tv_data,
                 ids, mode, _cinema_anime_queries(ids, mode, details=details), manager.deadline, manager.cancelled,
                 query_cache=manager.query_result_cache, _progressive=True, _cache_seed_only=True,
                 slot_factory=slot_factory, proxy_path=query_root / 'search-network.json', current=current)
+        if custom_torznab and not scoped_addon_url and not jackgram_only:
+            from lib.clients.jackett import Jackett
+            cancel_fn = getattr(manager, 'scope_cancelled', getattr(getattr(manager, 'cancelled', None), 'is_set', None))
+            for src in custom_torznab:
+                manager.submit_task(
+                    src['name'],
+                    f"{src['name']}:{src['id']}",
+                    Jackett.search_custom_torznab,
+                    src,
+                    query,
+                    mode,
+                    season,
+                    episode,
+                    inferred_year,
+                    title_queries=aliases,
+                    deadline=manager.deadline,
+                    cancelled=cancel_fn,
+                )
 
         # Optional RPDB/Fanart IO belongs to idle navigation warming. A picker
         # uses cached art (or TMDb art) and releases its search lease promptly.

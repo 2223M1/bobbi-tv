@@ -1,6 +1,7 @@
 """Unified 4-domain Accounts & Sources Center and thin cloud settings UI."""
 from .runtime import call
 from . import cd2_mounts
+from .i18n import is_english, tr
 from .server_ui import CANCELLED, CHANGED, NAVIGATED
 
 ACCOUNT_DOMAINS = ('services', 'servers', 'cloud', 'devices')
@@ -32,25 +33,50 @@ def status():
 
 
 def cd2_label(value):
+    en = is_english()
     state = value.get('state')
     if state == 'RUNNING':
         dependency = value.get('dependency')
         if dependency == 'READY' and value.get('ready') is True:
-            return '最近检查通过'
+            return 'Last check passed' if en else '最近检查通过'
         if dependency == 'CHECKING':
-            return '正在后台检查'
+            return 'Checking in background' if en else '正在后台检查'
         if dependency == 'ACCOUNT_MISMATCH':
-            return '网盘账号不一致'
+            return 'Cloud account mismatch' if en else '网盘账号不一致'
         if dependency == 'DEPENDENCY_UNAVAILABLE':
-            return '连接失败，请检查登录'
-        return '尚未检查连接'
-    return {'NOT_CONFIGURED': '未设置（可选）', 'STARTING': '正在启动',
-            'WAITING_ACCOUNT': '等待登录 115', 'REVOKING': '正在切换账号',
-            'UNAVAILABLE': '配置需要检查', 'STOPPED': '后台已停止',
-            'HOST_UNAVAILABLE': '影院后台暂不可用'}.get(state, '状态暂不可用')
+            return 'Connection failed, check sign-in' if en else '连接失败，请检查登录'
+        return 'Connection not checked yet' if en else '尚未检查连接'
+    if en:
+        return {
+            'NOT_CONFIGURED': 'Not configured (optional)',
+            'STARTING': 'Starting',
+            'WAITING_ACCOUNT': 'Waiting for 115 sign-in',
+            'REVOKING': 'Switching account',
+            'UNAVAILABLE': 'Check configuration',
+            'STOPPED': 'Service stopped',
+            'HOST_UNAVAILABLE': 'Cinema service unavailable',
+        }.get(state, 'Status unavailable')
+    return {
+        'NOT_CONFIGURED': '未设置（可选）',
+        'STARTING': '正在启动',
+        'WAITING_ACCOUNT': '等待登录 115',
+        'REVOKING': '正在切换账号',
+        'UNAVAILABLE': '配置需要检查',
+        'STOPPED': '后台已停止',
+        'HOST_UNAVAILABLE': '影院后台暂不可用',
+    }.get(state, '状态暂不可用')
 
 
 def cd2_details(value):
+    if is_english():
+        return (
+            '115 Pre-stage (CD2) · ' + cd2_label(value) + '\n\n'
+            'CD2 is not required for watching 115 share sources.\n'
+            'Existing CD2 mounts can be browsed directly in "My Library" without scanning a QR code. 115 share playback requires a one-time sign-in.\n'
+            'Only 115 pre-staging requires signing in to the same 115 account in CloudDrive; other cloud mounts do not need 115 sign-in.\n'
+            'If connection fails, check CloudDrive service and sign-in status first.\n\n'
+            'This screen only displays background status and never creates transfer tasks. Check the source picker for file readiness.'
+        )
     return ('115 提前存片（CD2） · ' + cd2_label(value) + '\n\n'
             '观看 115 分享片源无需 CD2。\n'
             '已有 CD2 挂载可直接在“我的片库”浏览，无需扫码。影院的 115 分享片源需单独登录一次。\n'
@@ -65,21 +91,48 @@ def transport(dialog):
     from .transport_preferences import load, save
     root = private_path(xbmcvfs.translatePath, 'config.json').parent
     mode = load(root)
-    selected = dialog.select('115 读取方式 · 重启 Kodi 后生效',
-        ['整块读取（兼容模式）', '边下载边读取'], preselect=1 if mode else 0)
+    selected = dialog.select(
+        tr(None, '115 读取方式 · 重启 Kodi 后生效', '115 Read Mode · Takes Effect After Restart'),
+        [
+            tr(None, '整块读取（兼容模式）', 'Block Read (Compatible Mode)'),
+            tr(None, '边下载边读取', 'Progressive Stream Read'),
+        ],
+        preselect=1 if mode else 0,
+    )
     if selected in (0, 1):
         save(root, selected == 1)
-        dialog.ok('已保存', '重启 Kodi 后生效，不影响当前播放。两种方式都保持原画质和原音轨。')
+        dialog.ok(
+            tr(None, '已保存', 'Saved'),
+            tr(None, '重启 Kodi 后生效，不影响当前播放。两种方式都保持原画质和原音轨。',
+               'Takes effect after restarting Kodi without affecting active playback. Both modes preserve original video and audio.'),
+        )
         return True
     return False
 
 
 def account_label(value):
+    if is_english():
+        return {True: 'Signed in', False: 'Not signed in', None: 'Service unavailable'}[value['authenticated']]
     return {True: '已保存登录', False: '未登录', None: '后台暂不可用'}[value['authenticated']]
 
 
 def connection_details(value, mounts):
     """Read-only projection; never enumerate cloud folders or expose credentials."""
+    if is_english():
+        mount_str = ('%d found' % len(mounts)) if mounts else 'None found'
+        return (
+            '115 Share Playback · ' + account_label(value) + '\n'
+            '115 Pre-stage (CD2) · ' + cd2_label(value['preparation']) + '\n'
+            'Local CD2 Mounts · ' + mount_str + '\n\n'
+            '115 supports local QR sign-in, switching, and sign-out with one active share-playback account at a time. '
+            'A saved sign-in does not guarantee the session is still valid or that every source is playable.\n\n'
+            'Other cloud drives can be used via existing CloudDrive mounts or added to "My Library" via WebDAV / SMB. '
+            'See "Native Multi-Cloud" for built-in QR and native drive support. '
+            'Multiple connections can be saved, checked, edited, or removed independently without signing out of 115.\n\n'
+            'CD2 mounts and 115 share sign-in are independent; detecting a mount does not prove its account or files are readable. '
+            'Remote CD2 instances can still be added over WebDAV / SMB.\n\n'
+            'Refreshing reads local status only and never re-authenticates, scans drives, transfers, or deletes files.'
+        )
     return ('115 分享播放 · ' + account_label(value) + '\n'
             '115 提前存片（CD2） · ' + cd2_label(value['preparation']) + '\n'
             '本机 CD2 挂载 · ' + ('发现 %d 个' % len(mounts) if mounts else '未发现') + '\n\n'
@@ -101,7 +154,7 @@ def _configure_cd2(dialog, value):
         from .android_preparation import show as configure
         configure(dialog)
     else:
-        dialog.textviewer('115 提前存片（CD2）', cd2_details(value['preparation']))
+        dialog.textviewer(tr(None, '115 提前存片（CD2）', '115 Pre-stage (CD2)'), cd2_details(value['preparation']))
 
 
 def _manage_library():
@@ -141,12 +194,15 @@ def _services_summary():
         bool(_plugin_setting('premiumize_token')),
         bool(_plugin_setting('offcloud_token')),
     ))
+    if is_english():
+        return ('%d connected' % count) if count else 'Trakt / Stremio / Nuvio / Debrid'
     return ('已连接 %d 项' % count) if count else 'Trakt / Stremio / Nuvio / Debrid'
 
 
 def _servers_summary():
     import xbmcvfs
     from .library_ui import registry
+    en = is_english()
     store = None
     try:
         store = registry(xbmcvfs.translatePath)
@@ -158,10 +214,10 @@ def _servers_summary():
         if store is not None:
             store.close()
     if not servers:
-        return '未保存连接'
+        return 'None saved' if en else '未保存连接'
     if active_emby is not None:
-        return '已存 %d 个 · 当前 %s' % (len(servers), active_emby.name)
-    return '已存 %d 个连接' % len(servers)
+        return ('%d saved · Active %s' % (len(servers), active_emby.name)) if en else ('已存 %d 个 · 当前 %s' % (len(servers), active_emby.name))
+    return ('%d saved' % len(servers)) if en else ('已存 %d 个连接' % len(servers))
 
 
 def _devices_summary():
@@ -172,81 +228,94 @@ def _devices_summary():
         paired = load_pairing(private_path(xbmcvfs.translatePath, 'helper-pairing.json')) is not None
     except Exception:
         paired = False
+    if is_english():
+        return 'Helper paired · Temporary phone QR' if paired else 'BT Helper & temporary phone QR'
     return '助手已配对 · 手机临时授权' if paired else 'BT 助手与手机临时授权'
 
 
 def _manage_service_item(dialog, service_key):
+    if service_key == 'search_sources':
+        _run_plugin_action('manage_search_sources')
+        return NAVIGATED
+    en = is_english()
     specs = {
         'trakt': ('Trakt', _plugin_flag('is_trakt_auth'), [
-            ('trakt_auth', '登录或重新授权 Trakt'),
-            ('trakt_auth_revoke', '退出 Trakt'),
+            ('trakt_auth', 'Sign in or re-authorize Trakt' if en else '登录或重新授权 Trakt'),
+            ('trakt_auth_revoke', 'Sign out of Trakt' if en else '退出 Trakt'),
         ]),
         'simkl': ('Simkl', _plugin_flag('simkl_authenticated'), [
-            ('simkl_auth', '登录或重新授权 Simkl'),
-            ('simkl_logout', '退出 Simkl'),
+            ('simkl_auth', 'Sign in or re-authorize Simkl' if en else '登录或重新授权 Simkl'),
+            ('simkl_logout', 'Sign out of Simkl' if en else '退出 Simkl'),
         ]),
         'stremio': ('Stremio', _plugin_flag('stremio_loggedin'), [
-            ('stremio_login', '登录 Stremio 账号'),
-            ('stremio_update', '同步账号插件源'),
-            ('stremio_toggle_addons', '选择播放插件源'),
-            ('stremio_toggle_catalogs', '选择目录插件源'),
-            ('stremio_toggle_tv_addons', '选择直播插件源'),
-            ('add_custom_stremio_addon', '添加自定义插件源网址'),
-            ('remove_custom_stremio_addon', '移除自定义插件源'),
-            ('stremio_logout', '退出 Stremio 账号'),
+            ('stremio_login', 'Sign in to Stremio account' if en else '登录 Stremio 账号'),
+            ('stremio_update', 'Sync account add-ons' if en else '同步账号插件源'),
+            ('stremio_toggle_addons', 'Select stream add-ons' if en else '选择播放插件源'),
+            ('stremio_toggle_catalogs', 'Select catalog add-ons' if en else '选择目录插件源'),
+            ('stremio_toggle_tv_addons', 'Select live TV add-ons' if en else '选择直播插件源'),
+            ('add_custom_stremio_addon', 'Add custom add-on URL' if en else '添加自定义插件源网址'),
+            ('remove_custom_stremio_addon', 'Remove custom add-on' if en else '移除自定义插件源'),
+            ('stremio_logout', 'Sign out of Stremio account' if en else '退出 Stremio 账号'),
         ]),
         'nuvio': ('Nuvio', _plugin_flag('nuvio_authenticated'), [
-            ('nuvio_auth', '登录 Nuvio 账号'),
-            ('nuvio_toggle_addons', '选择已导入的 Nuvio 来源'),
-            ('nuvio_logout', '退出 Nuvio 账号'),
+            ('nuvio_auth', 'Sign in to Nuvio account' if en else '登录 Nuvio 账号'),
+            ('nuvio_toggle_addons', 'Select imported Nuvio sources' if en else '选择已导入的 Nuvio 来源'),
+            ('nuvio_logout', 'Sign out of Nuvio account' if en else '退出 Nuvio 账号'),
         ]),
-        'debrid': ('Debrid 与下载加速服务', any((
+        'debrid': ('Debrid & Download Services' if en else 'Debrid 与下载加速服务', any((
             _plugin_flag('real_debid_authorized'),
             _plugin_flag('alldebrid_authorized'),
             bool(_plugin_setting('torbox_token')),
             bool(_plugin_setting('premiumize_token')),
             bool(_plugin_setting('offcloud_token')),
         )), [
-            ('rd_auth', 'Real-Debrid · 授权登录'),
-            ('rd_remove_auth', 'Real-Debrid · 移除授权'),
-            ('ad_auth', 'AllDebrid · 授权登录'),
-            ('ad_remove_auth', 'AllDebrid · 移除授权'),
-            ('tb_auth', 'TorBox · 授权登录'),
-            ('tb_remove_auth', 'TorBox · 移除授权'),
-            ('pm_auth', 'Premiumize · 授权登录'),
-            ('pm_remove_auth', 'Premiumize · 移除授权'),
-            ('oc_auth', 'Offcloud · 授权登录'),
-            ('oc_remove_auth', 'Offcloud · 移除授权'),
-            ('offcloud_info', 'Offcloud · 查看账户详情'),
-            ('easynews_info', 'Easynews · 查看账户详情'),
+            ('rd_auth', 'Real-Debrid · Authorize' if en else 'Real-Debrid · 授权登录'),
+            ('rd_remove_auth', 'Real-Debrid · Remove Authorization' if en else 'Real-Debrid · 移除授权'),
+            ('ad_auth', 'AllDebrid · Authorize' if en else 'AllDebrid · 授权登录'),
+            ('ad_remove_auth', 'AllDebrid · Remove Authorization' if en else 'AllDebrid · 移除授权'),
+            ('tb_auth', 'TorBox · Authorize' if en else 'TorBox · 授权登录'),
+            ('tb_remove_auth', 'TorBox · Remove Authorization' if en else 'TorBox · 移除授权'),
+            ('pm_auth', 'Premiumize · Authorize' if en else 'Premiumize · 授权登录'),
+            ('pm_remove_auth', 'Premiumize · Remove Authorization' if en else 'Premiumize · 移除授权'),
+            ('oc_auth', 'Offcloud · Authorize' if en else 'Offcloud · 授权登录'),
+            ('oc_remove_auth', 'Offcloud · Remove Authorization' if en else 'Offcloud · 移除授权'),
+            ('offcloud_info', 'Offcloud · Account Info' if en else 'Offcloud · 查看账户详情'),
+            ('easynews_info', 'Easynews · Account Info' if en else 'Easynews · 查看账户详情'),
         ]),
     }
     title, authed, actions = specs[service_key]
-    heading = title + ' · ' + ('已登录' if authed else '未登录')
+    state_str = ('Signed in' if authed else 'Not signed in') if en else ('已登录' if authed else '未登录')
+    heading = title + ' · ' + state_str
     choice = dialog.select(heading, [label for _, label in actions])
     if 0 <= choice < len(actions):
         _run_plugin_action(actions[choice][0])
-        return CHANGED
+        return NAVIGATED
     return CANCELLED
 
 
 def _manage_services_domain(dialog):
     def build():
+        en = is_english()
         rows = [
-            ('service:trakt', 'Trakt · ' + ('已授权' if _plugin_flag('is_trakt_auth') else '未登录')),
-            ('service:simkl', 'Simkl · ' + ('已授权' if _plugin_flag('simkl_authenticated') else '未登录')),
-            ('service:stremio', 'Stremio · ' + ('已登录' if _plugin_flag('stremio_loggedin') else '未登录或仅自定义源')),
-            ('service:nuvio', 'Nuvio · ' + ('已登录' if _plugin_flag('nuvio_authenticated') else '未登录')),
-            ('service:debrid', 'Debrid 与加速服务 · Real-Debrid / AllDebrid / TorBox / PM'),
+            ('service:trakt', 'Trakt · ' + (('Authorized' if _plugin_flag('is_trakt_auth') else 'Not signed in') if en else ('已授权' if _plugin_flag('is_trakt_auth') else '未登录'))),
+            ('service:simkl', 'Simkl · ' + (('Authorized' if _plugin_flag('simkl_authenticated') else 'Not signed in') if en else ('已授权' if _plugin_flag('simkl_authenticated') else '未登录'))),
+            ('service:stremio', 'Stremio · ' + (('Signed in' if _plugin_flag('stremio_loggedin') else 'Not signed in / custom add-ons') if en else ('已登录' if _plugin_flag('stremio_loggedin') else '未登录或仅自定义源'))),
+            ('service:nuvio', 'Nuvio · ' + (('Signed in' if _plugin_flag('nuvio_authenticated') else 'Not signed in') if en else ('已登录' if _plugin_flag('nuvio_authenticated') else '未登录'))),
+            ('service:debrid', ('Debrid Services · Real-Debrid / AllDebrid / TorBox / PM' if en else 'Debrid 与加速服务 · Real-Debrid / AllDebrid / TorBox / PM')),
+            ('service:search_sources', tr(32077, '检索源管理 · 默认源增删 / 子站点 / 自定义源', 'Search Sources · Default & Custom Sources')),
         ]
-        return '用户服务', rows, (None, ())
+        return tr(32071, '用户服务', 'User Services'), rows, (None, ())
     return _menu_loop(dialog, build)
 
 
 def _open_media_servers_view(dialog):
     import xbmc
     if not xbmc.getCondVisibility('System.HasAddon(plugin.video.bobbi.library)'):
-        dialog.ok('片库组件未安装', '请用波比 TV 完整安装包修复，已保存的服务器连接保留。')
+        dialog.ok(
+            tr(None, '片库组件未安装', 'Library Add-on Not Installed'),
+            tr(None, '请用波比 TV 完整安装包修复，已保存的服务器连接保留。',
+               'Repair using the full bobbi TV release bundle; saved server connections are kept.'),
+        )
         return CANCELLED
     xbmc.executebuiltin('ActivateWindow(Videos,plugin://plugin.video.bobbi.library/?action=root&kind=media_server,return)')
     return NAVIGATED
@@ -268,18 +337,20 @@ def _manage_servers_domain(dialog):
     try:
         store = registry(xbmcvfs.translatePath)
         while not monitor.abortRequested():
+            en = is_english()
             servers = [s for s in store.sources() if s.kind == 'media_server']
             active_emby = store.emby_binding()[0]
             rows = [
-                '＋ 添加媒体服务器 · Emby / Jellyfin / Plex',
-                '浏览全部媒体服务器',
+                ('+ Add Media Server · Emby / Jellyfin / Plex' if en else '＋ 添加媒体服务器 · Emby / Jellyfin / Plex'),
+                ('Browse All Media Servers' if en else '浏览全部媒体服务器'),
             ]
             for src in servers:
-                prov = provider_labels.get(src.metadata.get('provider'), '媒体服务器')
+                prov = provider_labels.get(src.metadata.get('provider'), 'Media Server' if en else '媒体服务器')
                 is_active = (src.metadata.get('provider') == 'emby'
                              and active_emby is not None and active_emby.id == src.id)
-                rows.append(src.name + ' · ' + prov + (' · 当前浏览账号' if is_active else ''))
-            choice = dialog.select('媒体服务器', rows)
+                active_tag = (' · Active Account' if en else ' · 当前浏览账号') if is_active else ''
+                rows.append(src.name + ' · ' + prov + active_tag)
+            choice = dialog.select(tr(32072, '媒体服务器', 'Media Servers'), rows)
             if choice < 0 or choice >= len(rows):
                 return CHANGED if changed else CANCELLED
             if choice == 0:
@@ -296,7 +367,7 @@ def _manage_servers_domain(dialog):
                 if outcome == CHANGED:
                     changed = True
     except (LibraryError, OSError, RuntimeError, ValueError) as error:
-        dialog.ok('媒体服务器设置暂不可用', message(error))
+        dialog.ok(tr(None, '媒体服务器设置暂不可用', 'Media Server Settings Unavailable'), message(error))
     finally:
         if store is not None:
             store.close()
@@ -307,15 +378,15 @@ def _manage_servers_domain(dialog):
 
 def _manage_devices_domain(dialog):
     # Opening this menu strictly reads local state only and NEVER creates a phone session.
-    import xbmc
     def build():
+        en = is_english()
         rows = [
-            ('device:helper', 'BT 助手与下载后台 · ' + _devices_summary()),
-            ('device:stremio_phone', '手机管理 Stremio 来源 · 需确认后开启临时扫码'),
-            ('device:import_phone', '手机上传片库或 T4 配置 · 需确认后开启临时扫码'),
-            ('device:info', '手机与设备安全说明'),
+            ('device:helper', ('BT Helper & Engine · ' if en else 'BT 助手与下载后台 · ') + _devices_summary()),
+            ('device:stremio_phone', 'Manage Stremio via Phone · Confirm to open temporary QR' if en else '手机管理 Stremio 来源 · 需确认后开启临时扫码'),
+            ('device:import_phone', 'Upload Library or T4 Config via Phone · Confirm to open temporary QR' if en else '手机上传片库或 T4 配置 · 需确认后开启临时扫码'),
+            ('device:info', 'Phone & Device Security Info' if en else '手机与设备安全说明'),
         ]
-        return '设备与手机', rows, (None, ())
+        return tr(32074, '设备与手机', 'Devices & Phone'), rows, (None, ())
     return _menu_loop(dialog, build)
 
 
@@ -325,7 +396,10 @@ def _dispatch_action(action, dialog, value, mounts=()):
         from .library_ui import open_existing_cd2
         return NAVIGATED if open_existing_cd2(dialog) else CANCELLED
     if action == 'status':
-        dialog.textviewer('网盘状态与支持范围', connection_details(value, mounts))
+        dialog.textviewer(
+            tr(None, '网盘状态与支持范围', 'Cloud Status & Support Scope'),
+            connection_details(value, mounts),
+        )
         return CANCELLED
     if action == 'account':
         from .cloud_ui import login
@@ -362,15 +436,19 @@ def _dispatch_action(action, dialog, value, mounts=()):
     if action == 'device:helper':
         import xbmc
         xbmc.executebuiltin('RunScript(script.bobbi.setup,helper)')
-        return CHANGED
+        return NAVIGATED
     if action == 'device:stremio_phone':
         _run_plugin_action('stremio_manage_phone')
-        return CHANGED
+        return NAVIGATED
     if action == 'device:import_phone':
         _run_plugin_action('source_import_manage_phone')
-        return CHANGED
+        return NAVIGATED
     if action == 'device:info':
-        dialog.ok('设备与手机权限范围', '打开菜单不会开启端口或创建会话。所有手机扫码管理均限定在当前选定功能，关闭二维码窗口即刻撤销。')
+        dialog.ok(
+            tr(None, '设备与手机权限范围', 'Device & Phone Permission Scope'),
+            tr(None, '打开菜单不会开启端口或创建会话。所有手机扫码管理均限定在当前选定功能，关闭二维码窗口即刻撤销。',
+               'Opening menus never opens ports or creates sessions. Every phone QR session is scoped strictly to the selected task and revoked immediately when closed.'),
+        )
         return CANCELLED
     return CANCELLED
 
@@ -396,17 +474,20 @@ def _menu_loop(dialog, build_menu):
 
 def details_outcome(dialog):
     def build():
+        en = is_english()
         value = status()
         mounts = cd2_mounts.discover()
-        rows = [('status', '状态与支持范围'),
-                ('account', '115 账号 · ' + account_label(value) + ' · 登录 / 切换 / 退出'),
-                ('library', '多网盘 / NAS 连接 · 添加 / 检查 / 修改 / 移除'),
-                ('cd2', '115 提前存片（CD2） · ' + cd2_label(value['preparation'])),
-                ('transport', '高级 · 115 读取方式'),
-                ('refresh', '刷新状态'),
-                ('native', '原生多网盘 · 接入与验证'),
-                ('preparation_tasks', '115 准备任务 · 只读实时状态')]
-        return '网盘详细管理', rows, (value, mounts)
+        rows = [
+            ('status', 'Status & Support Scope' if en else '状态与支持范围'),
+            ('account', ('115 Account · ' + account_label(value) + ' · Sign In / Switch / Sign Out') if en else ('115 账号 · ' + account_label(value) + ' · 登录 / 切换 / 退出')),
+            ('library', 'Multi-Cloud / NAS Connections · Add / Check / Edit / Remove' if en else '多网盘 / NAS 连接 · 添加 / 检查 / 修改 / 移除'),
+            ('cd2', ('115 Pre-stage (CD2) · ' if en else '115 提前存片（CD2） · ') + cd2_label(value['preparation'])),
+            ('transport', 'Advanced · 115 Read Mode' if en else '高级 · 115 读取方式'),
+            ('refresh', 'Refresh Status' if en else '刷新状态'),
+            ('native', 'Native Multi-Cloud · Sign-In & Verification' if en else '原生多网盘 · 接入与验证'),
+            ('preparation_tasks', '115 Preparation Tasks · Read-Only Live Status' if en else '115 准备任务 · 只读实时状态'),
+        ]
+        return tr(32076, '网盘详细管理', 'Cloud Advanced Management'), rows, (value, mounts)
     return _menu_loop(dialog, build)
 
 
@@ -417,17 +498,20 @@ def details(dialog):
 
 def show_outcome(dialog=None):
     def build():
+        en = is_english()
         value = status()
         account = account_label(value)
-        rows = [('account', '115 分享播放 · ' + account),
-                ('cd2', '115 提前存片（CD2） · ' + cd2_label(value['preparation'])),
-                ('library', '我的片库 · 多网盘 / NAS'),
-                ('details', '详细管理'),
-                ('refresh', '刷新状态'),
-                ('files', '我的文件 · 原生网盘')]
+        rows = [
+            ('account', ('115 Share Playback · ' if en else '115 分享播放 · ') + account),
+            ('cd2', ('115 Pre-stage (CD2) · ' if en else '115 提前存片（CD2） · ') + cd2_label(value['preparation'])),
+            ('library', 'My Library · Multi-Cloud / NAS' if en else '我的片库 · 多网盘 / NAS'),
+            ('details', 'Advanced Management' if en else '详细管理'),
+            ('refresh', 'Refresh Status' if en else '刷新状态'),
+            ('files', 'My Files · Native Cloud' if en else '我的文件 · 原生网盘'),
+        ]
         if cd2_mounts.discover():
-            rows.insert(0, ('mounted', '使用已有 CD2 网盘 · 无需扫码'))
-        return '网盘账号与连接', rows, (value,)
+            rows.insert(0, ('mounted', 'Use Existing CD2 Mount · No QR Needed' if en else '使用已有 CD2 网盘 · 无需扫码'))
+        return tr(32075, '网盘账号与连接', 'Cloud Accounts & Connections'), rows, (value,)
     return _menu_loop(dialog, build)
 
 
@@ -452,11 +536,11 @@ def show_accounts(dialog=None, domain=None):
     def build():
         value = status()
         rows = [
-            ('domain_services', '用户服务 · ' + _services_summary()),
-            ('domain_servers', '媒体服务器 · ' + _servers_summary()),
-            ('domain_cloud', '网盘与共享来源 · 115 ' + account_label(value)),
-            ('domain_devices', '设备与手机 · ' + _devices_summary()),
+            ('domain_services', tr(32071, '用户服务', 'User Services') + ' · ' + _services_summary()),
+            ('domain_servers', tr(32072, '媒体服务器', 'Media Servers') + ' · ' + _servers_summary()),
+            ('domain_cloud', tr(32073, '网盘与共享来源', 'Cloud Drives & Shared Sources') + ' · 115 ' + account_label(value)),
+            ('domain_devices', tr(32074, '设备与手机', 'Devices & Phone') + ' · ' + _devices_summary()),
         ]
-        return '账号与来源中心', rows, (value,)
+        return tr(32070, '账号与来源中心', 'Accounts & Sources Center'), rows, (value,)
 
     return _menu_loop(dialog, build)

@@ -447,4 +447,6 @@
       </control>
     </definition>
   </include>
+  <expression name="BobbiHostHasVS10">!String.IsEmpty(Player.Process(amlogic.vs10.mode)) | String.IsEqual(Window(Home).Property(Bobbi.Host.SupportsVS10),true)</expression>
+  <expression name="BobbiSupportsVS10">[$EXP[BobbiHostHasVS10]] + !String.IsEmpty(Player.Process(video.source.hdr.type)) + !String.IsEqual(Player.Process(video.source.hdr.type.raw),2)</expression>
 </includes>

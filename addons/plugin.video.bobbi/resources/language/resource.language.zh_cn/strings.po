@@ -6874,3 +6874,67 @@ msgstr "片库暂不可用，原文件、观看记录与已保存的整理结果
 msgctxt "#91640"
 msgid "Library Not Loaded"
 msgstr "未读取片库"
+
+msgctxt "#91641"
+msgid "Search Sources Hub"
+msgstr "检索源管理中心"
+
+msgctxt "#91642"
+msgid "1. Default Sources (Toggle / Remove / Restore)"
+msgstr "1. 默认源管理（启用 / 移除 / 恢复默认源）"
+
+msgctxt "#91643"
+msgid "2. Jackett Sub-Indexers (Toggle / Disable Sites)"
+msgstr "2. Jackett 子站点管理（按站点开关 / 移除失效源）"
+
+msgctxt "#91644"
+msgid "3. Custom Search Sources (Add / Edit / Delete)"
+msgstr "3. 自定义检索源（添加 / 编辑 / 删除 Torznab 或 Stremio 源）"
+
+msgctxt "#91645"
+msgid "4. Source Libraries & Servers (URL / T4 / Media Server / Cloud)"
+msgstr "4. 片源库与聚合源（片源库网址 / T4 / 媒体服 / 网盘）"
+
+msgctxt "#91646"
+msgid "5. Quick Multi-select Active Scrapers"
+msgstr "5. 快速多选已启用插件源"
+
+msgctxt "#91647"
+msgid "Restore All Default Sources"
+msgstr "恢复全部默认源"
+
+msgctxt "#91648"
+msgid "Active"
+msgstr "启用中"
+
+msgctxt "#91649"
+msgid "Removed"
+msgstr "已移除"
+
+msgctxt "#91650"
+msgid "Disabled"
+msgstr "已停用"
+
+msgctxt "#91651"
+msgid "Add Custom Torznab Source"
+msgstr "添加自定义 Torznab 源"
+
+msgctxt "#91652"
+msgid "Configure Jackett Host & API Key"
+msgstr "配置 Jackett 地址与 API Key"
+
+msgctxt "#91653"
+msgid "Configure Prowlarr Host & API Key"
+msgstr "配置 Prowlarr 地址与 API Key"
+
+msgctxt "#91654"
+msgid "Add Custom Stremio Addon URL"
+msgstr "添加自定义 Stremio 插件源网址"
+
+msgctxt "#91655"
+msgid "Remove Custom Stremio Addon"
+msgstr "移除自定义 Stremio 插件源"
+
+msgctxt "#91656"
+msgid "Default sources restored"
+msgstr "已恢复全部默认源"
