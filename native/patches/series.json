@@ -15,7 +15,7 @@
     },
     {
       "file": "0004-bobbi-android-host.patch",
-      "sha256": "ed9277fcea0a1ffe2c60429ebce68a4655a2ccaaaffd8e110386145097405cd6"
+      "sha256": "3faa766a0d4dd1c7926520466637fc830bc43fbb93c65e9a8a859380c043a212"
     },
     {
       "file": "0005-bobbi-android-fonts.patch",

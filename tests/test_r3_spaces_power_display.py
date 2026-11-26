@@ -183,7 +183,7 @@ def test_home_short_back_and_fixed_tools_button_contracts():
     assert 'Dialog.Close(all)' not in vs10_raw
     assert 'Dialog.Close(1116)' in vs10_raw
     vs10_items = ET.fromstring(vs10_raw).findall('.//content/item')
-    expected_vs10_fallback = 'String.IsEmpty(Player.Process(video.source.hdr.type)) | String.IsEqual(Player.Process(video.source.hdr.type.raw),2)'
+    expected_vs10_fallback = '!$EXP[BobbiSupportsVS10]'
     assert any(item.findtext('visible') == expected_vs10_fallback and item.findtext('onclick') == 'Dialog.Close(1116)'
                for item in vs10_items)
 

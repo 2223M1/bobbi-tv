@@ -2023,7 +2023,7 @@ def _create_source_search(params, query, ids, mode, media_type, tv_data,
             # configuration cannot mean "enable everything" or an empty list.
             # Already-discovered independent local rows remain available.
             raise RuntimeError('SEARCH_CONFIGURATION_UNAVAILABLE') from error
-        configuration = _build_search_cache_scope(scoped_addon_url, backend, setting, profile_root=query_root)
+        configuration = _build_search_cache_scope(scoped_addon_url, backend, setting)
         # Older snapshots discarded indexer category evidence. Re-admit from
         # fresh provider data rather than re-publishing those rows after upgrade.
         scope = configuration + ':provider-v2:' + hashlib.sha256(session.media.encode()).hexdigest()

@@ -42,9 +42,9 @@ def test_stable_uses_approved_opt_in_skin_and_plugin_dialogs():
     # Both freeze checks still cover the entire original archive, including
     # frame offsets, pixels and padding. Only the two new lookup keys differ.
     rows['media/Textures.xbt'] = approved_digest((skin/'media/Textures.xbt').read_bytes())
-    # CE2185: user-approved Home Emby rails, slot settings, VideoOSD Next capsule, and DialogVideoInfo refresh.
-    assert fingerprint(visual_rows(skin, rows, data)) == 'a6ed53e6f58cd6528a2928481a442a68943708f7c31e58a2aed379178c9a0c01'
-    assert fingerprint(rows) == 'c583bc890765ba48eeec2203250fc96e51d31117bbeadd05e5316f776a795e97'
+    # CE2188: MyFavourites binding, Settings IA consolidation, VS10/OSD capability expressions, and Liquid Glass state sync.
+    assert fingerprint(visual_rows(skin, rows, data)) == 'c8f58fd898dab9cc022984bb5a9239a37a26fc7e3981cf44a330d5fa5c83ec96'
+    assert fingerprint(rows) == 'b329cc8dd872c3e56f085a9fea02fe8980908f89382a897a58d541d46e75b189'
     mirror = ROOT/'addons/plugin.video.bobbi/resources/skins/Default'
     mirrored = files(mirror)
     assert fingerprint(visual_rows(mirror, mirrored)) == '4a20833ad30cf0f1b304389a0bc34d0b907c213491211200602a4cfe4332149d'

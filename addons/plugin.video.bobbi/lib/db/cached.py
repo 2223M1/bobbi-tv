@@ -274,6 +274,7 @@ class HybridCache(_BaseCache):
     def __init__(self, database=None, *, current=lambda: True, strict_reads=False):
         self._current, self._revoked = current, False
         self._strict_reads = strict_reads
+        self._db_path = database
         self._require_current()
         # Legacy callers keep their existing default. Search supplies one
         # captured absolute database, including a profile-specific L1 namespace.
