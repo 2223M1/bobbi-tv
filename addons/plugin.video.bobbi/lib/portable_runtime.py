@@ -44,6 +44,23 @@ def _sync_android_locale(*, force=False):
         return None
 
 
+def _is_noisy_chunk_observation(code: str) -> bool:
+    """Route high-frequency per-chunk playback read yields/completions to LOGDEBUG.
+
+    Keeps begin, end, retry, failure, and 20s READ_WINDOW summaries at LOGINFO so
+    production CoreELEC TF cards do not flush thousands of synchronous log lines
+    during high-bitrate playback while handling Yatse / remote input.
+    """
+    if not isinstance(code, str):
+        return False
+    if code.startswith('READ_YIELDED '):
+        return True
+    if '"event":"share_read"' in code and '"outcome":"failed"' not in code:
+        if all(tag not in code for tag in ('"phase":"begin"', '"phase":"end"', '"phase":"retry"')):
+            return True
+    return False
+
+
 def _sync_host_ui_properties(*, force_locale=True, sys_root=Path('/sys'), platform_name=None):
     try:
         import xbmcgui
@@ -73,7 +90,11 @@ def main(capabilities=None):
     plugin_root = binding.root('plugin.video.bobbi')
     subtitle_root = configure(plugin_root, subtitle_root=abi['root'] if abi else None,
               native_sha256=abi['sha256'] if abi else None, current=binding.is_current)
-    report = lambda code: xbmc.log('[bobbi] ' + code, xbmc.LOGINFO)
+    debug_level = getattr(xbmc, 'LOGDEBUG', 0)
+    report = lambda code: xbmc.log(
+        '[bobbi] ' + code,
+        debug_level if _is_noisy_chunk_observation(code) else xbmc.LOGINFO,
+    )
     try:
         from lib.db.file_history import FileHistory
         from lib.db.pickle_db import PickleDatabase

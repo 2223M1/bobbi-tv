@@ -1,10 +1,12 @@
 """Scoped, on-demand Emby Primary thumbnails. No remote URL, token or private disk cache."""
+from collections import OrderedDict
 from contextlib import closing
 import hashlib
 import hmac
 from pathlib import Path
 import re
 import struct
+from threading import Lock
 import time
 from urllib.parse import urlencode
 from urllib.request import Request
@@ -17,6 +19,51 @@ from .server_http import Session, address
 MAX_BYTES = 2 * 1024 * 1024
 KEY = re.compile(r'[A-Za-z0-9_-]{1,128}')
 PATH = re.compile(r'/emby-art/([a-f0-9]{32})/([a-f0-9]{64})/([A-Za-z0-9_-]{1,128})/([A-Za-z0-9_-]{1,128})/([a-f0-9]{64})')
+VERIFIED_TAG_TTL_SECONDS = 60.0
+VERIFIED_TAG_LIMIT = 512
+_VERIFIED_TAGS_LOCK = Lock()
+_VERIFIED_TAGS: OrderedDict[tuple[str, str, str, str, str], float] = OrderedDict()
+
+
+def _tag_scope_key(location: str, token: str, user_id: str, item: str, tag: str) -> tuple[str, str, str, str, str]:
+    tok_digest = hashlib.sha256(token.encode('utf-8')).hexdigest()
+    return (location.rstrip('/'), tok_digest, user_id, item, tag)
+
+
+def note_verified_primary_tag(location: str, token: str, user_id: str, item: str, tag: str) -> None:
+    """Record a short-lived in-memory lease for a user-scoped Primary tag just verified by a page read."""
+    if any(not isinstance(v, str) or not v for v in (location, token, user_id, item, tag)):
+        return
+    if not KEY.fullmatch(item) or not KEY.fullmatch(tag):
+        return
+    key = _tag_scope_key(location, token, user_id, item, tag)
+    expires = time.monotonic() + VERIFIED_TAG_TTL_SECONDS
+    with _VERIFIED_TAGS_LOCK:
+        _VERIFIED_TAGS[key] = expires
+        _VERIFIED_TAGS.move_to_end(key)
+        while len(_VERIFIED_TAGS) > VERIFIED_TAG_LIMIT:
+            _VERIFIED_TAGS.popitem(last=False)
+
+
+def _has_verified_primary_tag(source, item: str, tag: str) -> bool:
+    uid = source.metadata.get('user_id', '') if isinstance(getattr(source, 'metadata', None), dict) else ''
+    if not source.location or not source.password or not uid:
+        return False
+    key = _tag_scope_key(source.location, source.password, uid, item, tag)
+    now = time.monotonic()
+    with _VERIFIED_TAGS_LOCK:
+        exp = _VERIFIED_TAGS.get(key)
+        if exp is None:
+            return False
+        if now >= exp:
+            _VERIFIED_TAGS.pop(key, None)
+            return False
+        return True
+
+
+def clear_verified_primary_tags() -> None:
+    with _VERIFIED_TAGS_LOCK:
+        _VERIFIED_TAGS.clear()
 
 
 def _signer(token):
@@ -131,11 +178,14 @@ def thumbnail_type(raw, declared):
 def fetch_primary(source, item, tag, deadline, current):
     """Verify the user-scoped item still advertises this tag, then GET the fixed image route."""
     session = Session('emby', source.location, source.password)
-    with session.budget(max(.01, deadline-time.monotonic())):
-        data = session.request('/Users/' + source.metadata['user_id'] + '/Items/' + item,
-                               query={'EnableImageTypes':'Primary', 'ImageTypeLimit':1})
-    if (not isinstance(data, dict) or data.get('Id') != item or type(data.get('ImageTags')) is not dict
-            or data['ImageTags'].get('Primary') != tag or not current()):
+    if not _has_verified_primary_tag(source, item, tag):
+        with session.budget(max(.01, deadline-time.monotonic())):
+            data = session.request('/Users/' + source.metadata['user_id'] + '/Items/' + item,
+                                   query={'EnableImageTypes':'Primary', 'ImageTypeLimit':1})
+        if (not isinstance(data, dict) or data.get('Id') != item or type(data.get('ImageTags')) is not dict
+                or data['ImageTags'].get('Primary') != tag or not current()):
+            raise ValueError('IMAGE_CHANGED')
+    elif not current():
         raise ValueError('IMAGE_CHANGED')
     url = address(session.base, '/Items/' + item + '/Images/Primary') + '?' + urlencode({
         'tag':tag, 'MaxWidth':440, 'MaxHeight':660})

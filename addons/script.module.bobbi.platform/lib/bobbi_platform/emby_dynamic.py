@@ -1,4 +1,5 @@
 """Emby as an online Kodi directory. No scanner, history writer or player owner."""
+from threading import Lock
 from urllib.parse import quote, urlencode
 import time
 
@@ -14,6 +15,43 @@ from .paths import ProfileBinding
 from .server_emby import Client, static_original_url
 
 PAGE = 20
+MAX_PAGE = 10000
+HOME_RAIL_TOTAL_BUDGET_SECONDS = 6.0
+HOME_SOURCE_MAX_BUDGET_SECONDS = 4.5
+DEAD_SOURCE_COOLDOWN_SECONDS = 30.0
+_HOME_COOLDOWN_LOCK = Lock()
+_HOME_UNREACHABLE_UNTIL: dict[tuple[str, str, str], float] = {}
+
+
+def _home_source_cooling_down(source_id: str, rev: str, location: str, now: float | None = None) -> bool:
+    cur = time.monotonic() if now is None else now
+    key = (source_id, rev, location)
+    with _HOME_COOLDOWN_LOCK:
+        until = _HOME_UNREACHABLE_UNTIL.get(key)
+        if until is None:
+            return False
+        if cur >= until:
+            _HOME_UNREACHABLE_UNTIL.pop(key, None)
+            return False
+        return True
+
+
+def _mark_home_source_unreachable(source_id: str, rev: str, location: str) -> None:
+    key = (source_id, rev, location)
+    with _HOME_COOLDOWN_LOCK:
+        if len(_HOME_UNREACHABLE_UNTIL) >= 64:
+            _HOME_UNREACHABLE_UNTIL.clear()
+        _HOME_UNREACHABLE_UNTIL[key] = time.monotonic() + DEAD_SOURCE_COOLDOWN_SECONDS
+
+
+def _clear_home_source_unreachable(source_id: str, rev: str, location: str) -> None:
+    with _HOME_COOLDOWN_LOCK:
+        _HOME_UNREACHABLE_UNTIL.pop((source_id, rev, location), None)
+
+
+def reset_home_cooldowns() -> None:
+    with _HOME_COOLDOWN_LOCK:
+        _HOME_UNREACHABLE_UNTIL.clear()
 BASE = 'plugin://plugin.video.bobbi.library/?'
 FOLDERS = {'Folder', 'CollectionFolder', 'BoxSet', 'Series', 'Season', 'UserView'}
 LEAVES = {'Movie': 'movie', 'Episode': 'episode', 'Video': 'video', 'MusicVideo': 'musicvideo',
@@ -116,6 +154,7 @@ def execute(handle, params, store, item):
     action = params['action']
     play = action == 'emby_play'
     mark = action == 'emby_mark'
+    notice_only = action in ('emby_limit_notice', 'emby_jump')
     from .optimization import observe
     started, outcome = time.monotonic(), None
     # Terminal callbacks are single-shot in finally; failures stay succeeded=False.
@@ -186,6 +225,56 @@ def execute(handle, params, store, item):
             return link(action=act, source=source.id, revision=rev, **fields)
 
         current()
+
+        if action == 'emby_limit_notice':
+            if set(params) - {'action', 'source', 'revision'}:
+                raise PanError('PAN_ROUTE_REJECTED')
+            submitted = True
+            dialog.ok(
+                'Emby',
+                _t(
+                    '当前单次平铺列表已达上限（前 10,000 页 / 200,000 项）。\n请使用「搜索 Emby」输入更精确的关键词，或从媒体库按「剧集 → 季」分级进入浏览完整内容。',
+                    'Reached the single flat-list browse cap (first 10,000 pages / 200,000 items).\nUse "Search Emby" with a narrower keyword, or browse via Library -> Series -> Season to reach all items.',
+                ),
+            )
+            outcome = 'ok'
+            return
+
+        if action == 'emby_jump':
+            if set(params) - {'action', 'source', 'revision', 'parent', 'term', 'max_page'}:
+                raise PanError('PAN_ROUTE_REJECTED')
+            j_parent = params.get('parent', 'root')
+            j_term = params.get('term', '')
+            if j_parent == 'search' and not 1 <= len(j_term) <= 120 or j_term and j_parent != 'search':
+                raise PanError('PAN_ROUTE_REJECTED')
+            if j_parent not in ('root', 'recent', 'resume', 'search'):
+                if not j_parent.startswith('folder:'):
+                    raise PanError('PAN_ROUTE_REJECTED')
+                j_parent = 'folder:' + identifier(j_parent[7:])
+            try:
+                max_allowed = min(MAX_PAGE, max(1, int(params.get('max_page', str(MAX_PAGE)))))
+            except ValueError as exc:
+                raise PanError('PAN_ROUTE_REJECTED') from exc
+            submitted = True
+            prompt_lbl = _t(f'输入要跳转的页码 (1 - {max_allowed})', f'Enter Page Number (1 - {max_allowed})')
+            raw_page = (
+                dialog.numeric(0, prompt_lbl)
+                if hasattr(dialog, 'numeric')
+                else dialog.input(prompt_lbl)
+            )
+            raw_str = str(raw_page or '').strip()
+            if not raw_str:
+                return
+            if not raw_str.isdigit() or not (1 <= int(raw_str) <= max_allowed):
+                dialog.ok('Emby', _t(f'请输入 1 到 {max_allowed} 之间的有效页码。', f'Please enter a valid page between 1 and {max_allowed}.'))
+                return
+            current()
+            j_fields = dict(parent=j_parent, page=int(raw_str))
+            if j_term:
+                j_fields['term'] = j_term
+            xbmc.executebuiltin(f'Container.Update("{route("emby_page", **j_fields)}")')
+            outcome = 'ok'
+            return
 
         if mark:
             if set(params) != {'action', 'source', 'revision', 'id', 'op'}:
@@ -315,7 +404,7 @@ def execute(handle, params, store, item):
                 info = proj[3] if proj else {'title': title, 'mediatype': 'video'}
                 art_dict = {}
                 if proj and proj[4]:
-                    from .emby_artwork import poster_factory
+                    from .emby_artwork import note_verified_primary_tag, poster_factory
                     art_url = poster_factory(root, source.id, rev, store)(entry, proj[4])
                     if art_url:
                         art_dict = {'poster': art_url, 'thumb': art_url}
@@ -402,7 +491,7 @@ def execute(handle, params, store, item):
             rows += [item(_t('最近新增', 'Recently Added'), route('emby_page', parent='recent')),
                      item(_t('服务器的继续观看', 'Continue Watching (Server)'), route('emby_page', parent='resume')),
                      item(_t('搜索 Emby', 'Search Emby'), route('emby_search'))]
-        from .emby_artwork import poster_factory
+        from .emby_artwork import note_verified_primary_tag, poster_factory
         poster = poster_factory(root, source.id, rev, store)
         media_types = []
         for record in page_rows:
@@ -410,6 +499,8 @@ def execute(handle, params, store, item):
             if data is None:
                 continue
             ident, title, folder, info, tag = data
+            if tag:
+                note_verified_primary_tag(saved['location'], saved['token'], saved['user_id'], ident, tag)
             media_types.append(info.get('mediatype', 'video'))
             resume_sec, played_flag, fav_flag, _ = _user_state(record)
             label2_parts = []
@@ -450,10 +541,37 @@ def execute(handle, params, store, item):
                     row[1].addContextMenuItems(ctx)
             rows.append(row)
         if page * PAGE < total:
-            fields = dict(parent=parent, page=page + 1)
-            if term:
-                fields['term'] = term
-            rows.append(item(_t('下一页', 'Next Page'), route('emby_page', **fields), properties={'Bobbi.NextPage': 'true'}))
+            if page < MAX_PAGE:
+                fields = dict(parent=parent, page=page + 1)
+                if term:
+                    fields['term'] = term
+                total_pages = (total + PAGE - 1) // PAGE
+                capped_pages = min(MAX_PAGE, total_pages)
+                next_kwargs = {'properties': {'Bobbi.NextPage': 'true'}}
+                if capped_pages >= 3:
+                    next_kwargs['label2'] = _t(f'第 {page} / {capped_pages} 页', f'Page {page} / {capped_pages}')
+                next_row = item(_t('下一页', 'Next Page'), route('emby_page', **fields), **next_kwargs)
+                if capped_pages >= 3 and hasattr(next_row[1], 'addContextMenuItems'):
+                    jump_fields = dict(parent=parent, max_page=capped_pages)
+                    if term:
+                        jump_fields['term'] = term
+                    next_row[1].addContextMenuItems([
+                        (
+                            _t(f'跳转到指定页 (1-{capped_pages})...', f'Jump to Page (1-{capped_pages})...'),
+                            f'RunPlugin({route("emby_jump", **jump_fields)})',
+                        )
+                    ])
+                rows.append(next_row)
+            else:
+                rows.append(
+                    item(
+                        _t('已达单列表浏览上限（前 200,000 项）· 请缩小搜索或按剧集季浏览',
+                           'Browse Limit Reached (First 200,000 Items) · Narrow Search or Browse by Season'),
+                        route('emby_limit_notice'),
+                        False,
+                        properties={'Bobbi.LimitNotice': 'true'},
+                    )
+                )
         current()
         xbmcplugin.setPluginCategory(handle, source.name + ' · Emby')
         xbmcplugin.setContent(handle, 'videos' if parent == 'root' else _content_type(media_types))
@@ -476,7 +594,7 @@ def execute(handle, params, store, item):
             if not submitted:
                 submitted = True
                 xbmcplugin.setResolvedUrl(handle, False, xbmcgui.ListItem())
-        elif not mark and handle >= 0 and not submitted:
+        elif not mark and not notice_only and handle >= 0 and not submitted:
             submitted = True
             xbmcplugin.endOfDirectory(handle, succeeded=succeeded, cacheToDisc=False)
             if succeeded and confirm_sync and root is not None and read_revision is not None:
@@ -502,7 +620,7 @@ def execute_home_rail(handle: int, params: dict, *, registry_factory=None) -> No
     import xbmc
     import xbmcgui
     import xbmcplugin
-    from .emby_artwork import poster_factory
+    from .emby_artwork import note_verified_primary_tag, poster_factory
     from .libraries import Registry
     from .optimization import observe
 
@@ -550,6 +668,7 @@ def execute_home_rail(handle: int, params: dict, *, registry_factory=None) -> No
         multi_source = len(emby_sources) > 1
         query = 'view:resume' if section == 'resume' else 'view:recent'
         per_source_limit = min(PAGE, max(4, PAGE // len(emby_sources)))
+        rail_deadline = started + HOME_RAIL_TOTAL_BUDGET_SECONDS
 
         for source, rev in emby_sources:
             if len(rows) >= PAGE:
@@ -558,6 +677,13 @@ def execute_home_rail(handle: int, params: dict, *, registry_factory=None) -> No
                 rows = []
                 media_types = []
                 outcome = 'changed'
+                break
+            if _home_source_cooling_down(source.id, rev, source.location):
+                outcome = 'unavailable'
+                continue
+            remaining_budget = rail_deadline - time.monotonic()
+            if remaining_budget <= 0.25:
+                outcome = 'unavailable'
                 break
             saved = {
                 'provider': 'emby',
@@ -568,12 +694,15 @@ def execute_home_rail(handle: int, params: dict, *, registry_factory=None) -> No
             }
             client = Client('emby', saved)
             try:
-                with client.session.budget(8):
+                with client.session.budget(min(HOME_SOURCE_MAX_BUDGET_SECONDS, remaining_budget)):
                     client._identity(user_scoped_read=True)
                     page_rows, _ = client.page_rows(query, 1, PAGE, display=True)
-            except (PanError, LibraryError, ValueError, OSError):
+            except (PanError, LibraryError, ValueError, OSError) as err:
                 outcome = 'unavailable'
+                if isinstance(err, OSError) or str(err) in ('PAN_NETWORK_ERROR', 'PAN_BUDGET_EXHAUSTED'):
+                    _mark_home_source_unreachable(source.id, rev, source.location)
                 continue
+            _clear_home_source_unreachable(source.id, rev, source.location)
 
             if _aborted() or not binding.is_current():
                 rows = []
@@ -595,6 +724,8 @@ def execute_home_rail(handle: int, params: dict, *, registry_factory=None) -> No
                 if data is None:
                     continue
                 ident, title, folder, info, tag = data
+                if tag:
+                    note_verified_primary_tag(saved['location'], saved['token'], saved['user_id'], ident, tag)
                 media_types.append(info.get('mediatype', 'video'))
                 resume_sec, played_flag, fav_flag, _ = _user_state(record)
                 duration = int(info.get('duration') or 0)

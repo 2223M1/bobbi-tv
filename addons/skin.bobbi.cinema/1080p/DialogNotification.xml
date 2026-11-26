@@ -4,35 +4,39 @@
   <coordinates><left>1240</left><top>48</top></coordinates>
   <include content="PanelOpen"><param name="slide">28,0</param></include>
   <controls>
-    <control type="image">
-      <left>-40</left><top>-40</top><width>700</width><height>196</height>
-      <texture border="64">bobbi/glass/modal-shadow.png</texture>
-    </control>
-    <control type="image">
-      <left>0</left><top>0</top><width>620</width><height>116</height>
-      <texture colordiffuse="$VAR[BobbiMattePanelColor]" border="46">bobbi/glass/modal-glass.png</texture>
-    </control>
-    <control type="image">
-      <left>0</left><top>0</top><width>620</width><height>116</height>
-      <texture colordiffuse="glass_rim" border="46">bobbi/glass/modal-glass-rim.png</texture>
-    </control>
-    <control type="image">
-      <left>24</left><top>26</top><width>64</width><height>64</height>
-      <texture>bobbi/glass/icon-disc-44.png</texture>
-    </control>
-    <control type="image" id="400">
-      <left>36</left><top>38</top><width>40</width><height>40</height>
-      <aspectratio>keep</aspectratio>
-    </control>
-    <control type="fadelabel" id="401">
-      <left>108</left><top>22</top><width>484</width><height>36</height>
-      <font>Label28</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny>
-      <scroll>true</scroll><scrollout>false</scrollout><pauseatend>2000</pauseatend>
-    </control>
-    <control type="fadelabel" id="402">
-      <left>108</left><top>60</top><width>484</width><height>32</height>
-      <font>CardSub22</font><textcolor>$VAR[BobbiPanelCaption]</textcolor><aligny>center</aligny>
-      <scroll>true</scroll><scrollout>false</scrollout><pauseatend>2000</pauseatend>
+    <control type="group">
+      <!-- Arctic Fuse 3 HUD mutual exclusion + suppress Kodi EventServer 60s UDP idle reconnect toasts ("Remote control" / Yatse) -->
+      <visible>!String.IsEqual(Control.GetLabel(401),$LOCALIZE[790]) + !String.IsEqual(Control.GetLabel(401),Yatse) + !String.Contains(Control.GetLabel(402),Yatse) + !Window.IsActive(DialogVolumeBar.xml) + !Window.IsActive(DialogExtendedProgressBar.xml)</visible>
+      <control type="image">
+        <left>-40</left><top>-40</top><width>700</width><height>196</height>
+        <texture border="64">bobbi/glass/modal-shadow.png</texture>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>620</width><height>116</height>
+        <texture colordiffuse="$VAR[BobbiMattePanelColor]" border="46">bobbi/glass/modal-glass.png</texture>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>620</width><height>116</height>
+        <texture colordiffuse="glass_rim" border="46">bobbi/glass/modal-glass-rim.png</texture>
+      </control>
+      <control type="image">
+        <left>24</left><top>26</top><width>64</width><height>64</height>
+        <texture>bobbi/glass/icon-disc-44.png</texture>
+      </control>
+      <control type="image" id="400">
+        <left>36</left><top>38</top><width>40</width><height>40</height>
+        <aspectratio>keep</aspectratio>
+      </control>
+      <control type="fadelabel" id="401">
+        <left>108</left><top>22</top><width>484</width><height>36</height>
+        <font>Label28</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny>
+        <scroll>true</scroll><scrollout>false</scrollout><pauseatend>2000</pauseatend>
+      </control>
+      <control type="fadelabel" id="402">
+        <left>108</left><top>60</top><width>484</width><height>32</height>
+        <font>CardSub22</font><textcolor>$VAR[BobbiPanelCaption]</textcolor><aligny>center</aligny>
+        <scroll>true</scroll><scrollout>false</scrollout><pauseatend>2000</pauseatend>
+      </control>
     </control>
   </controls>
 </window>

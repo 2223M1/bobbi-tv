@@ -134,22 +134,39 @@ class Client:
             if descriptions is not None:
                 result['catalog_descriptions'] = {row['file_id']: descriptions[row['file_id']] for row in result['items']}
             return result
-        match = re.fullmatch(r'section:([A-Za-z0-9_-]{1,128}):(movie|show)', parent)
-        if match is None:
+        section_match = re.fullmatch(r'section:([A-Za-z0-9_-]{1,128}):(movie|show)', parent)
+        show_match = re.fullmatch(r'show:([A-Za-z0-9_-]{1,128}):([A-Za-z0-9_-]{1,128})', parent)
+        season_match = re.fullmatch(r'season:([A-Za-z0-9_-]{1,128}):([A-Za-z0-9_-]{1,128})', parent)
+        if section_match is not None:
+            section, kind = section_match.groups()
+            plex_type = 1 if kind == 'movie' else 2
+            child_prefix = 'item:' if kind == 'movie' else f'show:{section}:'
+            extra_query = {}
+        elif show_match is not None:
+            section, show_rk = show_match.groups()
+            plex_type = 3
+            child_prefix = f'season:{section}:'
+            extra_query = {'parent': show_rk}
+        elif season_match is not None:
+            section, season_rk = season_match.groups()
+            plex_type = 4
+            child_prefix = 'item:'
+            extra_query = {'parent': season_rk}
+        else:
             raise PanError('PAN_DIRECTORY_UNAVAILABLE')
-        section, kind = match.groups()
         offset = (page - 1) * size
         value = _container(self.session.request('/library/sections/' + section + '/all', query={
-            'type': 1 if kind == 'movie' else 4, 'X-Plex-Container-Start': offset, 'X-Plex-Container-Size': size}))
+            'type': plex_type, 'X-Plex-Container-Start': offset, 'X-Plex-Container-Size': size, **extra_query}))
         rows = _rows(value, 'Metadata', size)
         total = number(value.get('totalSize'))
         if (str(value.get('librarySectionID')) != section or number(value.get('offset', 0)) != offset
                 or offset > total or len(rows) != min(size, total - offset)):
             raise PanError('PAN_REPLY_INVALID')
-        items = [dict(file_id='item:' + _id(row.get('ratingKey')), name=text(row.get('title')),
+        items = [dict(file_id=child_prefix + _id(row.get('ratingKey')), name=text(row.get('title')),
                       directory=True, size=0) for row in rows]
         if len({row['file_id'] for row in items}) != len(items):
             raise PanError('PAN_REPLY_INVALID')
+        has_more = offset + len(rows) < total
         operation = getattr(self.session, 'operation', None)
         if operation is not None and operation.kind == 'scan':
             progress = getattr(operation, '_server_pages', {})
@@ -157,9 +174,12 @@ class Client:
             ids = {row['file_id'] for row in items}
             if previous and (previous[0] != total or previous[1] != offset or ids & previous[2]):
                 raise PanError('PAN_PAGE_EXPIRED')
-            progress[parent] = (total, offset + len(rows), ids | (previous[2] if previous else set()))
+            if has_more:
+                progress[parent] = (total, offset + len(rows), ids | (previous[2] if previous else set()))
+            else:
+                progress.pop(parent, None)
             operation._server_pages = progress
-        return dict(items=items, has_more=offset + len(rows) < total)
+        return dict(items=items, has_more=has_more)
 
     def resolve_original(self, selected):
         self._identity()

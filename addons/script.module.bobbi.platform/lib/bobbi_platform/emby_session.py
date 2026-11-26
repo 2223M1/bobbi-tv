@@ -1547,6 +1547,160 @@ class EmbySessionReporter:
         return True
 
 
+MAX_SEASON_LOOKUP_PAGE = 10000
+SEASON_LOOKUP_PAGE_SIZE = 20
+MAX_EXHAUSTIVE_SWEEP_PAGES = 10
+MAX_SEASON_LOOKUP_REQUESTS = 14
+
+
+def _find_next_season_episode(
+    client: Client,
+    season_id: str,
+    season_num: int,
+    target_ep: int,
+    cancelled,
+) -> tuple[dict | None, bool | None]:
+    """Locate target_ep in folder:<season_id> with O(1)/O(log N) bounded page probes.
+
+    Soundness rules:
+      - Positive match (IndexNumber == target_ep in same season) is valid at any page 1..10000.
+      - Negative proof (confirmed_end) requires EITHER:
+          (a) every page in the season was inspected (raw_last_page <= 10), OR
+          (b) dense 1..N season end proof: target_ep > total, page 1 starts at 1, and
+              the final page (<= 10000) ends at IndexNumber == total < target_ep.
+      - Otherwise uninspected pages in a >200-item season could still hold an out-of-order
+        episode, so we fail closed with (None, False) -> detail='page_limit'.
+    """
+    parent_ref = 'folder:' + identifier(season_id)
+    visited: dict[int, list[dict]] = {}
+    total_holder: list[int] = [0]
+
+    def _match_row(rows: list[dict]) -> dict | None:
+        return next(
+            (
+                r
+                for r in rows
+                if r.get('Type') == 'Episode'
+                and r.get('ParentIndexNumber') == season_num
+                and r.get('IndexNumber') == target_ep
+            ),
+            None,
+        )
+
+    def _ep_numbers(rows: list[dict]) -> list[int]:
+        return [
+            r['IndexNumber']
+            for r in rows
+            if r.get('Type') == 'Episode'
+            and r.get('ParentIndexNumber') == season_num
+            and type(r.get('IndexNumber')) is int
+        ]
+
+    def _fetch(page_idx: int) -> tuple[dict | None, list[dict] | None]:
+        if page_idx in visited:
+            rows = visited[page_idx]
+            return _match_row(rows), rows
+        if cancelled():
+            return None, None
+        rows, total = client.page_rows(parent_ref, page_idx, SEASON_LOOKUP_PAGE_SIZE, display=True)
+        total_holder[0] = total
+        visited[page_idx] = rows
+        return _match_row(rows), rows
+
+    # 1. Always read page 1 first (offset=0 is valid even when TotalRecordCount == 0).
+    hit, rows_1 = _fetch(1)
+    if rows_1 is None:
+        return None, None
+    if hit is not None:
+        return hit, True
+    total = total_holder[0]
+    if total <= SEASON_LOOKUP_PAGE_SIZE:
+        return None, True
+    if target_ep < 1:
+        return None, True
+
+    raw_last_page = (total - 1) // SEASON_LOOKUP_PAGE_SIZE + 1
+    max_page = min(MAX_SEASON_LOOKUP_PAGE, raw_last_page)
+    direct_guess = min(max_page, max(1, (target_ep - 1) // SEASON_LOOKUP_PAGE_SIZE + 1))
+
+    # 2. Seasons up to 10 pages (<= 200 items): probe direct arithmetic page first,
+    #    then sweep all remaining pages for 100% exhaustive confirmed_end proof.
+    if raw_last_page <= MAX_EXHAUSTIVE_SWEEP_PAGES:
+        probe_order = [direct_guess] + [p for p in range(1, max_page + 1) if p != direct_guess]
+        for p in probe_order:
+            if p in visited:
+                continue
+            hit, p_rows = _fetch(p)
+            if p_rows is None:
+                return None, None
+            if hit is not None:
+                return hit, True
+        return None, True
+
+    # 3. Large seasons (> 200 items, up to 200,000 items): probe direct arithmetic page first
+    #    (resolves 200->201 and 999->1000 in 1 extra HTTP request), then binary-search by IndexNumber.
+    hit, guess_rows = _fetch(direct_guess)
+    if guess_rows is None:
+        return None, None
+    if hit is not None:
+        return hit, True
+
+    nums_1 = _ep_numbers(rows_1)
+    lo, hi = 2, max_page
+    guess_nums = _ep_numbers(guess_rows)
+    if guess_nums and guess_nums == sorted(guess_nums):
+        if guess_nums[-1] < target_ep:
+            lo = max(lo, direct_guess + 1)
+        elif guess_nums[0] > target_ep:
+            hi = min(hi, direct_guess - 1)
+
+    while lo <= hi and len(visited) < MAX_SEASON_LOOKUP_REQUESTS:
+        mid = (lo + hi) // 2
+        hit, mid_rows = _fetch(mid)
+        if mid_rows is None:
+            return None, None
+        if hit is not None:
+            return hit, True
+        nums = _ep_numbers(mid_rows)
+        if not nums:
+            # Leading specials or non-episode rows on mid: advance rightward toward Season episodes.
+            lo = mid + 1
+            continue
+        if nums != sorted(nums):
+            break
+        if nums[-1] < target_ep:
+            lo = mid + 1
+        elif nums[0] > target_ep:
+            hi = mid - 1
+        else:
+            for adj in (mid - 1, mid + 1):
+                if 1 <= adj <= max_page and len(visited) < MAX_SEASON_LOOKUP_REQUESTS:
+                    hit, adj_rows = _fetch(adj)
+                    if adj_rows is None:
+                        return None, None
+                    if hit is not None:
+                        return hit, True
+            break
+
+    if cancelled():
+        return None, None
+
+    # Dense 1..N final-episode proof (e.g. episode=1000 -> target_ep=1001 on 1000-episode season)
+    if raw_last_page <= MAX_SEASON_LOOKUP_PAGE and target_ep > total and nums_1 and nums_1[0] == 1:
+        if max_page not in visited and len(visited) < MAX_SEASON_LOOKUP_REQUESTS:
+            hit, end_rows = _fetch(max_page)
+            if end_rows is None:
+                return None, None
+            if hit is not None:
+                return hit, True
+        if max_page in visited:
+            end_nums = _ep_numbers(visited[max_page])
+            if end_nums and end_nums == sorted(end_nums) and end_nums[-1] == total:
+                return None, True
+
+    return None, False
+
+
 def resolve_next_episode_result(
     current: dict,
     spec: dict,
@@ -1584,27 +1738,10 @@ def resolve_next_episode_result(
         client, saved = _load_emby_client(Path(root_str), source_id, generation)
         with client.session.budget(8):
             client._identity(user_scoped_read=True)
-            candidate = None
-            exhausted_all = False
-            for page_idx in range(1, 11):
-                if cancelled():
-                    return NextResolution('cancelled')
-                rows, total = client.page_rows('folder:' + identifier(season_id), page_idx, 20, display=True)
-                candidate = next(
-                    (
-                        r
-                        for r in rows
-                        if r.get('Type') == 'Episode'
-                        and r.get('ParentIndexNumber') == season_num
-                        and r.get('IndexNumber') == episode_num + 1
-                    ),
-                    None,
-                )
-                if page_idx * 20 >= total:
-                    exhausted_all = True
-                if candidate is not None or exhausted_all:
-                    break
-            if cancelled():
+            candidate, exhausted_all = _find_next_season_episode(
+                client, season_id, season_num, episode_num + 1, cancelled,
+            )
+            if exhausted_all is None or cancelled():
                 return NextResolution('cancelled')
             if candidate is None:
                 if exhausted_all:

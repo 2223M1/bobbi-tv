@@ -712,17 +712,18 @@ def render_nav(spec, *, root=ROOT):
         for sp in optional:
             key = sp['key']
             if slot == 1:
+                seen_expr = f'$EXP[BobbiSpaceRaw_1_{key}]'
                 slot_expr = f'$EXP[BobbiSpaceVis_{key}] + $EXP[BobbiSpaceRaw_1_{key}]'
             else:
-                prior = ' | '.join(f'$EXP[BobbiSpaceRaw_{prev}_{key}]' for prev in range(1, slot))
-                slot_expr = f'$EXP[BobbiSpaceVis_{key}] + $EXP[BobbiSpaceRaw_{slot}_{key}] + ![{prior}]'
+                seen_expr = f'$EXP[BobbiSpaceSeen_{slot - 1}_{key}] | $EXP[BobbiSpaceRaw_{slot}_{key}]'
+                slot_expr = f'$EXP[BobbiSpaceVis_{key}] + $EXP[BobbiSpaceRaw_{slot}_{key}] + !$EXP[BobbiSpaceSeen_{slot - 1}_{key}]'
+            ET.SubElement(doc, 'expression', {'name': f'BobbiSpaceSeen_{slot}_{key}'}).text = seen_expr
             ET.SubElement(doc, 'expression', {'name': f'BobbiSpaceSlot_{slot}_{key}'}).text = slot_expr
 
     for sp in optional:
         key = sp['key']
-        all_raw = ' | '.join(f'$EXP[BobbiSpaceRaw_{s}_{key}]' for s in range(1, n_opt + 1))
         ET.SubElement(doc, 'expression', {'name': f'BobbiSpaceFallback_{key}'}).text = (
-            f'$EXP[BobbiSpaceVis_{key}] + ![{all_raw}]'
+            f'$EXP[BobbiSpaceVis_{key}] + !$EXP[BobbiSpaceSeen_{n_opt}_{key}]'
         )
 
     inc = ET.SubElement(doc, 'include', {'name': 'HomeSpaceItems'})
