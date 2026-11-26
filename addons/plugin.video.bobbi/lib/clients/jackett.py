@@ -26,6 +26,20 @@ def _normalize_jackett_host(host: str) -> str:
     return cleaned
 
 
+def _canonical_torznab_endpoint(base_url: str) -> str:
+    """Normalize Jackett Web UI copied Torznab feed URLs (.../results/torznab/)
+    to their direct .../results/torznab/api endpoint so redirect-free shared HTTP works out-of-the-box.
+    """
+    parts = urlsplit(base_url)
+    trimmed_path = parts.path.rstrip("/")
+    if trimmed_path.endswith("/results/torznab"):
+        rebuilt = f"{parts.scheme}://{parts.netloc}{trimmed_path}/api"
+        if parts.query:
+            rebuilt += f"?{parts.query}"
+        return rebuilt
+    return base_url
+
+
 def discover_jackett_indexers(
     host: str,
     port: str,
@@ -118,6 +132,7 @@ class Jackett(BaseClient):
         deadline: Optional[float] = None,
         cancelled=None,
         session: Optional[requests.Session] = None,
+        slot_factory=None,
     ):
         from bobbi_core.search_completion import SearchCompletion, SearchResults
         from lib.utils.user_sources import validate_torznab_url
@@ -127,54 +142,95 @@ class Jackett(BaseClient):
             return SearchResults([], SearchCompletion(1, timed_out=1))
 
         try:
-            base_url = validate_torznab_url(source_spec.get("url", ""))
+            base_url = _canonical_torznab_endpoint(validate_torznab_url(source_spec.get("url", "")))
         except ValueError:
             return SearchResults([], SearchCompletion(1, failed=1))
 
         name = str(source_spec.get("name") or "Custom Torznab").strip() or "Custom Torznab"
         apikey = str(source_spec.get("apikey") or "").strip()
-        params = {}
-        if apikey and "apikey=" not in base_url.lower():
-            params["apikey"] = apikey
-        params["q"] = str(query or "").strip()
-        if mode == "tv" and season is not None:
-            params["t"] = "tvsearch"
-            params["season"] = season
-            if episode is not None:
-                params["ep"] = episode
-        elif mode == "movies":
-            params["t"] = "movie"
-            if year:
-                params["year"] = year
-        else:
-            params["t"] = "search"
+
+        primary_q = str(query or "").strip()
+        candidate_queries = [primary_q]
+        seen_q = {primary_q.casefold()}
+        for alias in (title_queries or ()):
+            alias_q = str(alias or "").strip()
+            if alias_q and alias_q.casefold() not in seen_q:
+                seen_q.add(alias_q.casefold())
+                candidate_queries.append(alias_q)
+                if len(candidate_queries) >= 3:
+                    break
 
         sep = "&" if "?" in base_url else "?"
-        req_url = base_url + sep + urlencode(params)
+        req_urls = []
+        for q_val in candidate_queries:
+            params = {}
+            if apikey and "apikey=" not in base_url.lower():
+                params["apikey"] = apikey
+            params["q"] = q_val
+            if mode == "tv" and season is not None:
+                params["t"] = "tvsearch"
+                params["season"] = season
+                if episode is not None:
+                    params["ep"] = episode
+            elif mode == "movies":
+                params["t"] = "movie"
+                if year:
+                    params["year"] = year
+            else:
+                params["t"] = "search"
+            req_urls.append(base_url + sep + urlencode(params))
+
         remaining = (deadline - time.monotonic()) if deadline is not None else float(timeout)
         if remaining <= 0:
-            return SearchResults([], SearchCompletion(1, timed_out=1))
-        req_timeout = max(0.2, min(float(timeout), remaining))
+            return SearchResults([], SearchCompletion(len(req_urls), timed_out=len(req_urls)))
+        req_timeout = max(0.01, min(8.0, float(timeout), remaining))
 
         own_session = session is None
         sess = session or requests.Session()
         if own_session:
             sess.headers.update(USER_AGENT_HEADER.copy())
+            if urlsplit(base_url).hostname in ("127.0.0.1", "localhost", "::1"):
+                sess.trust_env = False
         try:
-            response = sess.get(req_url, timeout=req_timeout)
-            if response.status_code != 200:
-                return SearchResults([], SearchCompletion(1, failed=1))
+            from lib.clients.jackett_fanout import fetch_independent
+
+            batch = fetch_independent(
+                sess,
+                req_urls,
+                budget=float(timeout),
+                deadline=deadline,
+                cancelled=is_cancelled,
+                request_timeout=req_timeout,
+                slot_factory=slot_factory,
+            )
+            if not batch:
+                return SearchResults([], batch.completion)
             parser = cls(host=base_url, apikey=apikey, port="", notification=lambda *a, **k: None, session=sess)
-            parsed = parser.parse_response(response)
-            if parsed is None:
-                return SearchResults([], SearchCompletion(1, failed=1))
-            for row in parsed:
-                row.provider = f"{name} · {row.provider}" if row.provider and row.provider != name else name
-            return SearchResults(parsed, SearchCompletion(1, succeeded=1))
+            merged = []
+            seen_streams = set()
+            parse_failures = 0
+            for response in batch:
+                parsed = parser.parse_response(response)
+                if parsed is None:
+                    parse_failures += 1
+                    continue
+                for row in parsed:
+                    row.provider = f"{name} · {row.provider}" if row.provider and row.provider != name else name
+                    dedup_key = (
+                        str(getattr(row, "infoHash", "") or "").strip().lower()
+                        or str(getattr(row, "guid", "") or "").strip()
+                        or str(getattr(row, "url", "") or "").strip()
+                        or f"{getattr(row, 'title', '')}:{getattr(row, 'size', 0)}"
+                    )
+                    if dedup_key not in seen_streams:
+                        seen_streams.add(dedup_key)
+                        merged.append(row)
+            completion = batch.completion.with_parse_failures(parse_failures) if parse_failures else batch.completion
+            return SearchResults(merged, completion)
         except requests.Timeout:
-            return SearchResults([], SearchCompletion(1, timed_out=1))
+            return SearchResults([], SearchCompletion(len(req_urls), timed_out=len(req_urls)))
         except Exception:
-            return SearchResults([], SearchCompletion(1, failed=1))
+            return SearchResults([], SearchCompletion(len(req_urls), failed=len(req_urls)))
         finally:
             if own_session:
                 sess.close()

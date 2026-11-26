@@ -2,10 +2,10 @@
   "schema": 1,
   "components": {
     "plugin.video.bobbi": {
-      "addon.xml": "42646fa1de508827a2ab1a2f70148684dff4019ae5ba5066507fbe467ca33657",
+      "addon.xml": "fd6e73beac1fbfe86c791da6ee3a6d7a43de56db3fe420f8399f1270b5a39954",
       "bobbi.py": "a8dac4cd24f31fc641940def2eb8e2d619c7c02e9383fecc2a3648070be051b2",
       "bobbi.select.json": "cfbffb55a9c01049dd335dc17d9d7436656e57896c2608f06bd09dabc627c6b7",
-      "CHANGELOG.md": "ef7737436d54cdcd41ff111347c0cfa4d0a73eec9ae14f19e5b2c753d68ba4ba",
+      "CHANGELOG.md": "373b55bc75498873b91fc3461fb69ca0abc14bc18348562066ecbcb73873ed7c",
       "fanart.png": "65e37420e8595145d77d54cbd42f303aeebaf14b5d13916b39c47c5d00822162",
       "icon.png": "206e58c783f6aa8f2936aafc6494edaecb28d39dcfa1d33f4335b3028109694a",
       "lib/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -164,7 +164,7 @@
       "lib/clients/external_scraper.py": "1d55467cdf7b5924183290092b8e6e6f864ca3f5eab754bf3c00329e69009351",
       "lib/clients/fanout_diagnostics.py": "a0055af6209c6900d8d8d6cc862fe341e91bed844acee650a6ae20acd50bfc84",
       "lib/clients/introdb.py": "c72065e266d9cb83849490235f58b039497c42090ecde19d21b05d54d759777f",
-      "lib/clients/jackett.py": "b3ee4b40494c0d1300ee17ccbe8c6b951ecac9d414991ce7028694ac12d8c73b",
+      "lib/clients/jackett.py": "a7625aa067d760f40bbe26ae05cf116d786aee316b54df7e65c86fbe9e664e61",
       "lib/clients/jackett_fanout.py": "7a37d9efd2bf4d6265d68b2a12770e826e875d4822f154bc2b9c68d831925506",
       "lib/clients/jackett_http.py": "ccf3fd0032be3ce8934d756e6a7d7104d1768317fdb121bdece21b6c36031021",
       "lib/clients/jackett_http_worker.py": "5b7855b3172feb5c53f87feec817d41177b0a1dc574ee01790524acf2ba746d4",
@@ -258,7 +258,7 @@
       "lib/gui/resume_window.py": "8ab783c87bde0e0f2bd3aa9c0dbc19a6dea9fcfba13281dc7264e6146026fdcb",
       "lib/gui/search_status_window.py": "aa957aa7265da40b78277a1c39ee73d2d03c23e8ee4d8bbab85df433fe8c991d",
       "lib/gui/skip_intro_window.py": "c76aabca789d83e1df36510e7834d278cc3b26d9eac3cbb00b3a94615faa831d",
-      "lib/gui/source_manager_dialog.py": "a4d0cd53ff7094171ab583b10d3fce61609891cd698d5d5d790be2ad8380144f",
+      "lib/gui/source_manager_dialog.py": "0eedd7bbb4cdea86becf3738a27b93f8c14c46bfe21a8e6fec39409cdde83e14",
       "lib/gui/source_pack_select.py": "578f9dc1cbd66dedeba2fbbb8fde6efc605f1e64fdd8f572fa1101cb0c6a30e1",
       "lib/gui/source_pack_window.py": "452efb5c3d3311274c2a90a64e6aa8e7aa91918d33ec9c42a989a3f50546d7f5",
       "lib/gui/source_select.py": "90d852b6781443f21ff1e4bc870ac1d95bfbc94cbcea623d6c54f6156ef889c0",
@@ -280,7 +280,7 @@
       "lib/portable.py": "43aedca9c852e9a76a8556b6c31e295078ee1d5dc94be1a951d74824d5562c5b",
       "lib/portable_runtime.py": "f93981e961b99dbd7f46d456295140e310e03099f4fb9b25f76fa7d3c93cac9f",
       "lib/router.py": "bb705a656f33bd6df86ec08171cc2a9e9d1b22b629c3e1421e0c47ee95eadd47",
-      "lib/search.py": "10ce4447f28afad91d7a55d53a7fd0daa568b0c985064a3efc506a5f4c778380",
+      "lib/search.py": "460adf5fc0264263b704d742678d6c8ecfb587d97def8f18ef9058de0415cad5",
       "lib/services/autostart.py": "b50007dfa6eed78e01ba8342ec91508297e98b94860e5182d04b9aeaec24cb58",
       "lib/services/background_service.py": "add9880f12fca0250eeab8e377bc8efc0cc6e40e9aa72548824c4bb1cf3079d3",
       "lib/services/debrid/__init__.py": "259494db02abf9834373cad4862a7bf1608d00de0f3b3284b459c317d12b818b",
@@ -960,7 +960,7 @@
       "resources/white.png": "1b285f3936913e90a0dd6e0e07b8f09b964a4e4b95cca70b1883a576183642fc"
     },
     "script.bobbi.start": {
-      "addon.xml": "6c6a196383f71128db4ab8ad5c7414173f913c1eee569e59636f2ab3acd7eee1",
+      "addon.xml": "4738aa7a93f54ee67fb71443b1d9633ddc4a7475e943f84ff2350d58a7ad48f0",
       "default.py": "4069e5edaece197c12edb99a425fb922b4f6e6a86258b5d3aade39dbcd4248dc",
       "resources/language/resource.language.en_gb/strings.po": "402f393a70e537cfe5c1a5e49e5649351ef75735fd40bd7172788ca97e35a1bc",
       "resources/language/resource.language.zh_cn/strings.po": "b26424b0f8df63894e9eed5d6df3037003c7f62ab17d3007e9690b8bff55859e"

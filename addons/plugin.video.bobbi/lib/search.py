@@ -2114,6 +2114,7 @@ def _create_source_search(params, query, ids, mode, media_type, tv_data,
                     title_queries=aliases,
                     deadline=manager.deadline,
                     cancelled=cancel_fn,
+                    slot_factory=slot_factory,
                 )
 
         # Optional RPDB/Fanart IO belongs to idle navigation warming. A picker

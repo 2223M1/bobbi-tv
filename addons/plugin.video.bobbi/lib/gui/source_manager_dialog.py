@@ -290,6 +290,9 @@ def _manage_default_sources(dialog, *, profile_root=None) -> str:
         if choice < 0 or choice >= len(options):
             return outcome
         if choice == len(DEFAULT_SOURCE_SPECS):
+            for source_id, _, _, setting_key in DEFAULT_SOURCE_SPECS:
+                if setting_key and source_id in removed:
+                    _write_setting(setting_key, "true", profile_root=profile_root)
             restore_all_defaults(profile_root=profile_root)
             outcome = CHANGED
             if hasattr(dialog, "notification"):
@@ -414,6 +417,50 @@ def _configure_indexer_service(dialog, prefix: str, label_name: str, default_por
     return True
 
 
+def _test_custom_torznab_connection(dialog, entry: dict, *, profile_root=None) -> None:
+    from pathlib import Path as _Path
+    import tempfile as _tempfile
+    import time as _time
+    from lib.clients.jackett import Jackett
+
+    slot_kw = {}
+    try:
+        from lib.clients.portable_http import _slot
+
+        base_root = resolve_profile_root(profile_root) or (_Path(_tempfile.gettempdir()) / "bobbi-custom-source-probe")
+        slot_dir = base_root / "http-slots"
+        slot_kw["slot_factory"] = lambda key=None: _slot(key, directory=slot_dir)
+    except Exception:
+        pass
+    res = Jackett.search_custom_torznab(
+        entry,
+        "test",
+        "search",
+        timeout=5.0,
+        deadline=_time.monotonic() + 5.0,
+        **slot_kw,
+    )
+    if res.completion.complete:
+        count = len(res)
+        dialog.ok(
+            _t(None, "自定义源连接正常", "Custom Source Connected"),
+            _t(
+                None,
+                f"连接正常（HTTP 200 RSS，返回 {count} 条示例结果）。",
+                f"Connection succeeded (HTTP 200 RSS, {count} item(s) returned).",
+            ),
+        )
+    else:
+        dialog.ok(
+            _t(None, "自定义源连接失败", "Custom Source Connection Failed"),
+            _t(
+                None,
+                "请求超时或返回非有效 Torznab RSS，请检查直达 API 地址与 API Key。",
+                "Request timed out or returned invalid Torznab RSS. Check the direct API URL and API Key.",
+            ),
+        )
+
+
 def _edit_existing_custom_torznab(dialog, entry: dict, *, profile_root=None) -> bool:
     state_action = (
         _t(None, "停用此自定义源", "Disable Custom Source")
@@ -426,6 +473,7 @@ def _edit_existing_custom_torznab(dialog, entry: dict, *, profile_root=None) -> 
             state_action,
             _t(None, "编辑名称 / 地址 / API Key", "Edit Name / URL / API Key"),
             _t(None, "删除此自定义源", "Delete Custom Source"),
+            _t(None, "测试此自定义源连接", "Test Custom Source Connection"),
         ],
     )
     if sub == 0:
@@ -460,6 +508,9 @@ def _edit_existing_custom_torznab(dialog, entry: dict, *, profile_root=None) -> 
             return False
     if sub == 2:
         return remove_custom_torznab_source(entry["id"], profile_root=profile_root)
+    if sub == 3:
+        _test_custom_torznab_connection(dialog, entry, profile_root=profile_root)
+        return False
     return False
 
 
