@@ -44,6 +44,27 @@ def _bobbi_plugin_archive(version='1.0.0'):
 def archive(name, version='1.0.0'):
     if name == 'plugin.video.bobbi':
         return _bobbi_plugin_archive(version)
+    if name in ('script.bobbi.start', 'script.module.bobbi.platform'):
+        from io import BytesIO
+        from bobbi_platform.ce_install_ui import _ENTRY_BOOTSTRAP_FILES
+        repo_root = Path(__file__).resolve().parents[1]
+        buf = BytesIO()
+        with zipfile.ZipFile(buf, 'w', zipfile.ZIP_DEFLATED) as out:
+            out.writestr(f'{name}/addon.xml', f'<addon id="{name}" version="{version}"/>')
+            out.writestr(f'{name}/code.py', f'VALUE = "{version}"\n')
+            if name == 'script.bobbi.start':
+                out.writestr(
+                    'script.bobbi.start/default.py',
+                    (repo_root / 'addons/script.bobbi.start/default.py').read_bytes(),
+                )
+            else:
+                plat_src = repo_root / 'addons/script.module.bobbi.platform/lib/bobbi_platform'
+                for fname in _ENTRY_BOOTSTRAP_FILES:
+                    out.writestr(
+                        f'script.module.bobbi.platform/lib/bobbi_platform/{fname}',
+                        (plat_src / fname).read_bytes(),
+                    )
+        return buf.getvalue()
     return _base_archive(name, version)
 
 

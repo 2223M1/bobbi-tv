@@ -252,12 +252,12 @@ def test_unattended_auto_online_installs_signed_update_without_modal_prompts(ent
     # Idempotent when already synced and all bootstrap files match byte-for-byte
     assert ui.ensure_entry_synced_from_recovery(entry.env.work, entry.env.addons, trust=signing[1]) is False
 
-    # 7. Same-version addon.xml (2.0.0) with missing/corrupt entry payload file -> detected & repaired!
-    entry_code = entry.env.addons / 'script.bobbi.start' / 'code.py'
-    orig_code = entry_code.read_bytes()
-    entry_code.write_bytes(b'# corrupted payload')
+    # 7. Same-version addon.xml (2.0.0) with missing/corrupt bootstrap module -> detected & repaired!
+    boot_target = entry.env.addons / 'script.bobbi.start' / 'bootstrap' / 'bobbi_platform' / 'online_updates.py'
+    orig_boot = boot_target.read_bytes()
+    boot_target.write_bytes(b'# corrupted bootstrap')
     assert ui.ensure_entry_synced_from_recovery(entry.env.work, entry.env.addons, trust=signing[1]) is True
-    assert entry_code.read_bytes() == orig_code
+    assert boot_target.read_bytes() == orig_boot
 
     # 8. Newer offline script.bobbi.start (9.9.9) with embedded complete.bobbi-update.zip -> NEVER downgraded!
     embedded = entry.env.addons / 'script.bobbi.start' / 'resources' / 'complete.bobbi-update.zip'
@@ -339,3 +339,291 @@ def test_v4_gitcode_http_418_fails_over_to_github_while_tls_and_conflict_fail_cl
     )
     with pytest.raises(URLError):
         online.latest(track='stable')
+
+
+def test_rls01_isolated_bootstrap_auto_executes_without_missing_modules_and_rejects_incomplete_bundle(tmp_path, signing, monkeypatch):
+    import shutil
+    import subprocess
+    import zipfile
+    from io import BytesIO
+    import build_ce_entry
+    import test_ce_general_installer as fixtures
+
+    # 1. Exact 24-file BOOTSTRAP copied into fresh python -I -B interpreter with full platform/lib on sys.path[1]
+    boot_dir = tmp_path / 'bootstrap' / 'bobbi_platform'
+    boot_dir.mkdir(parents=True)
+    plat_lib = ROOT / 'addons/script.module.bobbi.platform/lib'
+    for fname in build_ce_entry.BOOTSTRAP:
+        shutil.copyfile(plat_lib / 'bobbi_platform' / fname, boot_dir / fname)
+
+    work_dir = tmp_path / 'work'
+    work_dir.mkdir()
+    (work_dir / 'auto-update.json').write_text('false', encoding='utf-8')
+
+    child_code = (
+        "import importlib.util, json, sys, types\n"
+        "from pathlib import Path\n"
+        "sys.path[:0] = [sys.argv[1], sys.argv[2]]\n"
+        "sys.modules['xbmc'] = types.SimpleNamespace(\n"
+        "    Player=lambda: types.SimpleNamespace(isPlaying=lambda: False),\n"
+        "    getCondVisibility=lambda _c: False,\n"
+        "    getGlobalIdleTime=lambda: 60,\n"
+        ")\n"
+        "sys.modules['xbmcgui'] = types.SimpleNamespace(Dialog=lambda: types.SimpleNamespace())\n"
+        "sys.modules['xbmcvfs'] = types.SimpleNamespace(translatePath=lambda _p: sys.argv[3])\n"
+        "import bobbi_platform\n"
+        "from bobbi_platform import ce_install_ui as ui\n"
+        "inst = types.SimpleNamespace(work=Path(sys.argv[3]))\n"
+        "host = types.SimpleNamespace(xbmc=sys.modules['xbmc'], monitor=types.SimpleNamespace(abortRequested=lambda: False), check_idle=lambda: None)\n"
+        "ret = ui.install_auto_online(inst, host)\n"
+        "print(json.dumps({'ret': ret, 'ui_file': ui.__file__, 'notice_in_boot': importlib.util.find_spec('bobbi_platform.ce_update_notice') is not None}))\n"
+    )
+    proc = subprocess.run(
+        [sys.executable, '-I', '-B', '-c', child_code, str(tmp_path / 'bootstrap'), str(plat_lib), str(work_dir)],
+        capture_output=True, text=True, check=True,
+    )
+    obs = json.loads(proc.stdout)
+    assert obs['ret'] is False
+    assert obs['notice_in_boot'] is False
+    assert Path(obs['ui_file']).resolve() == (boot_dir / 'ce_install_ui.py').resolve()
+
+    # 2. Signed bundle missing a required bootstrap file is rejected BEFORE touching live script.bobbi.start
+    addons = tmp_path / 'addons'
+    addons.mkdir()
+    good_one = fixtures.package(tmp_path / 'one.zip', signing, 1, '1.0.0', channel='private-stable')
+    assert ui.sync_entry_from_bundle(good_one, addons, trust=signing[1]) is True
+    live_start = addons / 'script.bobbi.start'
+    assert ET.parse(live_start / 'addon.xml').getroot().get('version') == '1.0.0'
+
+    orig_archive = fixtures.archive
+
+    def omit_ui_archive(name, version='2.0.0'):
+        raw = orig_archive(name, version)
+        if name != 'script.module.bobbi.platform':
+            return raw
+        buf = BytesIO()
+        with zipfile.ZipFile(BytesIO(raw)) as src, zipfile.ZipFile(buf, 'w', zipfile.ZIP_DEFLATED) as dst:
+            for item in src.infolist():
+                if not item.filename.endswith('/ce_install_ui.py'):
+                    dst.writestr(item, src.read(item.filename))
+        return buf.getvalue()
+
+    monkeypatch.setattr(fixtures, 'archive', omit_ui_archive)
+    bad_two = fixtures.package(tmp_path / 'bad_two.zip', signing, 2, '2.0.0', channel='private-stable')
+    monkeypatch.setattr(fixtures, 'archive', orig_archive)
+
+    _write_journal(work_dir, sequence=2)
+    bad_out = {}
+    assert ui.sync_entry_from_bundle(
+        bad_two, addons, trust=signing[1], work=work_dir, expected_sequence=2, report_outcome=bad_out,
+    ) is False
+    assert bad_out['status'] == 'failed' and 'ENTRY_BOOTSTRAP_INCOMPLETE' in bad_out['error']
+    assert ET.parse(live_start / 'addon.xml').getroot().get('version') == '1.0.0'
+    assert (live_start / 'bootstrap/bobbi_platform/ce_install_ui.py').is_file()
+
+    # 3. Real online/offline entry ZIPs built via build_ce_entry.build() execute `default.py auto` (seq 1 -> 2) in isolated `python -I -B`
+    import vendor_licenses
+    base_pkg = fixtures.package(tmp_path / 'real_base.zip', signing, 1, '1.0.0', channel='private-stable')
+    next_pkg = fixtures.package(tmp_path / 'real_next.zip', signing, 2, '2.0.0', channel='private-stable')
+    expected_inv = json.loads((ROOT / 'release/source-inventory.json').read_text(encoding='utf-8'))['components']
+    monkeypatch.setattr(build_ce_entry, 'files', lambda root_p: expected_inv[Path(root_p).name])
+    monkeypatch.setattr(build_ce_entry, 'load_trust', lambda: signing[1])
+    monkeypatch.setattr(vendor_licenses, 'verify_bundle_notices', lambda _sb: None)
+    for online_mode in (True, False):
+        mode_dir = tmp_path / ('entry_online' if online_mode else 'entry_offline')
+        mode_addons = mode_dir / 'addons'
+        mode_addons.mkdir(parents=True)
+        entry_zip = mode_dir / f'script.bobbi.start-1.0.0-{"online" if online_mode else "offline"}.zip'
+        entry_meta = build_ce_entry.build(base_pkg, entry_zip, online=online_mode)
+        assert entry_meta['complete_offline_payload'] is (not online_mode)
+        with zipfile.ZipFile(entry_zip) as zin:
+            zin.extractall(mode_addons)
+
+        run_auto_child = (
+            "import hashlib, importlib.util, io, json, sys, types\n"
+            "from pathlib import Path\n"
+            "mode_dir = Path(sys.argv[1])\n"
+            "plat_lib = Path(sys.argv[2])\n"
+            "base_zip = Path(sys.argv[3])\n"
+            "next_zip = Path(sys.argv[4])\n"
+            "trust_doc = json.loads(Path(sys.argv[5]).read_text(encoding='utf-8'))\n"
+            "addons_dir = mode_dir / 'addons'\n"
+            "work_dir = mode_dir / 'userdata/addon_data/script.bobbi.start'\n"
+            "work_dir.mkdir(parents=True, exist_ok=True)\n"
+            "# Put full platform_lib on sys.path BEFORE default.py prepends bootstrap at sys.path[0]!\n"
+            "sys.path.insert(0, str(plat_lib))\n"
+            "sys.modules['xbmc'] = types.SimpleNamespace(\n"
+            "    LOGERROR=4, LOGWARNING=2, LOGINFO=1,\n"
+            "    log=lambda *a: None, executebuiltin=lambda *a: None,\n"
+            "    getInfoLabel=lambda _k: '21.2',\n"
+            "    getCondVisibility=lambda _c: False,\n"
+            "    getGlobalIdleTime=lambda: 60,\n"
+            "    Player=lambda: types.SimpleNamespace(isPlaying=lambda: False),\n"
+            "    Monitor=lambda: types.SimpleNamespace(abortRequested=lambda: False, waitForAbort=lambda _d: False),\n"
+            ")\n"
+            "notices = []\n"
+            "sys.modules['xbmcgui'] = types.SimpleNamespace(\n"
+            "    Dialog=lambda: types.SimpleNamespace(notification=lambda *a, **k: notices.append(a)),\n"
+            ")\n"
+            "sys.modules['xbmcvfs'] = types.SimpleNamespace(\n"
+            "    translatePath=lambda p: str(addons_dir) if 'home/addons' in p else str(work_dir),\n"
+            ")\n"
+            "sys.modules['xbmcaddon'] = types.SimpleNamespace(\n"
+            "    Addon=lambda aid='script.bobbi.start': types.SimpleNamespace(\n"
+            "        getAddonInfo=lambda k: str(addons_dir / aid) if k == 'path' else '1.0.0',\n"
+            "    ),\n"
+            ")\n"
+            "# Import bootstrap package exactly as default.py does\n"
+            "sys.path.insert(0, str(addons_dir / 'script.bobbi.start/bootstrap'))\n"
+            "from bobbi_platform import ce_install_ui as boot_ui, ce_installer as boot_inst, online_updates as boot_online\n"
+            "assert importlib.util.find_spec('bobbi_platform.ce_update_notice') is None\n"
+            "vector = set()\n"
+            "host = types.SimpleNamespace(\n"
+            "    xbmc=sys.modules['xbmc'], monitor=sys.modules['xbmc'].Monitor(),\n"
+            "    check_idle=lambda: None, dependencies=lambda _s: None,\n"
+            "    skin=lambda: 'skin.estuary', enabled=lambda: sorted(vector),\n"
+            "    quiesce=lambda: None, refresh=lambda: None, verify=lambda _v: None,\n"
+            "    activate=lambda v: vector.update(v), restore=lambda _s, e: (vector.clear(), vector.update(e)),\n"
+            "    close=lambda: None,\n"
+            ")\n"
+            "inst = boot_inst.Installer(addons_dir, work_dir, host, trust_doc)\n"
+            "inst.apply(base_zip)\n"
+            "boot_ui.KodiHost = lambda **_kw: host\n"
+            "boot_ui.Installer = lambda *_a: inst\n"
+            "boot_ui.profile = lambda *_a, **_kw: work_dir\n"
+            "raw_next = next_zip.read_bytes()\n"
+            "with boot_ui.SignedBundle(next_zip, trust_doc, 'coreelec') as sb:\n"
+            "    next_mf = sb.check_all()\n"
+            "offer = {'schema': 2, 'tag': 'ce2055', 'sequence': 2, 'size': len(raw_next),\n"
+            "         'sha256': hashlib.sha256(raw_next).hexdigest(), 'track': 'stable', 'prerelease': False,\n"
+            "         'manifest_channel': 'private-stable',\n"
+            "         'versions': {r['id']: r['version'] for r in next_mf['components']},\n"
+            "         'url': 'https://github.com/2223M1/bobbi-tv/releases/download/ce2055/BobbiTV-CE2055.bobbi-update.zip'}\n"
+            "class _R(io.BytesIO):\n"
+            "    status = 200\n"
+            "    def __init__(self, b): super().__init__(b); self.headers = {'Content-Length': str(len(b))}\n"
+            "    def read1(self, n): return self.read(n)\n"
+            "boot_online.latest = lambda *_a, **_k: offer\n"
+            "boot_online._open = lambda _u: _R(raw_next)\n"
+            "sys.argv = ['default.py', 'auto']\n"
+            "exec(compile((addons_dir / 'script.bobbi.start/default.py').read_text(encoding='utf-8'), 'default.py', 'exec'), {'__name__': '__main__'})\n"
+            "print(json.dumps({'seq': inst._read()['sequence'], 'notices': notices, 'ui_file': boot_ui.__file__}))\n"
+        )
+        trust_file = mode_dir / 'trust.json'
+        trust_file.write_text(json.dumps(signing[1]), encoding='utf-8')
+        res_proc = subprocess.run(
+            [sys.executable, '-I', '-B', '-c', run_auto_child, str(mode_dir), str(plat_lib), str(base_pkg), str(next_pkg), str(trust_file)],
+            capture_output=True, text=True, check=True,
+        )
+        res_json = json.loads(res_proc.stdout)
+        assert res_json['seq'] == 2
+        assert res_json['notices'] and 'CE2055' in res_json['notices'][-1][1]
+        assert 'bootstrap' in res_json['ui_file']
+
+
+def test_rls02_rls03_pre_handoff_idle_recheck_sequence_binding_and_entry_pending_notices(tmp_path, signing):
+    from test_ce_general_installer import environment, package
+    from test_online_updates import Response, entry as entry_fixture
+    from test_ce_update_continuity import make_offer
+
+    for scenario in ('nav_in_prep', 'modal_in_prep', 'own_ui_in_prepare_skin', 'entry_fail_notice'):
+        case_dir = tmp_path / scenario
+        case_dir.mkdir()
+        with pytest.MonkeyPatch.context() as mp:
+            env = environment.__wrapped__(case_dir, signing)
+            st = entry_fixture.__wrapped__(env, signing, mp)
+            env.installer.apply(package(case_dir / 'base.zip', signing, 1, '1.0.0', channel='private-stable'))
+            cand = package(case_dir / 'cand.zip', signing, 2, '2.0.0', channel='private-stable')
+            cand_raw = cand.read_bytes()
+            offer = make_offer(cand, 'ce2195')
+
+            idle_val = [60]
+            modal_val = [False]
+            effects, notices, logs = [], [], []
+            kodi = sys.modules['xbmc']
+            kodi.Player = lambda: SimpleNamespace(isPlaying=lambda: False)
+            kodi.getCondVisibility = lambda c: modal_val[0] if c == 'System.HasModalDialog' else False
+            kodi.getGlobalIdleTime = lambda: idle_val[0]
+            kodi.log = lambda line, *_a: logs.append(line)
+            env.host.xbmc = kodi
+            st.dialog.notification = lambda *a, **kw: notices.append(a)
+            mp.setattr(sys.modules['xbmcvfs'], 'translatePath', lambda _p: str(env.work))
+            mp.setattr(online, 'latest', lambda *_a, **_k: offer)
+            mp.setattr(online, '_open', lambda _u: Response(cand_raw))
+
+            real_deps = env.host.dependencies
+
+            def deps_hook(stage):
+                res = real_deps(stage)
+                if scenario == 'nav_in_prep':
+                    idle_val[0] = 0
+                elif scenario == 'modal_in_prep':
+                    modal_val[0] = True
+                return res
+
+            env.host.dependencies = deps_hook
+
+            def prep_skin():
+                effects.append('prepare_skin')
+                if scenario == 'own_ui_in_prepare_skin':
+                    idle_val[0] = 0
+                    modal_val[0] = True
+
+            env.host.prepare_install_skin = prep_skin
+            orig_quiesce = env.host.quiesce
+            env.host.quiesce = lambda: effects.append('quiesce') or orig_quiesce()
+
+            if scenario == 'entry_fail_notice':
+                live_entry = env.addons / 'script.bobbi.start'
+                assert ui.sync_entry_from_bundle(case_dir / 'base.zip', env.addons, trust=signing[1]) is True
+                real_rep = ui.os.replace
+                mp.setattr(
+                    ui.os,
+                    'replace',
+                    lambda s, d: (_ for _ in ()).throw(OSError('publish fail'))
+                    if Path(d) == live_entry and Path(s).name.startswith('.bobbi-entry-stage-')
+                    else real_rep(s, d),
+                )
+
+            ret = ui.main(auto=True)
+            final_seq = env.installer._read()['sequence']
+            if scenario in ('nav_in_prep', 'modal_in_prep'):
+                assert ret is False and final_seq == 1 and effects == []
+            elif scenario == 'own_ui_in_prepare_skin':
+                assert ret is True and final_seq == 2 and 'prepare_skin' in effects
+                assert notices and '已自动升级至 CE2195' in notices[-1][1]
+            else:
+                assert ret is True and final_seq == 2
+                assert any('ENTRY_SYNC_FAILED' in ln for ln in logs)
+                assert notices and '启动器待同步' in notices[-1][1] and '已自动升级至' not in notices[-1][1]
+                assert ET.parse(env.addons / 'script.bobbi.start/addon.xml').getroot().get('version') == '1.0.0'
+
+    # Manual online & offline paths bind applied['sequence'] and surface entry_pending in dialog.ok!
+    manual_dir = tmp_path / 'manual_seq_and_dialog'
+    manual_dir.mkdir()
+    with pytest.MonkeyPatch.context() as mp:
+        env = environment.__wrapped__(manual_dir, signing)
+        st = entry_fixture.__wrapped__(env, signing, mp)
+        b1 = package(manual_dir / 'm1.zip', signing, 1, '1.0.0', channel='private-stable')
+        b2 = package(manual_dir / 'm2.zip', signing, 2, '2.0.0', channel='private-stable')
+        b3 = package(manual_dir / 'm3.zip', signing, 3, '3.0.0', channel='private-stable')
+        env.installer.apply(b1)
+        assert ui.sync_entry_from_bundle(b1, env.addons, trust=signing[1], work=env.work, expected_sequence=1) is True
+
+        # Simulate race where journal already advanced to sequence=3 before manual online sync_entry_from_bundle acquires lock
+        orig_apply = env.installer.apply
+
+        def apply_then_advance_to_3(bundle):
+            applied_manifest = orig_apply(bundle)
+            orig_apply(b3)
+            return applied_manifest
+
+        mp.setattr(env.installer, 'apply', apply_then_advance_to_3)
+        b2_raw = b2.read_bytes()
+        mp.setattr(online, 'latest', lambda *_a, **_k: make_offer(b2, 'ce2055'))
+        mp.setattr(online, '_open', lambda _u: Response(b2_raw))
+        st.dialogs.clear()
+        ui.main(online=True)
+        # Stale candidate b2 (seq=2 vs journal seq=3) was skipped cleanly, AND dialog informed user launcher sync is pending!
+        assert ET.parse(env.addons / 'script.bobbi.start/addon.xml').getroot().get('version') == '1.0.0'
+        assert st.dialogs and '启动器入口尚未同步' in st.dialogs[-1][1]

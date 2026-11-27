@@ -12,6 +12,7 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'addons/script.module.bobbi.platform/lib'))
+from bobbi_platform.ce_install_ui import _ENTRY_BOOTSTRAP_FILES
 from bobbi_platform.offline_updates import SignedBundle, load_trust
 from build_release import sources, files
 
@@ -21,6 +22,8 @@ BOOTSTRAP = ('__init__.py', 'bootstrap_i18n.py', 'ce_installer.py', 'ce_install_
              'paths.py', 'kodi.py', 'playback.py', 'capabilities.py',
              'runtime.py', 'instance_lock.py', 'online_updates.py', 'online_transport.py', 'online_partial.py',
              'online_components.py')
+if BOOTSTRAP != _ENTRY_BOOTSTRAP_FILES:
+    raise RuntimeError('BOOTSTRAP inventory out of sync with ce_install_ui._ENTRY_BOOTSTRAP_FILES')
 
 
 def build(bundle, output, online=False):

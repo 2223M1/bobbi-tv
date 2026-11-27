@@ -116,6 +116,12 @@ def test_cap01_large_season_next_episode_lookup_beyond_200_gaps_shifts_and_bound
                 size = int(q['Limit'][0])
                 if season_id == 'bigseason':
                     all_eps = [ep_row('g', i + 1, i + 1) for i in range(1000)]
+                elif season_id == 'reordered':
+                    # Display order in /Shows/.../Episodes has E1001 at slot 20 while E1000 is last
+                    all_eps = [
+                        ep_row('ro', i + 1, 1001 if i == 20 else (i + 1), season_id='reordered')
+                        for i in range(1000)
+                    ]
                 elif season_id == 'dupseason':
                     all_eps = [
                         ep_row('dp', 200, 200, season_id='dupseason'),
@@ -135,39 +141,48 @@ def test_cap01_large_season_next_episode_lookup_beyond_200_gaps_shifts_and_bound
                 size = int(q['Limit'][0])
                 parent = q.get('ParentId', [''])[0]
                 if parent == 'bigseason':
-                    total = 1000
-                    rows = [ep_row('g', i + 1, i + 1) for i in range(start, min(start + size, total))]
-                elif parent == 'outoforder':
-                    # Page 1 starts at 1, final page 50 ends at 1000, while IndexNumber=1001 sits on uninspected page 3!
-                    total = 1000
-                    rows = []
-                    for i in range(start, min(start + size, total)):
-                        ep_no = 1001 if i == 50 else (i + 1)
-                        rows.append(ep_row('oo', i + 1, ep_no, season_id='outoforder'))
+                    all_rows = [ep_row('g', i + 1, i + 1) for i in range(1000)]
+                elif parent == 'reordered':
+                    all_rows = [
+                        ep_row('ro', i + 1, 1001 if i == 20 else (i + 1), season_id='reordered')
+                        for i in range(1000)
+                    ]
+                elif parent == 'dupboundary':
+                    # Two distinct E20 items straddle page 1 index 19 and page 2 index 0!
+                    nums = list(range(1, 21)) + [20] + list(range(21, 41))
+                    all_rows = [ep_row('db', i + 1, n, season_id='dupboundary') for i, n in enumerate(nums)]
                 elif parent == 'shifted':
                     # 15 leading specials (ParentIndexNumber=0) followed by 985 episodes (1..985)
-                    total = 1000
-                    rows = []
-                    for i in range(start, min(start + size, total)):
-                        if i < 15:
-                            rows.append(ep_row('sp', i + 1, i + 1, season_num=0, season_id='shifted'))
-                        else:
-                            ep_no = i - 14
-                            rows.append(ep_row('sh', ep_no, ep_no, season_num=1, season_id='shifted'))
+                    all_rows = [
+                        ep_row('sp', i + 1, i + 1, season_num=0, season_id='shifted')
+                        if i < 15 else ep_row('sh', i - 14, i - 14, season_num=1, season_id='shifted')
+                        for i in range(1000)
+                    ]
                 elif parent == 'gapseason':
                     # Episode 500 is missing: 1..499 then 501..1000 (total 999 items)
-                    total = 999
-                    rows = []
-                    for i in range(start, min(start + size, total)):
-                        ep_no = (i + 1) if i < 499 else (i + 2)
-                        rows.append(ep_row('gp', ep_no, ep_no, season_num=1, season_id='gapseason'))
+                    all_rows = [
+                        ep_row('gp', (i + 1) if i < 499 else (i + 2), (i + 1) if i < 499 else (i + 2), season_num=1, season_id='gapseason')
+                        for i in range(999)
+                    ]
                 elif parent == 'ultraseason':
                     # 250,000 episodes (> 200,000 single-directory ceiling)
                     total = 250000
                     rows = [ep_row('ul', i + 1, i + 1, season_id='ultraseason') for i in range(start, min(start + size, total))]
+                    obj = {'Items': rows, 'TotalRecordCount': total}
+                    raw = json.dumps(obj).encode('utf-8')
+                    self.send_response(200)
+                    self.send_header('Content-Type', 'application/json')
+                    self.send_header('Content-Length', str(len(raw)))
+                    self.end_headers()
+                    self.wfile.write(raw)
+                    return
                 else:
                     self.send_error(404)
                     return
+                if q.get('SortBy') == ['ParentIndexNumber,IndexNumber,SortName']:
+                    all_rows = sorted(all_rows, key=lambda r: (r['ParentIndexNumber'], r['IndexNumber'], r['Name']))
+                total = len(all_rows)
+                rows = all_rows[start:start + size]
                 obj = {'Items': rows, 'TotalRecordCount': total}
             elif u.path.startswith('/Users/u/Items/'):
                 ident = u.path.rsplit('/', 1)[1]
@@ -241,7 +256,7 @@ def test_cap01_large_season_next_episode_lookup_beyond_200_gaps_shifts_and_bound
         assert res_end.outcome == 'confirmed_end'
         assert counts['/Shows/ser1/Episodes'] - ep_calls_before == 1
 
-        # 2. Duplicate episode IndexNumber -> explicit needs_selection (duplicate_episode), never guesses!
+        # 2. Duplicate episode IndexNumber (both within targeted page and across 20-item page seam!) -> needs_selection
         res_dup = emby_session.resolve_next_episode_result(
             current,
             {
@@ -254,14 +269,26 @@ def test_cap01_large_season_next_episode_lookup_beyond_200_gaps_shifts_and_bound
         )
         assert res_dup.outcome == 'needs_selection' and res_dup.detail == 'duplicate_episode'
 
-        # 3. Fallback paginated lookup passes explicit episode SortBy & NEVER claims false confirmed_end with uninspected pages!
-        res_uninspected = emby_session.resolve_next_episode_result(
-            current,
-            {'resolver': 'emby_same_season', 'profile_root': str(tmp_path), 'season_id': 'outoforder', 'season': 1, 'episode': 1000},
+        res_dup_seam = emby_session.resolve_next_episode_result(
+            dict(current, _owned_source=dict(current['_owned_source'], item_id='db19')),
+            {'resolver': 'emby_same_season', 'profile_root': str(tmp_path), 'season_id': 'dupboundary', 'season': 1, 'episode': 19},
             lambda: False,
             open_session=False,
         )
-        assert res_uninspected.outcome == 'error' and res_uninspected.detail == 'page_limit'
+        assert res_dup_seam.outcome == 'needs_selection' and res_dup_seam.detail == 'duplicate_episode'
+
+        # 3. Reordered display list where E1001 precedes E1000 in /Shows/.../Episodes: StartItemId tail NEVER claims false confirmed_end; sorted fallback finds E1001!
+        res_reordered = emby_session.resolve_next_episode_result(
+            dict(current, _owned_source=dict(current['_owned_source'], item_id='ro1000')),
+            {
+                'resolver': 'emby_same_season', 'profile_root': str(tmp_path),
+                'series_id': 'ser1', 'season_id': 'reordered',
+                'season': 1, 'episode': 1000,
+            },
+            lambda: False,
+            open_session=False,
+        )
+        assert res_reordered.outcome == 'candidate' and res_reordered.candidate['_owned_source']['item_id'] == 'ro21'
         assert seen_item_queries[-1].get('SortBy') == ['ParentIndexNumber,IndexNumber,SortName']
         assert seen_item_queries[-1].get('IncludeItemTypes') == ['Episode']
 
@@ -634,7 +661,7 @@ def test_home_rail_shared_budget_and_host_resident_verified_primary_tag_cache(tm
         emby_artwork.clear_verified_primary_tags()
 
 
-def test_yatse_fuse3_notification_guard_timers_expression_o1_nav_and_log_filter():
+def test_yatse_fuse3_notification_guard_timers_expression_prefix_nav_and_log_filter():
     """Verify non-blocking KaiToast labels (R1), inlined Timers.xml VS10 expression (V3), nav prefix expressions, and log filter."""
     # 1. DialogNotification.xml places plain non-fadelabel IDs 401/402 OUTSIDE filtered group so KaiToast queue never stalls
     notif_tree = ET.parse(ROOT / 'addons/skin.bobbi.cinema/1080p/DialogNotification.xml').getroot()
@@ -658,7 +685,7 @@ def test_yatse_fuse3_notification_guard_timers_expression_o1_nav_and_log_filter(
     assert '$EXP[' not in timers_raw
     assert '[!String.IsEmpty(Player.Process(amlogic.vs10.mode)) | String.IsEqual(Window(Home).Property(Bobbi.Host.SupportsVS10),true)]' in timers_raw
 
-    # 3. Includes_HomeNav.generated.xml uses O(1) BobbiSpaceSeen_* prefix expressions (<= 3 atoms per slot!)
+    # 3. Includes_HomeNav.generated.xml uses bounded BobbiSpaceSeen_* prefix expressions (<= 3 $EXP atoms per slot)
     nav_tree = ET.parse(ROOT / 'addons/skin.bobbi.cinema/1080p/Includes_HomeNav.generated.xml').getroot()
     exprs = {e.get('name'): (e.text or '') for e in nav_tree.findall('expression')}
     assert 'BobbiSpaceSeen_11_settings' in exprs

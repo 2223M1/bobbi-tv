@@ -28,7 +28,7 @@ from .bootstrap_i18n import (
 from .ce_installer import Installer, MANAGED, PlaybackActive, blocked, installed_watermark, read_installation
 from .kodi import rpc
 from .offline_updates import SignedBundle
-from .paths import profile
+from .paths import ProfileBinding, profile
 from .updates import UpdateError, _Lock, _atomic, _json, _safe_path, archive_rows, auto_update_enabled
 from .upstream_addons import (
     DIRECTORY_CONFLICT,
@@ -896,7 +896,7 @@ def choose_package(dialog, payload, first, *, host=None):
     return dialog.browse(1, tr('source_browse_heading', host=host), 'files', mask='.zip')
 
 
-def install_online(installer, host, dialog):
+def install_online(installer, host, dialog, *, outcome=None):
     """A manual online action downloads first, then reuses the offline transaction."""
     import xbmcgui
     from .online_updates import latest, Cancelled, selected_track
@@ -949,7 +949,12 @@ def install_online(installer, host, dialog):
             return False
         host.check_idle()
         progress.close()
-        installer.apply(selected)
+        applied = installer.apply(selected)
+        applied_seq = (
+            applied['sequence']
+            if isinstance(applied, dict) and type(applied.get('sequence')) is int
+            else offer['sequence']
+        )
         entry_outcome = {}
         sync_entry_from_bundle(
             selected,
@@ -957,9 +962,13 @@ def install_online(installer, host, dialog):
             getattr(installer, 'trust', None),
             host=host,
             work=getattr(installer, 'work', None),
+            expected_sequence=applied_seq,
             report_outcome=entry_outcome,
         )
-        if entry_outcome.get('status') == 'failed':
+        entry_pending = entry_outcome.get('status') not in ('updated', 'unchanged', 'kept_newer')
+        if isinstance(outcome, dict):
+            outcome.update(entry_status=entry_outcome.get('status'), entry_pending=entry_pending)
+        if entry_pending:
             xbmc_mod = getattr(host, 'xbmc', None)
             if xbmc_mod is not None and hasattr(xbmc_mod, 'log'):
                 xbmc_mod.log('[bobbi-install] online · ENTRY_SYNC_FAILED', getattr(xbmc_mod, 'LOGWARNING', 2))
@@ -974,6 +983,11 @@ def install_online(installer, host, dialog):
 
 
 MIN_AUTO_IDLE_SECONDS = 20
+
+
+class _StartProfileBinding(ProfileBinding):
+    ADDONS = ('script.bobbi.start',)
+
 
 _ENTRY_BOOTSTRAP_FILES = (
     '__init__.py', 'bootstrap_i18n.py', 'ce_installer.py', 'ce_install_ui.py', 'android_ui.py',
@@ -1006,9 +1020,10 @@ def _extract_expected_entry_tree(entry_bytes, entry_row, plat_bytes, plat_row):
         names = set(pzf.namelist())
         for fname in _ENTRY_BOOTSTRAP_FILES:
             member = 'script.module.bobbi.platform/lib/bobbi_platform/' + fname
-            if member in names:
-                expected[('bootstrap', 'bobbi_platform', fname)] = pzf.read(member)
-    if ('addon.xml',) not in expected:
+            if member not in names:
+                raise UpdateError('ENTRY_BOOTSTRAP_INCOMPLETE')
+            expected[('bootstrap', 'bobbi_platform', fname)] = pzf.read(member)
+    if ('addon.xml',) not in expected or ('default.py',) not in expected:
         raise UpdateError('ENTRY_BOOTSTRAP_INCOMPLETE')
     return expected
 
@@ -1101,6 +1116,9 @@ def _sync_entry_core(bundle_path, root, active_trust, *, host=None, work_path=No
                 (stage_entry / 'resources').mkdir(parents=True, exist_ok=True)
                 shutil.copy2(embedded_zip, stage_entry / 'resources' / 'complete.bobbi-update.zip')
 
+        if not _entry_tree_matches_live(stage_entry, expected_files):
+            raise UpdateError('ENTRY_STAGE_INCOMPLETE')
+
         if live_entry.exists() and backup_entry.exists() and not backup_entry.is_symlink():
             shutil.rmtree(backup_entry)
 
@@ -1118,7 +1136,7 @@ def _sync_entry_core(bundle_path, root, active_trust, *, host=None, work_path=No
                     pass  # Keep backup_entry on disk so next startup heals live_entry.
             raise
 
-        if (live_entry / 'addon.xml').is_file() and backup_entry.exists() and not backup_entry.is_symlink():
+        if _entry_tree_matches_live(live_entry, expected_files) and backup_entry.exists() and not backup_entry.is_symlink():
             shutil.rmtree(backup_entry, ignore_errors=True)
     finally:
         if stage_entry.exists() and not stage_entry.is_symlink():
@@ -1246,11 +1264,10 @@ def ensure_entry_synced_from_recovery(work, addons_root=None, trust=None, *, hos
         return False
 
 
-def install_auto_online(installer, host):
+def install_auto_online(installer, host, *, outcome=None):
     """Unattended background online update when idle >= 20s and auto_update_enabled is True."""
     import xbmc as _xbmc
     import xbmcgui
-    from .ce_update_notice import NoticeProfile
     from .online_updates import latest, Cancelled, selected_track
     from .online_components import download
     if not auto_update_enabled(installer.work):
@@ -1262,7 +1279,7 @@ def install_auto_online(installer, host):
     player_fn = getattr(xbmc_mod, 'Player', None)
     idle_fn = getattr(xbmc_mod, 'getGlobalIdleTime', None)
     try:
-        profile_binding = NoticeProfile()
+        profile_binding = _StartProfileBinding()
         profile_ok = profile_binding.is_current
     except Exception:
         guard_builder = getattr(host, '_capture_profile_guard', None)
@@ -1299,6 +1316,10 @@ def install_auto_online(installer, host):
                 return True
             return False
 
+        def _require_auto_pre_handoff():
+            if ineligible():
+                raise Cancelled('AUTO_PRE_HANDOFF_INELIGIBLE')
+
         host.check_idle()
         if ineligible():
             return False
@@ -1312,7 +1333,23 @@ def install_auto_online(installer, host):
         if ineligible():
             return False
         host.check_idle()
-        installer.apply(selected)
+        prev_pre_handoff = getattr(host, 'check_pre_handoff', None)
+        host.check_pre_handoff = _require_auto_pre_handoff
+        try:
+            applied = installer.apply(selected)
+        finally:
+            if prev_pre_handoff is None:
+                try:
+                    delattr(host, 'check_pre_handoff')
+                except AttributeError:
+                    pass
+            else:
+                host.check_pre_handoff = prev_pre_handoff
+        applied_seq = (
+            applied['sequence']
+            if isinstance(applied, dict) and type(applied.get('sequence')) is int
+            else offer['sequence']
+        )
         entry_outcome = {}
         sync_entry_from_bundle(
             selected,
@@ -1320,21 +1357,42 @@ def install_auto_online(installer, host):
             getattr(installer, 'trust', None),
             host=host,
             work=getattr(installer, 'work', None),
-            expected_sequence=offer['sequence'],
+            expected_sequence=applied_seq,
             report_outcome=entry_outcome,
         )
-        if entry_outcome.get('status') == 'failed' and hasattr(xbmc_mod, 'log'):
+        entry_pending = entry_outcome.get('status') not in ('updated', 'unchanged', 'kept_newer')
+        if entry_pending and hasattr(xbmc_mod, 'log'):
             xbmc_mod.log('[bobbi-install] auto · ENTRY_SYNC_FAILED', getattr(xbmc_mod, 'LOGWARNING', 2))
         ensure_host_language(host, installer, None, payload=selected)
         restore_skin = getattr(host, 'restore_skin_after_install', None)
         skin_ok = restore_skin(previous_skin) if callable(restore_skin) else True
         if skin_ok is False and hasattr(xbmc_mod, 'log'):
             xbmc_mod.log('[bobbi-install] auto · SKIN_RESTORE_INCOMPLETE', getattr(xbmc_mod, 'LOGWARNING', 2))
+        if isinstance(outcome, dict):
+            outcome.update(
+                entry_status=entry_outcome.get('status'),
+                entry_pending=entry_pending,
+                skin_ok=bool(skin_ok is not False),
+            )
         en = normalize_locale(active_locale(host=host, rpc_fn=rpc)) == 'en_gb'
         notify_fn = getattr(xbmcgui.Dialog(), 'notification', None)
         if callable(notify_fn):
             tag_label = offer['tag'].upper()
-            if skin_ok is False:
+            if entry_pending and skin_ok is False:
+                notify_fn(
+                    'Bobbi TV Core Updated' if en else '波比 TV 主程序已更新',
+                    (f'Core updated to {tag_label}; launcher sync & skin switch pending'
+                     if en else f'主程序已升至 {tag_label}，启动器待同步，请重新进入影院界面'),
+                    sound=False,
+                )
+            elif entry_pending:
+                notify_fn(
+                    'Bobbi TV Core Updated' if en else '波比 TV 主程序已更新',
+                    (f'Core updated to {tag_label}; launcher sync pending (auto-heals on restart)'
+                     if en else f'主程序已升至 {tag_label}，启动器待同步（重启后自动补齐）'),
+                    sound=False,
+                )
+            elif skin_ok is False:
                 notify_fn(
                     'Bobbi TV Updated' if en else '波比 TV 已更新',
                     (f'Updated to {tag_label}; reopen Bobbi Cinema to switch skin'
@@ -1698,9 +1756,15 @@ def main(payload=None, online=False, storage=False, auto=False):
             state_now = installer._read()
             if not state_now or state_now.get('host_pending') or state_now.get('phase') not in ('complete', 'restored'):
                 return False
-            updated = install_auto_online(installer, host)
+            auto_outcome = {}
+            updated = install_auto_online(installer, host, outcome=auto_outcome)
             if updated and diagnostic_root is not None:
-                observe(diagnostic_root, 'update', 'ok', started)
+                obs_status = (
+                    'handoff'
+                    if (auto_outcome.get('entry_pending') or not auto_outcome.get('skin_ok', True))
+                    else 'ok'
+                )
+                observe(diagnostic_root, 'update', obs_status, started)
             return updated
         if not storage and callable(getattr(installer, '_read', None)):
             try:
@@ -1759,11 +1823,16 @@ def main(payload=None, online=False, storage=False, auto=False):
             return
         if choice == 4:
             stage = 'online'
-            if not install_online(installer, host, dialog):
+            online_outcome = {}
+            if not install_online(installer, host, dialog, outcome=online_outcome):
                 return
+            entry_pending = bool(online_outcome.get('entry_pending'))
             if diagnostic_root is not None:
-                observe(diagnostic_root, 'update', 'ok', started)
-            dialog.ok(tr('installed_title', host=host), tr('installed_online_body', host=host))
+                observe(diagnostic_root, 'update', 'handoff' if entry_pending else 'ok', started)
+            body = tr('installed_online_body', host=host)
+            if entry_pending:
+                body += tr('installed_entry_pending_suffix', host=host)
+            dialog.ok(tr('installed_title', host=host), body)
             choice = 0
         if choice == 1:
             stage = 'validate'
@@ -1783,18 +1852,32 @@ def main(payload=None, online=False, storage=False, auto=False):
             ):
                 return
             stage = 'apply'
-            installer.apply(selected)
+            applied = installer.apply(selected)
+            applied_seq = (
+                applied['sequence']
+                if isinstance(applied, dict) and type(applied.get('sequence')) is int
+                else (installer._read() or {}).get('sequence')
+            )
+            offline_entry_outcome = {}
             sync_entry_from_bundle(
                 selected,
                 getattr(installer, 'addons', None),
                 getattr(installer, 'trust', None),
                 host=host,
                 work=getattr(installer, 'work', None),
+                expected_sequence=applied_seq,
+                report_outcome=offline_entry_outcome,
             )
+            offline_entry_pending = offline_entry_outcome.get('status') not in ('updated', 'unchanged', 'kept_newer')
+            if offline_entry_pending and hasattr(xbmc, 'log'):
+                xbmc.log('[bobbi-install] offline · ENTRY_SYNC_FAILED', getattr(xbmc, 'LOGWARNING', xbmc.LOGERROR))
             ensure_host_language(host, installer, dialog, payload=selected)
             if diagnostic_root is not None:
-                observe(diagnostic_root, 'install', 'ok', started)
-            dialog.ok(tr('installed_title', host=host), tr('installed_offline_body', host=host))
+                observe(diagnostic_root, 'install', 'handoff' if offline_entry_pending else 'ok', started)
+            body = tr('installed_offline_body', host=host)
+            if offline_entry_pending:
+                body += tr('installed_entry_pending_suffix', host=host)
+            dialog.ok(tr('installed_title', host=host), body)
             choice = 0
         elif choice == 2:
             stage = 'rollback'

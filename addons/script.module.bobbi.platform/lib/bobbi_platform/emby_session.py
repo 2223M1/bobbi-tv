@@ -1563,22 +1563,33 @@ def _find_next_season_episode(
     series_id: str | None = None,
     start_item_id: str | None = None,
 ) -> tuple[dict | str | None, bool | None]:
-    """Locate target_ep in same season via targeted StartItemId slice or bounded page probes.
+    """Locate target_ep in same season via targeted StartItemId slice or bounded sorted probes.
 
     Soundness rules:
       - Positive match requires exact single item with ParentIndexNumber == season_num and
-        IndexNumber == target_ep; multiple matching items return ('duplicate', True).
-      - Negative proof (confirmed_end) requires EITHER:
-          (a) targeted /Shows/{SeriesId}/Episodes?StartItemId=<cur> returned the complete
-              remaining tail (total == len(rows)) anchored at start_item_id with sorted
-              episode numbers and zero matches, OR
-          (b) every page in the season was inspected (len(visited) == raw_last_page).
-      - Uninspected pages NEVER infer confirmed_end; they fail closed with (None, False)
-        -> detail='page_limit'.
+        IndexNumber == target_ep; adjacent page boundaries are checked so duplicate episode
+        items straddling a page seam return ('duplicate', True).
+      - Negative proof (confirmed_end) is NEVER inferred from StartItemId tail alone (which
+        skips display-order prefixes); it requires EITHER:
+          (a) every page in the season was inspected (len(visited) == raw_last_page), OR
+          (b) explicit numeric SortBy=ParentIndexNumber,IndexNumber,SortName query inspected
+              the final page (<= 10000) and its maximum (ParentIndexNumber, IndexNumber) is
+              strictly below (season_num, target_ep).
+      - Otherwise uninspected pages fail closed with (None, False) -> detail='page_limit'.
     """
     parent_ref = 'folder:' + identifier(season_id)
     visited: dict[int, list[dict]] = {}
     total_holder: list[int] = [0]
+    used_sorted_query = hasattr(client, 'season_episode_page')
+
+    def _row_sort_key(row: dict) -> tuple[int, int] | None:
+        if (
+            row.get('Type') == 'Episode'
+            and type(row.get('ParentIndexNumber')) is int
+            and type(row.get('IndexNumber')) is int
+        ):
+            return (row['ParentIndexNumber'], row['IndexNumber'])
+        return None
 
     def _matches(rows: list[dict]) -> list[dict]:
         return [
@@ -1601,14 +1612,14 @@ def _find_next_season_episode(
     if target_ep < 1:
         return None, True
 
-    # 0. Fast O(1) targeted tail slice via /Shows/{SeriesId}/Episodes?StartItemId=<cur>
+    # 0. Fast O(1) positive candidate via /Shows/{SeriesId}/Episodes?StartItemId=<cur>
     if series_id and start_item_id and hasattr(client, 'season_episodes_from'):
         if cancelled():
             return None, None
         try:
             tail_rows, tail_total = client.season_episodes_from(
                 series_id, season_id, start_item_id, SEASON_LOOKUP_PAGE_SIZE,
-            )
+             )
         except PanError as err:
             if str(err) not in ('PAN_FILE_CHANGED', 'PAN_DIRECTORY_UNAVAILABLE'):
                 raise
@@ -1616,27 +1627,26 @@ def _find_next_season_episode(
             hits = _matches(tail_rows)
             if len(hits) > 1:
                 return 'duplicate', True
-            if len(hits) == 1:
-                return hits[0], True
-            tail_nums = _ep_numbers(tail_rows)
+            tail_keys = [k for r in tail_rows if (k := _row_sort_key(r)) is not None]
             if (
-                tail_rows
+                len(hits) == 1
+                and tail_rows
                 and tail_rows[0].get('Id') == identifier(start_item_id)
-                and tail_rows[0].get('ParentIndexNumber') == season_num
-                and tail_rows[0].get('IndexNumber') == target_ep - 1
-                and tail_total == len(tail_rows)
-                and tail_nums == sorted(tail_nums)
+                and _row_sort_key(tail_rows[0]) == (season_num, target_ep - 1)
+                and len(tail_keys) == len(tail_rows)
+                and tail_keys == sorted(tail_keys)
+                and (len(tail_rows) == tail_total or hits[0] is not tail_rows[-1])
             ):
-                return None, True
+                return hits[0], True
 
-    def _fetch(page_idx: int) -> tuple[dict | str | None, list[dict] | None]:
+    def _fetch_raw(page_idx: int) -> tuple[dict | str | None, list[dict] | None]:
         if page_idx in visited:
             rows = visited[page_idx]
             hits = _matches(rows)
             return ('duplicate' if len(hits) > 1 else (hits[0] if hits else None)), rows
         if cancelled():
             return None, None
-        if hasattr(client, 'season_episode_page'):
+        if used_sorted_query:
             rows, total = client.season_episode_page(season_id, page_idx, SEASON_LOOKUP_PAGE_SIZE)
         else:
             rows, total = client.page_rows(parent_ref, page_idx, SEASON_LOOKUP_PAGE_SIZE, display=True)
@@ -1645,41 +1655,58 @@ def _find_next_season_episode(
         hits = _matches(rows)
         return ('duplicate' if len(hits) > 1 else (hits[0] if hits else None)), rows
 
+    def _resolve_hit(page_idx: int, hit: dict | str, rows: list[dict], max_page_bound: int) -> tuple[dict | str | None, bool | None]:
+        if hit == 'duplicate':
+            return 'duplicate', True
+        if page_idx > 1 and rows and rows[0] is hit and len(visited) < MAX_SEASON_LOOKUP_REQUESTS:
+            adj_hit, adj_rows = _fetch_raw(page_idx - 1)
+            if adj_rows is None:
+                return None, None
+            if adj_hit is not None:
+                return 'duplicate', True
+        if page_idx < max_page_bound and rows and rows[-1] is hit and len(visited) < MAX_SEASON_LOOKUP_REQUESTS:
+            adj_hit, adj_rows = _fetch_raw(page_idx + 1)
+            if adj_rows is None:
+                return None, None
+            if adj_hit is not None:
+                return 'duplicate', True
+        return hit, True
+
     # 1. Read page 1 first (offset=0 is valid even when TotalRecordCount == 0).
-    hit, rows_1 = _fetch(1)
+    hit, rows_1 = _fetch_raw(1)
     if rows_1 is None:
         return None, None
-    if hit is not None:
-        return hit, True
     total = total_holder[0]
+    raw_last_page = ((total - 1) // SEASON_LOOKUP_PAGE_SIZE + 1) if total > 0 else 1
+    max_page = min(MAX_SEASON_LOOKUP_PAGE, raw_last_page)
+    if hit is not None:
+        return _resolve_hit(1, hit, rows_1, max_page)
     if total <= SEASON_LOOKUP_PAGE_SIZE:
         return None, True
 
-    raw_last_page = (total - 1) // SEASON_LOOKUP_PAGE_SIZE + 1
-    max_page = min(MAX_SEASON_LOOKUP_PAGE, raw_last_page)
     direct_guess = min(max_page, max(1, (target_ep - 1) // SEASON_LOOKUP_PAGE_SIZE + 1))
 
     # 2. Seasons up to 10 pages (<= 200 items): probe direct arithmetic page first,
-    #    then sweep all remaining pages for 100% exhaustive confirmed_end proof.
+    #    then sweep all remaining pages for 100% exhaustive confirmed_end & duplicate proof.
     if raw_last_page <= MAX_EXHAUSTIVE_SWEEP_PAGES:
         probe_order = [direct_guess] + [p for p in range(1, max_page + 1) if p != direct_guess]
         for p in probe_order:
             if p in visited:
                 continue
-            hit, p_rows = _fetch(p)
+            hit, p_rows = _fetch_raw(p)
             if p_rows is None:
                 return None, None
             if hit is not None:
-                return hit, True
+                return _resolve_hit(p, hit, p_rows, max_page)
         return None, True
 
-    # 3. Large seasons (> 200 items, up to 200,000 items): probe direct arithmetic page first
-    #    (resolves 200->201 and 999->1000 in 1 extra HTTP request), then binary-search by IndexNumber.
-    hit, guess_rows = _fetch(direct_guess)
+    # 3. Large seasons (> 200 items, up to 200,000 items): probe direct arithmetic page first,
+    #    then binary-search by IndexNumber.
+    hit, guess_rows = _fetch_raw(direct_guess)
     if guess_rows is None:
         return None, None
     if hit is not None:
-        return hit, True
+        return _resolve_hit(direct_guess, hit, guess_rows, max_page)
 
     lo, hi = 2, max_page
     guess_nums = _ep_numbers(guess_rows)
@@ -1691,11 +1718,11 @@ def _find_next_season_episode(
 
     while lo <= hi and len(visited) < MAX_SEASON_LOOKUP_REQUESTS:
         mid = (lo + hi) // 2
-        hit, mid_rows = _fetch(mid)
+        hit, mid_rows = _fetch_raw(mid)
         if mid_rows is None:
             return None, None
         if hit is not None:
-            return hit, True
+            return _resolve_hit(mid, hit, mid_rows, max_page)
         nums = _ep_numbers(mid_rows)
         if not nums:
             # Leading specials or non-episode rows on mid: advance rightward toward Season episodes.
@@ -1710,18 +1737,45 @@ def _find_next_season_episode(
         else:
             for adj in (mid - 1, mid + 1):
                 if 1 <= adj <= max_page and len(visited) < MAX_SEASON_LOOKUP_REQUESTS:
-                    hit, adj_rows = _fetch(adj)
+                    hit, adj_rows = _fetch_raw(adj)
                     if adj_rows is None:
                         return None, None
                     if hit is not None:
-                        return hit, True
+                        return _resolve_hit(adj, hit, adj_rows, max_page)
             break
 
     if cancelled():
         return None, None
 
-    # Never infer confirmed_end when uninspected pages remain in the season.
-    return None, (len(visited) >= raw_last_page and raw_last_page <= MAX_SEASON_LOOKUP_PAGE)
+    if len(visited) >= raw_last_page and raw_last_page <= MAX_SEASON_LOOKUP_PAGE:
+        return None, True
+
+    # Explicit numeric SortBy=ParentIndexNumber,IndexNumber,SortName finale proof:
+    # if the globally sorted Episode list ends strictly below (season_num, target_ep),
+    # no higher-numbered episode in season_num exists anywhere in the season.
+    if used_sorted_query and raw_last_page <= MAX_SEASON_LOOKUP_PAGE:
+        if max_page not in visited and len(visited) < MAX_SEASON_LOOKUP_REQUESTS:
+            hit, end_rows = _fetch_raw(max_page)
+            if end_rows is None:
+                return None, None
+            if hit is not None:
+                return _resolve_hit(max_page, hit, end_rows, max_page)
+        if max_page in visited:
+            first_keys = [_row_sort_key(r) for r in rows_1]
+            end_keys = [_row_sort_key(r) for r in visited[max_page]]
+            if (
+                first_keys
+                and end_keys
+                and None not in first_keys
+                and None not in end_keys
+                and first_keys == sorted(first_keys)
+                and end_keys == sorted(end_keys)
+                and first_keys[-1] <= end_keys[0]
+                and end_keys[-1] < (season_num, target_ep)
+            ):
+                return None, True
+
+    return None, False
 
 
 def resolve_next_episode_result(

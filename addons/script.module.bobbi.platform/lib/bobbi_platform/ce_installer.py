@@ -363,6 +363,9 @@ class Installer:
                             if r['id'] in MANAGED})
                     if previous:
                         state['previous_tx'] = previous['tx']
+                    check_pre_handoff = getattr(self.host, 'check_pre_handoff', None)
+                    if callable(check_pre_handoff):
+                        check_pre_handoff()
                     prepare_skin = getattr(self.host, 'prepare_install_skin', None)
                     if prepare_skin:
                         prepare_skin()

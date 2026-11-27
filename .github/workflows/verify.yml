@@ -1,7 +1,7 @@
 name: Verify sources
 on:
   push:
-    branches: [main, 'codex/**']
+    branches: [main, preview, 'codex/**']
   pull_request:
 permissions:
   contents: read
