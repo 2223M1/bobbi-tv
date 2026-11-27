@@ -209,3 +209,12 @@ def test_unattended_auto_online_installs_signed_update_without_modal_prompts(ent
     assert entry.env.installer._read()['sequence'] == 2
     assert entry.dialogs == [] and not entry.confirmations
 
+    # 4. Simulate legacy launcher (0.0.1) on disk -> ensure_entry_synced_from_recovery self-heals from recovery-v1!
+    start_xml = entry.env.addons / 'script.bobbi.start' / 'addon.xml'
+    start_xml.parent.mkdir(parents=True, exist_ok=True)
+    start_xml.write_text('<addon id="script.bobbi.start" version="0.0.1"/>', encoding='utf-8')
+    assert ui.ensure_entry_synced_from_recovery(entry.env.work, entry.env.addons, trust=signing[1]) is True
+    assert ET.fromstring(start_xml.read_bytes()).get('version') == '2.0.0'
+    # Idempotent when already synced
+    assert ui.ensure_entry_synced_from_recovery(entry.env.work, entry.env.addons, trust=signing[1]) is False
+

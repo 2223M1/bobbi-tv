@@ -2,10 +2,10 @@
   "schema": 1,
   "components": {
     "plugin.video.bobbi": {
-      "addon.xml": "6351873ffa5d7566a9159e754f76e9c0a02067d3cefd93853536e5e6d41d7667",
+      "addon.xml": "7572c0e3f3fae310516a2ee29d4881faa25eb3473fde37be05cc2aa49b1d1446",
       "bobbi.py": "a8dac4cd24f31fc641940def2eb8e2d619c7c02e9383fecc2a3648070be051b2",
       "bobbi.select.json": "cfbffb55a9c01049dd335dc17d9d7436656e57896c2608f06bd09dabc627c6b7",
-      "CHANGELOG.md": "a4adffcbe908410dac187e144fb3f676d4112aa296cd0b1896e683b20f4be615",
+      "CHANGELOG.md": "82a0bd24a6c72835a33774908bd1ab84872ce0b0f4111286409b11858b35252e",
       "fanart.png": "65e37420e8595145d77d54cbd42f303aeebaf14b5d13916b39c47c5d00822162",
       "icon.png": "206e58c783f6aa8f2936aafc6494edaecb28d39dcfa1d33f4335b3028109694a",
       "lib/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -282,7 +282,7 @@
       "lib/router.py": "bb705a656f33bd6df86ec08171cc2a9e9d1b22b629c3e1421e0c47ee95eadd47",
       "lib/search.py": "460adf5fc0264263b704d742678d6c8ecfb587d97def8f18ef9058de0415cad5",
       "lib/services/autostart.py": "b50007dfa6eed78e01ba8342ec91508297e98b94860e5182d04b9aeaec24cb58",
-      "lib/services/background_service.py": "395062ed2b6dac6d758adc7c1099a932977304dcf4d3bb156debe70f42554160",
+      "lib/services/background_service.py": "2fa77b6350677e991e086b04da52f701898844a06599d66371bf70d41241a3a4",
       "lib/services/debrid/__init__.py": "259494db02abf9834373cad4862a7bf1608d00de0f3b3284b459c317d12b818b",
       "lib/services/debrid/auth.py": "48ae3b0651cc1c8e9c8a45c8ebcb51b063903da7dd7dc63f6c8dbc18fb6b24ac",
       "lib/services/debrid/download.py": "4b6531622bad6fe80c714b588b1930cab8f34b9220b61bdcb9e7a66384139691",
@@ -960,7 +960,7 @@
       "resources/white.png": "1b285f3936913e90a0dd6e0e07b8f09b964a4e4b95cca70b1883a576183642fc"
     },
     "script.bobbi.start": {
-      "addon.xml": "e6feb0718f292439d00857dd99894c92df3aa073da98dade27b172bdda06b9ef",
+      "addon.xml": "600d407716889db36ddbc009c8056cfda936dd4d638d24ed71a5c28fa3d27ecd",
       "default.py": "61a8c8dea81ac2d99b97a3bcf5f5927a61cffdded9bbbcfe1e2a33aafaa57c89",
       "resources/language/resource.language.en_gb/strings.po": "402f393a70e537cfe5c1a5e49e5649351ef75735fd40bd7172788ca97e35a1bc",
       "resources/language/resource.language.zh_cn/strings.po": "b26424b0f8df63894e9eed5d6df3037003c7f62ab17d3007e9690b8bff55859e"
@@ -1139,7 +1139,7 @@
       "resources/settings.xml": "422d302f662b1eca9e872cb663f342cd757d29dd3e24124fa2779486b46a3b3b"
     },
     "script.module.bobbi.platform": {
-      "addon.xml": "28c12d942aefa28ed823cfca8ebb12ab0884af46a37c3e63bfd86d6a40417216",
+      "addon.xml": "98819eaababad1aec41175e76fe8d6ae1dc51730cc77847ec96f9443c4fb3664",
       "lib/bobbi_platform/__init__.py": "691d6a67c49a1ef4a8d8f5e6c5d732f271a4ffbcd755eb4b1da424b87554fb97",
       "lib/bobbi_platform/_vendor/__init__.py": "22e2f9041b74d877917f3bf76e71e521b21368602291a46e4cbc8218c45f233b",
       "lib/bobbi_platform/_vendor/segno/__init__.py": "d6fec9545c9e5f4738f56d74940d4874dfaa78b2bb8180d463035679284995ae",
@@ -1166,7 +1166,7 @@
       "lib/bobbi_platform/cd2_mounts.py": "821062371984f1040579c81cd49c3dbad11acfb400f9801e393c5f94bcfd0972",
       "lib/bobbi_platform/ce_glass_boot.py": "45219e670abe3884bbc30c84a89e978ba7ece2298b028500ed4a14207673ea34",
       "lib/bobbi_platform/ce_glass_host.py": "72ad70ea86d983bc73065eed35096ffe71afea1e518987ec52aa7008743c3083",
-      "lib/bobbi_platform/ce_install_ui.py": "3cb6f4e133383f0b4fe992656160a0e5d65528999aed253833ad716d91aa17de",
+      "lib/bobbi_platform/ce_install_ui.py": "fd0b1df6abe42b61d78f6c8928317595a13b08d5e66e481b40ee7ae5c155256a",
       "lib/bobbi_platform/ce_installer.py": "f490f38dd3520255165da5fba51076a3dba27d04a4ab2e7d29dc879a9dcc3ba7",
       "lib/bobbi_platform/ce_recovery.py": "ea54485f0935997423178b93d9f4c62dc033b8f97e4928c58cdef0e0dd98985b",
       "lib/bobbi_platform/ce_share_origin.py": "2f1fa31052e4e86be53dbe8ef02ad2a159043da69349a48d440791ae55d20858",

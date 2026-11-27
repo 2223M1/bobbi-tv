@@ -1012,6 +1012,40 @@ def sync_entry_from_bundle(bundle, addons_root, trust=None, *, host=None):
         return False
 
 
+def ensure_entry_synced_from_recovery(work, addons_root=None, trust=None, *, host=None):
+    """Self-heal script.bobbi.start from the active generation's verified recovery-v1 bundle."""
+    try:
+        from .ce_installer import read_installation
+        from .ce_recovery import NAME
+        work_path = _safe_path(work)
+        state = read_installation(work_path)
+        if not state or state.get('phase') not in ('complete', 'restored') or state.get('host_pending'):
+            return False
+        seq = state.get('sequence')
+        if type(seq) is not int or seq < 1:
+            return False
+        if addons_root is None:
+            import xbmcvfs
+            addons_root = xbmcvfs.translatePath('special://home/addons')
+        rec_dir = work_path / 'recovery-v1'
+        if not rec_dir.is_dir():
+            return False
+        prefix = f'{seq}-'
+        for child in sorted(rec_dir.iterdir()):
+            if child.name.startswith(prefix) and NAME.fullmatch(child.name):
+                if sync_entry_from_bundle(child, addons_root, trust=trust, host=host):
+                    if host is None:
+                        try:
+                            import xbmc
+                            xbmc.executebuiltin('UpdateLocalAddons', False)
+                        except Exception:
+                            pass
+                    return True
+        return False
+    except Exception:
+        return False
+
+
 def install_auto_online(installer, host):
     """Unattended background online update when idle and auto_update_enabled is True."""
     import xbmc as _xbmc

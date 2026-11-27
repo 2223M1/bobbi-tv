@@ -125,6 +125,13 @@ class AutoUpdateCheck:
         sync_update_properties()
         if not coreelec():
             return
+        try:
+            from bobbi_platform.ce_install_ui import ensure_entry_synced_from_recovery
+            init_binding = NoticeProfile()
+            if init_binding.is_current():
+                ensure_entry_synced_from_recovery(init_binding.root('script.bobbi.start'))
+        except Exception:
+            pass
         monitor = self.monitor or xbmc.Monitor()
         delay = 25
         while not self._wait_or_wake(monitor, delay):
