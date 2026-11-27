@@ -626,4 +626,4 @@ def test_rls02_rls03_pre_handoff_idle_recheck_sequence_binding_and_entry_pending
         ui.main(online=True)
         # Stale candidate b2 (seq=2 vs journal seq=3) was skipped cleanly, AND dialog informed user launcher sync is pending!
         assert ET.parse(env.addons / 'script.bobbi.start/addon.xml').getroot().get('version') == '1.0.0'
-        assert st.dialogs and '启动器入口尚未同步' in st.dialogs[-1][1]
+        assert st.dialogs and '启动器入口尚未同步' in st.dialogs[-1][1] and '重新打开' not in st.dialogs[-1][1]

@@ -164,10 +164,22 @@ def test_cap01_large_season_next_episode_lookup_beyond_200_gaps_shifts_and_bound
                         ep_row('gp', (i + 1) if i < 499 else (i + 2), (i + 1) if i < 499 else (i + 2), season_num=1, season_id='gapseason')
                         for i in range(999)
                     ]
-                elif parent == 'ultraseason':
-                    # 250,000 episodes (> 200,000 single-directory ceiling)
-                    total = 250000
-                    rows = [ep_row('ul', i + 1, i + 1, season_id='ultraseason') for i in range(start, min(start + size, total))]
+                elif parent in ('ultraseason', 'reqseam', 'pagecap200k', 'pagecapseam'):
+                    if parent == 'ultraseason':
+                        total = 250000
+                        rows = [ep_row('ul', i + 1, i + 1, season_id=parent) for i in range(start, min(start + size, total))]
+                    elif parent == 'reqseam':
+                        total = 160000
+                        def _rs_ep(idx):
+                            ep_n = max(1, idx - 20 + 1)
+                            return (ep_n - 1) if idx >= 60 else ep_n
+                        rows = [ep_row('rs', i + 1, _rs_ep(i), season_id=parent) for i in range(start, min(start + size, total))]
+                    elif parent == 'pagecap200k':
+                        total = 200000
+                        rows = [ep_row('pc', i + 1, i + 1, season_id=parent) for i in range(start, min(start + size, total))]
+                    else:
+                        total = 200001
+                        rows = [ep_row('ps', i + 1, min(200000, i + 1), season_id=parent) for i in range(start, min(start + size, total))]
                     obj = {'Items': rows, 'TotalRecordCount': total}
                     raw = json.dumps(obj).encode('utf-8')
                     self.send_response(200)
@@ -319,7 +331,7 @@ def test_cap01_large_season_next_episode_lookup_beyond_200_gaps_shifts_and_bound
         )
         assert res_multi.outcome == 'needs_selection' and res_multi.detail == 'multi_version'
 
-        # 7. Beyond 200,000-episode single-directory ceiling -> explicit page_limit (never false confirmed_end)
+        # 7. Beyond 200,000-episode single-directory ceiling & unverified budget/page seams -> explicit page_limit (never guesses)
         res_ultra = emby_session.resolve_next_episode_result(
             current,
             {'resolver': 'emby_same_season', 'profile_root': str(tmp_path), 'season_id': 'ultraseason', 'season': 1, 'episode': 200050},
@@ -327,6 +339,23 @@ def test_cap01_large_season_next_episode_lookup_beyond_200_gaps_shifts_and_bound
             open_session=False,
         )
         assert res_ultra.outcome == 'error' and res_ultra.detail == 'page_limit'
+
+        res_pc_ok = emby_session.resolve_next_episode_result(
+            current,
+            {'resolver': 'emby_same_season', 'profile_root': str(tmp_path), 'season_id': 'pagecap200k', 'season': 1, 'episode': 199999},
+            lambda: False,
+            open_session=False,
+        )
+        assert res_pc_ok.outcome == 'candidate' and res_pc_ok.candidate['_owned_source']['item_id'] == 'pc200000'
+
+        for seam_season, cur_ep in (('reqseam', 39), ('pagecapseam', 199999)):
+            res_seam = emby_session.resolve_next_episode_result(
+                current,
+                {'resolver': 'emby_same_season', 'profile_root': str(tmp_path), 'season_id': seam_season, 'season': 1, 'episode': cur_ep},
+                lambda: False,
+                open_session=False,
+            )
+            assert res_seam.outcome == 'error' and res_seam.detail == 'page_limit', (seam_season, res_seam)
     finally:
         srv.shutdown()
         srv.server_close()

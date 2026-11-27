@@ -1655,17 +1655,27 @@ def _find_next_season_episode(
         hits = _matches(rows)
         return ('duplicate' if len(hits) > 1 else (hits[0] if hits else None)), rows
 
-    def _resolve_hit(page_idx: int, hit: dict | str, rows: list[dict], max_page_bound: int) -> tuple[dict | str | None, bool | None]:
+    def _resolve_hit(page_idx: int, hit: dict | str, rows: list[dict]) -> tuple[dict | str | None, bool | None]:
         if hit == 'duplicate':
             return 'duplicate', True
-        if page_idx > 1 and rows and rows[0] is hit and len(visited) < MAX_SEASON_LOOKUP_REQUESTS:
-            adj_hit, adj_rows = _fetch_raw(page_idx - 1)
+        cur_total = total_holder[0]
+        cur_last_page = ((cur_total - 1) // SEASON_LOOKUP_PAGE_SIZE + 1) if cur_total > 0 else page_idx
+        if page_idx > 1 and rows and rows[0] is hit:
+            left_page = page_idx - 1
+            if left_page not in visited and len(visited) >= MAX_SEASON_LOOKUP_REQUESTS:
+                return None, False
+            adj_hit, adj_rows = _fetch_raw(left_page)
             if adj_rows is None:
                 return None, None
             if adj_hit is not None:
                 return 'duplicate', True
-        if page_idx < max_page_bound and rows and rows[-1] is hit and len(visited) < MAX_SEASON_LOOKUP_REQUESTS:
-            adj_hit, adj_rows = _fetch_raw(page_idx + 1)
+        if page_idx < cur_last_page and rows and rows[-1] is hit:
+            right_page = page_idx + 1
+            if right_page not in visited and (
+                right_page > MAX_SEASON_LOOKUP_PAGE or len(visited) >= MAX_SEASON_LOOKUP_REQUESTS
+            ):
+                return None, False
+            adj_hit, adj_rows = _fetch_raw(right_page)
             if adj_rows is None:
                 return None, None
             if adj_hit is not None:
@@ -1680,7 +1690,7 @@ def _find_next_season_episode(
     raw_last_page = ((total - 1) // SEASON_LOOKUP_PAGE_SIZE + 1) if total > 0 else 1
     max_page = min(MAX_SEASON_LOOKUP_PAGE, raw_last_page)
     if hit is not None:
-        return _resolve_hit(1, hit, rows_1, max_page)
+        return _resolve_hit(1, hit, rows_1)
     if total <= SEASON_LOOKUP_PAGE_SIZE:
         return None, True
 
@@ -1697,7 +1707,7 @@ def _find_next_season_episode(
             if p_rows is None:
                 return None, None
             if hit is not None:
-                return _resolve_hit(p, hit, p_rows, max_page)
+                return _resolve_hit(p, hit, p_rows)
         return None, True
 
     # 3. Large seasons (> 200 items, up to 200,000 items): probe direct arithmetic page first,
@@ -1706,7 +1716,7 @@ def _find_next_season_episode(
     if guess_rows is None:
         return None, None
     if hit is not None:
-        return _resolve_hit(direct_guess, hit, guess_rows, max_page)
+        return _resolve_hit(direct_guess, hit, guess_rows)
 
     lo, hi = 2, max_page
     guess_nums = _ep_numbers(guess_rows)
@@ -1722,7 +1732,7 @@ def _find_next_season_episode(
         if mid_rows is None:
             return None, None
         if hit is not None:
-            return _resolve_hit(mid, hit, mid_rows, max_page)
+            return _resolve_hit(mid, hit, mid_rows)
         nums = _ep_numbers(mid_rows)
         if not nums:
             # Leading specials or non-episode rows on mid: advance rightward toward Season episodes.
@@ -1741,7 +1751,7 @@ def _find_next_season_episode(
                     if adj_rows is None:
                         return None, None
                     if hit is not None:
-                        return _resolve_hit(adj, hit, adj_rows, max_page)
+                        return _resolve_hit(adj, hit, adj_rows)
             break
 
     if cancelled():
@@ -1759,7 +1769,7 @@ def _find_next_season_episode(
             if end_rows is None:
                 return None, None
             if hit is not None:
-                return _resolve_hit(max_page, hit, end_rows, max_page)
+                return _resolve_hit(max_page, hit, end_rows)
         if max_page in visited:
             first_keys = [_row_sort_key(r) for r in rows_1]
             end_keys = [_row_sort_key(r) for r in visited[max_page]]

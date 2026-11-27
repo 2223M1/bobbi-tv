@@ -214,8 +214,8 @@ STRINGS = {
     ),
     'installed_entry_pending_suffix': (
         32982,
-        '\n启动器入口尚未同步，重启 Kodi 后会自动补齐，也可重新打开“波比 TV · 开始使用”重试。',
-        '\nLauncher entry sync is still pending; it will self-heal after restarting Kodi, or reopen "Bobbi TV · Get Started" to retry.',
+        '\n启动器入口尚未同步，请重启 Kodi 后重试。',
+        '\nLauncher entry sync is still pending; restart Kodi to retry.',
     ),
 }
 
