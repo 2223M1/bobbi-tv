@@ -167,7 +167,7 @@ class AutoUpdateCheck:
 
                 outcome = check_auto_update(work, cancelled, dispatch, notify=notify)
                 if outcome == 'deferred':
-                    delay = 60
+                    delay = 25
                 elif outcome in ('dispatched', 'cooldown'):
                     delay = 300
                 else:
@@ -509,7 +509,7 @@ class JacktookMOnitor(xbmc.Monitor):
                 "PAUSING services due to device sleep",
                 level=xbmc.LOGINFO,
             )
-        elif method == "System.OnWake":
+        elif method in ("System.OnWake", "Other.System.OnWake"):
             clear_property(pause_services_prop)
             self._auto_update_wake.set()
             kodilog(

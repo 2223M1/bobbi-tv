@@ -7,7 +7,7 @@ import xml.etree.ElementTree as ET
 from .ce_installer import installed_watermark, read_installation
 from .online_updates import Cancelled, latest, selected_track
 from .paths import ProfileBinding
-from .updates import UpdateError, _atomic, _json, _safe_path, auto_update_enabled
+from .updates import Busy, UpdateError, _Lock, _atomic, _json, _safe_path, auto_update_enabled
 
 MAX_LEGACY_SETTINGS_BYTES = 256 * 1024
 auto_enabled = auto_update_enabled
@@ -193,6 +193,18 @@ def sync_update_properties(work=None):
         return None
 
 
+def _install_lock_busy(work):
+    """Probe non-blocking flock lease; released _Lock keeps installation.lock inode on disk."""
+    lock_path = _safe_path(Path(work) / 'installation.lock')
+    if not lock_path.exists():
+        return False
+    try:
+        with _Lock(lock_path):
+            return False
+    except Busy:
+        return True
+
+
 def check_auto_update(work, cancelled, dispatch, notify=None, *, lookup=latest, cooldown_seconds=300, clock=time.monotonic):
     """Discover newer signed release when idle and dispatch unattended update if auto-update is enabled."""
     if cancelled():
@@ -203,7 +215,7 @@ def check_auto_update(work, cancelled, dispatch, notify=None, *, lookup=latest, 
         return 'inactive'
     if not auto_enabled(work):
         return 'disabled'
-    if (work / 'installation.lock').exists():
+    if _install_lock_busy(work):
         return 'deferred'
     track, watermark, tx = selected_track(work), installed_watermark(state), state['tx']
     try:

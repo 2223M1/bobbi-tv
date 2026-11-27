@@ -57,6 +57,7 @@ def test_auto_update_enabled_by_default_even_with_legacy_muted_notice_and_can_be
 
 
 def test_check_auto_update_lifecycle_cooldown_and_disabled_gate(tmp_path):
+    from bobbi_platform.updates import _Lock
     notice.reset_auto_update_cooldowns()
     work = tmp_path / 'start'
     _write_journal(work, sequence=2026102190)
@@ -65,7 +66,18 @@ def test_check_auto_update_lifecycle_cooldown_and_disabled_gate(tmp_path):
     now = [1000.0]
     offer = {'tag': 'ce2191', 'sequence': 2026102191}
 
-    # 1. Default enabled -> discovers 2026102191 & dispatches RunScript(script.bobbi.start,auto)
+    # Simulate CoreELEC post-install steady state: installation.lock file stays on disk!
+    # While actively held -> returns 'deferred'; once released -> file still exists and dispatches!
+    with _Lock(work / 'installation.lock'):
+        assert notice.check_auto_update(
+            work,
+            lambda: False,
+            dispatched.append,
+            lookup=lambda *_a, **_k: pytest.fail('network called while install lock held'),
+        ) == 'deferred'
+    assert (work / 'installation.lock').exists()
+
+    # 1. Default enabled + released installation.lock inode on disk -> discovers & dispatches!
     res = notice.check_auto_update(
         work,
         lambda: False,
