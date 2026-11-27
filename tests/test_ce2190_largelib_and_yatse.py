@@ -81,8 +81,9 @@ class _FakeListItem:
 
 
 def test_cap01_large_season_next_episode_lookup_beyond_200_gaps_shifts_and_bounds(tmp_path):
-    """CAP-01: >200-episode season next-episode lookup resolves in O(1)/O(log N) bounded HTTP requests."""
+    """CAP-01: >200-episode season next-episode lookup resolves via StartItemId or bounded sorted probes without unsound confirmed_end."""
     counts = Counter()
+    seen_item_queries = []
 
     def ep_row(prefix: str, item_num: int, ep_index: int, *, season_num: int = 1, season_id: str = 'bigseason'):
         return {
@@ -93,6 +94,7 @@ def test_cap01_large_season_next_episode_lookup_beyond_200_gaps_shifts_and_bound
             'ParentIndexNumber': season_num,
             'IndexNumber': ep_index,
             'SeriesName': 'Long Series',
+            'SeriesId': 'ser1',
             'SeasonId': season_id,
         }
 
@@ -108,13 +110,40 @@ def test_cap01_large_season_next_episode_lookup_beyond_200_gaps_shifts_and_bound
                 obj = {'Id': 's'}
             elif u.path == '/Users/u':
                 obj = {'Id': 'u'}
+            elif u.path == '/Shows/ser1/Episodes':
+                season_id = q.get('SeasonId', [''])[0]
+                start_item = q.get('StartItemId', [''])[0]
+                size = int(q['Limit'][0])
+                if season_id == 'bigseason':
+                    all_eps = [ep_row('g', i + 1, i + 1) for i in range(1000)]
+                elif season_id == 'dupseason':
+                    all_eps = [
+                        ep_row('dp', 200, 200, season_id='dupseason'),
+                        ep_row('dpa', 201, 201, season_id='dupseason'),
+                        ep_row('dpb', 202, 201, season_id='dupseason'),
+                    ]
+                else:
+                    self.send_error(404)
+                    return
+                ids = [r['Id'] for r in all_eps]
+                pos = ids.index(start_item) if start_item in ids else 0
+                tail = all_eps[pos:]
+                obj = {'Items': tail[:size], 'TotalRecordCount': len(tail)}
             elif u.path == '/Users/u/Items':
+                seen_item_queries.append(q)
                 start = int(q['StartIndex'][0])
                 size = int(q['Limit'][0])
                 parent = q.get('ParentId', [''])[0]
                 if parent == 'bigseason':
                     total = 1000
                     rows = [ep_row('g', i + 1, i + 1) for i in range(start, min(start + size, total))]
+                elif parent == 'outoforder':
+                    # Page 1 starts at 1, final page 50 ends at 1000, while IndexNumber=1001 sits on uninspected page 3!
+                    total = 1000
+                    rows = []
+                    for i in range(start, min(start + size, total)):
+                        ep_no = 1001 if i == 50 else (i + 1)
+                        rows.append(ep_row('oo', i + 1, ep_no, season_id='outoforder'))
                 elif parent == 'shifted':
                     # 15 leading specials (ParentIndexNumber=0) followed by 985 episodes (1..985)
                     total = 1000
@@ -179,32 +208,64 @@ def test_cap01_large_season_next_episode_lookup_beyond_200_gaps_shifts_and_bound
         store.close()
         current = {'_owned_source': {'source_id': source.id, 'source_generation': rev, 'server_id': 's', 'user_id': 'u', 'provider': 'emby'}}
 
-        # 1. Contiguous 1000-episode season: 199->200, 200->201, 999->1000 all succeed in <= 5 HTTP requests!
+        # 1. Targeted StartItemId slice (1 episode-list HTTP request!) for 199->200, 200->201, 999->1000 & season finale 1000!
         for ep in (199, 200, 999):
-            before = sum(counts.values())
+            ep_calls_before = counts['/Shows/ser1/Episodes']
             res = emby_session.resolve_next_episode_result(
                 current,
-                {'resolver': 'emby_same_season', 'profile_root': str(tmp_path), 'season_id': 'bigseason', 'season': 1, 'episode': ep},
+                {
+                    'resolver': 'emby_same_season', 'profile_root': str(tmp_path),
+                    'series_id': 'ser1', 'season_id': 'bigseason', 'item_id': f'g{ep}',
+                    'season': 1, 'episode': ep,
+                },
                 lambda: False,
                 open_session=False,
             )
-            used = sum(counts.values()) - before
             assert res.outcome == 'candidate', (ep, res)
             assert res.candidate['tv_data']['episode'] == ep + 1
-            assert used <= 5, (ep, used)
+            assert counts['/Shows/ser1/Episodes'] - ep_calls_before == 1
+            assert res.candidate['_owned_next']['series_id'] == 'ser1'
+            assert res.candidate['_owned_source']['item_id'] == f'g{ep + 1}'
 
-        # 2. Final episode 1000 -> confirmed_end in <= 5 HTTP requests
-        before = sum(counts.values())
+        ep_calls_before = counts['/Shows/ser1/Episodes']
         res_end = emby_session.resolve_next_episode_result(
             current,
-            {'resolver': 'emby_same_season', 'profile_root': str(tmp_path), 'season_id': 'bigseason', 'season': 1, 'episode': 1000},
+            {
+                'resolver': 'emby_same_season', 'profile_root': str(tmp_path),
+                'series_id': 'ser1', 'season_id': 'bigseason', 'item_id': 'g1000',
+                'season': 1, 'episode': 1000,
+            },
             lambda: False,
             open_session=False,
         )
         assert res_end.outcome == 'confirmed_end'
-        assert (sum(counts.values()) - before) <= 5
+        assert counts['/Shows/ser1/Episodes'] - ep_calls_before == 1
 
-        # 3. Shifted season (15 leading specials): 250 -> 251 resolved cleanly via binary search
+        # 2. Duplicate episode IndexNumber -> explicit needs_selection (duplicate_episode), never guesses!
+        res_dup = emby_session.resolve_next_episode_result(
+            current,
+            {
+                'resolver': 'emby_same_season', 'profile_root': str(tmp_path),
+                'series_id': 'ser1', 'season_id': 'dupseason', 'item_id': 'dp200',
+                'season': 1, 'episode': 200,
+            },
+            lambda: False,
+            open_session=False,
+        )
+        assert res_dup.outcome == 'needs_selection' and res_dup.detail == 'duplicate_episode'
+
+        # 3. Fallback paginated lookup passes explicit episode SortBy & NEVER claims false confirmed_end with uninspected pages!
+        res_uninspected = emby_session.resolve_next_episode_result(
+            current,
+            {'resolver': 'emby_same_season', 'profile_root': str(tmp_path), 'season_id': 'outoforder', 'season': 1, 'episode': 1000},
+            lambda: False,
+            open_session=False,
+        )
+        assert res_uninspected.outcome == 'error' and res_uninspected.detail == 'page_limit'
+        assert seen_item_queries[-1].get('SortBy') == ['ParentIndexNumber,IndexNumber,SortName']
+        assert seen_item_queries[-1].get('IncludeItemTypes') == ['Episode']
+
+        # 4. Shifted season (15 leading specials): 250 -> 251 resolved cleanly via binary search
         res_shift = emby_session.resolve_next_episode_result(
             current,
             {'resolver': 'emby_same_season', 'profile_root': str(tmp_path), 'season_id': 'shifted', 'season': 1, 'episode': 250},
@@ -213,7 +274,7 @@ def test_cap01_large_season_next_episode_lookup_beyond_200_gaps_shifts_and_bound
         )
         assert res_shift.outcome == 'candidate' and res_shift.candidate['tv_data']['episode'] == 251
 
-        # 4. Missing episode gap in >200-item season (499 -> 500 missing, 501 exists): never skips to 501; fails closed as page_limit
+        # 5. Missing episode gap in >200-item season (499 -> 500 missing, 501 exists): never skips to 501; fails closed as page_limit
         res_gap = emby_session.resolve_next_episode_result(
             current,
             {'resolver': 'emby_same_season', 'profile_root': str(tmp_path), 'season_id': 'gapseason', 'season': 1, 'episode': 499},
@@ -222,7 +283,7 @@ def test_cap01_large_season_next_episode_lookup_beyond_200_gaps_shifts_and_bound
         )
         assert res_gap.outcome == 'error' and res_gap.detail == 'page_limit'
 
-        # 5. Multi-version episode 599 -> 600 requires explicit selection (never guesses)
+        # 6. Multi-version episode 599 -> 600 requires explicit selection (never guesses)
         res_multi = emby_session.resolve_next_episode_result(
             current,
             {'resolver': 'emby_same_season', 'profile_root': str(tmp_path), 'season_id': 'bigseason', 'season': 1, 'episode': 599},
@@ -231,7 +292,7 @@ def test_cap01_large_season_next_episode_lookup_beyond_200_gaps_shifts_and_bound
         )
         assert res_multi.outcome == 'needs_selection' and res_multi.detail == 'multi_version'
 
-        # 6. Beyond 200,000-episode single-directory ceiling -> explicit page_limit (never false confirmed_end)
+        # 7. Beyond 200,000-episode single-directory ceiling -> explicit page_limit (never false confirmed_end)
         res_ultra = emby_session.resolve_next_episode_result(
             current,
             {'resolver': 'emby_same_season', 'profile_root': str(tmp_path), 'season_id': 'ultraseason', 'season': 1, 'episode': 200050},
@@ -329,16 +390,21 @@ def test_cap03_directory_page_10000_limit_notice_and_deep_page_jump(tmp_path, mo
                 monkeypatch.setitem(sys.modules, mod_name, mod_val)
             monkeypatch.setattr(runtime, 'bind_call', lambda *a: lambda *b, **k: {'revision': 0})
 
+            import importlib.util
+            lib_spec = importlib.util.spec_from_file_location(
+                'bobbi_library_default_r2', ROOT / 'addons/plugin.video.bobbi.library/default.py',
+            )
+            lib_default = importlib.util.module_from_spec(lib_spec)
+            lib_spec.loader.exec_module(lib_default)
+
             # 1. Page 10000 with total=380,000 in both ZH and EN: no broken page=10001 link!
             for english in (False, True):
                 monkeypatch.setattr(emby_dynamic, 'is_english', lambda eng=english: eng)
                 ui.rows.clear()
                 ui.dialogs.clear()
-                emby_dynamic.execute(
+                lib_default.execute(
                     17,
                     {'action': 'emby_page', 'source': source.id, 'revision': rev, 'parent': 'search', 'term': 'broad', 'page': '10000'},
-                    store,
-                    make_item,
                 )
                 assert ui.endings[-1]['succeeded'] is True
                 assert len(ui.rows) == 21
@@ -348,12 +414,13 @@ def test_cap03_directory_page_10000_limit_notice_and_deep_page_jump(tmp_path, mo
                 assert tail_params['action'] == 'emby_limit_notice'
                 assert 'page' not in tail_params
                 assert tail_item.properties.get('Bobbi.LimitNotice') == 'true'
+                assert tail_item.properties.get('IsPlayable') == 'false'
                 assert 'Bobbi.NextPage' not in tail_item.properties
                 assert ('200,000' in tail_item.label)
 
                 before_http = sum(http_calls.values())
                 endings_before = len(ui.endings)
-                emby_dynamic.execute(-1, tail_params, store, make_item)
+                lib_default.execute(-1, tail_params)
                 assert sum(http_calls.values()) == before_http
                 assert len(ui.endings) == endings_before
                 assert len(ui.dialogs) == 1 and '200,000' in ui.dialogs[0][1]
@@ -362,11 +429,9 @@ def test_cap03_directory_page_10000_limit_notice_and_deep_page_jump(tmp_path, mo
             monkeypatch.setattr(emby_dynamic, 'is_english', lambda: False)
             ui.rows.clear()
             ui.builtins.clear()
-            emby_dynamic.execute(
+            lib_default.execute(
                 17,
                 {'action': 'emby_page', 'source': source.id, 'revision': rev, 'parent': 'folder:movies', 'page': '1'},
-                store,
-                make_item,
             )
             assert len(ui.rows) == 21
             next_url, next_item, _ = ui.rows[-1]
@@ -376,7 +441,7 @@ def test_cap03_directory_page_10000_limit_notice_and_deep_page_jump(tmp_path, mo
             jump_cmd = next_item.context[0][1]
             assert jump_cmd.startswith('RunPlugin(') and jump_cmd.endswith(')')
             jump_params = dict(parse_qsl(urlsplit(jump_cmd[len('RunPlugin('):-1]).query))
-            emby_dynamic.execute(-1, jump_params, store, make_item)
+            lib_default.execute(-1, jump_params)
             assert len(ui.builtins) == 1 and 'page=750' in ui.builtins[0]
     finally:
         srv.shutdown()
@@ -384,8 +449,8 @@ def test_cap03_directory_page_10000_limit_notice_and_deep_page_jump(tmp_path, mo
         th.join(2)
 
 
-def test_cap02_plex_hierarchical_tv_reaches_350k_episodes_with_zero_retained_scan_state():
-    """CAP-02: Plex TV sections traverse Show -> Season -> Episode cleanly up to 350,000 episodes."""
+def test_cap02_plex_hierarchical_tv_fixture_traverses_show_season_episode_without_retained_scan_state():
+    """CAP-02 (loopback fixture): Plex TV sections traverse Show -> Season -> Episode without unbounded scan state."""
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, *_):
             pass
@@ -461,9 +526,9 @@ def test_cap02_plex_hierarchical_tv_reaches_350k_episodes_with_zero_retained_sca
         th.join(2)
 
 
-def test_home_rail_dead_source_cooldown_and_verified_primary_tag_lease(tmp_path, monkeypatch):
-    """Smart Ideas #1 & #2: dead Emby sources cool down for sibling Home rails; verified poster tags halve HTTP calls."""
-    emby_dynamic.reset_home_cooldowns()
+def test_home_rail_shared_budget_and_host_resident_verified_primary_tag_cache(tmp_path, monkeypatch):
+    """Home rails bound dead sources per rail without cross-invoker globals; Host ImageService caches verified tags across reads."""
+    assert not hasattr(emby_dynamic, '_HOME_UNREACHABLE_UNTIL')
     emby_artwork.clear_verified_primary_tags()
     art_calls = []
 
@@ -501,7 +566,6 @@ def test_home_rail_dead_source_cooldown_and_verified_primary_tag_lease(tmp_path,
     th = Thread(target=srv.serve_forever, kwargs={'poll_interval': 0.02}, daemon=True)
     th.start()
 
-    # Reserve an unbound closed port for dead source
     import socket
     with socket.socket() as dead_sock:
         dead_sock.bind(('127.0.0.1', 0))
@@ -540,49 +604,59 @@ def test_home_rail_dead_source_cooldown_and_verified_primary_tag_lease(tmp_path,
         monkeypatch.setattr(emby_dynamic, 'ProfileBinding', lambda: SimpleNamespace(root=lambda: tmp_path, is_current=lambda: True))
         monkeypatch.setattr(emby_dynamic, 'is_english', lambda: False)
 
-        # First rail (resume): dead_src fails & enters cooldown; live_src still renders!
-        emby_dynamic.execute_home_rail(11, {'section': 'resume'})
-        assert len(rail_rows) == 1 and rail_rows[0][1].label == 'Live Film'
-        dead_rev = Registry(tmp_path / 'libraries.sqlite3').source_snapshot(dead_src.id)[1]
-        assert emby_dynamic._home_source_cooling_down(dead_src.id, dead_rev, dead_src.location) is True
-
-        # Second rail (recent): dead_src is skipped immediately via cooldown; poster URL skips redundant /Items/m1 GET!
-        rail_rows.clear()
+        # Home rail isolates dead_src under the 6s rail budget while rendering live_src cleanly
         t0 = time.monotonic()
-        emby_dynamic.execute_home_rail(12, {'section': 'recent'})
-        elapsed = time.monotonic() - t0
-        assert elapsed < 1.5
-        assert len(rail_rows) == 1
+        emby_dynamic.execute_home_rail(11, {'section': 'recent'})
+        assert (time.monotonic() - t0) < emby_dynamic.HOME_RAIL_TOTAL_BUDGET_SECONDS
+        assert len(rail_rows) == 1 and rail_rows[0][1].label == 'Live Film'
+        # Separate plugin invoker did NOT pollute Host's verified-tag cache directly:
+        assert emby_artwork._has_verified_primary_tag(live_src, 'm1', 'ptag1') is False
+
+        # First read inside resident Host ImageService verifies /Users/u_live/Items/m1 + fetches Primary (2 GETs)
         poster_url = rail_rows[0][1].art['poster']
-        before_art = len(art_calls)
+        before_first = len(art_calls)
         with urlopen(poster_url, timeout=4) as reply:
             assert reply.read() == PNG
-        # Only 1 HTTP GET (/Items/m1/Images/Primary), NOT 2 (/Users/u_live/Items/m1 skipped by verified lease)!
-        assert len(art_calls) - before_art == 1
+        assert len(art_calls) - before_first == 2
+        assert emby_artwork._has_verified_primary_tag(live_src, 'm1', 'ptag1') is True
+
+        # Repeat fetch_primary inside resident Host within 60s reuses verified tag (1 GET only!)
+        before_second = len(art_calls)
+        raw_img, img_mime = emby_artwork.fetch_primary(live_src, 'm1', 'ptag1', time.monotonic() + 4.0, lambda: True)
+        assert raw_img == PNG and img_mime == 'image/png'
+        assert len(art_calls) - before_second == 1
         assert art_calls[-1].startswith('/Items/m1/Images/Primary?')
     finally:
         images.close()
         srv.shutdown()
         srv.server_close()
         th.join(2)
-        emby_dynamic.reset_home_cooldowns()
         emby_artwork.clear_verified_primary_tags()
 
 
 def test_yatse_fuse3_notification_guard_timers_expression_o1_nav_and_log_filter():
-    """Verify Yatse reconnect toast guard, Timers.xml syntax fix, O(1) nav prefix expressions, and log filter."""
-    # 1. DialogNotification.xml suppresses EventServer $LOCALIZE[790] & Yatse toasts and avoids HUD overlap
+    """Verify non-blocking KaiToast labels (R1), inlined Timers.xml VS10 expression (V3), nav prefix expressions, and log filter."""
+    # 1. DialogNotification.xml places plain non-fadelabel IDs 401/402 OUTSIDE filtered group so KaiToast queue never stalls
     notif_tree = ET.parse(ROOT / 'addons/skin.bobbi.cinema/1080p/DialogNotification.xml').getroot()
-    vis = notif_tree.findtext(".//control[@type='group']/visible") or ''
+    controls_el = notif_tree.find('controls')
+    top_ids = {(c.get('id'), c.get('type')) for c in controls_el.findall('control') if c.get('id')}
+    assert ('401', 'label') in top_ids
+    assert ('402', 'label') in top_ids
+    group_el = controls_el.find("control[@type='group']")
+    vis = group_el.findtext('visible') or ''
     assert '!String.IsEqual(Control.GetLabel(401),$LOCALIZE[790])' in vis
     assert '!String.IsEqual(Control.GetLabel(401),Yatse)' in vis
     assert '!Window.IsActive(DialogVolumeBar.xml)' in vis
     assert '!Window.IsActive(DialogExtendedProgressBar.xml)' in vis
+    group_fadelabels = group_el.findall("control[@type='fadelabel']")
+    assert len(group_fadelabels) == 2
+    assert all(fl.get('id') is None for fl in group_fadelabels)
+    assert [fl.findtext('info') for fl in group_fadelabels] == ['Control.GetLabel(401)', 'Control.GetLabel(402)']
 
-    # 2. Timers.xml has no [$EXP[BobbiHostHasVS10]] bracket parser error
+    # 2. Timers.xml inlines VS10 boolean condition with zero $EXP[...] references (V3)
     timers_raw = (ROOT / 'addons/skin.bobbi.cinema/1080p/Timers.xml').read_text(encoding='utf-8')
-    assert '[$EXP[BobbiHostHasVS10]]' not in timers_raw
-    assert '+ $EXP[BobbiHostHasVS10]</start>' in timers_raw
+    assert '$EXP[' not in timers_raw
+    assert '[!String.IsEmpty(Player.Process(amlogic.vs10.mode)) | String.IsEqual(Window(Home).Property(Bobbi.Host.SupportsVS10),true)]' in timers_raw
 
     # 3. Includes_HomeNav.generated.xml uses O(1) BobbiSpaceSeen_* prefix expressions (<= 3 atoms per slot!)
     nav_tree = ET.parse(ROOT / 'addons/skin.bobbi.cinema/1080p/Includes_HomeNav.generated.xml').getroot()

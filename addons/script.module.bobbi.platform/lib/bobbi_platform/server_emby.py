@@ -148,7 +148,7 @@ class Client:
                 excluded[reason] = excluded.get(reason, 0) + 1
         return rows, excluded
 
-    def page_rows(self, parent, page, size, *, display=False):
+    def page_rows(self, parent, page, size, *, display=False, episode_order=False):
         """One server page. Online Kodi presentation never opens the optional local index."""
         page_number(page, size)
         offset = (page - 1) * size
@@ -174,6 +174,12 @@ class Client:
                 raise PanError('PAN_DIRECTORY_UNAVAILABLE')
         elif not root:
             query['ParentId'] = _id(parent[7:])
+            if episode_order and self.provider == 'emby':
+                query.update(
+                    IncludeItemTypes='Episode',
+                    SortBy='ParentIndexNumber,IndexNumber,SortName',
+                    SortOrder='Ascending',
+                )
         if display and not root:
             query.update(Fields='Overview,Genres,ProductionYear,RunTimeTicks,UserData', EnableImageTypes='Primary', ImageTypeLimit=1)
         value = self.session.request('/Users/' + self.saved['user_id'] + route,
@@ -187,6 +193,32 @@ class Client:
         if len(rows) != min(size, max(0, total - offset)):
             raise PanError('PAN_REPLY_INVALID')
         if offset > total or len({_id(row.get('Id')) for row in rows}) != len(rows):
+            raise PanError('PAN_REPLY_INVALID')
+        return rows, total
+
+    def season_episode_page(self, season_id, page, size):
+        """Paginated season episode listing explicitly ordered by ParentIndexNumber,IndexNumber,SortName."""
+        return self.page_rows('folder:' + _id(season_id), page, size, display=True, episode_order=True)
+
+    def season_episodes_from(self, series_id, season_id, start_item_id, size=20):
+        """Targeted Emby episode slice starting at start_item_id in season episode order."""
+        if self.provider != 'emby':
+            raise PanError('PAN_PROVIDER_INVALID')
+        page_number(1, size)
+        sid, seas_id, start_id = _id(series_id), _id(season_id), _id(start_item_id)
+        query = dict(
+            UserId=self.saved['user_id'],
+            SeasonId=seas_id,
+            StartItemId=start_id,
+            Limit=size,
+            EnableTotalRecordCount='true',
+            Fields='Overview,Genres,ProductionYear,RunTimeTicks,UserData',
+            EnableImageTypes='Primary',
+            ImageTypeLimit=1,
+        )
+        value = self.session.request('/Shows/' + sid + '/Episodes', query=query)
+        rows, total = _rows(value, 'Items'), number(value.get('TotalRecordCount'))
+        if len(rows) != min(size, total) or len({_id(row.get('Id')) for row in rows}) != len(rows):
             raise PanError('PAN_REPLY_INVALID')
         return rows, total
 

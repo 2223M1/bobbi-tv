@@ -21,6 +21,7 @@ def test_kodi_skin_handoff_waits_for_native_decision(monkeypatch, outcome):
         events.append('request')
         return True
     host = ui.KodiHost.__new__(ui.KodiHost)
+    host.unattended = False
     host.skin = lambda: setting[0]
     host.monitor = NS(waitForAbort=wait)
     host.xbmc = NS(getSkinDir=lambda: target if clock[0] >= .7 and outcome != 'never-loaded' else 'skin.bobbi.cinema',
@@ -95,3 +96,103 @@ def test_unknown_drain_response_is_reconciled_only_by_lease(tmp_path, monkeypatc
     finally:
         host.close()
         lease.close()
+
+
+@pytest.mark.parametrize('scenario', ['delayed_dialog', 'rpc_false', 'foreign_dialog', 'reverted_timeout', 'already_active'])
+def test_restore_skin_after_install_and_confirmer_contracts(monkeypatch, scenario):
+    clock = [0.0]
+    setting = ['skin.bobbi.cinema' if scenario == 'already_active' else 'skin.estuary']
+    clicks = []
+    dialog_state = {'visible': False, 'heading': '', 'body': ''}
+
+    def wait(dt):
+        clock[0] = round(clock[0] + dt, 4)
+        if scenario == 'delayed_dialog':
+            # Kodi Omega getSkinDir() updates immediately, while ReloadSkin(confirm) opens #13123 asynchronously at 0.3s
+            if 0.3 <= clock[0] < 0.7 and 'SendClick(yesnodialog,11)' not in clicks:
+                dialog_state.update(visible=True, heading='Keep skin?', body='Would you like to keep this change?')
+            if 'SendClick(yesnodialog,11)' in clicks:
+                dialog_state.update(visible=False, heading='', body='')
+        elif scenario == 'reverted_timeout':
+            if 0.3 <= clock[0] < 2.0:
+                dialog_state.update(visible=True, heading='Keep skin?', body='Would you like to keep this change?')
+            elif clock[0] >= 2.0:
+                dialog_state.update(visible=False, heading='', body='')
+                setting[0] = 'skin.estuary'
+        return False
+
+    def exec_builtin(cmd, *_a):
+        clicks.append(cmd)
+        if scenario == 'delayed_dialog' and cmd == 'SendClick(yesnodialog,11)':
+            dialog_state.update(visible=False, heading='', body='')
+
+    def fake_rpc(method, args):
+        if method == 'Settings.SetSettingValue':
+            if scenario == 'rpc_false':
+                return False
+            setting[0] = args['value']
+            return True
+        raise AssertionError(method)
+
+    host = ui.KodiHost.__new__(ui.KodiHost)
+    host.unattended = True
+    host.skin = lambda: setting[0]
+    host.details = lambda name: {'enabled': True, 'version': '0.1.44'}
+    host.monitor = NS(waitForAbort=wait)
+    host.xbmc = NS(
+        # Mirror Kodi Omega ModuleXbmc.cpp: getSkinDir() reads lookandfeel.skin setting directly!
+        getSkinDir=lambda: setting[0],
+        getCondVisibility=lambda c: dialog_state['visible'] if c == 'Window.IsVisible(yesnodialog)' else False,
+        getInfoLabel=lambda c: dialog_state['heading'] if c == 'Control.GetLabel(1)' else (
+            dialog_state['body'] if c == 'Control.GetLabel(2)' else ''
+        ),
+        getLocalizedString=lambda n: 'Keep skin?' if n == 13123 else '',
+        executebuiltin=exec_builtin,
+        Player=lambda: NS(isPlaying=lambda: False),
+    )
+    monkeypatch.setattr(ui, 'time', NS(monotonic=lambda: clock[0]))
+    monkeypatch.setattr(ui, 'rpc', fake_rpc)
+
+    if scenario == 'foreign_dialog':
+        # Test _skin_keep_confirmer directly: #13123 replaced by unrelated yesnodialog within 200ms settle window
+        setting[0] = 'skin.bobbi.cinema'
+        dialog_state.update(visible=True, heading='Keep skin?', body='Would you like to keep this change?')
+        orig_is_keep = host._is_keep_skin_dialog
+        checks = [0]
+
+        def morphing_check(expected_skin=None):
+            checks[0] += 1
+            res = orig_is_keep(expected_skin)
+            if checks[0] == 1:
+                dialog_state.update(visible=True, heading='Delete library source?', body='Remove saved share?')
+            return res
+
+        host._is_keep_skin_dialog = morphing_check
+        with host._skin_keep_confirmer(expected_skin='skin.bobbi.cinema'):
+            import time as real_time
+            real_time.sleep(0.35)
+        assert clicks == []
+        return
+
+    if scenario == 'delayed_dialog':
+        # Drive deterministic confirmer click when #13123 becomes visible
+        orig_wait = host.monitor.waitForAbort
+
+        def wait_with_auto_click(dt):
+            res = orig_wait(dt)
+            if host._is_keep_skin_dialog('skin.bobbi.cinema'):
+                exec_builtin('SendClick(yesnodialog,11)', False)
+            return res
+
+        host.monitor.waitForAbort = wait_with_auto_click
+        assert host.restore_skin_after_install('skin.bobbi.cinema') is True
+        assert clock[0] >= 0.3
+        assert 'SendClick(yesnodialog,11)' in clicks
+        assert setting[0] == 'skin.bobbi.cinema'
+    elif scenario == 'already_active':
+        assert host.restore_skin_after_install('skin.bobbi.cinema') is True
+        assert clock[0] == 0.0 and clicks == []
+    else:
+        # Both rpc_false and reverted_timeout must return False honestly (never hang or claim success)
+        host._skin_keep_confirmer = lambda **_kw: ui.contextmanager(lambda: (yield))()
+        assert host.restore_skin_after_install('skin.bobbi.cinema') is False

@@ -185,6 +185,7 @@ def fetch_primary(source, item, tag, deadline, current):
         if (not isinstance(data, dict) or data.get('Id') != item or type(data.get('ImageTags')) is not dict
                 or data['ImageTags'].get('Primary') != tag or not current()):
             raise ValueError('IMAGE_CHANGED')
+        note_verified_primary_tag(source.location, source.password, source.metadata['user_id'], item, tag)
     elif not current():
         raise ValueError('IMAGE_CHANGED')
     url = address(session.base, '/Items/' + item + '/Images/Primary') + '?' + urlencode({

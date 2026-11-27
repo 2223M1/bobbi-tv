@@ -685,7 +685,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/ce_update_notice.py",
-        "line": 129,
+        "line": 132,
         "anchor": "def check(work, cancelled, notify, *, lookup=latest, legacy_settings=None):"
       },
       "note": "The idle worker reads a validated installer journal and track. Preference and notification receipts belong to the launcher profile; only the confirmed installer owns the package transaction."

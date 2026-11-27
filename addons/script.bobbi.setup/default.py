@@ -461,8 +461,8 @@ def show_auto_update_policy(dialog):
         new_on = (index == 0)
         auto_enabled(work, new_on)
         sync_update_properties(work)
-        if new_on and not current_on and coreelec() and not xbmc.Player().isPlaying():
-            xbmc.executebuiltin('RunScript(script.bobbi.start,auto)')
+        if new_on and not current_on and coreelec():
+            xbmc.executebuiltin('NotifyAll(bobbi.setup,AutoUpdatePolicyChanged)')
         return True
     return False
 

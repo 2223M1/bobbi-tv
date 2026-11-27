@@ -516,3 +516,5 @@ class JacktookMOnitor(xbmc.Monitor):
                 "UNPAUSING services due to device awake",
                 level=xbmc.LOGINFO,
             )
+        elif method == "Other.AutoUpdatePolicyChanged":
+            self._auto_update_wake.set()

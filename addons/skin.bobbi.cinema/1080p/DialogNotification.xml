@@ -4,6 +4,15 @@
   <coordinates><left>1240</left><top>48</top></coordinates>
   <include content="PanelOpen"><param name="slide">28,0</param></include>
   <controls>
+    <!-- Kodi GUIDialogKaiToast binds IDs 401/402; keep them as plain non-fadelabel controls outside the filtered group so suppressed toasts never stall AllLabelsShown() -->
+    <control type="label" id="401">
+      <left>-2000</left><top>-2000</top><width>1</width><height>1</height>
+      <font>Label28</font><textcolor>00000000</textcolor>
+    </control>
+    <control type="label" id="402">
+      <left>-2000</left><top>-2000</top><width>1</width><height>1</height>
+      <font>CardSub22</font><textcolor>00000000</textcolor>
+    </control>
     <control type="group">
       <!-- Arctic Fuse 3 HUD mutual exclusion + suppress Kodi EventServer 60s UDP idle reconnect toasts ("Remote control" / Yatse) -->
       <visible>!String.IsEqual(Control.GetLabel(401),$LOCALIZE[790]) + !String.IsEqual(Control.GetLabel(401),Yatse) + !String.Contains(Control.GetLabel(402),Yatse) + !Window.IsActive(DialogVolumeBar.xml) + !Window.IsActive(DialogExtendedProgressBar.xml)</visible>
@@ -27,15 +36,17 @@
         <left>36</left><top>38</top><width>40</width><height>40</height>
         <aspectratio>keep</aspectratio>
       </control>
-      <control type="fadelabel" id="401">
+      <control type="fadelabel">
         <left>108</left><top>22</top><width>484</width><height>36</height>
         <font>Label28</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny>
         <scroll>true</scroll><scrollout>false</scrollout><pauseatend>2000</pauseatend>
+        <info>Control.GetLabel(401)</info>
       </control>
-      <control type="fadelabel" id="402">
+      <control type="fadelabel">
         <left>108</left><top>60</top><width>484</width><height>32</height>
         <font>CardSub22</font><textcolor>$VAR[BobbiPanelCaption]</textcolor><aligny>center</aligny>
         <scroll>true</scroll><scrollout>false</scrollout><pauseatend>2000</pauseatend>
+        <info>Control.GetLabel(402)</info>
       </control>
     </control>
   </controls>

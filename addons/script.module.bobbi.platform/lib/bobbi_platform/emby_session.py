@@ -1559,33 +1559,35 @@ def _find_next_season_episode(
     season_num: int,
     target_ep: int,
     cancelled,
-) -> tuple[dict | None, bool | None]:
-    """Locate target_ep in folder:<season_id> with O(1)/O(log N) bounded page probes.
+    *,
+    series_id: str | None = None,
+    start_item_id: str | None = None,
+) -> tuple[dict | str | None, bool | None]:
+    """Locate target_ep in same season via targeted StartItemId slice or bounded page probes.
 
     Soundness rules:
-      - Positive match (IndexNumber == target_ep in same season) is valid at any page 1..10000.
+      - Positive match requires exact single item with ParentIndexNumber == season_num and
+        IndexNumber == target_ep; multiple matching items return ('duplicate', True).
       - Negative proof (confirmed_end) requires EITHER:
-          (a) every page in the season was inspected (raw_last_page <= 10), OR
-          (b) dense 1..N season end proof: target_ep > total, page 1 starts at 1, and
-              the final page (<= 10000) ends at IndexNumber == total < target_ep.
-      - Otherwise uninspected pages in a >200-item season could still hold an out-of-order
-        episode, so we fail closed with (None, False) -> detail='page_limit'.
+          (a) targeted /Shows/{SeriesId}/Episodes?StartItemId=<cur> returned the complete
+              remaining tail (total == len(rows)) anchored at start_item_id with sorted
+              episode numbers and zero matches, OR
+          (b) every page in the season was inspected (len(visited) == raw_last_page).
+      - Uninspected pages NEVER infer confirmed_end; they fail closed with (None, False)
+        -> detail='page_limit'.
     """
     parent_ref = 'folder:' + identifier(season_id)
     visited: dict[int, list[dict]] = {}
     total_holder: list[int] = [0]
 
-    def _match_row(rows: list[dict]) -> dict | None:
-        return next(
-            (
-                r
-                for r in rows
-                if r.get('Type') == 'Episode'
-                and r.get('ParentIndexNumber') == season_num
-                and r.get('IndexNumber') == target_ep
-            ),
-            None,
-        )
+    def _matches(rows: list[dict]) -> list[dict]:
+        return [
+            r
+            for r in rows
+            if r.get('Type') == 'Episode'
+            and r.get('ParentIndexNumber') == season_num
+            and r.get('IndexNumber') == target_ep
+        ]
 
     def _ep_numbers(rows: list[dict]) -> list[int]:
         return [
@@ -1596,18 +1598,54 @@ def _find_next_season_episode(
             and type(r.get('IndexNumber')) is int
         ]
 
-    def _fetch(page_idx: int) -> tuple[dict | None, list[dict] | None]:
-        if page_idx in visited:
-            rows = visited[page_idx]
-            return _match_row(rows), rows
+    if target_ep < 1:
+        return None, True
+
+    # 0. Fast O(1) targeted tail slice via /Shows/{SeriesId}/Episodes?StartItemId=<cur>
+    if series_id and start_item_id and hasattr(client, 'season_episodes_from'):
         if cancelled():
             return None, None
-        rows, total = client.page_rows(parent_ref, page_idx, SEASON_LOOKUP_PAGE_SIZE, display=True)
+        try:
+            tail_rows, tail_total = client.season_episodes_from(
+                series_id, season_id, start_item_id, SEASON_LOOKUP_PAGE_SIZE,
+            )
+        except PanError as err:
+            if str(err) not in ('PAN_FILE_CHANGED', 'PAN_DIRECTORY_UNAVAILABLE'):
+                raise
+        else:
+            hits = _matches(tail_rows)
+            if len(hits) > 1:
+                return 'duplicate', True
+            if len(hits) == 1:
+                return hits[0], True
+            tail_nums = _ep_numbers(tail_rows)
+            if (
+                tail_rows
+                and tail_rows[0].get('Id') == identifier(start_item_id)
+                and tail_rows[0].get('ParentIndexNumber') == season_num
+                and tail_rows[0].get('IndexNumber') == target_ep - 1
+                and tail_total == len(tail_rows)
+                and tail_nums == sorted(tail_nums)
+            ):
+                return None, True
+
+    def _fetch(page_idx: int) -> tuple[dict | str | None, list[dict] | None]:
+        if page_idx in visited:
+            rows = visited[page_idx]
+            hits = _matches(rows)
+            return ('duplicate' if len(hits) > 1 else (hits[0] if hits else None)), rows
+        if cancelled():
+            return None, None
+        if hasattr(client, 'season_episode_page'):
+            rows, total = client.season_episode_page(season_id, page_idx, SEASON_LOOKUP_PAGE_SIZE)
+        else:
+            rows, total = client.page_rows(parent_ref, page_idx, SEASON_LOOKUP_PAGE_SIZE, display=True)
         total_holder[0] = total
         visited[page_idx] = rows
-        return _match_row(rows), rows
+        hits = _matches(rows)
+        return ('duplicate' if len(hits) > 1 else (hits[0] if hits else None)), rows
 
-    # 1. Always read page 1 first (offset=0 is valid even when TotalRecordCount == 0).
+    # 1. Read page 1 first (offset=0 is valid even when TotalRecordCount == 0).
     hit, rows_1 = _fetch(1)
     if rows_1 is None:
         return None, None
@@ -1615,8 +1653,6 @@ def _find_next_season_episode(
         return hit, True
     total = total_holder[0]
     if total <= SEASON_LOOKUP_PAGE_SIZE:
-        return None, True
-    if target_ep < 1:
         return None, True
 
     raw_last_page = (total - 1) // SEASON_LOOKUP_PAGE_SIZE + 1
@@ -1645,7 +1681,6 @@ def _find_next_season_episode(
     if hit is not None:
         return hit, True
 
-    nums_1 = _ep_numbers(rows_1)
     lo, hi = 2, max_page
     guess_nums = _ep_numbers(guess_rows)
     if guess_nums and guess_nums == sorted(guess_nums):
@@ -1685,20 +1720,8 @@ def _find_next_season_episode(
     if cancelled():
         return None, None
 
-    # Dense 1..N final-episode proof (e.g. episode=1000 -> target_ep=1001 on 1000-episode season)
-    if raw_last_page <= MAX_SEASON_LOOKUP_PAGE and target_ep > total and nums_1 and nums_1[0] == 1:
-        if max_page not in visited and len(visited) < MAX_SEASON_LOOKUP_REQUESTS:
-            hit, end_rows = _fetch(max_page)
-            if end_rows is None:
-                return None, None
-            if hit is not None:
-                return hit, True
-        if max_page in visited:
-            end_nums = _ep_numbers(visited[max_page])
-            if end_nums and end_nums == sorted(end_nums) and end_nums[-1] == total:
-                return None, True
-
-    return None, False
+    # Never infer confirmed_end when uninspected pages remain in the season.
+    return None, (len(visited) >= raw_last_page and raw_last_page <= MAX_SEASON_LOOKUP_PAGE)
 
 
 def resolve_next_episode_result(
@@ -1736,13 +1759,25 @@ def resolve_next_episode_result(
     }
     try:
         client, saved = _load_emby_client(Path(root_str), source_id, generation)
+        raw_series_id = spec.get('series_id') or meta.get('series_id')
+        raw_item_id = spec.get('item_id') or meta.get('item_id')
+        series_id = raw_series_id if isinstance(raw_series_id, str) and raw_series_id else None
+        start_item_id = raw_item_id if isinstance(raw_item_id, str) and raw_item_id else None
         with client.session.budget(8):
             client._identity(user_scoped_read=True)
             candidate, exhausted_all = _find_next_season_episode(
-                client, season_id, season_num, episode_num + 1, cancelled,
+                client,
+                season_id,
+                season_num,
+                episode_num + 1,
+                cancelled,
+                series_id=series_id,
+                start_item_id=start_item_id,
             )
             if exhausted_all is None or cancelled():
                 return NextResolution('cancelled')
+            if candidate == 'duplicate':
+                return NextResolution('needs_selection', selection=selection_ref, detail='duplicate_episode')
             if candidate is None:
                 if exhausted_all:
                     return NextResolution('confirmed_end')
@@ -1848,6 +1883,11 @@ def resolve_next_episode_result(
                 'season_id': season_id,
                 'season': season_num,
                 'episode': episode_num + 1,
+                **(
+                    {'series_id': identifier(detail['SeriesId'])}
+                    if isinstance(detail.get('SeriesId'), str) and detail.get('SeriesId')
+                    else ({'series_id': identifier(series_id)} if series_id else {})
+                ),
             },
         },
     )

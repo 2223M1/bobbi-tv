@@ -627,7 +627,9 @@ def test_n3_favourites_vs10_expressions_and_english_business_surfaces(monkeypatc
     timers_root = ET.parse(skin_dir / "Timers.xml").getroot()
     sdr_timers = [t for t in timers_root.findall("timer") if t.findtext("name") == "autovideosdr"]
     assert len(sdr_timers) == 1
-    assert "$EXP[BobbiHostHasVS10]" in sdr_timers[0].findtext("start", "")
+    start_expr = sdr_timers[0].findtext("start", "")
+    assert "$EXP[" not in start_expr
+    assert "amlogic.vs10.mode" in start_expr and "Bobbi.Host.SupportsVS10" in start_expr
 
     # 3. English business surface probes across pan_ui, diagnostics_ui, cloud_hub, source_library_ui, t4_ui, setup/default.py
     builtins_called = []

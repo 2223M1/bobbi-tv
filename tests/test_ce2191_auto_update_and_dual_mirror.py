@@ -178,7 +178,9 @@ def test_settings_xml_and_setup_expose_check_updates_and_disable_auto_update(set
     assert setup_ui.module.show_updates(setup_ui.dialog) is True
     assert seen_preselects == [1]
     assert notice.auto_enabled(work) is True
-    assert 'RunScript(script.bobbi.start,auto)' in setup_ui.builtins
+    # Must wake background AutoUpdateCheck worker rather than bypassing 20s idle via immediate RunScript(...,auto)
+    assert 'RunScript(script.bobbi.start,auto)' not in setup_ui.builtins
+    assert 'NotifyAll(bobbi.setup,AutoUpdatePolicyChanged)' in setup_ui.builtins
 
 
 from test_ce_general_installer import environment, signing  # noqa: F401
@@ -209,24 +211,131 @@ def test_unattended_auto_online_installs_signed_update_without_modal_prompts(ent
     assert entry.dialogs == []
     assert entry.env.installer._read()['sequence'] == 1
 
-    # 3. Idle + auto-update enabled -> installs next_pkg (sequence=2) with zero modal dialogs!
+    # 3. Idle < 20s (remote just pressed) -> refuses unattended update before network/apply!
     from test_ce_update_continuity import make_offer
     entry.playing = False
+    idle_seconds = [0]
+    sys.modules['xbmc'].getGlobalIdleTime = lambda: idle_seconds[0]
     next_pkg = package(entry.env.root / 'next.zip', signing, 2, '2.0.0', channel='private-stable')
     next_raw = next_pkg.read_bytes()
     next_offer = make_offer(next_pkg, 'ce2055')
+    monkeypatch.setattr(online, 'latest', lambda *_a, **_kw: pytest.fail('network called while idle < 20s'))
+    assert ui.main(auto=True) is False
+    assert entry.env.installer._read()['sequence'] == 1
+
+    # 4. Idle drops below 20s mid-download -> cancels cleanly with zero apply and cleans partial staging!
+    idle_seconds[0] = 25
     monkeypatch.setattr(online, 'latest', lambda *_a, **_kw: next_offer)
+
+    class WakeDuringDownload(Response):
+        def read1(self, size):
+            idle_seconds[0] = 2
+            return super().read1(size)
+
+    monkeypatch.setattr(online, '_open', lambda _u: WakeDuringDownload(next_raw))
+    assert ui.main(auto=True) is False
+    assert entry.env.installer._read()['sequence'] == 1
+
+    # 5. Idle >= 20s + auto-update enabled -> installs next_pkg (sequence=2) with zero modal dialogs!
+    idle_seconds[0] = 25
     monkeypatch.setattr(online, '_open', lambda _u: Response(next_raw))
     assert ui.main(auto=True) is True
     assert entry.env.installer._read()['sequence'] == 2
     assert entry.dialogs == [] and not entry.confirmations
 
-    # 4. Simulate legacy launcher (0.0.1) on disk -> ensure_entry_synced_from_recovery self-heals from recovery-v1!
+    # 6. Simulate legacy launcher (0.0.1) on disk -> ensure_entry_synced_from_recovery self-heals from recovery-v1!
     start_xml = entry.env.addons / 'script.bobbi.start' / 'addon.xml'
     start_xml.parent.mkdir(parents=True, exist_ok=True)
     start_xml.write_text('<addon id="script.bobbi.start" version="0.0.1"/>', encoding='utf-8')
     assert ui.ensure_entry_synced_from_recovery(entry.env.work, entry.env.addons, trust=signing[1]) is True
     assert ET.fromstring(start_xml.read_bytes()).get('version') == '2.0.0'
-    # Idempotent when already synced
+    # Idempotent when already synced and all bootstrap files match byte-for-byte
     assert ui.ensure_entry_synced_from_recovery(entry.env.work, entry.env.addons, trust=signing[1]) is False
 
+    # 7. Same-version addon.xml (2.0.0) with missing/corrupt entry payload file -> detected & repaired!
+    entry_code = entry.env.addons / 'script.bobbi.start' / 'code.py'
+    orig_code = entry_code.read_bytes()
+    entry_code.write_bytes(b'# corrupted payload')
+    assert ui.ensure_entry_synced_from_recovery(entry.env.work, entry.env.addons, trust=signing[1]) is True
+    assert entry_code.read_bytes() == orig_code
+
+    # 8. Newer offline script.bobbi.start (9.9.9) with embedded complete.bobbi-update.zip -> NEVER downgraded!
+    embedded = entry.env.addons / 'script.bobbi.start' / 'resources' / 'complete.bobbi-update.zip'
+    embedded.parent.mkdir(parents=True, exist_ok=True)
+    embedded.write_bytes(b'offline-full-bundle')
+    start_xml.write_text('<addon id="script.bobbi.start" version="9.9.9"/>', encoding='utf-8')
+    out = {}
+    assert ui.sync_entry_from_bundle(
+        next_pkg, entry.env.addons, trust=signing[1], work=entry.env.work, report_outcome=out,
+    ) is False
+    assert out['status'] == 'kept_newer'
+    assert ET.fromstring(start_xml.read_bytes()).get('version') == '9.9.9'
+    assert embedded.read_bytes() == b'offline-full-bundle'
+
+    # 9. Simulated os.replace failure on publish -> original script.bobbi.start is restored, NEVER deleted!
+    start_xml.write_text('<addon id="script.bobbi.start" version="1.0.0"/>', encoding='utf-8')
+    real_replace = ui.os.replace
+    live_entry_dir = entry.env.addons / 'script.bobbi.start'
+
+    def fail_stage_publish(src, dst):
+        if Path(dst) == live_entry_dir and '.bobbi-entry-stage-' in Path(src).name:
+            raise OSError('simulated publish failure')
+        return real_replace(src, dst)
+
+    monkeypatch.setattr(ui.os, 'replace', fail_stage_publish)
+    fail_out = {}
+    assert ui.sync_entry_from_bundle(
+        next_pkg, entry.env.addons, trust=signing[1], work=entry.env.work, report_outcome=fail_out,
+    ) is False
+    monkeypatch.setattr(ui.os, 'replace', real_replace)
+    assert fail_out['status'] == 'failed'
+    assert live_entry_dir.is_dir() and ET.fromstring(start_xml.read_bytes()).get('version') == '1.0.0'
+
+    # 10. Held installation.lock & phase='restored' skip recovery entry sync cleanly
+    from bobbi_platform.updates import _Lock
+    with _Lock(entry.env.work / 'installation.lock'):
+        locked_out = {}
+        assert ui.ensure_entry_synced_from_recovery(
+            entry.env.work, entry.env.addons, trust=signing[1], report_outcome=locked_out,
+        ) is False
+        assert locked_out['status'] == 'failed'
+    st = json.loads((entry.env.work / 'installation.json').read_text(encoding='utf-8'))
+    st['phase'] = 'restored'
+    (entry.env.work / 'installation.json').write_text(json.dumps(st), encoding='utf-8')
+    restored_out = {}
+    assert ui.ensure_entry_synced_from_recovery(
+        entry.env.work, entry.env.addons, trust=signing[1], report_outcome=restored_out,
+    ) is False
+    assert restored_out['status'] == 'skipped_inactive'
+
+
+def test_v4_gitcode_http_418_fails_over_to_github_while_tls_and_conflict_fail_closed(monkeypatch):
+    from email.message import Message
+    from io import BytesIO
+    from urllib.error import HTTPError, URLError
+    import ssl
+    from test_online_updates import Response, tracked_offer
+
+    valid_offer = tracked_offer(b'valid', sequence=2026102195, track='stable')
+    raw_offer = json.dumps(valid_offer).encode('utf-8')
+
+    def open_418_then_ok(url):
+        if 'gitcode.com' in url:
+            raise HTTPError(url, 418, "I'm a teapot", Message(), BytesIO(b'waf'))
+        return Response(raw_offer)
+
+    monkeypatch.setattr(online, '_open', open_418_then_ok)
+    rep = {}
+    got = online.latest(track='stable', report=rep)
+    assert got['sequence'] == 2026102195
+    assert rep['mirrors'] == 'unavailable'
+
+    # TLS SSLError on primary mirror MUST still fail closed without silent downgrade/fallback
+    monkeypatch.setattr(
+        online,
+        '_open',
+        lambda u: (_ for _ in ()).throw(URLError(ssl.SSLError('certificate verify failed')))
+        if 'gitcode.com' in u else Response(raw_offer),
+    )
+    with pytest.raises(URLError):
+        online.latest(track='stable')

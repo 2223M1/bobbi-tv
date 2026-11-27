@@ -42,9 +42,9 @@ def test_stable_uses_approved_opt_in_skin_and_plugin_dialogs():
     # Both freeze checks still cover the entire original archive, including
     # frame offsets, pixels and padding. Only the two new lookup keys differ.
     rows['media/Textures.xbt'] = approved_digest((skin/'media/Textures.xbt').read_bytes())
-    # CE2188: MyFavourites binding, Settings IA consolidation, VS10/OSD capability expressions, and Liquid Glass state sync.
-    assert fingerprint(visual_rows(skin, rows, data)) == 'c8f58fd898dab9cc022984bb5a9239a37a26fc7e3981cf44a330d5fa5c83ec96'
-    assert fingerprint(rows) == 'b329cc8dd872c3e56f085a9fea02fe8980908f89382a897a58d541d46e75b189'
+    # CE2195: Non-blocking DialogNotification.xml KaiToast plain-label binding (R1) and inlined Timers.xml VS10 start guard (V3).
+    assert fingerprint(visual_rows(skin, rows, data)) == 'a356e214219cc59f7b4f82631788b2a2e55c6f67bf97212f73cafbe10580d3c6'
+    assert fingerprint(rows) == 'b207684ab17e92accdcf002cee2c512cc6cee835b3a3692e25a59e7e0fc87d90'
     mirror = ROOT/'addons/plugin.video.bobbi/resources/skins/Default'
     mirrored = files(mirror)
     assert fingerprint(visual_rows(mirror, mirrored)) == '4a20833ad30cf0f1b304389a0bc34d0b907c213491211200602a4cfe4332149d'

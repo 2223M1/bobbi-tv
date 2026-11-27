@@ -95,7 +95,7 @@ def _allowed_redirect(value):
 
 def _network_failure(error):
     if isinstance(error, HTTPError):
-        return error.code in (403, 404, 408, 429, 500, 502, 503, 504)
+        return error.code in (403, 404, 408, 418, 429, 500, 502, 503, 504)
     if isinstance(getattr(error, 'reason', error), ssl.SSLError):
         return False
     return isinstance(error, (URLError, TimeoutError, ConnectionError))

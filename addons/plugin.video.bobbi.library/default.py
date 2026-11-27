@@ -146,7 +146,7 @@ def execute(handle, params):
                 raise LibraryError('INVALID_VALUE')
         elif action in (
             'browse', 'play', 'play_pointer',
-            'emby_page', 'emby_play', 'emby_search', 'emby_mark',
+            'emby_page', 'emby_play', 'emby_search', 'emby_mark', 'emby_jump', 'emby_limit_notice',
             't4_site', 't4_cat', 't4_search', 't4_detail', 't4_play',
         ):
             source = store.get(params.get('source', ''))

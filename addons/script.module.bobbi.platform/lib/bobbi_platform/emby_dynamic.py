@@ -1,5 +1,4 @@
 """Emby as an online Kodi directory. No scanner, history writer or player owner."""
-from threading import Lock
 from urllib.parse import quote, urlencode
 import time
 
@@ -18,40 +17,6 @@ PAGE = 20
 MAX_PAGE = 10000
 HOME_RAIL_TOTAL_BUDGET_SECONDS = 6.0
 HOME_SOURCE_MAX_BUDGET_SECONDS = 4.5
-DEAD_SOURCE_COOLDOWN_SECONDS = 30.0
-_HOME_COOLDOWN_LOCK = Lock()
-_HOME_UNREACHABLE_UNTIL: dict[tuple[str, str, str], float] = {}
-
-
-def _home_source_cooling_down(source_id: str, rev: str, location: str, now: float | None = None) -> bool:
-    cur = time.monotonic() if now is None else now
-    key = (source_id, rev, location)
-    with _HOME_COOLDOWN_LOCK:
-        until = _HOME_UNREACHABLE_UNTIL.get(key)
-        if until is None:
-            return False
-        if cur >= until:
-            _HOME_UNREACHABLE_UNTIL.pop(key, None)
-            return False
-        return True
-
-
-def _mark_home_source_unreachable(source_id: str, rev: str, location: str) -> None:
-    key = (source_id, rev, location)
-    with _HOME_COOLDOWN_LOCK:
-        if len(_HOME_UNREACHABLE_UNTIL) >= 64:
-            _HOME_UNREACHABLE_UNTIL.clear()
-        _HOME_UNREACHABLE_UNTIL[key] = time.monotonic() + DEAD_SOURCE_COOLDOWN_SECONDS
-
-
-def _clear_home_source_unreachable(source_id: str, rev: str, location: str) -> None:
-    with _HOME_COOLDOWN_LOCK:
-        _HOME_UNREACHABLE_UNTIL.pop((source_id, rev, location), None)
-
-
-def reset_home_cooldowns() -> None:
-    with _HOME_COOLDOWN_LOCK:
-        _HOME_UNREACHABLE_UNTIL.clear()
 BASE = 'plugin://plugin.video.bobbi.library/?'
 FOLDERS = {'Folder', 'CollectionFolder', 'BoxSet', 'Series', 'Season', 'UserView'}
 LEAVES = {'Movie': 'movie', 'Episode': 'episode', 'Video': 'video', 'MusicVideo': 'musicvideo',
@@ -404,7 +369,7 @@ def execute(handle, params, store, item):
                 info = proj[3] if proj else {'title': title, 'mediatype': 'video'}
                 art_dict = {}
                 if proj and proj[4]:
-                    from .emby_artwork import note_verified_primary_tag, poster_factory
+                    from .emby_artwork import poster_factory
                     art_url = poster_factory(root, source.id, rev, store)(entry, proj[4])
                     if art_url:
                         art_dict = {'poster': art_url, 'thumb': art_url}
@@ -426,6 +391,8 @@ def execute(handle, params, store, item):
                             'season': detail['ParentIndexNumber'],
                             'episode': detail['IndexNumber'],
                         }
+                        if isinstance(detail.get('SeriesId'), str) and detail.get('SeriesId'):
+                            next_spec['series_id'] = identifier(detail['SeriesId'])
                     except ValueError:
                         next_spec = None
 
@@ -491,7 +458,7 @@ def execute(handle, params, store, item):
             rows += [item(_t('最近新增', 'Recently Added'), route('emby_page', parent='recent')),
                      item(_t('服务器的继续观看', 'Continue Watching (Server)'), route('emby_page', parent='resume')),
                      item(_t('搜索 Emby', 'Search Emby'), route('emby_search'))]
-        from .emby_artwork import note_verified_primary_tag, poster_factory
+        from .emby_artwork import poster_factory
         poster = poster_factory(root, source.id, rev, store)
         media_types = []
         for record in page_rows:
@@ -499,8 +466,6 @@ def execute(handle, params, store, item):
             if data is None:
                 continue
             ident, title, folder, info, tag = data
-            if tag:
-                note_verified_primary_tag(saved['location'], saved['token'], saved['user_id'], ident, tag)
             media_types.append(info.get('mediatype', 'video'))
             resume_sec, played_flag, fav_flag, _ = _user_state(record)
             label2_parts = []
@@ -569,6 +534,7 @@ def execute(handle, params, store, item):
                            'Browse Limit Reached (First 200,000 Items) · Narrow Search or Browse by Season'),
                         route('emby_limit_notice'),
                         False,
+                        playable=False,
                         properties={'Bobbi.LimitNotice': 'true'},
                     )
                 )
@@ -620,7 +586,7 @@ def execute_home_rail(handle: int, params: dict, *, registry_factory=None) -> No
     import xbmc
     import xbmcgui
     import xbmcplugin
-    from .emby_artwork import note_verified_primary_tag, poster_factory
+    from .emby_artwork import poster_factory
     from .libraries import Registry
     from .optimization import observe
 
@@ -678,9 +644,6 @@ def execute_home_rail(handle: int, params: dict, *, registry_factory=None) -> No
                 media_types = []
                 outcome = 'changed'
                 break
-            if _home_source_cooling_down(source.id, rev, source.location):
-                outcome = 'unavailable'
-                continue
             remaining_budget = rail_deadline - time.monotonic()
             if remaining_budget <= 0.25:
                 outcome = 'unavailable'
@@ -697,12 +660,9 @@ def execute_home_rail(handle: int, params: dict, *, registry_factory=None) -> No
                 with client.session.budget(min(HOME_SOURCE_MAX_BUDGET_SECONDS, remaining_budget)):
                     client._identity(user_scoped_read=True)
                     page_rows, _ = client.page_rows(query, 1, PAGE, display=True)
-            except (PanError, LibraryError, ValueError, OSError) as err:
+            except (PanError, LibraryError, ValueError, OSError):
                 outcome = 'unavailable'
-                if isinstance(err, OSError) or str(err) in ('PAN_NETWORK_ERROR', 'PAN_BUDGET_EXHAUSTED'):
-                    _mark_home_source_unreachable(source.id, rev, source.location)
                 continue
-            _clear_home_source_unreachable(source.id, rev, source.location)
 
             if _aborted() or not binding.is_current():
                 rows = []
@@ -724,8 +684,6 @@ def execute_home_rail(handle: int, params: dict, *, registry_factory=None) -> No
                 if data is None:
                     continue
                 ident, title, folder, info, tag = data
-                if tag:
-                    note_verified_primary_tag(saved['location'], saved['token'], saved['user_id'], ident, tag)
                 media_types.append(info.get('mediatype', 'video'))
                 resume_sec, played_flag, fav_flag, _ = _user_state(record)
                 duration = int(info.get('duration') or 0)
