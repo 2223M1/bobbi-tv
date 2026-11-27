@@ -2,10 +2,10 @@
   "schema": 1,
   "components": {
     "plugin.video.bobbi": {
-      "addon.xml": "dfc382c2440a73741978c3b48678edefd10749b89c1cfefe594573deec5b6d6b",
+      "addon.xml": "3a065733ab63cdeb4185c6d117ea1744de790843b40f5901496a224dcc36ad2b",
       "bobbi.py": "a8dac4cd24f31fc641940def2eb8e2d619c7c02e9383fecc2a3648070be051b2",
       "bobbi.select.json": "cfbffb55a9c01049dd335dc17d9d7436656e57896c2608f06bd09dabc627c6b7",
-      "CHANGELOG.md": "d78b27dddecddcff15b8be5ff0d6ba27b45ab11a136c521bbe2a9ab249faf20a",
+      "CHANGELOG.md": "ff772cc032150e068264b2deaa8d8e9c44e5177dea1b94ba143ff857167f07e9",
       "fanart.png": "65e37420e8595145d77d54cbd42f303aeebaf14b5d13916b39c47c5d00822162",
       "icon.png": "206e58c783f6aa8f2936aafc6494edaecb28d39dcfa1d33f4335b3028109694a",
       "lib/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -960,7 +960,7 @@
       "resources/white.png": "1b285f3936913e90a0dd6e0e07b8f09b964a4e4b95cca70b1883a576183642fc"
     },
     "script.bobbi.start": {
-      "addon.xml": "3f1a8ea233beffc792ce93fb81ada9410c31e8100b89b985ff75b6e440708a0f",
+      "addon.xml": "b61a71de363b2e400bce86cbfca1663d15809e1ec453b70ad3863363a93feb2d",
       "default.py": "61a8c8dea81ac2d99b97a3bcf5f5927a61cffdded9bbbcfe1e2a33aafaa57c89",
       "resources/language/resource.language.en_gb/strings.po": "402f393a70e537cfe5c1a5e49e5649351ef75735fd40bd7172788ca97e35a1bc",
       "resources/language/resource.language.zh_cn/strings.po": "b26424b0f8df63894e9eed5d6df3037003c7f62ab17d3007e9690b8bff55859e"
