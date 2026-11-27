@@ -281,3 +281,23 @@ msgstr ""
 msgctxt "#32067"
 msgid "Reopen \"Cinema Setup\" and try again; saved settings are kept."
 msgstr ""
+
+msgctxt "#32068"
+msgid "Automatic Updates · Enabled (Default)"
+msgstr ""
+
+msgctxt "#32069"
+msgid "Automatic Updates · Disabled"
+msgstr ""
+
+msgctxt "#32070"
+msgid "Automatic Updates"
+msgstr ""
+
+msgctxt "#32071"
+msgid "Auto-download & install when idle (Default)"
+msgstr ""
+
+msgctxt "#32072"
+msgid "Disable automatic updates (Manual check only)"
+msgstr ""

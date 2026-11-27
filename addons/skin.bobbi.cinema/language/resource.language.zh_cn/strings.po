@@ -2136,6 +2136,14 @@ msgctxt "#32375"
 msgid "No bookmarks yet — select Add Bookmark below to save the current timestamp"
 msgstr "暂无书签 — 选择下方「添加书签」记录当前画面时间点"
 
+msgctxt "#32380"
+msgid "Check for bobbi TV Updates"
+msgstr "立即检查波比 TV 更新"
+
+msgctxt "#32381"
+msgid "Automatic Updates"
+msgstr "自动更新设置"
+
 msgctxt "#32399"
 msgid "en"
 msgstr "zh"

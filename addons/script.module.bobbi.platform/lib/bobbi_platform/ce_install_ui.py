@@ -1,4 +1,5 @@
 """Kodi-native installation UI. No SSH, HTTP control port or developer paths."""
+from contextlib import contextmanager
 from io import BytesIO
 from pathlib import Path, PurePosixPath
 import errno
@@ -7,6 +8,7 @@ import re
 import shutil
 import ssl
 import sys
+import threading
 import time
 import uuid
 import xml.etree.ElementTree as ET
@@ -27,7 +29,7 @@ from .ce_installer import Installer, MANAGED, PlaybackActive, blocked, installed
 from .kodi import rpc
 from .offline_updates import SignedBundle
 from .paths import profile
-from .updates import UpdateError, _atomic, _json, _safe_path, archive_rows
+from .updates import UpdateError, _atomic, _json, _safe_path, archive_rows, auto_update_enabled
 from .upstream_addons import (
     DIRECTORY_CONFLICT,
     DISABLED,
@@ -61,11 +63,46 @@ def check_host_crypto():
 
 
 class KodiHost:
-    def __init__(self, dialog=None):
+    def __init__(self, dialog=None, *, unattended=False):
         import xbmc
         self.xbmc = xbmc
         self.monitor = xbmc.Monitor()
         self.dialog = dialog
+        self.unattended = bool(unattended)
+
+    @contextmanager
+    def _skin_keep_confirmer(self):
+        if not self.unattended:
+            yield
+            return
+        stop = threading.Event()
+
+        def _watch():
+            while not stop.is_set():
+                try:
+                    if self.xbmc.getCondVisibility('Window.IsVisible(yesnodialog)'):
+                        heading = self.xbmc.getInfoLabel('Control.GetLabel(1)') or ''
+                        body = self.xbmc.getInfoLabel('Control.GetLabel(2)') or ''
+                        keep_title = self.xbmc.getLocalizedString(13123) or ''
+                        if (
+                            (keep_title and heading == keep_title)
+                            or '保持皮肤' in heading or '保持皮肤' in body
+                            or 'keep this change' in body.lower()
+                        ):
+                            time.sleep(0.2)
+                            if self.xbmc.getCondVisibility('Window.IsVisible(yesnodialog)'):
+                                self.xbmc.executebuiltin('SendClick(yesnodialog,11)', False)
+                except Exception:
+                    pass
+                stop.wait(0.15)
+
+        worker = threading.Thread(target=_watch, name='BobbiKeepSkinAuto', daemon=True)
+        worker.start()
+        try:
+            yield
+        finally:
+            stop.set()
+            worker.join(1.0)
 
     def skin(self):
         return rpc('Settings.GetSettingValue', {'setting': 'lookandfeel.skin'})['value']
@@ -275,27 +312,47 @@ class KodiHost:
             return
         self.check_idle()
         target = 'skin.estuary'
-        if rpc('Settings.SetSettingValue', {'setting': 'lookandfeel.skin', 'value': target}) is not True:
-            raise UpdateError('INSTALL_SKIN_NOT_CONFIRMED')
-        deadline = time.monotonic() + 28
-        loaded = None
-        saw_dialog = False
-        while True:
-            now = time.monotonic()
-            self.check_idle()
-            if self.skin() != target:
+        with self._skin_keep_confirmer():
+            if rpc('Settings.SetSettingValue', {'setting': 'lookandfeel.skin', 'value': target}) is not True:
                 raise UpdateError('INSTALL_SKIN_NOT_CONFIRMED')
-            if self.xbmc.getSkinDir() == target:
-                if loaded is None:
-                    loaded = now
-                modal = self.xbmc.getCondVisibility('Window.IsVisible(yesnodialog)')
-                if modal and self.xbmc.getInfoLabel('Control.GetLabel(1)') == self.xbmc.getLocalizedString(13123):
-                    saw_dialog = True
-                if not modal and (saw_dialog or now - loaded >= 12):
-                    if self.skin() == target and self.xbmc.getSkinDir() == target:
-                        return
-            if now >= deadline or self.monitor.waitForAbort(.1):
-                raise UpdateError('INSTALL_SKIN_NOT_CONFIRMED')
+            deadline = time.monotonic() + 28
+            loaded = None
+            saw_dialog = False
+            while True:
+                now = time.monotonic()
+                self.check_idle()
+                if self.skin() != target:
+                    raise UpdateError('INSTALL_SKIN_NOT_CONFIRMED')
+                if self.xbmc.getSkinDir() == target:
+                    if loaded is None:
+                        loaded = now
+                    modal = self.xbmc.getCondVisibility('Window.IsVisible(yesnodialog)')
+                    if modal and self.xbmc.getInfoLabel('Control.GetLabel(1)') == self.xbmc.getLocalizedString(13123):
+                        saw_dialog = True
+                    if not modal and (saw_dialog or now - loaded >= 12):
+                        if self.skin() == target and self.xbmc.getSkinDir() == target:
+                            return
+                if now >= deadline or self.monitor.waitForAbort(.1):
+                    raise UpdateError('INSTALL_SKIN_NOT_CONFIRMED')
+
+    def restore_skin_after_install(self, previous_skin):
+        """Restore skin.bobbi.cinema seamlessly after unattended background updates."""
+        if previous_skin != 'skin.bobbi.cinema':
+            return
+        if not (self.details('skin.bobbi.cinema') or {}).get('enabled'):
+            return
+        with self._skin_keep_confirmer():
+            if self.skin() != 'skin.bobbi.cinema':
+                rpc('Settings.SetSettingValue', {'setting': 'lookandfeel.skin', 'value': 'skin.bobbi.cinema'})
+            if self.unattended:
+                deadline = time.monotonic() + 14
+                while time.monotonic() < deadline:
+                    if (self.skin() == 'skin.bobbi.cinema'
+                            and self.xbmc.getSkinDir() == 'skin.bobbi.cinema'
+                            and not self.xbmc.getCondVisibility('Window.IsVisible(yesnodialog)')):
+                        break
+                    if self.monitor.waitForAbort(0.15):
+                        break
 
     def quiesce(self):
         self.check_idle()
@@ -870,12 +927,143 @@ def install_online(installer, host, dialog):
         host.check_idle()
         progress.close()
         installer.apply(selected)
+        sync_entry_from_bundle(selected, getattr(installer, 'addons', None), getattr(installer, 'trust', None), host=host)
         ensure_host_language(host, installer, dialog, payload=selected)
         return True
     except Cancelled:
         return False
     finally:
         progress.close()
+        if selected is not None:
+            selected.unlink(missing_ok=True)
+
+
+_ENTRY_BOOTSTRAP_FILES = (
+    '__init__.py', 'bootstrap_i18n.py', 'ce_installer.py', 'ce_install_ui.py', 'android_ui.py',
+    'ce_storage.py', 'ce_recovery.py', 'offline_updates.py', 'catalog_compatibility.py',
+    'optimization.py', 'updates.py', 'upstream_addons.py', 'signatures.py', 'release_trust.json',
+    'paths.py', 'kodi.py', 'playback.py', 'capabilities.py', 'runtime.py', 'instance_lock.py',
+    'online_updates.py', 'online_transport.py', 'online_partial.py', 'online_components.py',
+)
+
+
+def sync_entry_from_bundle(bundle, addons_root, trust=None, *, host=None):
+    """Keep script.bobbi.start & its bootstrap synchronized from the verified signed bundle."""
+    if bundle is None or addons_root is None:
+        return False
+    bundle_path = Path(bundle)
+    if not bundle_path.is_file():
+        return False
+    try:
+        root = _safe_path(addons_root)
+        if not root.is_dir():
+            return False
+        from .offline_updates import load_trust
+        active_trust = trust or load_trust()
+        with SignedBundle(bundle_path, active_trust, 'coreelec') as signed:
+            manifest = signed.check_all()
+            entry_row = next((r for r in manifest['components'] if r['id'] == 'script.bobbi.start'), None)
+            plat_row = next((r for r in manifest['components'] if r['id'] == 'script.module.bobbi.platform'), None)
+            if entry_row is None or plat_row is None:
+                return False
+            live_entry = root / 'script.bobbi.start'
+            live_xml = live_entry / 'addon.xml'
+            if live_xml.is_file():
+                try:
+                    if ET.fromstring(live_xml.read_bytes()).get('version') == entry_row['version']:
+                        return False
+                except ET.ParseError:
+                    pass
+            entry_bytes = signed.read(entry_row['file'], entry_row['size'])
+            plat_bytes = signed.read(plat_row['file'], plat_row['size'])
+        temp_wrap = _safe_path(root / ('.bobbi-entry-' + uuid.uuid4().hex))
+        stage_entry = temp_wrap / 'script.bobbi.start'
+        try:
+            with zipfile.ZipFile(BytesIO(entry_bytes)) as ezf:
+                rows = archive_rows(ezf, entry_row)
+                for row in rows:
+                    rel_parts = PurePosixPath(row.filename).parts[1:]
+                    if not rel_parts:
+                        continue
+                    dest = stage_entry.joinpath(*rel_parts)
+                    if row.is_dir():
+                        dest.mkdir(parents=True, exist_ok=True)
+                    else:
+                        dest.parent.mkdir(parents=True, exist_ok=True)
+                        dest.write_bytes(ezf.read(row))
+            with zipfile.ZipFile(BytesIO(plat_bytes)) as pzf:
+                archive_rows(pzf, plat_row)
+                boot_dir = stage_entry / 'bootstrap' / 'bobbi_platform'
+                boot_dir.mkdir(parents=True, exist_ok=True)
+                for fname in _ENTRY_BOOTSTRAP_FILES:
+                    member = 'script.module.bobbi.platform/lib/bobbi_platform/' + fname
+                    if member in pzf.namelist():
+                        (boot_dir / fname).write_bytes(pzf.read(member))
+            if live_entry.exists():
+                os.replace(live_entry, temp_wrap / 'previous')
+            os.replace(stage_entry, live_entry)
+        finally:
+            if temp_wrap.exists():
+                shutil.rmtree(temp_wrap, ignore_errors=True)
+        if host is not None and callable(getattr(host, 'refresh', None)):
+            host.refresh()
+        return True
+    except (OSError, ValueError, UpdateError, BadZipFile):
+        return False
+
+
+def install_auto_online(installer, host):
+    """Unattended background online update when idle and auto_update_enabled is True."""
+    import xbmc as _xbmc
+    import xbmcgui
+    from .online_updates import latest, Cancelled, selected_track
+    from .online_components import download
+    if not auto_update_enabled(installer.work):
+        return False
+    xbmc_mod = getattr(host, 'xbmc', _xbmc)
+    monitor = getattr(host, 'monitor', None)
+    abort_fn = getattr(monitor, 'abortRequested', lambda: False) if monitor is not None else (lambda: False)
+    cond_fn = getattr(xbmc_mod, 'getCondVisibility', lambda _c: False)
+    player_fn = getattr(xbmc_mod, 'Player', None)
+    selected = None
+    try:
+        host.check_idle()
+        if cond_fn('System.HasModalDialog'):
+            return False
+        cancelled = lambda: (
+            abort_fn()
+            or (callable(player_fn) and player_fn().isPlaying())
+            or not auto_update_enabled(installer.work)
+        )
+        track = selected_track(installer.work)
+        offer = latest(cancelled, track=track)
+        state = installer._read() or {}
+        watermark = installed_watermark(state)
+        if offer['sequence'] <= watermark:
+            return False
+        previous_skin = host.skin() if callable(getattr(host, 'skin', None)) else None
+        selected = download(offer, installer.work / 'downloads', installer.trust, cancelled)
+        if cancelled() or cond_fn('System.HasModalDialog'):
+            return False
+        host.check_idle()
+        installer.apply(selected)
+        sync_entry_from_bundle(selected, getattr(installer, 'addons', None), getattr(installer, 'trust', None), host=host)
+        ensure_host_language(host, installer, None, payload=selected)
+        restore_skin = getattr(host, 'restore_skin_after_install', None)
+        if callable(restore_skin):
+            restore_skin(previous_skin)
+        en = normalize_locale(active_locale(host=host, rpc_fn=rpc)) == 'en_gb'
+        notify_fn = getattr(xbmcgui.Dialog(), 'notification', None)
+        if callable(notify_fn):
+            notify_fn(
+                'Bobbi TV Updated' if en else '波比 TV 已自动更新',
+                (f"Updated to {offer['tag'].upper()}" if en else f"已自动升级至 {offer['tag'].upper()}"),
+                sound=False,
+            )
+        return True
+    except (Cancelled, PlaybackActive):
+        return False
+    finally:
         if selected is not None:
             selected.unlink(missing_ok=True)
 
@@ -1172,14 +1360,14 @@ def readable_text(host, dialog, *, locale=None, cjk_needed=None, rpc_fn=None):
     return True
 
 
-def main(payload=None, online=False, storage=False):
+def main(payload=None, online=False, storage=False, auto=False):
     import xbmc
     from .android_ui import bundled_host, start
     if bundled_host():
-        return start(online=online, storage=storage)
+        return None if auto else start(online=online, storage=storage)
     import xbmcgui
     import xbmcvfs
-    dialog = xbmcgui.Dialog()
+    dialog = None if auto else xbmcgui.Dialog()
     host = None
     from .optimization import observe
     from .paths import profile_root
@@ -1188,7 +1376,7 @@ def main(payload=None, online=False, storage=False):
     stage = 'init'
     def report(step, error):
         if diagnostic_root is not None:
-            observe(diagnostic_root, {'online':'update','rollback':'rollback'}.get(step,'install'),
+            observe(diagnostic_root, {'online':'update','auto':'update','rollback':'rollback'}.get(step,'install'),
                     'space' if str(error).partition(':')[0] == 'INSTALLATION_SPACE_REQUIRED' else 'failed', started)
         line = diagnosis(step, error)
         try:
@@ -1200,8 +1388,8 @@ def main(payload=None, online=False, storage=False):
         except (AttributeError, ImportError, OSError, RuntimeError, TypeError, ValueError):
             pass
         if hasattr(xbmc, 'log'):
-            xbmc.log('[bobbi-install] ' + line, xbmc.LOGERROR)
-        if hasattr(dialog, 'ok'):
+            xbmc.log('[bobbi-install] ' + line, getattr(xbmc, 'LOGWARNING', xbmc.LOGERROR) if auto else xbmc.LOGERROR)
+        if not auto and dialog is not None and hasattr(dialog, 'ok'):
             old = str(error) in ('PREVIOUS_PROGRAM_INCOMPLETE', 'PREVIOUS_PROGRAM_SPECIAL_FILE', 'PREVIOUS_PROGRAM_RECEIPT_REQUIRED')
             message = (tr('report_old_backup_body', host=host) if old
                        else failure_message(error, step, host=host))
@@ -1209,7 +1397,7 @@ def main(payload=None, online=False, storage=False):
             dialog.ok(title, message + tr('report_diag_prefix', host=host) + line)
     try:
         try:
-            host = KodiHost(dialog=dialog)
+            host = KodiHost(dialog=dialog, unattended=auto)
         except TypeError:
             host = KodiHost()
         try:
@@ -1218,6 +1406,15 @@ def main(payload=None, online=False, storage=False):
             pass
         installer = Installer(xbmcvfs.translatePath('special://home/addons'),
                               profile('script.bobbi.start'), host)
+        if auto:
+            stage = 'auto'
+            state_now = installer._read()
+            if not state_now or state_now.get('host_pending') or state_now.get('phase') not in ('complete', 'restored'):
+                return False
+            updated = install_auto_online(installer, host)
+            if updated and diagnostic_root is not None:
+                observe(diagnostic_root, 'update', 'ok', started)
+            return updated
         if not storage and callable(getattr(installer, '_read', None)):
             try:
                 pending_state = installer._read()

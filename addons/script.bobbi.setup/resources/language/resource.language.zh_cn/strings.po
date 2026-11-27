@@ -281,3 +281,23 @@ msgstr "操作未完成"
 msgctxt "#32067"
 msgid "Reopen \"Cinema Setup\" and try again; saved settings are kept."
 msgstr "请重新打开“影院设置”重试，已保存的设置保留。"
+
+msgctxt "#32068"
+msgid "Automatic Updates · Enabled (Default)"
+msgstr "自动更新设置 · 已开启（默认）"
+
+msgctxt "#32069"
+msgid "Automatic Updates · Disabled"
+msgstr "自动更新设置 · 已禁止"
+
+msgctxt "#32070"
+msgid "Automatic Updates"
+msgstr "自动更新设置"
+
+msgctxt "#32071"
+msgid "Auto-download & install when idle (Default)"
+msgstr "空闲时自动下载并更新（默认）"
+
+msgctxt "#32072"
+msgid "Disable automatic updates (Manual check only)"
+msgstr "禁止自动更新（仅手动检查更新）"

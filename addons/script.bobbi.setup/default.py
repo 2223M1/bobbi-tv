@@ -225,8 +225,19 @@ def main():
     if sys.argv[1:] == ['liquid_glass_status']:
         from bobbi_platform.glass_settings import sync_runtime_property
         sync_runtime_property()
+        try:
+            from bobbi_platform.ce_update_notice import sync_update_properties
+            sync_update_properties()
+        except Exception:
+            pass
         return
     dialog = xbmcgui.Dialog()
+    if sys.argv[1:] == ['check_updates']:
+        run_check_updates(dialog)
+        return
+    if sys.argv[1:] == ['auto_update_policy']:
+        show_auto_update_policy(dialog)
+        return
     if sys.argv[1:] == ['liquid_glass']:
         from bobbi_platform.glass_settings import show
         show(dialog)
@@ -421,6 +432,41 @@ def main():
             transport(dialog)
 
 
+def run_check_updates(dialog):
+    """Trigger immediate online update check; refuse cleanly during active playback."""
+    if bundled_host():
+        from bobbi_platform.android_ui import show_updates as android_updates
+        return android_updates(dialog)
+    if xbmc.Player().isPlaying():
+        dialog.ok(
+            _tr(32016, '请先停止播放', 'Stop Playback First'),
+            _tr(32053, '停止影片后再更新程序。', 'Stop video playback before updating.'),
+        )
+        return False
+    xbmc.executebuiltin('RunScript(script.bobbi.start,online)')
+    return True
+
+
+def show_auto_update_policy(dialog):
+    """Configure profile-scoped automatic idle updates (enabled by default)."""
+    from bobbi_platform.ce_update_notice import NoticeProfile, auto_enabled, coreelec, sync_update_properties
+    binding = NoticeProfile()
+    work = binding.root('script.bobbi.start')
+    current_on = auto_enabled(work)
+    index = dialog.select(_tr(32070, '自动更新设置', 'Automatic Updates'), [
+        _tr(32071, '空闲时自动下载并更新（默认）', 'Auto-download & install when idle (Default)'),
+        _tr(32072, '禁止自动更新（仅手动检查更新）', 'Disable automatic updates (Manual check only)'),
+    ], preselect=0 if current_on else 1)
+    if index in (0, 1) and binding.is_current():
+        new_on = (index == 0)
+        auto_enabled(work, new_on)
+        sync_update_properties(work)
+        if new_on and not current_on and coreelec() and not xbmc.Player().isPlaying():
+            xbmc.executebuiltin('RunScript(script.bobbi.start,auto)')
+        return True
+    return False
+
+
 def show_updates(dialog):
     """Route user-requested maintenance; never update during playback."""
     if bundled_host():
@@ -432,6 +478,11 @@ def show_updates(dialog):
             _tr(32053, '停止影片后再更新程序。', 'Stop video playback before updating.'),
         )
         return False
+    from bobbi_platform.ce_update_notice import NoticeProfile, auto_enabled
+    try:
+        auto_on = auto_enabled(NoticeProfile().root('script.bobbi.start'))
+    except Exception:
+        auto_on = True
     choice = dialog.select(_tr(32054, '更新与恢复', 'Updates & Recovery'), [
         _tr(32055, '管理 Kodi 依赖', 'Manage Kodi Dependencies'),
         _tr(32056, '管理已安装插件', 'Manage Installed Add-ons'),
@@ -439,6 +490,9 @@ def show_updates(dialog):
         _tr(32058, '检查波比 TV 更新', 'Check for bobbi TV Updates'),
         _tr(32059, '存储空间与清理', 'Storage Space & Cleanup'),
         _tr(32060, '新版本提醒', 'Update Notifications'),
+        (_tr(32068, '自动更新设置 · 已开启（默认）', 'Automatic Updates · Enabled (Default)')
+         if auto_on else
+         _tr(32069, '自动更新设置 · 已禁止', 'Automatic Updates · Disabled')),
     ])
     if choice in (0, 1):
         dialog.ok(
@@ -484,6 +538,8 @@ def show_updates(dialog):
             enabled(work, index == 0)
             return True
         return False
+    if choice == 6:
+        return show_auto_update_policy(dialog)
     return False
 
 

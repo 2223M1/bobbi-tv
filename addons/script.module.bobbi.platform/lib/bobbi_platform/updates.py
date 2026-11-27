@@ -711,3 +711,22 @@ class UpdateEngine:
             finally:
                 if not self.journal_path.exists() and not self._preserved(tx):
                     self._remove(tx)
+
+
+def auto_update_enabled(work, value=None):
+    """Profile-scoped automatic idle update preference. Enabled (True) by default."""
+    work = Path(work)
+    path = _safe_path(work / 'auto-update.json')
+    if value is not None:
+        if type(value) is not bool:
+            raise ValueError('Boolean expected')
+        path.parent.mkdir(parents=True, exist_ok=True)
+        _atomic(path, value)
+    if not path.exists():
+        return True
+    if path.stat().st_size > 1024:
+        raise UpdateError('AUTO_UPDATE_PREF_INVALID')
+    result = _json(path.read_bytes())
+    if type(result) is not bool:
+        raise UpdateError('AUTO_UPDATE_PREF_INVALID')
+    return result

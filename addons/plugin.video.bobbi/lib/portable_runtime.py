@@ -73,6 +73,11 @@ def _sync_host_ui_properties(*, force_locale=True, sys_root=Path('/sys'), platfo
         sync_runtime_property()
     except Exception:
         pass
+    try:
+        from bobbi_platform.ce_update_notice import sync_update_properties
+        sync_update_properties()
+    except Exception:
+        pass
     return _sync_android_locale(force=force_locale)
 
 

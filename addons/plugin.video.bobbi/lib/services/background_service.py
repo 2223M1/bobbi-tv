@@ -90,6 +90,86 @@ class UpdateCheck:
                 delay = 15 * 60
 
 
+class AutoUpdateCheck:
+    """Idle automatic update worker (enabled by default; checks GitCode + GitHub)."""
+
+    def __init__(self, monitor=None, wake_event=None):
+        self.monitor = monitor
+        self.wake_event = wake_event
+
+    def _wait_or_wake(self, monitor, seconds):
+        if self.wake_event is None:
+            return monitor.waitForAbort(seconds)
+        remaining = float(seconds)
+        while remaining > 0:
+            step = min(1.0, remaining)
+            if monitor.waitForAbort(step):
+                return True
+            if self.wake_event.is_set():
+                self.wake_event.clear()
+                return False
+            remaining -= step
+        return False
+
+    def run(self):
+        import xbmcgui
+        from bobbi_platform.ce_update_notice import (
+            NoticeProfile,
+            check_auto_update,
+            coreelec,
+            supported,
+            sync_update_properties,
+        )
+        if not supported():
+            return
+        sync_update_properties()
+        if not coreelec():
+            return
+        monitor = self.monitor or xbmc.Monitor()
+        delay = 25
+        while not self._wait_or_wake(monitor, delay):
+            try:
+                binding = NoticeProfile()
+                if not binding.is_current():
+                    delay = 60
+                    continue
+                work = binding.root('script.bobbi.start')
+                sync_update_properties(work)
+                player = xbmc.Player()
+
+                def cancelled():
+                    return (
+                        monitor.abortRequested()
+                        or player.isPlaying()
+                        or xbmc.getGlobalIdleTime() < 20
+                        or xbmc.getCondVisibility('System.HasModalDialog')
+                        or not binding.is_current()
+                    )
+
+                def notify(tag):
+                    from bobbi_platform.i18n import current_locale
+                    en = current_locale() == 'en_gb'
+                    xbmcgui.Dialog().notification(
+                        'Bobbi TV Auto-Update' if en else '波比 TV 收到更新推送',
+                        (f'Updating to {tag} in background...' if en else f'正在后台自动更新至 {tag}…'),
+                        sound=False,
+                    )
+
+                def dispatch(_tag):
+                    xbmc.executebuiltin('RunScript(script.bobbi.start,auto)', False)
+
+                outcome = check_auto_update(work, cancelled, dispatch, notify=notify)
+                if outcome == 'deferred':
+                    delay = 60
+                elif outcome in ('dispatched', 'cooldown'):
+                    delay = 300
+                else:
+                    delay = 1800
+            except Exception as error:
+                kodilog('Auto-update check: ' + type(error).__name__, level=xbmc.LOGWARNING)
+                delay = 300
+
+
 def TMDBHelperAutoInstall():
     import lib.cinema  # Bootstrap the independently packaged core in Kodi.
     from bobbi_core.deployment import PINNED_RUNTIME
@@ -251,6 +331,7 @@ class JacktookMOnitor(xbmc.Monitor):
         self._auxiliary_thread = None
         self._auxiliary_status = 'NOT_STARTED'
         self._auxiliary_workers = []
+        self._auto_update_wake = Event()
         self._control = None
 
     def run_owner_loop(self, host=None, presentation_tick=None):
@@ -351,6 +432,7 @@ class JacktookMOnitor(xbmc.Monitor):
             lambda: CheckKodiVersion().run(),
             lambda: DatabaseSetup().run(), run_migrations,
             lambda: self._start_worker(UpdateCheck(self._worker_monitor()).run),
+            lambda: self._start_worker(AutoUpdateCheck(self._worker_monitor(), self._auto_update_wake).run),
             lambda: _start_optional_sync("lib.services.trakt_sync", "TraktSyncService",
                                          ("trakt_enabled", "is_trakt_auth"), monitor=self._worker_monitor()),
             lambda: _start_optional_sync("lib.services.simkl_sync", "SimklSyncService",
@@ -383,6 +465,7 @@ class JacktookMOnitor(xbmc.Monitor):
 
     def onScreensaverDeactivated(self):
         clear_property(pause_services_prop)
+        self._auto_update_wake.set()
         kodilog("UNPAUSING services due to device awake", level=xbmc.LOGINFO)
 
     def onSettingsChanged(self):
@@ -421,6 +504,7 @@ class JacktookMOnitor(xbmc.Monitor):
             )
         elif method == "System.OnWake":
             clear_property(pause_services_prop)
+            self._auto_update_wake.set()
             kodilog(
                 "UNPAUSING services due to device awake",
                 level=xbmc.LOGINFO,

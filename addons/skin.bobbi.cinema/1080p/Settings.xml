@@ -291,6 +291,18 @@
 
         <!-- Category 6: System & Maintenance -->
         <item>
+          <label>$LOCALIZE[32380]</label>
+          <property name="Bobbi.Value">$INFO[Window(Home).Property(Bobbi.Update.CurrentSeq)]</property>
+          <onclick>RunScript(script.bobbi.setup,check_updates)</onclick>
+          <visible>String.IsEqual(Container(9000).ListItem.Property(cat),system_maint)</visible>
+        </item>
+        <item>
+          <label>$LOCALIZE[32381]</label>
+          <property name="Bobbi.Value">$INFO[Window(Home).Property(Bobbi.AutoUpdate.Label)]</property>
+          <onclick>RunScript(script.bobbi.setup,auto_update_policy)</onclick>
+          <visible>String.IsEqual(Container(9000).ListItem.Property(cat),system_maint)</visible>
+        </item>
+        <item>
           <label>$LOCALIZE[32101]</label>
           <onclick>RunScript(script.bobbi.setup,updates)</onclick>
           <visible>String.IsEqual(Container(9000).ListItem.Property(cat),system_maint)</visible>

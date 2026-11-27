@@ -26,4 +26,9 @@ except (ImportError, OSError, RuntimeError, SyntaxError):
         'Diagnostic / 诊断（可拍照） ' + diagnostic,
     )
     raise SystemExit(0)
-main(root / 'resources' / 'complete.bobbi-update.zip', online='online' in sys.argv[1:], storage='storage' in sys.argv[1:])
+main(
+    root / 'resources' / 'complete.bobbi-update.zip',
+    online='online' in sys.argv[1:],
+    storage='storage' in sys.argv[1:],
+    auto='auto' in sys.argv[1:],
+)

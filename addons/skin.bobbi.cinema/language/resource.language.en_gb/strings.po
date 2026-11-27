@@ -2135,6 +2135,14 @@ msgctxt "#32375"
 msgid "No bookmarks yet — select Add Bookmark below to save the current timestamp"
 msgstr ""
 
+msgctxt "#32380"
+msgid "Check for bobbi TV Updates"
+msgstr ""
+
+msgctxt "#32381"
+msgid "Automatic Updates"
+msgstr ""
+
 msgctxt "#32399"
 msgid "en"
 msgstr ""

@@ -1,14 +1,17 @@
 """Idle signed-ZIP discovery. Installing is always a separate, confirmed transaction."""
 from pathlib import Path
 import sys
+import time
 import xml.etree.ElementTree as ET
 
 from .ce_installer import installed_watermark, read_installation
 from .online_updates import Cancelled, latest, selected_track
 from .paths import ProfileBinding
-from .updates import UpdateError, _atomic, _json, _safe_path
+from .updates import UpdateError, _atomic, _json, _safe_path, auto_update_enabled
 
 MAX_LEGACY_SETTINGS_BYTES = 256 * 1024
+auto_enabled = auto_update_enabled
+_AUTO_ATTEMPTS = {}
 
 
 class NoticeProfile(ProfileBinding):
@@ -154,3 +157,79 @@ def check(work, cancelled, notify, *, lookup=latest, legacy_settings=None):
     notify(offer['tag'].upper())
     _atomic(receipt, offer['sequence'])
     return 'notified'
+
+
+def reset_auto_update_cooldowns():
+    _AUTO_ATTEMPTS.clear()
+
+
+def sync_update_properties(work=None):
+    """Sync Bobbi.AutoUpdate.* and Bobbi.Update.CurrentSeq to Window(10000)."""
+    try:
+        import xbmcgui
+        from .i18n import current_locale
+        if work is None:
+            binding = NoticeProfile()
+            if not binding.is_current():
+                return None
+            work = binding.root('script.bobbi.start')
+        work = Path(work)
+        on = auto_enabled(work)
+        en = current_locale() == 'en_gb'
+        label = (
+            ('On (Idle Auto)' if en else '已开启（空闲自动）')
+            if on else
+            ('Off (Disabled)' if en else '已禁止自动更新')
+        )
+        state = read_installation(work)
+        seq = int(state.get('sequence', 0)) if isinstance(state, dict) else 0
+        seq_label = f'CE{str(seq)[-4:]}' if seq >= 2026100000 else (str(seq) if seq > 0 else '')
+        win = xbmcgui.Window(10000)
+        win.setProperty('Bobbi.AutoUpdate.Enabled', 'true' if on else 'false')
+        win.setProperty('Bobbi.AutoUpdate.Label', label)
+        win.setProperty('Bobbi.Update.CurrentSeq', seq_label)
+        return {'enabled': on, 'label': label, 'sequence_label': seq_label}
+    except Exception:
+        return None
+
+
+def check_auto_update(work, cancelled, dispatch, notify=None, *, lookup=latest, cooldown_seconds=300, clock=time.monotonic):
+    """Discover newer signed release when idle and dispatch unattended update if auto-update is enabled."""
+    if cancelled():
+        return 'deferred'
+    work = Path(work)
+    state = read_installation(work)
+    if not state or state['phase'] not in ('complete', 'restored') or state.get('host_pending'):
+        return 'inactive'
+    if not auto_enabled(work):
+        return 'disabled'
+    if (work / 'installation.lock').exists():
+        return 'deferred'
+    track, watermark, tx = selected_track(work), installed_watermark(state), state['tx']
+    try:
+        offer = lookup(cancelled, track=track)
+    except Cancelled:
+        return 'deferred'
+    if cancelled():
+        return 'deferred'
+    now_state = read_installation(work)
+    if (not now_state or now_state.get('tx') != tx or now_state['phase'] not in ('complete', 'restored')
+            or now_state.get('host_pending') or not auto_enabled(work)):
+        return 'deferred'
+    if offer['sequence'] <= watermark:
+        return 'current'
+    key = (str(work), track, int(offer['sequence']))
+    now = float(clock())
+    prev_at = _AUTO_ATTEMPTS.get(key)
+    if prev_at is not None and (now - prev_at) < cooldown_seconds:
+        return 'cooldown'
+    if cancelled():
+        return 'deferred'
+    _AUTO_ATTEMPTS[key] = now
+    if len(_AUTO_ATTEMPTS) > 32:
+        oldest = min(_AUTO_ATTEMPTS, key=_AUTO_ATTEMPTS.get)
+        _AUTO_ATTEMPTS.pop(oldest, None)
+    if callable(notify):
+        notify(offer['tag'].upper())
+    dispatch(offer['tag'].upper())
+    return 'dispatched'
