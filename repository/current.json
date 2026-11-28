@@ -1,8 +1,8 @@
 {
   "schema": 1,
-  "tag": "ce2195",
-  "sequence": 2026102195,
-  "size": 114792564,
-  "sha256": "c2af463c300818ac2ccaf07ef1beb94ec85f768415f9a2a331fb6e4b842a9558",
-  "url": "https://github.com/2223M1/bobbi-tv/releases/download/ce2195/BobbiTV-CE2195.bobbi-update.zip"
+  "tag": "ce2207",
+  "sequence": 2026102207,
+  "size": 114833146,
+  "sha256": "2e25226a4e8eb961e074b96857ef81c9e315ef236af5e22ea3e3feb40e3d90ff",
+  "url": "https://github.com/2223M1/bobbi-tv/releases/download/ce2207/BobbiTV-CE2207.bobbi-update.zip"
 }
