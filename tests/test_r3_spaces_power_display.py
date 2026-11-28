@@ -334,7 +334,7 @@ def test_display_adaptation_is_strictly_read_only_and_deep_links_native_windows(
 
 
 def test_manage_home_spaces_draft_cancel_save_reset_and_python_xml_equivalence(monkeypatch):
-    from bobbi_platform import glass_settings as gs
+    from bobbi_platform import home_preferences as gs
 
     _, _, nav, _ = generator.full_outputs(ROOT)
     nav_tree = ET.fromstring(nav)

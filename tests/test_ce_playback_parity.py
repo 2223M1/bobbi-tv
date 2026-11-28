@@ -41,7 +41,7 @@ def parity(tmp_path, monkeypatch):
                       torrent_path='Fixture.2025.mkv', torrent_file_bytes=1000))
     source = ast.parse((ROOT / 'addons/plugin.video.bobbi/lib/native_player.py').read_text(encoding='utf-8'))
     cls = next(n for n in source.body if isinstance(n, ast.ClassDef) and n.name == 'JacktookPLayer')
-    names = {'start_cinema_preparation', 'start_direct_preparation', '_preparation_diagnostic'}
+    names = {'start_cinema_preparation', '_preparation_diagnostic'}
     methods = [n for n in cls.body if isinstance(n, ast.FunctionDef) and n.name in names]
     class InlineThread:
         def __init__(self, target, **kwargs):
@@ -81,9 +81,9 @@ def parity(tmp_path, monkeypatch):
         ledger.close()
 
 
-def retry(value, direct=False):
-    value.clock[0] = getattr(value.player, '_direct_prepare_due' if direct else '_cinema_prepare_due')
-    (value.player.start_direct_preparation if direct else value.player.start_cinema_preparation)()
+def retry(value):
+    value.clock[0] = value.player._cinema_prepare_due
+    value.player.start_cinema_preparation()
 
 
 def test_manual_selection_rejection_does_not_retry_or_claim_cloud_ready(parity, monkeypatch):
@@ -218,90 +218,13 @@ def test_local_font_warming_remains_idle_only_and_independent_of_cd2(parity, pla
         assert calls[0][-1]() is False
 
 
-def direct_setup(p, monkeypatch):
-    from bobbi_core.direct_cloud import DirectQueue, source_key
-    body = dict(request_id='a' * 32,
-        source=dict(provider='mdsub', guid='mdsub:' + 'b' * 64,
-            locator='https://pan.mdsub.top/api/raw?fixture', title='Fixture.mkv', size=16384),
-        media=dict(tmdb_id=1, kind='movie', season=0, episode=0))
-    root = p.ledger.path.parent
-    queue = DirectQueue(root / 'direct.sqlite', root / 'direct.json', 'account', '/115open/fixture',
-                       SimpleNamespace(perform=lambda *args: pytest.fail('No cloud IO')))
-    p.session.direct_queue = queue
-    monkeypatch.setattr(direct_cloud_client, 'intent', lambda data: body)
-    return queue, source_key(body)
-
-
-def test_direct_intake_is_idempotent_and_available_before_cd2_health(parity, monkeypatch):
+@pytest.mark.parametrize('phase', ['before_start', 'after_start', 'after_account_change'])
+def test_public_catalog_does_not_start_or_retry_a_cloud_transfer(parity, phase):
     p = parity
-    queue, key = direct_setup(p, monkeypatch)
-    try:
-        p.player.start_direct_preparation()
-        assert p.player._direct_prepare_sent
-        assert queue.status(key)['state'] == 'queued'
-        assert queue.db.execute('SELECT COUNT(*) FROM direct_jobs').fetchone()[0] == 1
-        assert [c[0] for c in p.calls] == ['catalog_prepare']
-    finally:
-        queue.close()
-
-
-@pytest.mark.parametrize('status', ['unavailable', 'none', 'empty', 'wrong_key', 'timeout'])
-def test_direct_unknown_receipt_only_queries_status_then_reports_retry(parity, monkeypatch, status):
-    p = parity
-    queue, key = direct_setup(p, monkeypatch)
-    calls = []
-    def unavailable(method, body, *, expected_account):
-        p.accounts.require_current(expected_account)
-        calls.append(method)
-        if status == 'timeout':
-            raise OSError('fixture uncertain IPC')
-        return {'unavailable': {'state': 'unavailable'}, 'none': None,
-                'empty': {}, 'wrong_key': {'key':'wrong', 'state':'absent'}}[status]
-    monkeypatch.setattr(preparation_client, 'call', unavailable)
-    try:
-        p.player.start_direct_preparation()
-        for _ in range(7):
-            retry(p, direct=True)
-        assert not getattr(p.player, '_direct_prepare_sent', False)
-        assert calls == ['catalog_prepare'] + ['catalog_status'] * 5
-        assert len(p.notices) == 1 and '重新选择此片源检查' in p.notices[0]
-        assert queue.status(key)['state'] == 'absent'
-    finally:
-        queue.close()
-
-
-def test_non_catalog_playback_does_not_consume_direct_retry_budget_or_notify(parity, monkeypatch):
-    monkeypatch.setattr(direct_cloud_client, 'intent', lambda data: None)
-    parity.player.start_direct_preparation()
-    for _ in range(7):
-        retry(parity, direct=True)
-    assert getattr(parity.player, '_direct_prepare_attempts', 0) == 0
-    assert not parity.notices and not parity.calls
-
-
-@pytest.mark.parametrize('accepted', [True, False])
-def test_direct_lost_receipt_recovers_or_reaccepts_only_explicit_absence(parity, monkeypatch, accepted):
-    p, first = parity, [True]
-    queue, key = direct_setup(p, monkeypatch)
-    def transport(method, body, *, expected_account):
-        p.accounts.require_current(expected_account)
-        if first[0]:
-            first[0] = False
-            if accepted:
-                p.call(method, body, expected_account=expected_account)
-            else:
-                p.calls.append((method, dict(body)))
-            raise OSError('fixture lost receipt or request')
-        return p.call(method, body, expected_account=expected_account)
-    monkeypatch.setattr(preparation_client, 'call', transport)
-    try:
-        p.player.start_direct_preparation()
-        assert not getattr(p.player, '_direct_prepare_sent', False)
-        retry(p, direct=True)
-        assert p.player._direct_prepare_sent and queue.status(key)['state'] == 'queued'
-        assert queue.db.execute('SELECT COUNT(*) FROM direct_jobs').fetchone()[0] == 1
-        assert [c[0] for c in p.calls] == ['catalog_prepare', 'catalog_status'] + ([] if accepted else ['catalog_prepare'])
-        if not accepted:
-            assert p.calls[0][1] == p.calls[2][1]
-    finally:
-        queue.close()
+    p.player.data.update(is_torrent=False, direct_source={'provider':'mdsub'}, url='https://public.example.invalid/episode')
+    if phase == 'after_account_change':
+        p.accounts.logout(p.scope)
+    for _ in range(8):
+        p.player.start_cinema_preparation(pre_start=phase == 'before_start')
+        p.clock[0] += 20
+    assert not p.calls and not p.notices

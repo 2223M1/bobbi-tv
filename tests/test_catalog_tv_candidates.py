@@ -68,9 +68,9 @@ def test_tv_previews_12_real_files_then_5_5_2_and_keeps_special_season(tv):
     assert len({body['request_id'] for body in writes(tv)}) == 3
     assert tv.views[0][0] == '逐项预览（尚未保存）'
     assert tv.views[0][1].count('修改后描述 Show') == 12
-    assert '原描述 未设置' in tv.views[0][1]
+    assert '修改前描述 未设置' in tv.views[0][1]
     assert 'S00E01 · 版本备注 未填写' in tv.views[0][1]
-    assert '操作 保存描述 · 修改后状态 人工确认' in tv.views[0][1]
+    assert '操作 保存描述 · 整理状态 待确认建议 → 人工确认' in tv.views[0][1]
     assert not any(raw in tv.views[0][1] for raw in ('None', 'confirm', "{'kind'"))
     assert tv.entries == original
     assert [command for body in writes(tv) for command in body['commands']] == [row['command'] for row in original]
@@ -109,9 +109,9 @@ def test_review_removal_preview_translates_real_before_after_and_preserves_comma
     catalog_ui.review_entries(tv.dialog, tv.expected, [entry])
     text = tv.views[0][1]
     assert '记录修订 1' in text
-    assert '原描述 Show · 剧集 · TMDb 123 · S01E01 · 版本备注 原版' in text
+    assert '修改前描述 Show · 剧集 · TMDb 123 · S01E01 · 版本备注 原版' in text
     assert '修改后描述 未设置' in text
-    assert '操作 %s · 修改后状态 %s' % (label, state) in text
+    assert '操作 %s · 整理状态 人工确认 → %s' % (label, state) in text
     assert not any(raw in text for raw in ('None', action, "{'kind'"))
     assert entry == original and not writes(tv)
     assert tv.calls[0][1]['commands'] == [original['command']]

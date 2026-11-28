@@ -56,9 +56,14 @@ def test_fixed_transport_slots_honor_capability_without_moving_default_focus(act
     transport = control(document('VideoOSD.xml'), 600)
     items = transport.findall('content/item')
     assert len(items) == 6
-    assert items[2].findtext('onclick') == 'RunScript(plugin.video.bobbi,bobbi_osd=toggle_pause)'
-    item = next(i for i in items if i.findtext('onclick') == action)
-    assert item.find('onclick').get('condition') == condition
+    assert any(node.text.endswith('bobbi_osd=toggle_pause)') for node in items[2].findall('onclick'))
+    item = next(i for i in items if any(n.text == action for n in i.findall('onclick')))
+    clicks = item.findall('onclick')
+    assert len(clicks) == 2
+    assert all(node.get('condition').startswith('[' + condition + '] + ') for node in clicks)
+    assert {node.get('condition').split('] + ', 1)[1] for node in clicks} == {
+        prefix + 'String.IsEmpty(Window(Home).Property(Bobbi.OSD.TapScope))' for prefix in ('!', '')}
+    assert any(n.text.startswith('NotifyAll(bobbi.osd,BobbiTap.') for n in clicks)
     assert item.findtext("property[@name='unavailable']") == f'$VAR[{variable}]'
 
 

@@ -197,26 +197,33 @@ def stream_directory(handle, stream_type, panel=None):
             if view['mode'] == 'managed':
                 rows = view['audio' if stream_type == 'audio' else 'subtitles']
             elif view['mode'] in NATIVE_MODES:
-                response = rpc('Player.GetProperties', dict(playerid=1, properties=list(definition)))
-                if type(response) is dict:
-                    rows = response.get(definition[0]) or []
-                    selected = response.get(definition[1])
-                    current = selected.get('index') if type(selected) is dict else None
+                from lib.services.native_streams import snapshot
+                seen = snapshot(rpc, stream_type, view['mode'])
+                rows, current = seen['rows'], seen['current']
             if type(rows) is not list:
                 raise ValueError('OSD_PROJECTION_INVALID')
             toggle = (encode(owner.capture(view, 'subtitle_visible',
                           dict(visible=not view['subtitle_visible'])))
-                      if view['mode'] == 'managed' else encode(dict(native_toggle=True)))
+                      if view['mode'] == 'managed' else encode(dict(native_toggle=not seen['visible'], proof=seen['proof']))
+                      if view['mode'] in NATIVE_MODES and stream_type == 'subtitle' else '')
             for row in rows:
                 if type(row) is not dict or type(row.get('index')) is not int or not 0 <= row['index'] <= 255:
                     raise ValueError('OSD_PROJECTION_INVALID')
                 captured = (owner.capture(view,
                     'audio_stream' if stream_type == 'audio' else 'manual_subtitle_stream',
                     dict(index=row['index'], stream_key=row['stream_key'])) if view['mode'] == 'managed'
-                    else dict(native_stream=stream_type, index=row['index']))
+                    else dict(native_stream=stream_type, index=row['index'], proof=seen['proof']))
                 token = encode(captured)
                 path = 'plugin://plugin.video.bobbi/?' + urlencode(dict(action='osd_apply', token=token))
-                item = ListItem(label=row.get('language') or 'UND', label2=row.get('name', ''),
+                caption = row.get('name', '')
+                if stream_type == 'subtitle':
+                    purposes = []
+                    if row.get('isforced') is True:
+                        purposes.append(_tr(91657, '强制字幕'))
+                    if row.get('isimpaired') is True:
+                        purposes.append(_tr(91658, '听障字幕 (SDH)'))
+                    caption = ' · '.join(dict.fromkeys(x for x in [*purposes, caption] if x))
+                item = ListItem(label=row.get('language') or 'UND', label2=caption,
                                 path=path, offscreen=True)
                 properties = {str(key): str(value) for key, value in row.items() if value is not None}
                 properties.update(bobbi_command=token, bobbi_toggle=toggle, isfolder='false')
@@ -238,6 +245,8 @@ def stream_directory(handle, stream_type, panel=None):
 
 
 def _notice(status):
+    if status in ("applied", "queued"):
+        return  # Routine foreground controls already have visible player feedback.
     from xbmcgui import Dialog
     text = {'applied': _tr(91202, '操作已生效'), 'queued': _tr(91203, '操作已提交，等待播放器确认'),
             'unknown': _tr(91204, '操作结果待确认，请稍后重新打开面板；不会重复发送'),
@@ -268,28 +277,35 @@ def _submit(owner, value):
     return reply
 
 
-def _native_stream(kind, index):
-    from bobbi_platform.kodi import rpc
-    if kind == 'audio':
-        return rpc('Player.SetAudioStream', dict(playerid=1, stream=int(index)))
-    return rpc('Player.SetSubtitle', dict(playerid=1, subtitle=int(index), enable=True))
-
-
 def apply(owner, token):
     value = decode(token)
-    if value == {'native_toggle': True}:
-        if owner.read()['mode'] in NATIVE_MODES:
-            import xbmc
-            return xbmc.executebuiltin('ShowSubtitles')
-        _notice('rejected')
-        return
-    if value.get('native_stream') in ('audio', 'subtitle'):
-        if set(value) != {'native_stream', 'index'} or type(value['index']) is not int:
-            raise ValueError('OSD_CAPTURE_INVALID')
-        if owner.read()['mode'] in NATIVE_MODES:
-            return _native_stream(value['native_stream'], value['index'])
-        _notice('rejected')
-        return
+    if 'native_toggle' in value or 'native_stream' in value:
+        from bobbi_platform.kodi import rpc
+        from lib.services.native_streams import snapshot
+        try:
+            toggle = 'native_toggle' in value
+            kind = 'subtitle' if toggle else value['native_stream']
+            keys = {'native_toggle', 'proof'} if toggle else {'native_stream', 'index', 'proof'}
+            mode = owner.read()['mode']
+            if set(value) != keys or mode not in NATIVE_MODES or kind not in ('audio','subtitle'):
+                raise ValueError('OSD_CAPTURE_INVALID')
+            seen = snapshot(rpc, kind, mode)
+            if value['proof'] != seen['proof'] or owner.read()['mode'] != mode:
+                raise ValueError('OSD_CAPTURE_STALE')
+            if toggle:
+                visible = value['native_toggle']
+                if type(visible) is not bool or visible == seen['visible']:
+                    raise ValueError('OSD_CAPTURE_INVALID')
+                return rpc('Player.SetSubtitle', dict(playerid=seen['player'], subtitle='on' if visible else 'off'))
+            index = value['index']
+            if type(index) is not int or not any(r['index'] == index for r in seen['rows']):
+                raise ValueError('OSD_CAPTURE_INVALID')
+            if kind == 'audio':
+                return rpc('Player.SetAudioStream', dict(playerid=seen['player'], stream=index))
+            return rpc('Player.SetSubtitle', dict(playerid=seen['player'], subtitle=index, enable=True))
+        except (OSError, RuntimeError, ValueError, KeyError, TypeError, AttributeError):
+            _notice('rejected')
+            return
     return _submit(owner, command(value))
 
 
@@ -354,7 +370,12 @@ def run(bobbi_osd, token=None, **kwargs):
         except (ValueError, TypeError, KeyError):
             _notice('rejected')
             return
-    view = owner.read()
+    return _run_view(bobbi_osd, owner, owner.read())
+
+
+def _run_view(bobbi_osd, owner, view):
+    import xbmc
+    from xbmcgui import Dialog
     publish(view, owner.window)
     if bobbi_osd == 'refresh':
         reconcile_display(owner)
@@ -431,6 +452,38 @@ def run(bobbi_osd, token=None, **kwargs):
     # view was captured BEFORE the numeric/chapter dialog. No re-read/rebase.
     return _submit(owner, Client.capture(view, 'seek', dict(position_ms=target)))
 
+
+
+TAP_SCOPE = 'Bobbi.OSD.TapScope'
+TAPS = ('toggle_pause', 'seek_forward', 'seek_back', 'stop', 'chapter_next', 'chapter_previous')
+
+
+def tap_scope(view):
+    # Presentation token pins the open OSD to one player/selection. The real
+    # command still captures the fresh sequence and is checked by the actor.
+    if view.get('mode') != 'managed' or view.get('available') is not True:
+        return ''
+    row = view['expected']
+    return sha256(encode([row[k] for k in ('boot_id', 'epoch', 'request_id',
+        'native_instance', 'file_sha256', 'selection_epoch')]).encode()).hexdigest()[:32]
+
+
+def resident_tap(owner, method):
+    import xbmc
+    if not xbmc.getCondVisibility('Window.IsActive(videoosd)'):
+        return
+    if method == 'Other.BobbiRefresh':
+        view = owner.read()
+        _run_view('refresh', owner, view)
+        owner.window.setProperty(TAP_SCOPE, tap_scope(view))
+        return
+    action, _, captured = method.removeprefix('Other.BobbiTap.').partition('.')
+    if action not in TAPS or not re.fullmatch('[0-9a-f]{32}', captured):
+        return
+    view = owner.read()
+    if captured == owner.window.getProperty(TAP_SCOPE) and captured == tap_scope(view):
+        return _run_view(action, owner, view)
+    _notice('rejected')
 
 def _tr(po_id, zh_text):
     try:

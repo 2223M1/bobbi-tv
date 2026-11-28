@@ -333,6 +333,7 @@ class JacktookMOnitor(xbmc.Monitor):
         xbmc.Monitor.__init__(self)
         from queue import Queue
         self._playback_events = Queue(maxsize=128)
+        self._osd_taps = Queue(maxsize=12)
         self._playback_event_overflow = False
         self._owner_stopped = Event()
         self._auxiliary_thread = None
@@ -345,6 +346,14 @@ class JacktookMOnitor(xbmc.Monitor):
         from lib.services.playback_control import PlaybackControlServer
         control = PlaybackControlServer(events=self._playback_events, host=host)
         self._control = control
+        from lib.services.osd_playback import client, resident_tap, TAP_SCOPE
+        try:
+            osd = client()
+            osd.call = control.authority.dispatch  # Already on the resident owner thread.
+            osd.window.clearProperty(TAP_SCOPE)
+            osd.window.setProperty('Bobbi.OSD.Resident', 'true')
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError):
+            osd = None  # Optional OSD setup must not prevent playback boot.
         if host is not None:
             host.playback = self
             control.authority.configure_accounts(getattr(host, 'playback_accounts', host.accounts))
@@ -365,6 +374,13 @@ class JacktookMOnitor(xbmc.Monitor):
                     # Never keep issuing playback actions after losing ordering.
                     raise RuntimeError('Playback receipt queue overflow; owner stopped')
                 control.tick()
+                if not self._osd_taps.empty():
+                    try:
+                        command = self._osd_taps.get_nowait()
+                        if osd is not None:
+                            resident_tap(osd, command)
+                    except (RuntimeError, OSError, ValueError, KeyError, TypeError):
+                        xbmc.log('[bobbi] OSD command unavailable', xbmc.LOGWARNING)
                 if host is not None:
                     host.tick()
                 if presentation_tick is not None:
@@ -377,6 +393,9 @@ class JacktookMOnitor(xbmc.Monitor):
                 if self.waitForAbort(.01):
                     break
         finally:
+            if osd is not None:
+                osd.window.clearProperty(TAP_SCOPE)
+                osd.window.clearProperty('Bobbi.OSD.Resident')
             self._owner_stopped.set()
             if host is not None:
                 host.bind_owner(None)
@@ -491,6 +510,14 @@ class JacktookMOnitor(xbmc.Monitor):
         )
 
     def onNotification(self, sender, method, data):
+        if sender == 'bobbi.osd' and (method == 'Other.BobbiRefresh' or
+                (len(method) < 80 and method.startswith('Other.BobbiTap.'))):
+            from queue import Full
+            try:
+                self._osd_taps.put_nowait(method)
+            except Full:
+                pass  # Never delay a live input or replay it on a later player.
+            return
         if sender == 'xbmc' and method in ('Player.OnBobiState', 'Player.OnBobiWindow', 'Player.OnBobiControl'):
             from queue import Full
             try:

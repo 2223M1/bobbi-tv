@@ -866,6 +866,11 @@ def _render_directory(data, item_builder, category_label, content_type, next_act
         item.setProperty('IsPlayable', 'false')
         directory_items = [(_build_url('bobbi_retry_rail', rail=rail), item, False)]
         apply_rail_state(directory_items, 'empty')
+    if (next_action == 'am6b_streaming_search' and next_params
+            and next_params.get('section') != 'multi' and next_params.get('query') and not rail):
+        global_row = xbmcgui.ListItem(label='用同一关键词搜全部影视')
+        global_row.setProperty('IsPlayable', 'false')
+        directory_items.append((_build_url(next_action, section='multi', query=next_params['query'], page=1), global_row, True))
     if next_action and total_pages > page and not rail:
         _add_next_item(directory_items, next_action, page, **(next_params or {}))
     xbmcplugin.addDirectoryItems(handle, directory_items)
@@ -1000,7 +1005,7 @@ def handle_am6b_streaming_search(params):
         rendered = _render_directory(
             data,
             lambda result: _anime_search_item(result, submode, title_map),
-            "动漫搜索" if submode == "tv" else "动漫电影搜索",
+            "搜索 · 动漫剧集" if submode == "tv" else "搜索 · 动漫电影",
             "tvshows" if submode == "tv" else "movies",
             next_action="am6b_streaming_search",
             page=page,
@@ -1020,7 +1025,7 @@ def handle_am6b_streaming_search(params):
     return _render_directory(
         data,
         lambda result: _generic_item(result, forced_section=forced_section),
-        "搜索结果",
+        {"movie":"搜索 · 电影（不含动画）", "tv":"搜索 · 剧集（不含动画）", "multi":"搜索 · 全部影视"}[section],
         "videos" if section == "multi" else ("movies" if section == "movie" else "tvshows"),
         next_action="am6b_streaming_search",
         page=page,

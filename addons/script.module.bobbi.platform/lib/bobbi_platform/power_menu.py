@@ -218,14 +218,16 @@ def show_display_adaptation(dialog, *, get_info=None, rpc_call=None, execute=Non
             if english:
                 detail = (
                     f"GUI Plane: {snap['gui_resolution']} (Mode: {snap['screen_mode']})\n"
-                    f"HDMI Output: {snap['hdmi_mode']}   ·   OSD Axis: {snap['fb0_window_axis']}\n"
+                    f"HDMI mode reported by the box: {snap['hdmi_mode']}   ·   OSD Axis: {snap['fb0_window_axis']}\n"
+                    "TV/AVR received signal: unknown (receiver not measured).\n"
                     f"Skin Zoom: {snap['skin_zoom']} (read-only check; existing calibration is preserved)."
                 )
                 dialog.ok('Live Display Chain', detail)
             else:
                 detail = (
                     f"Kodi 界面平面：{snap['gui_resolution']}（模式：{snap['screen_mode']}）\n"
-                    f"HDMI 实际输出：{snap['hdmi_mode']}   ·   OSD 坐标轴：{snap['fb0_window_axis']}\n"
+                    f"盒端 HDMI 模式：{snap['hdmi_mode']}   ·   OSD 坐标轴：{snap['fb0_window_axis']}\n"
+                    "电视／功放接收信号：未知（未读取接收端）。\n"
                     f"当前皮肤缩放：{snap['skin_zoom']}（只读检查，不自动修改任何已有校准配置）。"
                 )
                 dialog.ok('当前显示链路状态', detail)

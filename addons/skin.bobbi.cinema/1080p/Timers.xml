@@ -8,6 +8,15 @@
     <stop>!Window.IsActive(videoosd) | !Skin.HasSetting(OSDAutoClose) | Integer.IsGreaterOrEqual(Skin.TimerElapsedSecs(osd_autoclose),5)</stop>
     <onstop condition="Window.IsActive(videoosd) + Window.IsTopMost(videoosd) + Skin.HasSetting(OSDAutoClose) + System.IdleTime(5)">Dialog.Close(videoosd)</onstop>
   </timer>
+  <!-- Kodi can restore a movie-only pill while entering the TV directory.
+       Recover only when the settled topmost directory actually has no focus. -->
+  <timer>
+    <name>bobbi_directory_focus</name>
+    <start>Window.IsTopMost(videos) + !System.HasModalDialog + !Container.IsUpdating + String.IsEmpty(System.CurrentControlID) + Control.IsVisible(9701)</start>
+    <stop>!Window.IsTopMost(videos) | !String.IsEmpty(System.CurrentControlID)</stop>
+    <onstart condition="Control.IsVisible(50) + Integer.IsGreater(Container(50).NumItems,0)">SetFocus(50)</onstart>
+    <onstart condition="!Control.IsVisible(50) | !Integer.IsGreater(Container(50).NumItems,0)">SetFocus(9701)</onstart>
+  </timer>
   <!-- original auto-SDR behaviour; the inverted setting name is kept so saved values still apply -->
   <timer>
     <name>autovideosdr</name>

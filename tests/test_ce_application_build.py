@@ -85,3 +85,22 @@ def test_source_archive_without_git_is_not_mislabeled_clean(monkeypatch):
     assert result['head_commit'] is None and result['head_tree'] is None
     assert result['worktree_dirty'] is None
     assert len(result['inventory_sha256']) == len(result['build_tool_sha256']) == 64
+
+
+def test_stale_glass_blocks_both_inventory_refresh_and_build(tmp_path, monkeypatch):
+    from update_glass_assets import DEFAULT_OUT_REL
+    manifest = tmp_path / DEFAULT_OUT_REL
+    manifest.parent.mkdir(parents=True)
+    manifest.write_bytes(b'old material digests')
+    monkeypatch.setattr(builder, 'ROOT', tmp_path)
+    monkeypatch.setattr(builder, 'sync_source_rows', lambda root: None)
+    monkeypatch.setattr(builder, 'check_generated', lambda root: {})
+    monkeypatch.setattr(builder, 'build_manifest', lambda root: {'materials': {'picker.xml': 'new digest'}})
+    inventory = tmp_path / 'inventory.json'
+    monkeypatch.setattr(builder, 'INVENTORY', inventory)
+    destination = tmp_path / 'components'
+    with pytest.raises(ValueError, match='Stale glass materials'):
+        builder.refresh()
+    with pytest.raises(ValueError, match='Stale glass materials'):
+        builder.build(destination)
+    assert not inventory.exists() and not destination.exists()

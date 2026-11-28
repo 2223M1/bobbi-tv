@@ -19,9 +19,9 @@ def test_manual_confirmation_http_retains_phase_without_repeating_commands(http_
     owner = FakeOwner(clock)
     choices = []
     owner.choose_file = lambda rows: choices.append(rows) or rows[0]
-    # Valid work/episode binding; a weak romanized file needs manual confirmation.
+    # Two actual encodes with equally weak episode evidence require a choice.
     file = dict(id=1, path='Example - 01 [1080p].mkv', length=1000000)
-    info = status(file)
+    info = dict(status(file), file_stats=[file, dict(file, id=2, path='Example - 01 [720p].mkv')])
     replies = [Response(b'MatriX.147'), Response({'hash': HASH}), Response(info),
                Response(info, http_status)]
     if http_status == 200:

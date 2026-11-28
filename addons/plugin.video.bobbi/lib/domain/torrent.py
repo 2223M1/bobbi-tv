@@ -67,3 +67,6 @@ class TorrentStream:
     shareState: Dict[str, Any] = field(default_factory=dict)
     # Indexer-declared category joined to its own caps; negative search evidence only.
     jackettReleaseType: str = ''
+    # Captured catalogue IDs and public labels. Neither is used to resolve a file.
+    sourceLibraries: Dict[str, str] = field(default_factory=dict)
+    sourceStations: Dict[str, str] = field(default_factory=dict)

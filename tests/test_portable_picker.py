@@ -208,12 +208,44 @@ def test_paired_bt_uses_shared_source_data_then_exact_returned_file(picker, monk
     assert picker.file_prompts == [['S01E01.mkv', 'S01E02.mkv']]
 
 
+
+@pytest.mark.parametrize('paths,explicit,index,outcome,should_prompt', [
+    (['Extras/Trailer.mkv'], False, 0, 'FILE_SELECTION_FAILED', False),
+    (['Feature.mkv', 'Extras/Trailer.mkv'], False, 0, 'SOLE_ELIGIBLE_FILE', False),
+    (['Cut A.mkv', 'Cut B.mkv'], False, 1, 'USER_CONFIRMED_FILE', True),
+    (['Cut A.mkv', 'Cut B.mkv'], False, -1, 'USER_CANCELLED_FILE_CHOICE', True),
+    (['Feature.mkv', 'Extras/Trailer.mkv'], True, 1, 'USER_CONFIRMED_FILE', True),
+])
+def test_portable_file_choice_uses_filtered_rows_and_keeps_explicit_pack_browsing(
+        picker, monkeypatch, paths, explicit, index, outcome, should_prompt):
+    from test_torrserver import FakeEngine, HASH
+    from bobbi_platform.torrserver import TorrServerError
+    engine = FakeEngine()
+    engine.add = {'hash': HASH, 'file_stats': [dict(id=i, path=p, length=1024)
+                                               for i, p in enumerate(paths, 1)]}
+    engine.metadata = [engine.add]
+    monkeypatch.setattr(picker.module, 'local_client', lambda: engine.client)
+    picker.file_choice = index
+    def resolve():
+        return picker.module.resolve_torrent(source(type='Torrent', infoHash=HASH, title='Movie'),
+            lambda: True, {'request_id': 'c' * 32, 'mode': 'movie'}, force_picker=explicit)
+    if outcome in ('SOLE_ELIGIBLE_FILE', 'USER_CONFIRMED_FILE'):
+        _, stream = resolve()
+        assert (stream['file_id'], stream['torrent_path'], stream['file_evidence']) == (index+1, paths[index], outcome)
+    else:
+        with pytest.raises(TorrServerError, match=outcome):
+            resolve()
+    assert picker.file_prompts == ([paths] if should_prompt else [])
+    gets = [r for r in engine.requests if r[1].endswith('/torrents') and r[3].get('action') == 'get']
+    assert len(gets) == (1 if outcome == 'SOLE_ELIGIBLE_FILE' else 0)
+
+
 def test_bt_file_cancel_returns_to_sources_without_playback(picker, monkeypatch):
     from bobbi_platform.torrserver import VideoFile, Cancelled
     chosen = source(type='Torrent', infoHash='a' * 40)
     picker.file_choice = -1
     def select(expected, **kwargs):
-        assert kwargs['choose_file']((VideoFile(1, 'single.mkv', 100),)) is None
+        assert kwargs['choose_file']((VideoFile(1, 'Cut A.mkv', 100), VideoFile(2, 'Cut B.mkv', 250))) is None
         raise Cancelled('USER_CANCELLED_FILE_CHOICE')
     monkeypatch.setattr(picker.module, 'local_client', lambda: SimpleNamespace(select_source=select))
     window = picker.window([chosen, None], progressive=True)
@@ -223,17 +255,18 @@ def test_bt_file_cancel_returns_to_sources_without_playback(picker, monkeypatch)
     assert picker.calls == ['modal', 'reopen', 'modal', 'pump_cancel', 'session_cancel']
 
 
-def test_restricted_catalogue_episode_without_proof_requires_manual_file(picker, monkeypatch):
+def test_restricted_catalogue_episode_without_any_episode_context_cannot_open(picker, monkeypatch):
     from bobbi_platform.torrserver import VideoFile, Cancelled
     chosen = source(type='Torrent', infoHash='a' * 40, requiresCatalogEpisodeProof=True)
     picker.file_choice = -1
     def select(expected, **kwargs):
-        assert kwargs['choose_file']((VideoFile(1, 'S01E01.mkv', 100),)) is None
-        raise Cancelled('USER_CANCELLED_FILE_CHOICE')
+        with pytest.raises(ValueError, match='CATALOG_EPISODE_PROOF_REQUIRED'):
+            kwargs['choose_file']((VideoFile(1, 'S01E01.mkv', 100),))
+        raise Cancelled('NO_ELIGIBLE_FILE')
     monkeypatch.setattr(picker.module, 'local_client', lambda: SimpleNamespace(select_source=select))
     window = picker.window([chosen, None])
     assert picker.module.manual_modal(window, window.base_modal) is False
-    assert picker.file_prompts == [['S01E01.mkv']]
+    assert picker.file_prompts == []
     assert picker.opened == []
 
 

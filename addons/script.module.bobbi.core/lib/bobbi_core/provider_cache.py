@@ -71,7 +71,7 @@ class ProviderResultCache:
         # quality, group or a guessed equivalence between BT and cloud files.
         from .source_list_session import SourceListSession
         identity = SourceListSession({}, lambda rows: rows)
-        rows, seen = [], set()
+        rows, seen = [], {}
         for row in list(old) + list(new):
             try:
                 key = identity.key(row)
@@ -79,7 +79,10 @@ class ProviderResultCache:
                 key = None  # Uncertain identity must not erase another source.
             if key is None or key not in seen:
                 rows.append(row)
-                seen.add(key)
+                seen[key] = row
+            else:
+                from .library_labels import merge_stations
+                merge_stations(seen[key], row)
         return rows
 
     def get(self, provider, name):

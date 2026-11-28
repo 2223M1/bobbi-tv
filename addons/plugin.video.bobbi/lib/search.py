@@ -1980,15 +1980,15 @@ def _create_source_search(params, query, ids, mode, media_type, tv_data,
             if '漫迪 MDsub' in active_local_providers:
                 from lib.clients.mdsub_provider import find_sources as mdsub_sources
                 session.publish(session.epoch, '漫迪 MDsub', state='RUNNING')
-                rows = mdsub_sources(ids, mode, season, episode, prepared_session=prepared_session)
+                rows = mdsub_sources(ids, mode, season, episode)
                 if not local_live(manager):
                     return
                 session.publish(session.epoch, '漫迪 MDsub', rows)
             if '115-local-index' in active_local_providers:
-                from lib.clients.bobbi_library import load_index, find_sources
+                from lib.clients.bobbi_library import searchable_index, find_sources
                 session.publish(session.epoch, '115-local-index', state='RUNNING')
                 try:
-                    clouds = find_sources(load_index(session=prepared_session), ids.get('tmdb_id'), mode, season, episode)
+                    clouds = find_sources(searchable_index(prepared_session), ids.get('tmdb_id'), mode, season, episode)
                     if not local_live(manager):
                         return
                     session.publish(session.epoch, '115-local-index', clouds)

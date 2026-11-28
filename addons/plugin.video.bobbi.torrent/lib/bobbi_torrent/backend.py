@@ -133,13 +133,14 @@ def subtitle_connection():
 
 class Backend:
     """Only echo, exact add, metadata read and one selected-file preload."""
-    def __init__(self, config, session=None, clock=time.monotonic):
+    def __init__(self, config, session=None, clock=time.monotonic, media_session_factory=None):
         import requests
         self.config = validate_backend_config(config)
         self.session, self.clock = session or requests.Session(), clock
         self.session.trust_env = False
         self.auth = self.config['auth']
         self.auth = (self.auth['username'], self.auth['password']) if self.auth else None
+        self.media_session_factory = media_session_factory or requests.Session
         self.add_attempted = False
         self.add_reconciled = False
         self.preload_attempted = False
@@ -276,6 +277,52 @@ class Backend:
         self.preload_attempted = True
         self.request('GET', '/stream?' + urlencode({'link': info_hash, 'index': file_id,
             'stat': 'true', 'preload': 'true'}), deadline, active, preload=True)
+
+    def selected_opening(self, info_hash, file, chunk, timeout):
+        from .opening import SelectedOpening
+        return SelectedOpening(self.stream_url(info_hash, file), file['length'], chunk,
+                               timeout, self.media_session_factory, self.clock)
+
+    def opening_readable(self, info_hash, file, deadline, active):
+        """One bounded read from this exact file, never control credentials."""
+        import requests
+        from urllib3.exceptions import HTTPError
+        length = file['length']
+        from .opening import SMALL_FILE
+        if not 0 < length <= SMALL_FILE:
+            return False
+        ranges = [(0, length - 1)]
+        limit = min(deadline, self.clock() + 4)
+        def check():
+            active()
+            if self.clock() >= limit:
+                raise TimeoutError('opening read expired')
+        try:
+            with RequestIO(self.session, check):
+                for start, end in ranges:
+                    check()
+                    span = '{}-{}'.format(start, end)
+                    with self.session.get(self.stream_url(info_hash, file),
+                            headers={'Range': 'bytes='+span, 'Accept-Encoding': 'identity'},
+                            timeout=min(2, max(.001, limit-self.clock())),
+                            stream=True, allow_redirects=False) as response:
+                        if (response.status_code != 206 or response.headers.get('Content-Range') !=
+                                'bytes {}/{}'.format(span, length) or
+                                response.headers.get('Content-Encoding', 'identity') != 'identity'):
+                            return False
+                        size = 0
+                        for chunk in response.iter_content(65536):
+                            check()
+                            size += len(chunk)
+                            if size > end - start + 1:
+                                return False
+                        if size != end - start + 1:
+                            return False
+                check()
+                return True
+        except (requests.RequestException, HTTPError, OSError):
+            active()  # Cancellation is never converted into availability.
+            return False
 
     def stream_url(self, info_hash, file):
         # TorrServer's media endpoint deliberately does not use control auth.

@@ -396,8 +396,21 @@ class SQLiteCache(_BaseCache):
     def _initialize_connection(self):
         for k, v in SQLITE_SETTINGS.items():
             self._require_current()
+            # WAL and auto_vacuum are persistent. Reassigning them can compete
+            # with a writer even when a widget only wants to read.
+            if k == 'journal_mode' and self._conn.execute('PRAGMA journal_mode').fetchone()[0] == v:
+                continue
+            if k == 'auto_vacuum' and self._conn.execute('PRAGMA page_count').fetchone()[0]:
+                continue  # Changing an existing database would require VACUUM.
             self._conn.execute(f"PRAGMA {k}={v}")
         self._require_current()
+        names = ('cached', 'cache_revision', 'cached_revision_insert',
+                 'cached_revision_update', 'cached_revision_delete')
+        if (self._conn.execute("SELECT count(*) FROM sqlite_master WHERE name IN (?,?,?,?,?)", names).fetchone()[0] == len(names)
+                and self._conn.execute("SELECT 1 FROM cache_revision WHERE singleton=1").fetchone()):
+            return
+        # Only first installation / migration needs a writer. DDL is idempotent
+        # when two fresh widgets both observe the missing schema.
         self._conn.execute('BEGIN IMMEDIATE')
         self._require_current()
         self._conn.execute(

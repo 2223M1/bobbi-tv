@@ -69,6 +69,7 @@ def project(raw, boot_id, epoch, row, subtitle_label=''):
         return unavailable
     try:
         scope = expected(dict(boot_id=boot_id, epoch=epoch, request_id=row['request_id'],
+            # Wire name retained: digest of the file identity string, never of media bytes.
             native_instance=row['native_instance'], file_sha256=sha256(row['file_identity'].encode()).hexdigest(),
             selection_epoch=row['open_epoch'], expected_sequence=row['sequence'], user_intent=row['user_intent'],
             subtitle_intent=row['subtitle_intent'], audio_intent=row['audio_intent']))
@@ -107,6 +108,10 @@ def project(raw, boot_id, epoch, row, subtitle_label=''):
                 seen.add(key)
                 result[target].append(dict(index=index, stream_key=key, selected=index == raw.get(active),
                     name=str(item.get('name', ''))[:128], language=str(item.get('language', ''))[:32]))
+                if target == 'subtitles':
+                    for flag in ('isforced', 'isimpaired'):
+                        if type(item.get(flag)) is bool:
+                            result[target][-1][flag] = item[flag]
             result[target + '_truncated'] = len(streams) > len(shown)
         for chapter in raw.get('chapters', [])[:32]:
             target = chapter.get('position_ms')

@@ -177,12 +177,35 @@
     const sortText = ({name: t(91335, '按名称'), recent_added: t(91336, '最近加入'), recent_edited: t(91337, '最近整理')})[sortVal] || t(91335, '按名称');
     byId('scopeStatus').textContent = t(91485, '当前来源：%s · %s · %s · %s · %s', srcText, kindText, stateText, availText, sortText);
   }
+  function previewMapping(value) {
+    if (!value) return bi('未设置','Unset');
+    const parts=[value.title || bi('未填写名称','Untitled'),
+      ({movie:t(91318,'电影'),tv:t(91319,'剧集'),custom:bi('自定义名称','Custom')})[value.kind]];
+    if (value.tmdb_id != null) parts.push('TMDb '+value.tmdb_id);
+    if (value.kind==='tv') parts.push(Number.isInteger(value.season)&&Number.isInteger(value.episode)
+      ? 'S'+String(value.season).padStart(2,'0')+'E'+String(value.episode).padStart(2,'0') : bi('季集未明确','S/E unset'));
+    parts.push(bi('版本备注 %s','Version note %s',value.version||bi('未填写','None')));
+    return parts.filter(Boolean).join(' · ');
+  }
+  function previewRelation(value) {
+    if (!value) return bi('无补充关系','No extra link');
+    return [value.title, value.metadata_key, value.kind,
+      value.parent_file_id ? bi('指定文件版本 %s','File version %s',value.parent_file_id.slice(0,12)) : bi('整个作品','Whole work')].filter(Boolean).join(' · ');
+  }
   function buildPreviewCard(entryName, row) {
     const card = node('div', undefined, 'card');
     card.append(node('h3', (entryName || bi('未知条目', 'Unknown item')) + ' · ' + labelOf(row.status)));
-    card.append(node('pre', bi('修改前\n', 'Before\n') + JSON.stringify(row.before, null, 2) + bi('\n修改后\n', '\nAfter\n') + JSON.stringify(row.after, null, 2)));
-    if ('before_supplement' in row || 'after_supplement' in row) {
-      card.append(node('pre', bi('补充关系修改前\n', 'Extra link before\n') + JSON.stringify(row.before_supplement, null, 2) + bi('\n补充关系修改后\n', '\nExtra link after\n') + JSON.stringify(row.after_supplement, null, 2)));
+    const actions={confirm:bi('保存描述','Save mapping'),unbind:bi('解除绑定','Unbind'),ignore:bi('忽略此项','Ignore'),undo:bi('撤回上次修改','Undo'),supplement:bi('关联补充内容','Link extra'),detach_supplement:bi('移除补充内容关联','Unlink extra')};
+    if (row.status==='failed') {card.append(node('p',bi('该文件不可用；未保存。','File unavailable; nothing saved.')));return card;}
+    card.append(node('p',bi('记录修订 %s','Revision %s',row.revision??'—')+' · '+(actions[row.action]||bi('待核对','Pending'))),
+      node('p',bi('修改前描述 %s','Before: %s',previewMapping(row.before))),node('p',bi('修改后描述 %s','After: %s',previewMapping(row.after))));
+    if (row.before_state||row.after_state) card.append(node('p',bi('整理状态 %s → %s','Review state %s → %s',labelOf(row.before_state)||'—',labelOf(row.after_state)||'—')));
+    if ('before_supplement' in row || 'after_supplement' in row) card.append(node('p',bi('原补充关系 %s','Extra before: %s',previewRelation(row.before_supplement))),node('p',bi('修改后补充关系 %s','Extra after: %s',previewRelation(row.after_supplement))));
+    if ('before_segments' in row || 'after_segments' in row) {
+      const segments=v=>!v ? bi('未设置','Unset') : [bi('人工标注 · 时长 %s 秒','Manual annotation · duration %s s',v.duration_ms/1000),
+        v.state==='matched'?bi('与当前文件匹配','Matches current file'):bi('文件观察已变或不可用','File observation changed or unavailable'),
+        ...(v.items||[]).map(s=>s.kind+' '+s.start_ms/1000+'–'+s.end_ms/1000+' s')].join(' · ');
+      card.append(node('p',bi('原片段 %s','Segments before: %s',segments(row.before_segments))),node('p',bi('修改后片段 %s','Segments after: %s',segments(row.after_segments))));
     }
     return card;
   }
@@ -420,7 +443,7 @@
       labelEl.firstChild.nodeValue = text;
     } else {
       labelEl.textContent = text;
-      if (!labelEl.children || !labelEl.children.includes(inputEl)) labelEl.append(inputEl);
+      if (!labelEl.children || !Array.from(labelEl.children).includes(inputEl)) labelEl.append(inputEl);
     }
   }
   function bindLabel(labelEl, inputEl, titleOrFn) {
@@ -574,7 +597,13 @@
     card.append(bindText(node('small'),()=>item.file.parent+(item.file.truncated?t(91417,'（显示已截短）'):'')));
     card.append(bindText(node('p'),()=>t(91418,'%s · 修订 %d',labelOf(item.state),item.revision)));
     if (item.available === false) card.append(bindText(node('p',undefined,'error'),()=>t(91419,'当前来源未发现此文件；本地描述和观看记录仍保留。')));
-    if (item.candidates && item.candidates.length) card.append(node('pre',JSON.stringify(item.candidates,null,2),'muted'));
+    for (const hint of item.candidates||[]) {
+      if (hint.origin==='filename') card.append(bindText(node('small',undefined,'muted'),()=>{
+        const parts=[Number.isInteger(hint.year)?String(hint.year):'',Number.isInteger(hint.season)&&Number.isInteger(hint.episode)?'S'+String(hint.season).padStart(2,'0')+'E'+String(hint.episode).padStart(2,'0'):''].filter(Boolean);
+        return parts.length?bi('文件名提示：%s（身份尚未确认）','Filename hint: %s (identity unverified)',parts.join(' · ')):bi('文件名不能确认作品身份。','The filename does not establish identity.');
+      }));
+      else if(hint.origin==='server' && hint.description) card.append(bindText(node('small',undefined,'muted'),()=>bi('服务器描述：%s','Server description: %s',[hint.description.title,hint.description.year].filter(Boolean).join(' · '))));
+    }
     const current=item.mapping||{};
     const action=select(card,()=>t(91420,'操作'),[
       ['confirm',()=>t(91421,'设置作品 / 自定义名称')],['supplement',()=>t(91422,'设为补充视频')],
@@ -649,13 +678,16 @@
     }));
     return card;
   }
-  async function editFile(entity) {
-    selectedEntity=entity.entity_id;cancelCandidates();viewGeneration++;
+  async function editFile(entity, announce=true) {
+    selectedEntity=entity.entity_id;cancelCandidates();const generation=++viewGeneration, auth=authGeneration;
     const result=await rpc('catalog_item',{file_id:entity.entity_id});
-    editing=result.item||result;
+    const record=result.item||result;
+    if(authClosed||auth!==authGeneration||generation!==viewGeneration||selectedEntity!==entity.entity_id)return;
+    if(!record.file||record.file.id!==entity.entity_id)throw new Error(bi('条目已变化，请刷新。','Item changed; refresh.'));
+    editing=record;
     byId('editorRows').replaceChildren(itemCard(editing));byId('rows').classList.add('hidden');
     byId('editorRows').classList.remove('hidden');byId('back').disabled=false;
-    status(()=>t(91450,'仅按需读取此原文件。候选只是建议，修改仍需逐项预览。'));
+    if(announce)status(()=>t(91450,'仅按需读取此原文件。候选只是建议，修改仍需逐项预览。'));
   }
   function summaryCard(row) {
     const card=node('article',undefined,'card');card.append(node('h2',row.display_title),
@@ -1096,7 +1128,7 @@
   }
   async function load(automatic=false) {
     clearTimeout(pollTimer);pollTimer=null;
-    viewGeneration++;cancelCandidates();clearLiveUpdaters();byId('groupRows').replaceChildren();
+    const generation=++viewGeneration;cancelCandidates();clearLiveUpdaters();byId('groupRows').replaceChildren();
     status(()=>t(91484,'正在读取电视上的当前状态…'));
     byId('filters').classList.toggle('hidden',tab!=='items');
     byId('editorRows').classList.add('hidden');byId('rows').classList.remove('hidden');editing=null;
@@ -1113,10 +1145,12 @@
       let value;
       try {value=await rpc('catalog_query',{query:filters,cursor,limit:32});}
       catch(error) {
+        if(authClosed||generation!==viewGeneration)return;
         if(error.code!=='CATALOG_CURSOR_STALE'||cursor===null)throw error;
         cursor=null;queryStarts=[null];queryPage=0;
         value=await rpc('catalog_query',{query:filters,cursor:null,limit:32});
       }
+      if(authClosed||generation!==viewGeneration)return;
       nextCursor=value.next_cursor;
       const itemsList = value.items || [];
       lastRowsRender = () => {
@@ -1277,6 +1311,11 @@
       plan.index++;
     }
     plan.phase=plan.canceled?'canceled':'complete';planProgress();
+    if(plan.phase==='complete' && editing && plan.chunks.some(c=>c.entries.some(e=>e.command.file_id===editing.file.id))) {
+      try {await editFile({entity_id:editing.file.id},false);} catch(error) {
+        if(!authClosed)status(()=>bi('修改已保存。当前条目未能重新读取，请刷新后再整理。','Changes saved. Refresh this item before editing again.'),true);
+      }
+    }
     if(plan.canceled)status(()=>bi('已停止未开始的批次。已发提交及其真实回执保留。','Stopped unstarted batches. Sent submissions and receipts kept.'));
   }
   byId('apply').addEventListener('click',()=>guarded(async()=>{

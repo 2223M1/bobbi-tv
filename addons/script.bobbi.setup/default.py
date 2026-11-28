@@ -243,19 +243,19 @@ def main():
         show(dialog)
         return
     if sys.argv[1:] == ['home_rails']:
-        from bobbi_platform.glass_settings import show_home_rails
+        from bobbi_platform.home_preferences import show_home_rails
         show_home_rails(dialog)
         return
     if sys.argv[1:] == ['home_rails_reset']:
-        from bobbi_platform.glass_settings import reset_home_rails
+        from bobbi_platform.home_preferences import reset_home_rails
         reset_home_rails(dialog)
         return
     if sys.argv[1:] == ['home_spaces']:
-        from bobbi_platform.glass_settings import show_home_spaces
+        from bobbi_platform.home_preferences import show_home_spaces
         show_home_spaces(dialog)
         return
     if sys.argv[1:] == ['home_spaces_reset']:
-        from bobbi_platform.glass_settings import reset_home_spaces
+        from bobbi_platform.home_preferences import reset_home_spaces
         reset_home_spaces(dialog)
         return
     if len(sys.argv) > 1 and sys.argv[1] == 'power_action':

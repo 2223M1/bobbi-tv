@@ -15,6 +15,10 @@ USER_AGENT = 'Bobbi-MediaServer/1'
 MAX_REPLY = 2 * 1024 * 1024
 
 
+class ReplyTooLarge(PanError):
+    """Same public error; a display reader can retry once without optional fields."""
+
+
 def token(value):
     if type(value) is not str or not re.fullmatch(r'[A-Za-z0-9._~+/=-]{1,4096}', value):
         raise PanError('PAN_CREDENTIALS_INVALID')
@@ -210,7 +214,7 @@ class Session:
                             break
                         raw.extend(chunk)
                         if len(raw) > MAX_REPLY:
-                            raise PanError('PAN_REPLY_INVALID')
+                            raise ReplyTooLarge('PAN_REPLY_INVALID')
                     attempt.finish()
             self._check_budget()
             if not raw and empty_response:

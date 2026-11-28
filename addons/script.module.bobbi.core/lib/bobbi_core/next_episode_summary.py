@@ -5,6 +5,8 @@ from hashlib import sha256
 import json
 import re
 
+from .file_evidence import PLAY_ONCE_EVIDENCE
+
 STATES = {
     'unavailable',
     'preparing',
@@ -98,7 +100,7 @@ def project(current, candidate=None, *, preparing=False, failed=False, selection
     result = dict(schema=1, state='unavailable', reason_code='IDENTITY_UNAVAILABLE',
                   current_media_ref=None, next_media_ref=None, release_family_ref=None)
     if (not current_ref or current.get('selection_policy') != 'exact'
-            or current.get('file_evidence') == 'USER_CONFIRMED_FILE' or current.get('_pan_file')):
+            or current.get('file_evidence') in PLAY_ONCE_EVIDENCE or current.get('_pan_file')):
         return result
     result['current_media_ref'] = current_ref
     result.update(state='preparing' if preparing else 'unavailable', reason_code='NOT_PREPARED')

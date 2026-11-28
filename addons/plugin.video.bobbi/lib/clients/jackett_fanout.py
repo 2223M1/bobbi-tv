@@ -76,8 +76,16 @@ def _fetch_batch(session, urls, budget=8.0, *, deadline=None, cancelled=None,
         observe(receipt, 'terminal', tasks[ordinal][2], state, reason)
     counts = {state: sum(outcome == state for outcome, _ in outcomes)
               for state in ('succeeded', 'failed', 'skipped', 'timed_out')}
+    from urllib.parse import urlsplit
+    from bobbi_core.library_labels import PUBLIC_STATIONS
+    failed_stations = set()
+    for task, (state, _) in zip(tasks, outcomes):
+        if state in ('failed', 'timed_out'):
+            path = urlsplit(task[1]).path.split('/')
+            if len(path) >= 5 and path[-5] == 'indexers' and path[-4] in PUBLIC_STATIONS:
+                failed_stations.add(path[-4])
     result = SearchResults([response for _, response in outcomes if response is not None],
-                           SearchCompletion(len(outcomes), **counts))
+                           SearchCompletion(len(outcomes), failed_stations=tuple(sorted(failed_stations)), **counts))
     observe(receipt, 'bind_responses', outcomes)
     result.fanout_receipt = receipt
     return result

@@ -785,7 +785,7 @@
         </control>
         <control type="group">
           <left>0</left><top>0</top><width>780</width><height>66</height>
-          <visible>$PARAM[focused] + Control.HasFocus(9000)</visible>
+          <visible>$PARAM[focused] + Control.HasFocus($PARAM[list])</visible>
           <include content="Lift"><param name="center">390,33</param><param name="zoom">101</param></include>
           <control type="image">
             <left>0</left><top>0</top><width>780</width><height>66</height>

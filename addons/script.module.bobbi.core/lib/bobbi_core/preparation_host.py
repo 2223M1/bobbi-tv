@@ -575,7 +575,9 @@ class Session:
             self.direct_queue.complete(value, result)
 
     def _failed(self, kind, value, error):
-        self.report('PREPARATION_' + kind.upper() + '_' + type(error).__name__)
+        # Report an outage once per failure class; keep probing for recovery.
+        if kind != 'account' or self.readiness.error != type(error).__name__:
+            self.report('PREPARATION_' + kind.upper() + '_' + type(error).__name__)
         if kind == 'account':
             self.readiness.complete(error=error)
         elif kind == 'intent':

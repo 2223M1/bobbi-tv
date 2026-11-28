@@ -101,6 +101,49 @@ def movie_candidates(candidate_files):
     return main
 
 
+def play_once_candidates(files, season, episode, releases, request_id, selection, info_hash,
+                         episode_binding='', movie_binding=''):
+    """Eligible rows of this selected source. Membership is not catalogue proof."""
+    from .episode_identity import check_transport_episode_file, resolve_episode_binding
+    from .movie_identity import binding_status, load_binding
+    if not (season or episode):
+        movie = load_binding(movie_binding, request_id, selection)
+        if binding_status(movie, releases)['status'] == 'conflict':
+            return []
+        return [f for f in movie_candidates(files)
+                if binding_status(movie, [f['path']])['status'] != 'conflict']
+
+    checked = resolve_episode_binding(episode_binding, request_id, selection, info_hash, season, episode)
+    numbering = load_episode_binding(checked, info_hash, season, episode)
+    season, episode = _normalize_number(season), _normalize_number(episode)
+    if season is None or episode is None or not 0 <= season <= 100000 or not 0 < episode <= 100000:
+        return []
+    envelope = json.loads(episode_binding) if episode_binding else {}
+    allowed = {episode, numbering['absolute_episode']} if numbering else {episode}
+    for title in releases:
+        if _release_season_contexts(title, season) - {season}:
+            return []
+    candidates = []
+    for file in (movie_candidates(files) if season else files):
+        path = file['path']
+        if is_sample_or_trailer(path) or _path_season_contexts(path, season) - {season}:
+            continue
+        if envelope.get('version') in (1, 2):
+            try:
+                check_transport_episode_file(episode_binding, path, releases, require_work=False)
+            except ValueError:
+                continue
+        parsed = parse_filename(re.split(r'[/\\]', path)[-1])
+        if parsed.strong:
+            pairs = parsed.episode_pairs()
+            if any(s != season for s, _ in pairs) or (season, episode) not in pairs:
+                continue
+        elif parsed.markers and not {int(m['episode']) for m in parsed.markers}.issubset(allowed):
+            continue
+        candidates.append(file)
+    return candidates
+
+
 def _unique_json_object(pairs):
     result = {}
     for key, value in pairs:

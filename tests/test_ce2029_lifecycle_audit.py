@@ -95,7 +95,7 @@ def native_prepare(tmp_path, monkeypatch):
     path = ROOT / 'addons/plugin.video.bobbi/lib/native_player.py'
     source = ast.parse(path.read_text(encoding='utf-8'))
     cls = next(n for n in source.body if isinstance(n, ast.ClassDef) and n.name == 'JacktookPLayer')
-    names = {'start_cinema_preparation', 'start_direct_preparation', '_preparation_diagnostic'}
+    names = {'start_cinema_preparation', '_preparation_diagnostic'}
     methods = [n for n in cls.body if isinstance(n, ast.FunctionDef) and n.name in names]
     data = dict(request_id=request, selection_policy='exact', is_torrent=True, mode='movie',
                 ids={'tmdb_id': 1}, title='Fixture', source_title='Fixture.2025',
@@ -139,7 +139,7 @@ def test_lost_intake_retry_cannot_transfer_old_playback_work_to_new_account(nati
             title='Fixture.2025.mkv', size=16384))
     p.player.start_cinema_preparation()
     method = 'catalog_prepare' if kind == 'mdsub' else 'prepare'
-    assert p.calls == [(method, p.initial)]
+    assert p.calls == ([] if kind == 'mdsub' else [(method, p.initial)])
     assert not getattr(p.player, '_direct_prepare_sent' if kind == 'mdsub' else '_cinema_prepare_sent', False)
     if transition == 'renewal':
         after = p.accounts.install(credential(suffix='new-session'), p.initial)
@@ -150,13 +150,15 @@ def test_lost_intake_retry_cannot_transfer_old_playback_work_to_new_account(nati
         p.accounts.logout(p.initial)
         after = p.accounts.install(credential(), p.accounts.snapshot())
         assert after['account_id'] == p.initial['account_id'] and after != p.initial
-    p.clock[0] = getattr(p.player, '_direct_prepare_due' if kind == 'mdsub' else '_cinema_prepare_due')
+    p.clock[0] += 30
     p.player.start_cinema_preparation()
     # Changing the cloud account is not a user Stop for the independent BT or
     # public HTTP playback. Only its old cloud side work must lose admission.
     assert not p.player._cinema_cancel.is_set()
     assert p.player._owns_playback_session()
-    if transition == 'renewal':
+    if kind == 'mdsub':
+        assert not p.calls
+    elif transition == 'renewal':
         assert [m for m, _ in p.calls].count(method) == 1
         assert getattr(p.player, '_direct_prepare_sent' if kind == 'mdsub' else '_cinema_prepare_sent')
     else:

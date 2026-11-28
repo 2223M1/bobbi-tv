@@ -180,6 +180,14 @@ def test_metadata_timeout_is_bounded_and_never_readds(engine):
     assert sum(bool(request[3] and request[3].get('action') == 'add') for request in engine.requests) == 1
 
 
+def test_single_eligible_file_recheck_never_uses_stale_cardinality(engine):
+    engine.add = dict(hash=HASH, file_stats=FILES[:2])
+    engine.metadata = [dict(hash=HASH, file_stats=FILES)]
+    with pytest.raises(TorrServerError, match='SELECTED_FILE_CHANGED'):
+        engine.select(recheck_files=lambda: True)
+    assert [r[3]['action'] for r in engine.requests if r[1].endswith('/torrents')] == ['add', 'get']
+
+
 def test_cancel_before_add_and_while_waiting_does_not_retry(engine):
     with pytest.raises(Cancelled):
         engine.select(cancelled=lambda: True)

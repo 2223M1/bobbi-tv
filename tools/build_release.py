@@ -13,6 +13,8 @@ import xml.etree.ElementTree as ET
 import zipfile
 from delivery_policy import require_clean
 from generate_home_rails import check_generated
+from generate_source_rows import sync_source_rows
+from update_glass_assets import DEFAULT_OUT_REL, build_manifest, render_manifest_bytes
 
 ROOT = Path(__file__).resolve().parents[1]
 INVENTORY = ROOT / 'release/source-inventory.json'
@@ -52,8 +54,16 @@ def files(root):
     return result
 
 
+def check_glass_materials(root):
+    manifest = root / DEFAULT_OUT_REL
+    if not manifest.is_file() or manifest.read_bytes() != render_manifest_bytes(build_manifest(root)):
+        raise ValueError('Stale glass materials: run tools/update_glass_assets.py')
+
+
 def refresh():
+    sync_source_rows(ROOT)
     check_generated(ROOT)  # Never bless a stale generated skin by refreshing its hash.
+    check_glass_materials(ROOT)
     content = {key: files(root) for key, root in sources().items()}
     with INVENTORY.open('w', encoding='utf-8', newline='\n') as output:
         output.write(json.dumps({'schema': 1, 'components': content}, indent=2) + '\n')
@@ -119,7 +129,9 @@ def source_provenance():
 
 
 def build(destination, *, source_check=False):
+    sync_source_rows(ROOT)
     home_rails = check_generated(ROOT)  # Read-only, before any output or inventory work.
+    check_glass_materials(ROOT)
     from vendor_licenses import verify, verify_component_archive
     notices = verify()
     destination = Path(destination)

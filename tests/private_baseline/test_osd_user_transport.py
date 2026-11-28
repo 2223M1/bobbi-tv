@@ -257,3 +257,20 @@ def test_video_and_sidebar_transport_use_owned_entry_music_livetv_are_preserved(
         for native in ('PlayerControl(Play)', 'PlayerControl(Stop)'):
             assert any(n.text == native and n.get('condition') == '!Player.HasVideo' for n in nodes)
             assert any(n.text == native and n.get('condition') is None for n in nodes)  # Live TV.
+
+
+def test_resident_commands_require_visible_osd_and_original_tap_scope(scene, client, ui, transport_scene, monkeypatch):
+    xbmc = sys.modules['xbmc']
+    active = [True]
+    monkeypatch.setattr(xbmc, 'getCondVisibility', lambda _: active[0], raising=False)
+    osd.resident_tap(client, 'Other.BobbiRefresh')
+    token = client.window.getProperty(osd.TAP_SCOPE)
+    assert len(token) == 32
+    active[0] = False
+    osd.resident_tap(client, 'Other.BobbiTap.toggle_pause.' + token)
+    active[0] = True
+    stale = ('0' if token[0] != '0' else '1') + token[1:]
+    osd.resident_tap(client, 'Other.BobbiTap.toggle_pause.' + stale)
+    assert not scene[1].commands
+    osd.resident_tap(client, 'Other.BobbiTap.toggle_pause.' + token)
+    assert [event['action'] for event in scene[1].commands] == ['user_pause']

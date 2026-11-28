@@ -24,6 +24,37 @@ def finish(pump):
     assert not pump.thread.is_alive()
 
 
+def test_early_manual_pick_keeps_other_inflight_results_for_the_same_retry_list(tmp_path):
+    session = SourceListSession({}, lambda entries: entries)
+    first, second = source('a'), source('b')
+    session.publish(session.epoch, 'early', [first])
+    entered, release = Event(), Event()
+    def waiting():
+        entered.set()
+        assert release.wait(2)
+        return [first, second]
+    pump = ProgressiveSearch(session, lambda q: q.submit_task('Slow','web',waiting),
+                             lambda rows: rows, admission=lambda: try_acquire(tmp_path/'lease'))
+    key = session.key(first)
+    try:
+        pump.start()
+        assert entered.wait(2)
+        session.focus(key, 0)
+        chosen = session.capture(session.epoch, key, collect_siblings=True)
+        first.title = 'late replacement'
+        release.set()
+        finish(pump)
+        assert chosen.title == 'a' and session.confirmed == key
+        assert session.capture(session.epoch, session.key(second)) is None
+        session.reopen()
+        rows = session.snapshot()['entries']
+        assert [card.title for _, card in rows] == ['a', 'b'] and rows[0][0] == key
+        assert session.capture(session.epoch, session.key(second)).title == 'b'
+    finally:
+        release.set()
+        pump.cancel()
+
+
 def test_retry_only_failed_task_keeps_cards_focus_and_fresh_request_context(tmp_path):
     session = SourceListSession({'tmdb': 1}, lambda rows: rows)
     calls, contexts = [], []

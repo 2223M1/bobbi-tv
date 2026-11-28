@@ -77,7 +77,7 @@ def test_partial_empty_is_not_claimed_to_be_no_resources():
     row = dict(state='PARTIAL', error='', completion=asdict(
         SearchCompletion(2, succeeded=1, failed=1)))
     summary, error, _ = search_status({'sharelib': row}, False)
-    assert summary == '部分来源未完成' and error == '1 个来源查询失败或超时'
+    assert summary == '暂无片源 · 来源查询未完成' and error == '共享目录部分查询失败'
     row['completion'] = asdict(SearchCompletion(2, succeeded=1, skipped=1))
     assert search_status({'sharelib': row}, False)[1] == ''
 

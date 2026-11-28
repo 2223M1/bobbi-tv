@@ -44,7 +44,10 @@ def main():
     root = ProfilePath('subtitle-browser', profile=binding.root('plugin.video.bobbi'))
     binding.require_current()
     def provider(directory):
-        return Provider(directory, api_key=api_key)
+        if api_key and api_key.strip():
+            return Provider(directory, api_key=api_key)
+        from resources.lib.shared_search import SharedSearch
+        return SharedSearch(binding.root('plugin.video.bobbi'), root, binding.is_current)
     return run(rpc, xbmcgui.Dialog(), xbmcgui.DialogProgress, xbmc.Monitor(),
                xbmc.executebuiltin, provider, profile, root=root,
                account_reader=lambda: call('account_status', {}, timeout=.2), current=binding.is_current)

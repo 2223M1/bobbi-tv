@@ -96,6 +96,16 @@ class Owner:
         xbmc.log(failure_log(BackendError('TORRENT_STAGE_OBSERVED', diagnostic=detail),
                             self.request_id), xbmc.LOGINFO)
 
+    @staticmethod
+    def cache_chunk_size():
+        import xbmc
+        try:
+            reply = json.loads(xbmc.executeJSONRPC(json.dumps(dict(jsonrpc='2.0', id=1,
+                method='Settings.GetSettingValue', params={'setting':'filecache.chunksize'}))))
+            return reply['result']['value']
+        except (ValueError, TypeError, KeyError, RuntimeError):
+            return None
+
     def wait_for_buffer(self, detail):
         import xbmcgui
         self.active()

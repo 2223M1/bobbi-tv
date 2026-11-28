@@ -81,6 +81,16 @@ def local(tmp_path):
         return cache.local(cat._spec(SPEC))
 
 
+def test_verified_public_snapshot_supplies_missing_directory_title(tmp_path):
+    client = Catalogue(body=envelope(name='经典修复馆'))
+    for _ in range(8):
+        if step(tmp_path, client)['state'] == 'PUBLISHED':
+            break
+    with contextlib.closing(cat.Cache(tmp_path)) as cache:
+        from bobbi_core.library_labels import directory, memberships
+        assert list(memberships(['shared:audit'], directory(cache)).values()) == ['经典修复馆']
+
+
 @pytest.mark.parametrize('route,expected', [('complete', None), ('short', 'NETWORK_SHORT_READ'),
                                          ('unknown', None), ('bad', 'RESPONSE_SCHEMA')])
 def test_http_message_completeness(route, expected):

@@ -12,6 +12,7 @@ import re
 
 from bobbi_core.native_receipt import ReceiptHistory, SHA, receipt, subtitle_snapshot_follows
 from bobbi_core.playback_owner import PlaybackOwner
+from bobbi_core.file_evidence import PLAY_ONCE_EVIDENCE
 
 
 # Only explicit controls may reconcile native windows while observing state.
@@ -777,7 +778,7 @@ class PlaybackAuthority:
                     or row['request_id'] != args[2] or row['native_instance'] != instance
                     or observed.get('native_instance') != instance
                     or row.get('file_identity') != self.owner.desired.get('file_identity')
-                    or self.owner.desired.get('file_evidence') == 'USER_CONFIRMED_FILE'):
+                    or self.owner.desired.get('file_evidence') in PLAY_ONCE_EVIDENCE):
                 return {'accepted': False}
             account = deepcopy(self.selection_account or message.get('account_scope'))
             self.next_presentation = (args, instance, account, envelope(value, 'native',
@@ -1102,7 +1103,7 @@ class PlaybackAuthority:
             if not isinstance(identity, str) or not identity or len(identity) > 1024:
                 raise ValueError('Exact next-release identity required')
             if (self.continuation or not owner._current(*args)
-                    or owner.desired['file_evidence'] == 'USER_CONFIRMED_FILE'):
+                    or owner.desired['file_evidence'] in PLAY_ONCE_EVIDENCE):
                 return {'authorized': False}
             if operation == 'authorize_next':
                 row = self._continuation_receipt(row)

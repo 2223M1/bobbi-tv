@@ -98,7 +98,7 @@ def readable_alias(result, context, root, cancelled=lambda: False):
     directory = _private_directory(root)
     source = Path(result.get("path", ""))
     digest, size = result.get("sha256"), result.get("bytes")
-    if (source.parent != directory or source.suffix != ".srt"
+    if (source.parent != directory or source.suffix not in {".srt", ".ass", ".ssa", ".vtt"}
             or not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest)
             or type(size) is not int or not 0 < size <= MAX_BYTES
             or result.get("sync_verified") is not False):
@@ -119,7 +119,7 @@ def readable_alias(result, context, root, cancelled=lambda: False):
     if result.get("bilingual") is True and not language.endswith("双语"):
         language += "双语"
     prefix = "手动下载-"
-    suffix = "{}{}-{}-待校准-{}.srt".format(year, episode, language, digest[:8])
+    suffix = "{}{}-{}-待校准-{}{}".format(year, episode, language, digest[:8], source.suffix)
     title_budget = 240 - len((prefix + suffix).encode("utf-8"))
     title = title.encode("utf-8")[:title_budget].decode("utf-8", "ignore").rstrip(" .") or "影片"
     name = prefix + title + suffix
@@ -229,6 +229,8 @@ def run(rpc, dialogs, progress_factory, monitor, builtin, provider_factory,
         with lock_factory(state_directory):
             snapshot = capture(rpc, account_reader)
             provider = provider_factory(state_directory)
+            if getattr(provider, "shared_search", False) is True:
+                heading = _tr(32027, "找中文字幕", "Find Chinese Subtitles")
             progress = progress_factory()
             progress.create(heading, _tr(32020, "正在搜索当前影片的中文字幕；可返回取消。",
                                          "Searching Chinese subtitles for current video; press Back to cancel."))

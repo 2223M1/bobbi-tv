@@ -9,6 +9,9 @@ import re
 from uuid import uuid4
 
 
+from .file_evidence import PLAY_ONCE_EVIDENCE
+
+
 class StaleIntent(ValueError):
     pass
 
@@ -96,7 +99,7 @@ class PlaybackOwner:
             return False
         if not isinstance(file_identity, str) or not file_identity or len(file_identity) > 1024:
             raise ValueError('Exact bounded file identity required')
-        if file_evidence not in ('AUTO_VERIFIED_FILE', 'USER_CONFIRMED_FILE'):
+        if file_evidence != 'AUTO_VERIFIED_FILE' and file_evidence not in PLAY_ONCE_EVIDENCE:
             raise ValueError('Explicit file evidence required')
         if self.desired['file_bound']:
             return (self.desired['file_identity'] == file_identity
@@ -306,7 +309,7 @@ class PlaybackOwner:
 
     def consume_next(self, boot_id, epoch, request_id, native_instance):
         if (not self._current(boot_id, epoch, request_id) or not self.terminal
-                or self.desired['file_evidence'] == 'USER_CONFIRMED_FILE'
+                or self.desired['file_evidence'] in PLAY_ONCE_EVIDENCE
                 or self.terminal['native_instance'] != native_instance
                 or self.terminal['request_id'] != request_id or self.terminal['reason'] != 'NATURAL_EOF'
                 or not self.terminal['av_started']

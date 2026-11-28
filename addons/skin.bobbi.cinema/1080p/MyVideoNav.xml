@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <window>
-  <defaultcontrol always="false">50</defaultcontrol>
+  <defaultcontrol always="true">9701</defaultcontrol>
+  <onload condition="Integer.IsGreater(Container(50).NumItems,0)">SetFocus(50)</onload>
   <menucontrol>9701</menucontrol>
   <views>50</views>
   <include>PageOpen</include>

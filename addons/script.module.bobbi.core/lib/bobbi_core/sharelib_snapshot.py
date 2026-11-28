@@ -5,6 +5,7 @@ its partial file; no Range/ETag support is assumed. The envelope may place
 library/movies/success in any order. No rows are visible until its final EOF.
 """
 import json
+from bobbi_core.library_labels import public_name
 
 MAX_VALUE = 4 * 1024 * 1024
 
@@ -126,6 +127,8 @@ class SnapshotReader:
                             raise ValueError('Snapshot library shape')
                         self.state['library'] = {name: value[name] for name in
                             ('shareCode', 'version', 'itemCount', 'isPublic') if name in value}
+                        if (name := public_name(value)):
+                            self.state['library']['name'] = name
                     self.state['phase'] = scope + '_delim'
             elif phase in ('top_delim', 'data_delim'):
                 scope = phase.split('_')[0]

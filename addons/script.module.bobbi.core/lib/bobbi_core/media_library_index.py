@@ -114,6 +114,8 @@ class MediaIndex:
                     'SELECT (SELECT count(*) FROM objects)+(SELECT count(*) FROM typed_objects)').fetchone()[0])
                 if rebuild:
                     self._rebuild_projection()
+                else:
+                    self._page_indexes()
                 self.db.execute('PRAGMA user_version=4')
             self._attach_frontier()
             self.query_reader = catalog_query.CatalogQuery(self)
@@ -380,8 +382,14 @@ class MediaIndex:
         self.db.execute('CREATE INDEX catalog_rows_scope ON catalog_rows(provider,account,title_sort,id)')
         self.db.execute('CREATE INDEX catalog_rows_work ON catalog_rows(provider,account,work_id,season_id,episode_id)')
         self.db.execute('CREATE INDEX catalog_rows_group ON catalog_rows(group_key,id)')
+        self._page_indexes()
         self.db.execute('INSERT OR REPLACE INTO catalog_meta VALUES(1,?,?,?)',
             (catalog_query.PROJECTION_SCHEMA, uuid4().hex, revision))
+
+    def _page_indexes(self):
+        # Upgrade the read model in place and restore the same paths on an explicit rebuild.
+        self.db.execute('CREATE INDEX IF NOT EXISTS catalog_rows_filename ON catalog_rows(provider,account,filename_sort,id)')
+        self.db.execute('CREATE INDEX IF NOT EXISTS catalog_rows_season ON catalog_rows(provider,account,season_id,episode_id)')
 
     def rebuild_projection(self):
         with self.transaction():
@@ -1273,7 +1281,7 @@ class MediaIndex:
                     segments = segments_target(self, expected, cmd, item)
                     result = dict(status='ready' if item['revision'] == cmd['expected_revision'] else 'conflict',
                         file=self._public(item)['file'], revision=item['revision'], before=item['mapping'],
-                        after=after, after_state=state, action=cmd['action'])
+                        after=after, before_state=item['state'], after_state=state, action=cmd['action'])
                     if relation or item.get('supplement') or cmd['action'] in ('supplement', 'detach_supplement'):
                         result.update(before_supplement=item.get('supplement'), after_supplement=summary(self, expected, relation))
                     if segments or item.get('segments') or cmd['action'] == 'segments':

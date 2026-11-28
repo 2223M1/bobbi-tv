@@ -365,10 +365,10 @@ def test_external_list_capture_cannot_control_new_managed_playback(scene, client
 
 
 @pytest.mark.parametrize('kind,method', [('audio', 'Player.SetAudioStream'), ('subtitle', 'Player.SetSubtitle')])
-def test_ordinary_stream_selection_is_native_without_fabricated_scope(client, ui, kind, method):
+def test_old_index_only_native_selection_cannot_be_replayed(client, ui, kind, method):
     client.call = lambda _: dict(mode='standard', available=False)
     osd.run('apply', token=osd.encode(dict(native_stream=kind, index=0)))
-    assert ui.calls[0][0] == method and not client.window.getProperty(osd.PENDING)
+    assert ui.notices == ['rejected'] and not ui.calls and not client.window.getProperty(osd.PENDING)
 
 
 def test_managed_full_settings_are_not_a_global_control_escape(scene, client, ui):
@@ -467,17 +467,29 @@ def test_ordinary_directory_uses_unwrapped_platform_rpc_and_native_tokens(
     import bobbi_platform.kodi
     client.call = lambda _: dict(mode=mode, available=False)
 
+    player = {'file':'file:///A.mkv', 'lang':'zh', 'visible':True}
     def rpc(method, params):
         ui.calls.append((method, params))
-        return {key: [dict(index=0, language='zh', name='原声')], current: dict(index=0)}
-
+        if method=='Player.GetActivePlayers':return [{'playerid':1,'type':'video'}]
+        if method=='Player.GetItem':return {'item':{'type':'movie','file':player['file']}}
+        if method=='Player.GetProperties':
+            return {key:[dict(index=0, language=player['lang'], name='原声', isforced=True)], current:dict(index=0), 'subtitleenabled':player['visible']}
+        return 'OK'
     monkeypatch.setattr(bobbi_platform.kodi, 'rpc', rpc)
     osd.stream_directory(7, kind)
     row = directory_ui.rows[0][1][0][1]
     assert row.getProperty('index') == '0' and row.getProperty('iscurrent') == 'true'
-    assert osd.decode(row.getProperty('bobbi_command')) == dict(native_stream=kind, index=0)
-    assert osd.decode(row.getProperty('bobbi_toggle')) == dict(native_toggle=True)
-    assert ui.calls == [('Player.GetProperties', dict(playerid=1, properties=[key, current]))]
+    token=row.getProperty('bobbi_command');toggle=row.getProperty('bobbi_toggle')
+    capture=osd.decode(token);assert len(capture['proof'])==64 and 'A.mkv' not in repr(capture)
+    osd.apply(client,token);assert ui.calls[-1][0]==('Player.SetAudioStream' if kind=='audio' else 'Player.SetSubtitle')
+    ui.calls.clear();player['file']='file:///B.mkv';osd.apply(client,token)
+    player['file']='file:///A.mkv';player['lang']='en';osd.apply(client,token)
+    assert ui.notices[-2:]==['rejected','rejected'] and not any('Set' in method for method,_ in ui.calls)
+    if kind=='subtitle':
+        player['lang']='zh';osd.apply(client,toggle)
+        assert ui.calls[-1]==('Player.SetSubtitle',{'playerid':1,'subtitle':'off'})
+        player['visible']=False;ui.calls.clear();osd.apply(client,toggle)
+        assert ui.notices[-1]=='rejected' and not any('Set' in method for method,_ in ui.calls)
     assert directory_ui.completions == [(7, {'cacheToDisc': False})]
 
 

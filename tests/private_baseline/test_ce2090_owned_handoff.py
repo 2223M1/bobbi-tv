@@ -352,3 +352,19 @@ def test_early_native_eof_cannot_reserve_or_dispatch_next_episode(monkeypatch, t
 @pytest.mark.parametrize('change', ['manual_picker_cancel', 'child_cancel', 'child_superseded'])
 def test_owned_handoff_queue_cancellation(monkeypatch, change):
     multi_case(monkeypatch, change)
+
+@pytest.mark.parametrize('drained,busy', [('cancelled', False), ('ready', True)])
+def test_drain_cannot_open_over_a_new_player_or_cancel_a_different_selection(drained, busy):
+    scope = {'boot_id': 'old-boot', 'epoch': 4, 'request_id': 'child'}
+    actions = []
+    cls = player_type({'kodilog': lambda *a, **kw: None}, selected={'_drain_nextep_queue'})
+    parent = cls()
+    parent._cinema_cancel = Event()
+    parent.kodi_monitor = SimpleNamespace(abortRequested=lambda: False)
+    parent._cinema_phase = lambda phase: actions.append(phase)
+    parent.isPlaying = lambda: busy
+    parent.playback_client = SimpleNamespace(call=actions.append)
+    cls._nextep_queue.append({'data': {'_selection_context': scope}, 'kodi_end_wait':
+                              (lambda reserved, cancelled: drained, 0)})
+    assert parent._drain_nextep_queue() is True
+    assert actions == ['KODI_EOF_DRAIN_' + drained.upper(), dict(scope, operation='cancel')]

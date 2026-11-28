@@ -45,14 +45,39 @@ def search_status(providers, has_results):
     pending = sum(row.get('state') not in terminal for row in providers.values())
     partial = sum(row.get('state') == 'PARTIAL' for row in providers.values())
     failures = sum(provider_failed(row) for row in providers.values())
+    names = {'sharelib': '共享目录', 'qqdocs': '腾讯文档', 'jackett': 'BT 检索', 'animegarden': '动漫检索',
+             '115-local-index': '我的 115 片库', 'prowlarr': 'Prowlarr', '漫迪 mdsub': '漫迪'}
+    from bobbi_core.library_labels import PUBLIC_STATIONS
+    notes = []
+    for key, row in providers.items():
+        if not provider_failed(row):
+            continue
+        name = names.get(key.casefold().split(':')[0], '其他来源')
+        receipt = row.get('completion') or {}
+        sites = [PUBLIC_STATIONS[s] for s in receipt.get('failed_stations', ()) if s in PUBLIC_STATIONS]
+        if name == 'BT 检索' and sites:
+            name += '（' + '、'.join(dict.fromkeys(sites)) + '）'
+        if receipt.get('stale') and row.get('count', 0):
+            note = name + '更新失败，显示上次结果'
+        elif row.get('state') == 'PARTIAL':
+            note = name + ('部分超时' if receipt.get('timed_out') else '部分查询失败')
+        else:
+            note = name + ('查询超时' if row.get('state') == 'TIMEOUT' else '查询失败')
+        if note not in notes:
+            notes.append(note)
     status = ('正在查询 {} 个来源'.format(pending) if pending else
-              '部分来源未完成' if failures else '查询完成' if has_results else '未找到匹配片源')
-    error = '{} 个来源查询失败或超时'.format(failures) if failures else ''
-    diagnostic = '{} 个来源仅返回部分结果'.format(partial) if partial else ''
-    return status, error, diagnostic
+              '部分来源未完成' if failures and has_results else '暂无片源 · 来源查询未完成' if failures
+              else '查询完成' if has_results else '未找到匹配片源')
+    detail = '；'.join(notes)
+    diagnostic = detail if has_results else ''
+    if not failures and partial:
+        diagnostic = '{} 个来源仅返回部分结果'.format(partial)
+    return status, (detail if not has_results else ''), diagnostic
 
 
 def recommendation_label(recommended, caution, status):
+    if status.startswith(('分享已失效', '文件已变化')):
+        return status.split(' · ')[0]
     if recommended:
         return '需核实' if caution else '推荐'
     return {'Download': '待验证', 'Cached': '已标记缓存', 'Added': '待就绪',

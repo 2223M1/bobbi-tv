@@ -382,7 +382,7 @@ class BaseWindow(xbmcgui.WindowXMLDialog):
             if value is not None:
                 playback_data[target_key] = value
         if playback_data.get('selection_policy') == 'exact' and playback_data.get('prepared_resource_id'):
-            from lib.clients.bobbi_library import load_prepared_index, local_path
+            from lib.clients.bobbi_library import load_prepared_index, PreparedSourceUnavailable
             from bobbi_core.prepared_transport import playback_path
             session = getattr(self, 'prepared_session', None)
             prepared = load_prepared_index(session=session)
@@ -390,7 +390,7 @@ class BaseWindow(xbmcgui.WindowXMLDialog):
                        if entry['key'] == playback_data['prepared_resource_id']]
             entry = session.resolve_entry(playback_data, prepared, entries[0]) if session and len(entries) == 1 else None
             if not entry:
-                raise RuntimeError('云端文件身份已变化或暂不可用，请刷新片源')
+                raise PreparedSourceUnavailable('115 文件暂不可用，请换源或刷新片源')
             playback_data['url'] = playback_path(prepared['mount_root'], entry)
             playback_data['source_title'] = entry['title']
             playback_data['video_context'] = entry.get('video_context')

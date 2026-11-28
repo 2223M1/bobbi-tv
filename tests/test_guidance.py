@@ -88,7 +88,7 @@ def test_empty_picker_hint_matches_direct_dialog_fallback():
     base = ROOT / 'addons/plugin.video.bobbi/resources/skins/Default/1080i'
     dialog = ET.parse(base / 'source_select_direct.xml')
     hint = '按上键选择“全部”清晰度，或放宽筛选条件'
-    assert hint in [node.text for node in dialog.findall('.//label')]
+    assert '$INFO[Window().Property(source_empty_hint)]' in [node.text for node in dialog.findall('.//label')]
     assert hint in strings('addons/plugin.video.bobbi/lib/gui/source_select.py')
     for name in ('source_select.xml', 'source_select_direct.xml'):
         assert '正在查找更多片源，可先选择已显示的版本' in [

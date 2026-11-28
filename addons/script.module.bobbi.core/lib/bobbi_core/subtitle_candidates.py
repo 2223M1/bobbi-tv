@@ -257,6 +257,15 @@ def inspect_text(raw, extension, duration=None):
     text = subtitle_text(raw)
     if text.lstrip().startswith('<'):
         raise ValueError('HTML is not a subtitle')
+    if extension in ('.ass', '.ssa') and '[script info]' not in text.casefold():
+        # Some real releases start at [V4+ Styles]. FFmpeg probes for Script
+        # Info; supply that missing preamble only for a complete styled script.
+        header = re.match(r'(?i)^\s*\[(V4\+? Styles)\]\s*$', text.splitlines()[0] if text.splitlines() else '')
+        if header and re.search(r'(?im)^\s*\[Events\]\s*$', text):
+            version = 'v4.00+' if '+' in header[1] else 'v4.00'
+            raw = ('[Script Info]\nScriptType: ' + version + '\n\n' + text).encode('utf-8')
+            if len(raw) > MAX_BYTES:
+                raise ValueError('Bounded text subtitle required')
     cues = parse(raw, extension)
     chinese = [c for c in cues if re.search(r'[\u3400-\u9fff]', c['text'])]
     if not chinese:

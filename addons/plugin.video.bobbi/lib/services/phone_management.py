@@ -310,7 +310,7 @@ PUBLIC_FIELDS = frozenset(('items', 'next_offset', 'id', 'name', 'parent', 'trun
     'state', 'reason', 'candidates', 'revision', 'mapping', 'provenance', 'origin', 'season',
     'episode', 'year', 'kind', 'title', 'tmdb_id', 'version', 'status', 'before', 'after', 'action',
     'schema', 'task_id', 'stage', 'counts', 'pages', 'scanned', 'discovered', 'updated_at',
-    'cancel_requested', 'result_summary', 'available', 'after_state', 'position', 'duration', 'completion_reason', 'index',
+    'cancel_requested', 'result_summary', 'available', 'before_state', 'after_state', 'position', 'duration', 'completion_reason', 'index',
     'observation', 'coverage', 'availability', 'recheck_required', 'indexed_count', 'latest_state',
     'work_title', 'version_label', 'description', 'navigation', 'view', 'parent_entity_id',
     'supplement', 'before_supplement', 'after_supplement', 'metadata_key', 'parent_file_id',
@@ -323,6 +323,7 @@ QUERY_FIELDS = frozenset(('schema', 'items', 'next_cursor', 'projection_revision
     'file_name', 'file_size', 'version_label', 'sources', 'source_total', 'id', 'name',
     'review_revision', 'observation_key', 'supplement', 'kind', 'title', 'parent_file_id',
     'parent_revision', 'parent_evidence', 'state'))
+PREVIEW_FIELDS = PUBLIC_FIELDS | frozenset(('before_segments','after_segments','duration_ms','observed_at','start_ms','end_ms'))
 CANDIDATE_FIELDS = frozenset(('items', 'media_kind', 'tmdb_id', 'title', 'original_title',
                             'year', 'poster_path', 'basis', 'mismatch'))
 GROUP_FIELDS = PUBLIC_FIELDS | frozenset(('group_id', 'anchor_id', 'source_id', 'projection_revision'))
@@ -787,14 +788,20 @@ class PhoneManagement:
             elif action == 'catalog_query':
                 result = public(result, fields=QUERY_FIELDS, max_items=32)
             else:
-                fields = CANDIDATE_FIELDS if action == 'catalog_candidates' else GROUP_FIELDS if action == 'catalog_group' else PUBLIC_FIELDS
+                fields = {'catalog_candidates': CANDIDATE_FIELDS, 'catalog_group': GROUP_FIELDS,
+                          'catalog_preview': PREVIEW_FIELDS}.get(action, PUBLIC_FIELDS)
                 result = public(result, fields=fields)
             if len(encode(result)) > MAX_REPLY:
                 raise PhoneError('REPLY_TOO_LARGE', 502)
             if action in ('playback_command', 'playback_receipt'):
                 self._observe_playback(args, result)
             if action == 'catalog_preview':
-                self.previews[digest] = self.clock()
+                rows = result.get('items')
+                if (type(rows) is list and len(rows) == len(args['commands']) and
+                        all(type(row) is dict and row.get('status') == 'ready' for row in rows)):
+                    self.previews[digest] = self.clock()
+                else:
+                    self.previews.pop(digest, None)
                 while len(self.previews) > 8:
                     del self.previews[next(iter(self.previews))]
             return result, None

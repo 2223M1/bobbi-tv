@@ -625,7 +625,7 @@ def get_jacktorr_url(magnet: str, url: str, data: Optional[Dict[str, Any]] = Non
             if len(serialized.encode("utf-8")) <= 2048:
                 exact_params += "&episode_binding=" + quote(serialized)
                 binding_present = True
-        if restricted_range and (not binding_present or binding.get('candidate_scope') != 'unscoped-range-v1'):
+        if restricted_range and (not binding_present or binding.get('candidate_scope') not in ('unscoped-range-v1', 'catalog-s1-explicit-v1')):
             raise TorrentException('This range has no complete catalogue-bearing episode proof')
         if (data or {}).get('mode') == 'tv':
             _log_jacktorr_episode_binding(request_id, binding_present, binding, episode_diagnostic)

@@ -135,7 +135,7 @@ def test_changed_selected_file_stops_before_preload_or_manual_choice():
     assert not any('/stream?' in call[1] for call in session.calls)
 
 
-def test_manual_legacy_request_keeps_unknown_file_choice():
+def test_legacy_singleton_opens_only_the_selected_source_without_file_dialog():
     file = dict(FILE, path='video.mkv')
     clock, choices = Clock(), []
     owner = FakeOwner(clock)
@@ -144,5 +144,5 @@ def test_manual_legacy_request_keeps_unknown_file_choice():
                        Response(status(file)), Response(status(file)),
                        Response(b''), Response(status(file))])
     result = Resolver(Backend(config(), session, clock), owner, Session([]), clock).resolve(request(catalog=False))
-    assert result['file'] == file and result['file_evidence'] == 'USER_CONFIRMED_FILE'
-    assert choices == [[file]]
+    assert result['file'] == file and result['file_evidence'] == 'SOLE_ELIGIBLE_FILE'
+    assert not choices

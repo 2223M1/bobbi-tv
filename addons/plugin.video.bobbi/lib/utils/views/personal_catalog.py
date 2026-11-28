@@ -608,7 +608,8 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
                     else:
                         detail += ' · ' + ({'local_path': _tr(91609, '本地'), 'network_path': _tr(91610, '网络目录（实验）')}.get(account.get('reference_kind'), 'CD2') + _tr(91611, ' · 从头播放，不继承旧路径进度') if mounted else
                                           NAMES.get(account['provider'], account['provider']))
-                        if account.get('provider') in SERVER_PROVIDERS:
+                        from bobbi_core.server_ref import resumable
+                        if not mounted and not resumable(account):
                             detail += _tr(91612, ' · 从头播放，历史进度仅供查看')
                         from bobbi_core.catalog_display import file_description
                         descriptions = [file_description(card)]

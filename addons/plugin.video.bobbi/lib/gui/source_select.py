@@ -13,7 +13,9 @@ from lib.clients.stremio.constants import STREMIO_ADDON_ALIASES_KEY
 from lib.db.cached import cache
 from lib.domain.torrent import TorrentStream
 from lib.cinema.source_presentation import source_site_label
-from lib.utils.general.source_platform import source_platform_label
+from lib.cinema import source_filters
+from lib.utils.general.release_quality import cinema_quality_order, quality_text, release_quality
+from lib.utils.general.source_platform import source_libraries, source_platform_label
 from lib.gui.base_window import BaseWindow, _CAPTURE_PLAYBACK
 from lib.gui.filter_items_window import FilterWindow
 from lib.gui.filter_type_window import FilterTypeWindow
@@ -95,11 +97,11 @@ def _source_quality(source):
     return source_resolution_label(source)
 
 
-def _quality_tabs(sources):
+def _quality_tabs(sources, active=None):
     from collections import Counter
     counts = Counter(_quality_key(_source_quality(source)) for source in sources)
     return [('全部', '__all__', len(sources))] + [(label, key, counts[key]) for label, key in
-            [('4K', '4k'), ('1080', '1080p'), ('720', '720p'), ('其他', 'n/a')] if counts[key]]
+            [('4K', '4k'), ('1080', '1080p'), ('720', '720p'), ('其他', 'n/a')] if counts[key] or key == active]
 
 
 def _plain_source_badges(value):
@@ -122,7 +124,7 @@ def _source_card_fields(template, skin):
         return frozenset(('type_plain', 'title', 'chinese_subtitles', 'badges_plain',
             'release_group', 'size', 'seeders', 'languages_plain', 'source_site',
             'recommendation_status', 'quality_plain', 'source_key', 'peers',
-            'status_plain', 'recommendation_reason'))
+            'status_plain', 'recommendation_reason', 'version_hint'))
     return None
 
 
@@ -246,12 +248,19 @@ class SourceSelect(BaseWindow):
         from bobbi_platform.source_libraries import capture_context
         captured = capture_context()
         self._share_reader = captured.reader if captured is not None else None
+        self._catalog_source = captured.source if captured is not None else None
+        self._preferences = source_filters.Preferences(captured.binding) if captured is not None else None
+        self._filters = self._preferences.read() if self._preferences else {}
+        self.filter_applied = bool(self._filters)
+        if self.filter_applied:
+            self.filtered_sources = self._filtered_rows(self.sources)
+        self._filter_summary = source_filters.summary(self._filters)
         self.source_pump = None
         self._source_revision = -1
         self._source_interacted = False
         self._retry_shown = False
         self.setProperty('source_empty_title', '没有符合条件的片源')
-        self.setProperty('source_empty_hint', '按上键选择“全部”清晰度，或放宽筛选条件')
+        self._show_filter_status()
         self._auto_select_pending = False  # Manual source selection is product policy.
 
     def onInit(self) -> None:
@@ -290,15 +299,18 @@ class SourceSelect(BaseWindow):
         else:
             self.populate_qualities_header()
             self.populate_sources_list()
-        self.set_default_focus(self.display_list, 1000, control_list_reset=True)
         # A newly opened recommendation list starts at its first card, not an
         # ordinal saved for an older, differently ordered search result set.
         if self.list_sources:
             position = self._restore_position if self._restore_position is not None else 0
+            restored = getattr(self, '_restore_key', None)
+            if restored and self.source_session:
+                position = next((i for i, row in enumerate(self.list_sources)
+                                 if self.source_session.key(row) == restored), position)
             self.display_list.selectItem(max(0, min(position, len(self.list_sources) - 1)))
             self.setFocus(self.display_list)
-        elif getattr(self, 'source_session', None):
-            self.setFocusId(1300)  # The visible all-quality tab, not an empty list.
+        else:
+            self.setFocusId(1400 if self.filter_applied else 1300)
         super().onInit()
         if hasattr(self, '_source_ready'):
             self._source_ready.set()
@@ -311,9 +323,19 @@ class SourceSelect(BaseWindow):
         keys = getattr(self, '_quality_keys', [])
         selected = qualities_list.getSelectedItem() if keys else None
         selected_key = selected.getProperty('quality') if selected else None
+        rules = getattr(self, '_filters', {})
+        saved_quality = rules.get('quality')
+        active = _quality_key(saved_quality[1]) if saved_quality else '__all__'
+        self.setProperty('selected_quality', active)
+        if not keys and saved_quality:
+            selected_key = _quality_key(saved_quality[1])
         selected_position = keys.index(selected_key) if selected_key in keys else 0
         rebound = False
-        desired = _quality_tabs(self.sources)
+        available = self.sources
+        for axis, (kind, value, _) in rules.items():
+            if axis != 'quality':
+                available = self._apply_source_filter(kind, value, sources=available)
+        desired = _quality_tabs(available, active)
         wanted = {key for _, key, _ in desired}
         for position in range(len(keys) - 1, -1, -1):
             if keys[position] not in wanted:
@@ -360,6 +382,7 @@ class SourceSelect(BaseWindow):
                                           _account=self.item_information.get('_account'))
         prepared_retry = None
         prepared_retry_cancelled = None
+        after_failed_source = False
         while True:
             read_snapshot = self.playback_client.read_snapshot
             try:
@@ -386,6 +409,8 @@ class SourceSelect(BaseWindow):
                 return False
             self._pending_selection = None
             self._selection_locked = False
+            self.setProperty("instant_close", "false")
+            self.setProperty("resolving", "false")
             if prepared_retry is not None:
                 from lib.cinema.prepared_retry import unchanged
                 cloud_source, prior_snapshot, retry_account = prepared_retry
@@ -414,7 +439,7 @@ class SourceSelect(BaseWindow):
             resolver = ResolverWindow(
                 "resolver.xml", ADDON_PATH, source=source,
                 playback_client=self.playback_client,
-                item_information=dict(self.item_information), **options,
+                item_information=dict(self.item_information, _retry_after_failed_source=after_failed_source), **options,
                 share_reader=getattr(getattr(self, 'source_session', None), 'share_reader', getattr(self, '_share_reader', None)),
             )
             self.resolved = resolver.doModal(False)
@@ -445,9 +470,11 @@ class SourceSelect(BaseWindow):
                 return True
             if get_property("bobbi_cinema_selection") != self.item_information.get("request_id"):
                 return False
+            after_failed_source = True
             if prepared_retry is not None:
                 continue  # One new exact request; never repeat the failed BT opener.
             self._restore_position = self.position
+            self._restore_key = self.source_session.key(source) if getattr(self, "source_session", None) else None
             if getattr(self, 'source_session', None):
                 self.source_session.reopen()
             self.setProperty("resolving", "false")
@@ -501,11 +528,15 @@ class SourceSelect(BaseWindow):
         self._auto_select_pending = False
         if pending:
             self.source_pump.cancel()
-        snapshot = self.source_session.snapshot(full=True)
+        # A manual cursor position must not change the automatic recommendation.
+        snapshot = self.source_session.snapshot(full=True,
+            pin_focus=not cinema_quality_order(getattr(self, 'item_information', {})))
         from lib.utils.general.cinema_source_rank import source_preference
         context = dict(self.item_information, **snapshot['metadata'])
+        allowed = (set(self.source_session.key(s) for s in self._filtered_rows([s for _, s in snapshot['entries']]))
+                   if getattr(self, 'filter_applied', False) else None)
         choice = next(((key, source) for key, source in snapshot['entries']
-                       if not source_preference(source, context)['caution']), None)
+                       if (allowed is None or key in allowed) and not source_preference(source, context)['caution']), None)
         if choice is None:
             self.last_error = '暂无可自动选择的可靠片源，请手动选择或重试'
             self.setProperty('playback_error', self.last_error)
@@ -530,14 +561,15 @@ class SourceSelect(BaseWindow):
         status = self.source_session.status()
         if not force and status['revision'] == self._source_revision:
             return
-        # Once a card is visible, provider arrivals must not steal its focus.
-        # Recommendation badges can change without moving/rebinding old cards.
+        # Preserve the actual card under the cursor when later providers rank
+        # ahead of it. Its ordinal is not part of the release's identity.
         preserve_focus = bool(self.list_sources)
         if capture_focus and self.list_sources and preserve_focus:
             item = self.display_list.getSelectedItem()
             if item:
                 self.source_session.focus(item.getProperty('source_key'), self.display_list.getSelectedPosition())
         snapshot = self.source_session.snapshot(full=True,
+            pin_focus=not cinema_quality_order(getattr(self, 'item_information', {})),
             after_content_revision=None if force else getattr(self, '_source_content_revision', None))
         self._source_revision = snapshot['revision']
         self._source_content_revision = snapshot['content_revision']
@@ -552,8 +584,8 @@ class SourceSelect(BaseWindow):
         if snapshot['entries'] is not None:
             self.sources = [source for _, source in snapshot['entries']]
             self.populate_qualities_header()
-            if self.filter_applied and getattr(self, '_filter_spec', None):
-                self.filtered_sources = self._apply_source_filter(*self._filter_spec)
+            if self.filter_applied:
+                self.filtered_sources = self._filtered_rows(self.sources)
             self.populate_sources_list(incremental=not force)
         if self.list_sources and not capture_focus:
             keys = [self.source_session.key(source) for source in self.list_sources]
@@ -584,9 +616,14 @@ class SourceSelect(BaseWindow):
             summary = '正在自动选源，操作列表可改为手选'
         if snapshot.get('superseded_count'):
             summary += ' · {} 个同版 BT 已由 115 替代'.format(snapshot['superseded_count'])
-        self.setProperty('source_status', summary)
+        self._base_source_status = summary
+        if getattr(self, '_filter_summary', ''):
+            self._show_filter_status()
+        else:
+            self.setProperty('source_status', summary)
         self.setProperty('source_diagnostics', diagnostic)
-        self.setProperty('playback_error', self.last_error or error)
+        self.setProperty('source_error', error)
+        self.setProperty('playback_error', self.last_error)
 
     def handle_action(self, action_id: int, control_id: Optional[int] = None) -> None:
         self._source_interacted = True
@@ -621,6 +658,85 @@ class SourceSelect(BaseWindow):
         self._provider_terminal_logged = False
         self._refresh_progressive_sources()  # Incremental only; keep native cards/filter/focus.
 
+    def _show_filter_status(self):
+        summary = getattr(self, '_filter_summary', '')
+        status = getattr(self, '_base_source_status', '')
+        self.setProperty('filter_button_label', '已筛选' if summary else '筛选')
+        self.setProperty('source_status', '   ·   '.join(x for x in (('已筛选 · ' + summary) if summary else '', status) if x))
+        self.setProperty('source_empty_hint', '当前筛选：' + summary + '。可在“筛选”中重置。'
+                         if summary else '按上键选择“全部”清晰度，或放宽筛选条件')
+
+    def _filtered_rows(self, rows):
+        rules = getattr(self, '_filters', {})
+        if not rules:
+            legacy = getattr(self, '_filter_spec', None)
+            return self._apply_source_filter(*legacy, sources=rows) if legacy else list(rows)
+        active = rules.get('source')
+        if active and active[0] == 'library':
+            name = next((n for row in rows if (n := source_libraries(row).get(active[1]))), None)
+            if name and name != active[2]:
+                rules['source'] = (active[0], active[1], name)
+                self._filter_summary = source_filters.summary(rules)
+        for kind, value, _ in rules.values():
+            rows = self._apply_source_filter(kind, value, sources=rows)
+        return rows
+
+    def _change_filter(self, kind, value=None, label=None):
+        rules = dict(getattr(self, '_filters', {}))
+        if kind == 'reset':
+            rules.clear()
+        elif kind == 'clear_source':
+            rules.pop('source', None)
+        elif kind == 'quality_tab' and value == '__all__':
+            rules.pop('quality', None)
+        else:
+            rule = source_filters.choice(kind, value, label)
+            if not rule:
+                return
+            rules[source_filters.AXIS[kind]] = rule
+        self._filters = rules
+        self._filter_spec = None
+        self.filter_applied = bool(rules)
+        self.filtered_sources = self._filtered_rows(self.sources) if rules else None
+        self._filter_summary = source_filters.summary(rules)
+        self._show_filter_status()
+        preferences = getattr(self, '_preferences', None)
+        if preferences:
+            try:
+                preferences.write(rules)
+            except (OSError, RuntimeError, ValueError):
+                notification('筛选仅对本次生效，未能保存到当前用户')
+        elif getattr(self, '_preferences', True) is None:
+            notification('筛选仅对本次生效，未能保存到当前用户')
+        self.populate_qualities_header()
+        self.populate_sources_list()
+        if self.list_sources:
+            self.set_default_focus(self.display_list, 1000, control_list_reset=True)
+        else:
+            self.setFocusId(1400)
+
+    def _library_options(self):
+        active = getattr(self, '_filters', {}).get('source')
+        known = source_filters.catalog_options(getattr(self, '_catalog_source', None))
+        current = {}
+        for source in self.sources:
+            current.update(source_libraries(source))
+        if active and active[0] == 'library':
+            known.setdefault(active[1], active[2])
+        # Current-title matches first, followed by sites and other configured libraries.
+        def options(libraries):
+            return [('library', key, name) for key, name in sorted(libraries.items(), key=lambda p:(p[1].casefold(),p[0]))]
+        sites = sorted({_source_filter_label(s) for s in self.sources if _source_filter_label(s)})
+        stations = {key: label for row in self.sources for key, label in
+                    (getattr(row, 'sourceStations', {}) or {}).items()}
+        result = (options(current) + [('station', key, label) for key, label in
+                  sorted(stations.items(), key=lambda p:(p[1].casefold(), p[0]))]
+                  + [('indexer', site, site) for site in sites]
+                  + options({k:v for k,v in known.items() if k not in current}))
+        if active and not any(rule[:2] == active[:2] for rule in result):
+            result.append(active)
+        return result
+
     def _handle_filter_action(self):
         filter_type_popup = FilterTypeWindow("filter_type.xml", ADDON_PATH)
         group_sources = [source for source in self.sources if _show_release_group(getattr(self, "item_information", {}), source)]
@@ -630,6 +746,36 @@ class SourceSelect(BaseWindow):
         del filter_type_popup
         if selected_type is None:
             return  # Back cancels the popup without clearing an existing filter.
+        if selected_type == 'reset':
+            self._change_filter('reset')
+            return
+        if selected_type == 'indexer':
+            options = self._library_options()
+            from lib.clients import qqdocs_provider
+            others = []
+            if qqdocs_provider.enabled():
+                from bobbi_catalog.collection_labels import headings
+                visible = {key for kind, key, name in options if kind == 'library'}
+                others = [('library', k, v) for k, v in sorted(headings().items(), key=lambda p:p[1].casefold())
+                          if k not in visible]
+            options = [('clear_source', None, '不限源库')] + options
+            active = getattr(self, '_filters', {}).get('source')
+            selected = active[:2] if active else ('clear_source', None)
+            def pick(rows, more=False):
+                prefix = {'library': '源库 · ', 'station': 'BT · ', 'indexer': '来源站点 · '}
+                popup = FilterWindow("filter_items.xml", ADDON_PATH, filter=[
+                    prefix.get(kind, '') + label for kind, _, label in rows]
+                    + (['其他腾讯文档源库…'] if more else []))
+                popup.active_position = next((i for i, row in enumerate(rows) if row[:2] == selected), None)
+                popup.doModal()
+                return popup.selected_position
+            position = pick(options, bool(others))
+            if position == len(options) and others:
+                options = others
+                position = pick(options)
+            if position is not None and 0 <= position < len(options):
+                self._change_filter(*options[position])
+            return
 
         def get_unique(attr):
             if attr == 'quality':
@@ -647,111 +793,49 @@ class SourceSelect(BaseWindow):
                 for key in sorted(groups)
             ]
 
-        filter_map = {
-            "quality": {
-                "items": lambda: get_unique("quality"),
-                "filter": lambda val: [s for s in self.sources if _source_quality(s) == val],
-            },
-            "provider": {
-                "items": get_release_groups,
-                "filter": lambda val: [
-                    s
-                    for s in group_sources
-                    if parse_title_info(s.title)["release_group"].casefold() == val.casefold()
-                ],
-            },
-            "type": {
-                "items": lambda: get_unique("type"),
-                "filter": lambda val: [s for s in self.sources if s.type == val],
-            },
-            "indexer": {
-                "items": lambda: sorted({_source_filter_label(s) for s in self.sources if _source_filter_label(s)}),
-                "filter": lambda val: [s for s in self.sources if _source_filter_label(s) == val],
-            },
-            "language": {
-                "items": self._get_all_languages,
-                "filter": lambda val: [
-                    s
-                    for s in self.sources
-                    if val in getattr(s, "languages", []) or val in getattr(s, "fullLanguages", [])
-                ],
-            },
-            "release_group": {
-                "items": get_release_groups,
-                "filter": lambda val: [
-                    s
-                    for s in group_sources
-                    if parse_title_info(s.title)["release_group"].casefold() == val.casefold()
-                ],
-            },
+        value_lists = {
+            'quality': lambda: get_unique('quality'), 'type': lambda: get_unique('type'),
+            'provider': get_release_groups, 'release_group': get_release_groups,
+            'language': self._get_all_languages,
         }
-
-        one_click_filters = {
-            "chinese_subtitles": lambda: [
-                source for source in self.sources if _has_chinese_candidate(source)
-            ],
-            "only_torrents": lambda: [s for s in self.sources if s.type == "Torrent"],
-            "only_debrid": lambda: [s for s in self.sources if s.type == "Debrid"],
-        }
-
-        if selected_type in one_click_filters:
-            filtered_sources = self._apply_source_filter(selected_type, None)
-            if not filtered_sources:
-                kodilog("No sources found matching the filter")
-                if selected_type == "chinese_subtitles":
-                    notification("未找到标注中文字幕的片源，可选“全部”清除筛选")
-            self.filtered_sources = filtered_sources
-            self.filter_applied = True
-            self._filter_spec = (selected_type, None)
-        elif selected_type in filter_map:
-            items = filter_map[selected_type]["items"]()
-            if selected_type == "language" and not items:
-                notification(translation(90406))
+        if selected_type in source_filters.FLAGS:
+            self._change_filter(selected_type)
+        elif selected_type in value_lists:
+            items = value_lists[selected_type]()
+            if not items:
+                if selected_type == 'language':
+                    notification(translation(90406))
                 return
             popup = FilterWindow("filter_items.xml", ADDON_PATH, filter=items)
             popup.doModal()
-            selected_filter = popup.selected_filter
-            del popup
-            if selected_filter is not None:
-                filtered_sources = self._apply_source_filter(selected_type, selected_filter)
-                if not filtered_sources:
-                    kodilog("No sources found matching the filter")
-                self.filtered_sources = filtered_sources
-                self.filter_applied = True
-                self._filter_spec = (selected_type, selected_filter)
-            else:
-                return  # A cancelled value picker preserves the current cards.
-        else:
-            self.filtered_sources = None
-            self.filter_applied = False
-            self._filter_spec = None
+            if popup.selected_filter is not None:
+                self._change_filter(selected_type, popup.selected_filter)
 
-        self.populate_sources_list()
-        if self.filter_applied and self.filtered_sources == []:
-            self.setFocusId(1300)
-        else:
-            self.set_default_focus(self.display_list, 1000, control_list_reset=True)
-
-    def _apply_source_filter(self, kind, value):
+    def _apply_source_filter(self, kind, value, sources=None):
+        sources = self.sources if sources is None else sources
+        if kind == 'library':
+            return [s for s in sources if value in source_libraries(s)]
+        if kind == 'station':
+            return [s for s in sources if value in (getattr(s, 'sourceStations', {}) or {})]
         if kind == 'indexer':
-            return [s for s in self.sources if _source_filter_label(s) == value]
+            return [s for s in sources if _source_filter_label(s) == value or (value == '漫迪 MDsub' and s.indexer == value)]
         if kind == 'quality':
-            return [s for s in self.sources if _source_quality(s) == value]
+            return [s for s in sources if _source_quality(s) == value]
         if kind == 'type':
-            return [s for s in self.sources if getattr(s, kind) == value]
+            return [s for s in sources if getattr(s, kind) == value]
         if kind == 'quality_tab':
-            return [s for s in self.sources if _quality_key(_source_quality(s)) == value]
+            return [s for s in sources if _quality_key(_source_quality(s)) == value]
         if kind in ('provider', 'release_group'):
-            return [s for s in self.sources if _show_release_group(getattr(self, 'item_information', {}), s)
+            return [s for s in sources if _show_release_group(getattr(self, 'item_information', {}), s)
                     and parse_title_info(s.title)['release_group'].casefold() == value.casefold()]
         if kind == 'language':
-            return [s for s in self.sources if value in (getattr(s, 'languages', None) or [])
+            return [s for s in sources if value in (getattr(s, 'languages', None) or [])
                     or value in (getattr(s, 'fullLanguages', None) or [])]
         if kind == 'chinese_subtitles':
-            return [s for s in self.sources if _has_chinese_candidate(s)]
+            return [s for s in sources if _has_chinese_candidate(s)]
         if kind in ('only_torrents', 'only_debrid'):
             expected = 'Torrent' if kind == 'only_torrents' else 'Debrid'
-            return [s for s in self.sources if s.type == expected]
+            return [s for s in sources if s.type == expected]
         raise ValueError('Unknown source filter')
 
     def _handle_context_menu_action(self):
@@ -838,16 +922,7 @@ class SourceSelect(BaseWindow):
         selected_item = quality_list.getSelectedItem()
         if selected_item:
             selected_quality = selected_item.getProperty("quality")
-            filtered_sources = list(self.sources) if selected_quality == '__all__' else [
-                s for s in self.sources if _quality_key(_source_quality(s)) == selected_quality]
-            if not filtered_sources:
-                kodilog("No sources found matching the filter")
-                return
-            self.filtered_sources = filtered_sources
-            self.filter_applied = selected_quality != '__all__'
-            self._filter_spec = ('quality_tab', selected_quality) if self.filter_applied else None
-            self.populate_sources_list()
-            self.set_default_focus(self.display_list, 1000, control_list_reset=True)
+            self._change_filter('quality_tab', selected_quality)
 
     def _handle_select_action(self, control_id):
         self.position = self.display_list.getSelectedPosition()
@@ -857,7 +932,7 @@ class SourceSelect(BaseWindow):
             item = self.display_list.getSelectedItem()
             key = item.getProperty('source_key') if item else ''
             self.source_session.focus(key, self.position)
-            selected_source = self.source_session.capture(self.source_session.epoch, key)
+            selected_source = self.source_session.capture(self.source_session.epoch, key, collect_siblings=True)
             if selected_source is None:
                 self.last_error = '片源列表已更新，请重新选择当前显示的版本'
                 self.setProperty('playback_error', self.last_error)
@@ -868,11 +943,10 @@ class SourceSelect(BaseWindow):
         control_list = self.getControl(control_id)
         self.set_cached_focus(control_id, control_list.getSelectedPosition())
         self._resolve_item(selected_source, pack_select=False)
-        if getattr(self, 'source_session', None):
-            if self._selection_locked:
-                self.source_pump.cancel()
-            else:
-                self.source_session.reopen()
+        # The enclosing search still owns its original deadline and cancellation
+        # on exit. An early manual click must not close the retry list's providers.
+        if getattr(self, 'source_session', None) and not self._selection_locked:
+            self.source_session.reopen()
 
     def populate_sources_list(self, incremental=False) -> None:
         self.list_sources = (
@@ -880,8 +954,6 @@ class SourceSelect(BaseWindow):
             if self.filter_applied and self.filtered_sources is not None
             else self.sources
         )
-        if getattr(self, 'source_session', None):
-            self.list_sources = _manual_source_limit(self.list_sources, self.source_session.limit)
         key_for = (self.source_session.key if getattr(self, 'source_session', None)
                    else lambda source: str(id(source)))
         cards = getattr(self, '_rendered_cards', {}) if incremental else {}
@@ -889,21 +961,44 @@ class SourceSelect(BaseWindow):
         keys = list(getattr(self, '_rendered_keys', [])) if incremental else []
         if not incremental:
             self.display_list.reset()  # Explicit filter/reopen, never provider publication.
-        desired = {key_for(source): source for source in self.list_sources}
         selected = self.display_list.getSelectedItem() if incremental else None
         selected_key = selected.getProperty('source_key') if selected else None
         selected_position = keys.index(selected_key) if selected_key in keys else 0
+        ordered = cinema_quality_order(getattr(self, 'item_information', {}))
+        if getattr(self, 'source_session', None):
+            candidates = self.list_sources
+            self.list_sources = _manual_source_limit(candidates, self.source_session.limit)
+            # If the cursor's still-eligible file crossed the display cutoff,
+            # reserve the last row for it during this interaction.
+            if ordered and selected_key and len(candidates) > len(self.list_sources):
+                if not any(key_for(row) == selected_key for row in self.list_sources):
+                    keep = next((row for row in candidates[len(self.list_sources):]
+                                 if key_for(row) == selected_key), None)
+                    if keep is not None:
+                        self.list_sources[-1] = keep
+        recommended_key = getattr(self, '_recommended_key', None)
+        if self.filter_applied:
+            eligible = self.filtered_sources or []
+            if not any(key_for(s) == recommended_key for s in eligible):
+                recommended_key = next((key_for(s) for s in eligible if not getattr(s, 'shareFailure', '')), None)
+        desired = {key_for(source): source for source in self.list_sources}
         rebound = False
-        # Remove only withdrawn/superseded rows (e.g. exact BT -> 115 duplicate).
-        # Every surviving card keeps its native object and relative position.
+        # Kodi can append but cannot insert into a ControlList. A changed
+        # order needs one bind; reuse its native items and their field caches.
+        surviving = [key for key in keys if key in desired]
+        reorder = ordered and incremental and list(desired)[:len(surviving)] != surviving
         for position in range(len(keys) - 1, -1, -1):
             if keys[position] not in desired:
                 removed_key = keys.pop(position)
                 cards.pop(removed_key)
                 card_values.pop(removed_key, None)
-                self.display_list.removeItem(position)
+                if not reorder:
+                    self.display_list.removeItem(position)
                 rebound = True
-        keys += [key for key in desired if key not in cards]
+        if reorder:
+            keys = list(desired)
+        else:
+            keys += [key for key in desired if key not in cards]
         self.list_sources = [desired[key] for key in keys]
         aliases = {}
         with contextlib.suppress(Exception):
@@ -934,7 +1029,12 @@ class SourceSelect(BaseWindow):
             menu_item.setProperty("codec", info["codec"])
             menu_item.setProperty("audio", info["audio"])
             menu_item.setProperty("hdr_info", info["badges"])
-            menu_item.setProperty("badges_plain", _plain_source_badges(info["badges"]))
+            badges = info["badges"]
+            if ordered:
+                video = release_quality(quality_text(source.title, self.item_information))
+                badges = ' • '.join(filter(None, (video.origin_label, video.dynamic_label,
+                    *(info[k] for k in ('codec', 'audio', 'edition', 'lang_detail', 'format', 'note')))))
+            menu_item.setProperty("badges_plain", _plain_source_badges(badges))
             release_group = info["release_group"] or ""
             from bobbi_core.subtitle_projection import source_card_label, source_label
             chinese_subtitles = detect_chinese_subtitle_kind(
@@ -951,7 +1051,7 @@ class SourceSelect(BaseWindow):
             if subtitle_evidence and not source_label(source):
                 chinese_subtitles = subtitle_evidence
                 menu_item.setProperty('chinese_subtitle_detail', subtitle_evidence)
-            menu_item.setProperty("release_group", release_group)
+            menu_item.setProperty("release_group", release_group if _show_release_group(getattr(self, "item_information", {}), source) else "")
             menu_item.setProperty("show_release_group", "true" if _show_release_group(getattr(self, "item_information", {}), source) else "false")
             menu_item.setProperty("provider_raw", release_group)
             menu_item.setProperty("chinese_subtitles", chinese_subtitles)
@@ -962,11 +1062,10 @@ class SourceSelect(BaseWindow):
                 chinese_subtitles = subtitle_evidence
                 menu_item.setProperty('chinese_subtitles', subtitle_evidence)
                 menu_item.setProperty('chinese_subtitle_detail', subtitle_evidence or '字幕未验证')
-                menu_item.setProperty('source_provenance', source.subindexer)
+                menu_item.setProperty('source_provenance', '、'.join(source_libraries(source).values()) or source.subindexer)
             menu_item.setProperty(
                 "has_chinese_subtitles", "true" if chinese_subtitles else "false"
             )
-            kodilog(f"SourceSelect populate_sources_list: source.type={source.type}")
             if source.type in IndexerType.TORRENT:
                 if source.addedToDebrid and source.debridType:
                     provider_name = source.debridType
@@ -987,6 +1086,13 @@ class SourceSelect(BaseWindow):
                 provider_name = source.debridType or source.type
             indexer_label = _get_source_indexer_label(source, aliases)
             display_indexer = source_site_label(indexer_label, source.type)
+            stations = getattr(source, 'sourceStations', {}) or {}
+            if source.type == 'Torrent' and (stations or source.indexer == 'Jackett'):
+                display_indexer = '、'.join(sorted(set(stations.values()))) or '站点未标'
+            library_names = source_libraries(source)
+            if library_names:
+                provider_name = '、'.join(library_names.values())
+                display_indexer = source_platform_label(source)
             menu_item.setProperty("type", get_provider_color(provider_name))
             menu_item.setProperty("indexer", get_random_color(display_indexer or indexer_label))
             menu_item.setProperty("source_site", display_indexer)
@@ -1014,16 +1120,27 @@ class SourceSelect(BaseWindow):
             preference = source_preference(source, getattr(self, "item_information", {}))
             from lib.cinema.source_presentation import recommendation_label
             first_label = recommendation_label(True, preference['caution'], status)
-            recommended = (self.source_session.key(source) == getattr(self, '_recommended_key', None)
+            recommended = (self.source_session.key(source) == recommended_key
                            if getattr(self, 'source_session', None) else position == 0)
             recommended = recommended and not getattr(source, 'shareFailure', '')
             menu_item.setProperty("recommendation", first_label if recommended else "")
-            menu_item.setProperty("recommendation_reason", preference["reason"])
+            menu_item.setProperty("recommendation_reason", preference["reason"] if recommended else "")
+            hint = []
+            if ordered:
+                if info['note']:
+                    hint.append(_plain_source_badges(info['note']).replace('PROPER', 'PROPER 修订').replace('REPACK', 'REPACK 重封'))
+                if info['audio']:
+                    hint.append(_plain_source_badges(info['audio']))
+            menu_item.setProperty("version_hint", ' · '.join(hint))
             menu_item.setProperty("recommendation_status", recommendation_label(recommended, preference['caution'], status))
             menu_item.setProperty("isPack", str(source.isPack))
             menu_item.flush()
 
-        if menu_items:
+        if reorder:
+            self.display_list.reset()
+            self.display_list.addItems([cards[key] for key in keys])
+            rebound = True
+        elif menu_items:
             self.display_list.addItems(menu_items)
             rebound = True
         self._rendered_cards, self._rendered_keys = cards, keys

@@ -638,7 +638,8 @@ def test_multi_account_same_itemid_isolation_and_manual_mark(plugin, emby_env):
         'action': 'emby_page', 'source': emby_env.src_a.id, 'revision': emby_env.rev_a, 'parent': 'folder:movies'
     })
     row_a = next(r for _, r, _ in plugin.rows if '1001' in r.label or 'Shared Movie' in r.label)
-    assert row_a.properties.get('ResumeTime') == '900'
+    # The server clock belongs to the entry, not either of its two cuts.
+    assert 'ResumeTime' not in row_a.properties and '15:00' in row_a.properties['Bobbi.Library.Location']
 
     plugin.rows.clear()
     plugin.module.execute(17, {
@@ -995,3 +996,23 @@ def test_native_owned_resume_seek_waits_for_observed_clock_and_never_fabricates_
             _sys.modules['xbmc'] = old_xbmc
 
 
+
+
+def test_multicut_resume_rail_waits_for_explicit_start_after_selecting_cut(plugin, emby_env):
+    route = dict(action='emby_play', source=emby_env.src_a.id, revision=emby_env.rev_a,
+                 id='1001', resume_mode='resume')
+    emby_env.picks[:] = [1, -1]
+    plugin.module.execute(17, route)
+    assert not any(ok for _, ok, _ in plugin.resolved)
+    assert not any(path.endswith('/PlaybackInfo') for _,path,_,_ in emby_env.srv.calls)
+    emby_env.picks[:] = [1, 1]
+    plugin.module.execute(17, route)
+    _, ok, item = plugin.resolved[-1]
+    assert ok and float(item.properties.get('StartOffset', 0)) == 0
+
+
+def test_old_profile_card_cannot_start_same_server_item_in_a_different_profile(plugin, emby_env):
+    before = len(emby_env.srv.calls)
+    plugin.module.execute(17, dict(action='emby_play', source=emby_env.src_a.id,
+        revision=emby_env.rev_a, id='1001', profile='0'*64, resume_mode='resume'))
+    assert not any(ok for _,ok,_ in plugin.resolved) and len(emby_env.srv.calls)==before

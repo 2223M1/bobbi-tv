@@ -33,7 +33,7 @@ class FilterTypeWindow(BaseWindow):
             provider_item.setProperty("type", "provider")
             self.list_control.addItem(provider_item)
 
-        source_item = xbmcgui.ListItem(label=_tr(91175, "来源站点"))
+        source_item = xbmcgui.ListItem(label=_tr(91175, "源库或来源站点"))
         source_item.setProperty("type", "indexer")
         self.list_control.addItem(source_item)
 

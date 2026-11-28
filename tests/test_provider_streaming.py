@@ -377,7 +377,9 @@ def test_picker_logs_one_terminal_provider_snapshot_not_each_refresh(chain):
     def log(value, level):
         assert level == 1  # Visible without enabling full Kodi debug logging.
         chain.logs.append(value)
-    namespace = dict(json=json,kodilog=log,xbmc=SimpleNamespace(LOGINFO=1))
+    from lib.utils.general.release_quality import cinema_quality_order
+    namespace = dict(json=json,kodilog=log,xbmc=SimpleNamespace(LOGINFO=1),
+                     cinema_quality_order=cinema_quality_order)
     exec(compile(ast.Module(body=[method],type_ignores=[]),'source_select.py','exec'),namespace)
     snapshot = dict(revision=1,content_revision=1,recommended_key=None,metadata={},entries=[],
                     providers={'ShareLib:1':dict(state='RUNNING',count=0)})

@@ -443,16 +443,16 @@ def review_entries(dialog, expected, entries, invoke=None, scope_check=None, pro
         commands = [entry['command'] for entry in chunk['entries']]
         rows = invoke('catalog_preview', commands=commands)['items']
         if len(rows) != len(commands) or any(row['status'] != 'ready' for row in rows):
-            dialog.ok(_t(None, '预览包含冲突', 'Preview Contains Conflicts'), _t(None, '未提交任何批次，请刷新后重新选择。', 'No batches submitted; refresh and select again.'))
-            return
+            dialog.ok(_t(None, '预览包含冲突', 'Preview Contains Conflicts'), _t(None, '原记录已变化或不可用。未提交任何批次，请在当前条目重新核对。', 'The record changed or is unavailable. Nothing was saved; review this item again.'))
+            return {'complete': False, 'saved': 0, 'refresh_required': True}
         for entry, row in zip(chunk['entries'], rows):
             action = {'confirm': _t(None, '保存描述', 'Save Mapping'), 'unbind': _t(None, '解除绑定', 'Unbind'), 'ignore': _t(None, '忽略此项', 'Ignore'), 'undo': _t(None, '撤回上次修改', 'Undo'),
                       'supplement': _t(None, '关联补充内容', 'Link Extra'), 'detach_supplement': _t(None, '移除补充内容关联', 'Unlink Extra'), 'segments': _t(None, '保存人工片段', 'Save Segments'),
                       'restore_description': _t(None, '导入人工描述与片段证据', 'Restore Mapping & Segments')}
-            previews.append(_t(None, '%s\n记录修订 %s\n原描述 %s\n修改后描述 %s\n操作 %s · 修改后状态 %s', '%s\nRevision %s\nBefore %s\nAfter %s\nAction %s · State %s') % (
+            previews.append(_t(None, '%s\n记录修订 %s\n修改前描述 %s\n修改后描述 %s\n操作 %s · 整理状态 %s → %s', '%s\nRevision %s\nBefore %s\nAfter %s\nAction %s · State %s → %s') % (
                 entry['name'], entry['command']['expected_revision'], _mapping_description(row.get('before')),
                 _mapping_description(row.get('after')), action.get(entry['command']['action'], _t(None, '待核对', 'Pending')),
-                _lbl(row.get('after_state', 'unknown'))))
+                _lbl(row.get('before_state', 'unknown')), _lbl(row.get('after_state', 'unknown'))))
             if 'after_supplement' in row:
                 def relation_label(value):
                     if not value:
@@ -465,7 +465,9 @@ def review_entries(dialog, expected, entries, invoke=None, scope_check=None, pro
                 previews[-1] += _t(None, '\n原片段\n%s\n修改后片段\n%s', '\nSegments before\n%s\nSegments after\n%s') % (
                     _segments_description(row.get('before_segments')), _segments_description(row.get('after_segments')))
     scope_check()
-    dialog.textviewer(_t(None, '逐项预览（尚未保存）', 'Item Preview (Not Saved Yet)'), '\n\n'.join(previews))
+    scope_text = (_t(None, '本次只整理当前登记来源的本地记录。', 'Local records of this registered source only.')
+                  if expected.get('reference_kind') else _t(None, '本次只整理当前账号的本地记录。', 'Local records of the current account only.'))
+    dialog.textviewer(_t(None, '逐项预览（尚未保存）', 'Item Preview (Not Saved Yet)'), scope_text + '\n\n' + '\n\n'.join(previews))
     if not dialog.yesno(_t(None, '确认分批保存？', 'Save in Batches?'), _t(None, '%s 项将分 %s 批。已保存批次不会因后续冲突自动回滚；每批开始前仍会检查修订。', 'Saves %s items across %s batches. Committed batches do not roll back on later conflicts; revisions are rechecked per batch.') % (len(entries), len(chunks))):
         return
     for number, chunk in enumerate(chunks):

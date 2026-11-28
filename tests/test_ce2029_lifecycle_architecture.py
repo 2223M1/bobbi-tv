@@ -69,7 +69,9 @@ def test_due_work_still_requires_owner_and_original_account(native_prepare, kind
         p.accounts.install(credential('456'), p.initial)
     owner_reads = count_owner_reads(p)
     p.player.start_cinema_preparation()
-    if state == 'current':
+    if kind == 'mdsub':
+        assert not p.calls and not owner_reads
+    elif state == 'current':
         assert p.calls == [('catalog_prepare' if kind == 'mdsub' else 'prepare', p.initial)]
         assert owner_reads
     else:
@@ -101,7 +103,7 @@ def test_status_absent_is_not_authority_to_submit_after_late_change(native_prepa
         return result
     monkeypatch.setattr(runtime, 'call', transport)
     p.player.start_cinema_preparation()
-    assert p.calls == [(status_method, p.initial)]
+    assert p.calls == ([] if kind == 'mdsub' else [(status_method, p.initial)])
     assert not getattr(p.player, prefix + 'sent', False)
 
 

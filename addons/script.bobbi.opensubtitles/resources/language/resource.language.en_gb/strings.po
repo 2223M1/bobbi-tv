@@ -117,3 +117,7 @@ msgstr ""
 msgctxt "#32026"
 msgid "Another subtitle search window is active; finish or cancel it first."
 msgstr ""
+
+msgctxt "#32027"
+msgid "Find Chinese Subtitles"
+msgstr ""

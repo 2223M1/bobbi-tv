@@ -11,7 +11,7 @@
     "script.module.bobbi.core"
   ],
   "materials": {
-    "plugin.video.bobbi/resources/skins/Default/1080i/source_select.xml": "3c04f88eabef6cd8499faa86a3c478cf4818ce0dbf4f2c4d8cee0ed08c376481",
+    "plugin.video.bobbi/resources/skins/Default/1080i/source_select.xml": "f54142d3544f92b1c22a01a0633785d0d7500edc364c6b7f8f8c6e0c445baf8e",
     "plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/cc-pill-208x96.png": "0c38b103a60814de9b466900885425f70c0a0bb0ea270eef86b433815a5f2f28",
     "plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/cc-pill-251x112.png": "61f007bfa9e5696d13ac1d741e82bd0163c4fcff728e9afa7246a9f6a6417df0",
     "plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/cc-power-208x208.png": "1ddbab0d677425456d5db302b1385439cfcfac8607d9f197f6ef17e979749fb2",

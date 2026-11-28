@@ -461,3 +461,22 @@ def test_shared_native_export_root_does_not_authorize_revoked_profile(profiles, 
     assert answer['status'] in ('STALE', 'SUBTITLE_SERVICE_UNAVAILABLE')
     assert owner.subtitle_root == shared_native_root
     assert not native.commands
+
+
+def test_new_widget_reads_committed_cache_while_another_widget_holds_writer(tmp_path):
+    from lib.db.cached import SQLiteCache
+    path = str(tmp_path / 'widget.sqlite')
+    writer = SQLiteCache(database=path)
+    try:
+        from datetime import timedelta
+        writer.set('poster', 'committed', timedelta(hours=1))
+        writer._conn.execute('BEGIN IMMEDIATE')
+        writer._conn.execute("DELETE FROM cached WHERE key='poster'")
+        reader = SQLiteCache(database=path)
+        try:
+            assert reader.get('poster') == 'committed'
+        finally:
+            reader.close()
+    finally:
+        writer._conn.rollback()
+        writer.close()

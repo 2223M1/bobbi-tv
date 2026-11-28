@@ -216,8 +216,11 @@ class PreProcessBuilder(BaseProcessBuilder):
                 unique_results.append(res)
                 seen_values.add(key)
                 retained[key] = res
-            elif key and getattr(res, 'requiresCatalogEpisodeProof', False):
-                retained[key].requiresCatalogEpisodeProof = True
+            elif key:
+                from bobbi_core.library_labels import merge_stations
+                merge_stations(retained[key], res)
+                if getattr(res, 'requiresCatalogEpisodeProof', False):
+                    retained[key].requiresCatalogEpisodeProof = True
         self.results = unique_results
         return self
 

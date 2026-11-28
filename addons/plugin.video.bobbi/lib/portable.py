@@ -33,82 +33,82 @@ def resolve_torrent(source, still_selected, information=None, force_picker=False
     progress = xbmcgui.DialogProgress()
     progress.create('正在准备片源', '正在读取文件列表，最多等待 30 秒，可随时取消。')
     choosing = False
-    evidence = 'USER_CONFIRMED_FILE'
+    evidence = None
     def cancelled():
         return not still_selected() or (not choosing and progress.iscanceled())
     def choose_file(files):
         nonlocal choosing, evidence
         if cancelled():
             return None
-        if information and not force_picker:
-            from bobbi_core.torrent_selection import select_exact_file, ExactSelectionError
-            from bobbi_core.episode_identity import (bind_selected_episode,
-                bind_catalog_episode, resolve_episode_binding, check_transport_episode_file)
-            tv = information.get('tv_data') or {}
-            try:
-                import json
-                if not tv and information.get('mode') not in ('movies', 'movie'):
-                    raise ValueError('CATALOG_MEDIA_IDENTITY_REQUIRED')
-                raw_binding = information.get('episode_binding') or ''
-                if tv:
-                    from lib.utils.player.utils import _jacktorr_cached_tv_identity
-                    catalog = _jacktorr_cached_tv_identity(information.get('ids'))
-                    numbering = json.loads(raw_binding) if isinstance(raw_binding, str) and raw_binding else raw_binding
-                    if not numbering or 'version' not in numbering:
-                        numbering = numbering or bind_selected_episode(information.get('ids'), tv, expected)
-                        proof = bind_catalog_episode(information.get('ids'), tv, information['request_id'],
-                            'bt:' + expected, expected, catalog, numbering or None)
-                        raw_binding = json.dumps(proof) if proof else raw_binding
-                    if isinstance(raw_binding, dict):
-                        raw_binding = json.dumps(raw_binding)
-                if raw_binding:
-                    binding = resolve_episode_binding(raw_binding, information['request_id'],
-                        'bt:' + expected, expected, tv.get('season', ''), tv.get('episode', ''))
-                else:
-                    proof = bind_selected_episode(information.get('ids'), tv, expected)
-                    binding = json.dumps(proof) if proof else ''
-                if information.get('require_catalog_episode_binding') and not raw_binding:
+        import json
+        from bobbi_core.file_evidence import PlayOnceAction
+        from bobbi_core.torrent_selection import select_exact_file, play_once_candidates
+        from bobbi_core.episode_identity import (bind_selected_episode,
+            bind_catalog_episode, resolve_episode_binding, check_transport_episode_file)
+        rows = [dict(id=f.id, path=f.path, length=f.size) for f in files]
+        items = {f.id: f for f in files}
+        releases = [getattr(source, 'title', '')]
+        # Explicit pack browsing keeps its existing multi-file picker.
+        context = information or {}
+        tv = context.get('tv_data') or {}
+        known_media = bool(tv or context.get('mode') in ('movies', 'movie'))
+        if context.get('require_catalog_episode_binding') and not tv:
+            raise ValueError('CATALOG_EPISODE_PROOF_REQUIRED')
+        if known_media and not (force_picker and len(files) > 1):
+            rid = context['request_id']
+            season, episode = tv.get('season', ''), tv.get('episode', '')
+            raw, movie = information.get('episode_binding') or '', None
+            if tv:
+                from lib.utils.player.utils import _jacktorr_cached_tv_identity
+                catalog = _jacktorr_cached_tv_identity(information.get('ids'))
+                numbering = json.loads(raw) if isinstance(raw, str) and raw else raw
+                if not numbering or 'version' not in numbering:
+                    numbering = numbering or bind_selected_episode(information.get('ids'), tv, expected)
+                    raw = bind_catalog_episode(information.get('ids'), tv, rid,
+                        'bt:' + expected, expected, catalog, numbering or None) or raw
+                if isinstance(raw, dict):
+                    raw = json.dumps(raw)
+                if information.get('require_catalog_episode_binding') and not raw:
                     raise ValueError('CATALOG_EPISODE_PROOF_REQUIRED')
-                candidates = [dict(id=f.id, path=f.path, length=f.size) for f in files]
-                if tv and raw_binding:
-                    scoped = []
-                    for candidate in candidates:
-                        try:
-                            check_transport_episode_file(raw_binding, candidate['path'],
-                                [getattr(source, 'title', '')], require_work=False)
-                            scoped.append(candidate)
-                        except ValueError:
-                            pass
-                    candidates = scoped
-                matched = select_exact_file(candidates,
-                    tv.get('season', ''), tv.get('episode', ''), getattr(source, 'title', ''),
-                    expected, binding)
+            else:
+                from lib.clients.tmdb.movie_years import cached_movie_identity
+                from bobbi_core.movie_identity import make_binding, file_identity_status
+                catalog = cached_movie_identity((information.get('ids') or {}).get('tmdb_id'))
+                if catalog:
+                    movie = make_binding(catalog['evidence'], catalog['tmdb_id'], catalog['aliases'],
+                                         rid, 'bt:' + expected)
+            binding = resolve_episode_binding(raw, rid, 'bt:' + expected, expected, season, episode)
+            rows = play_once_candidates(rows, season, episode, releases, rid, 'bt:' + expected,
+                                        expected, raw, json.dumps(movie) if movie else '')
+            try:
+                matched = select_exact_file(rows, season, episode, releases[0], expected, binding)
                 if tv:
-                    check_transport_episode_file(raw_binding, matched['path'], [getattr(source, 'title', '')])
-                if not tv:
-                    from lib.clients.tmdb.movie_years import cached_movie_identity
-                    from bobbi_core.movie_identity import make_binding, binding_status, file_identity_status
-                    catalog = cached_movie_identity((information.get('ids') or {}).get('tmdb_id'))
-                    movie = (make_binding(catalog['evidence'], catalog['tmdb_id'], catalog['aliases'],
-                        information['request_id'], 'bt:' + expected) if catalog else None)
+                    check_transport_episode_file(raw, matched['path'], releases)
+                else:
                     basename = matched['path'].replace('\\', '/').rsplit('/', 1)[-1]
-                    if (not movie or binding_status(movie, [basename, getattr(source, 'title', '')])['status'] == 'conflict'
-                            or file_identity_status(movie, basename)['status'] == 'identity_insufficient'):
+                    if not movie or file_identity_status(movie, basename)['status'] == 'identity_insufficient':
                         raise ValueError('MOVIE_FILE_IDENTITY_UNRESOLVED')
-                chosen = next(f for f in files if f.id == matched['id'])
                 evidence = 'AUTO_VERIFIED_FILE'
-                return chosen
-            except (ValueError, KeyError, StopIteration):
-                pass  # Ambiguity goes to the real files, never first/largest.
-        choosing = True
-        progress.close()
-        # Ambiguous files are explicit manual evidence, never promoted to
-        # automatic next-episode/cloud preparation authority.
-        selected = xbmcgui.Dialog().select('选择要播放的文件', [file.path for file in files])
-        return files[selected] if 0 <= selected < len(files) else None
+                return items[matched['id']]
+            except ValueError:
+                pass  # Membership allows this play only; it never proves the episode.
+        action = PlayOnceAction.for_candidates(rows)
+        if action is PlayOnceAction.NO_MATCH:
+            raise ValueError('NO_MATCHING_FILE_IN_SELECTED_SOURCE')
+        if action is PlayOnceAction.USE_SOLE:
+            row = rows[0]
+        else:
+            choosing = True
+            progress.close()
+            selected = xbmcgui.Dialog().select('选择要播放的文件', [row['path'] for row in rows])
+            if type(selected) is not int or not 0 <= selected < len(rows):
+                return None
+            row = rows[selected]
+        evidence = action.value
+        return items[row['id']]
     try:
         result = client.select_source(expected, magnet=magnet, choose_file=choose_file,
-                                      cancelled=cancelled, budget=30)
+            cancelled=cancelled, budget=30, recheck_files=lambda: evidence == 'SOLE_ELIGIBLE_FILE')
     finally:
         progress.close()
     identity = selected_identity('bt:' + result['info_hash'] + ':' + str(result['file_id']))
@@ -149,6 +149,8 @@ def manual_modal(window, base_modal):
     while not xbmc.Monitor().abortRequested():
         window._selection_locked = False
         window._pending_selection = None
+        window.setProperty("instant_close", "false")
+        window.setProperty("resolving", "false")
         if getattr(window, 'source_session', None) is None:
             base_modal()
         else:

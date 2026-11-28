@@ -11,6 +11,7 @@ import sqlite3
 import time
 
 from bobbi_core import sharelib_api
+from bobbi_core.library_labels import public_name
 from bobbi_core.sharelib_snapshot import SnapshotReader
 
 PAGE_SIZE = 100
@@ -64,7 +65,7 @@ def _page(cache, client, deadline, cancelled, cat):
             raise ValueError('Public catalogue entry shape')
         codes.append(item['shareCode'])
         selected.append(dict(shareCode=item['shareCode'], version=str(item['version']),
-                             isPublic=item.get('isPublic', True)))
+                             isPublic=item.get('isPublic', True), name=public_name(item) if item.get('isPublic', True) else ''))
     if len(set(codes)) != len(codes) or set(codes).intersection(state['seen']):
         raise ValueError('Public catalogue repeated page')
     state['items'].extend(selected)
@@ -189,6 +190,15 @@ def _publish(cache, job, path, cat):
         cache._room(size, preserve=code)
         cache.db.execute('INSERT INTO shared_rows SELECT ?,key,tmdb,kind,season,episode,payload FROM snapshot_rows WHERE conflict=0', (code,))
         cache.db.execute('INSERT INTO libraries VALUES(?,?,?,?,?)', (code, job['version'], time.time(), count, size))
+        # A verified public snapshot can supply a name omitted by its directory page.
+        name = public_name(job.get('cursor', {}).get('library', {}))
+        if name:
+            directory = _read(cache, 'directory') or {}
+            for item in directory.get('items', ()):
+                if item['shareCode'] == code and item.get('isPublic', True) and not item.get('name'):
+                    item['name'] = name
+                    _write(cache, 'directory', directory)
+                    break
         cache.db.execute('DELETE FROM library_visibility WHERE code=?', (code,))
         cache.db.execute('DELETE FROM maintenance WHERE key=?', ('attempt:' + code,))
         cache.db.execute("DELETE FROM maintenance WHERE key='snapshot-job'")

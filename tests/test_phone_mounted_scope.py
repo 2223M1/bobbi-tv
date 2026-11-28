@@ -111,7 +111,9 @@ def test_mounted_file_and_receipt_ids_from_another_registered_source_do_not_gran
     with pytest.raises(mounted.module.PhoneError, match='CATALOG_FILE_NOT_FOUND'):
         invoke(mounted, 'catalog_item', dict(file_id=row['entity_id']))
     assert invoke(mounted, 'catalog_preview', dict(commands=[command]))['items'][0]['status'] == 'failed'
-    assert invoke(mounted, 'catalog_apply', dict(commands=[command], request_id='e'*32))['items'][0]['status'] == 'failed'
+    with pytest.raises(mounted.module.PhoneError, match='PREVIEW_REQUIRED'):
+        invoke(mounted, 'catalog_apply', dict(commands=[command], request_id='e'*32))
+    assert invoke(mounted, 'catalog_receipt', dict(request_id='e'*32)) == dict(status='missing', items=[])
     assert service.index.item(scope, row['entity_id'])['revision'] == 0
     service.dispatch('catalog_mount_apply', dict(source_id=foreign.id, namespace=scope['namespace'],
         request_id='f'*32, commands=[command]))

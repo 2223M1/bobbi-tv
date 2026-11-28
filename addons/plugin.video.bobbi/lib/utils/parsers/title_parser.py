@@ -276,7 +276,7 @@ def _extract_release_group(title):
     # Keep hyphens inside names such as Erai-Raws or VCB-Studio by anchoring
     # the separator to a technical token immediately before the group.
     boundary = re.search(
-        r"(?:2160p|1080p|720p|480p|4k|8k|x26[45]|h\.?26[45]|hevc|av1|avc|"
+        r"^.*(?:2160p|1080p|720p|480p|4k|8k|x26[45]|h\.?26[45]|hevc|av1|avc|"
         r"web(?:-dl)?|webrip|bluray|bdrip|brrip|remux|10bit|8bit|12bit|"
         r"atmos|truehd|dts(?:-hd|-x)?|ddp?|e-?ac3|aac|flac|opus|"
         r"7[._ ]?1|5[._ ]?1|2[._ ]?0|s\d{1,3}e\d{1,4}|ep?\d{1,4})"
@@ -435,9 +435,9 @@ def parse_title_info(title):
     audio_format = ""
     if "ATMOS" in title_upper:
         audio_format = "ATMOS"
-    elif "DTS-HD" in title_upper or "DTSHD" in title_upper:
+    elif "DTS HD" in title_upper or "DTSHD" in title_upper:
         audio_format = "DTS-HD"
-    elif "DTS-X" in title_upper or "DTSX" in title_upper:
+    elif "DTS X" in title_upper or "DTSX" in title_upper or "DTS:X" in title_upper:
         audio_format = "DTS:X"
     elif "TRUEHD" in title_upper:
         audio_format = "TRUEHD"

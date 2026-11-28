@@ -195,9 +195,9 @@
           <visible>String.IsEqual(Container(9000).ListItem.Property(cat),ui_lang)</visible>
         </item>
         <item>
-          <label>$LOCALIZE[32084]</label>
+          <label>$LOCALIZE[32114]</label>
           <property name="Bobbi.Value">$VAR[BobbiGlassShortState]</property>
-          <onclick>ActivateWindow(SkinSettings)</onclick>
+          <onclick>ActivateWindowAndFocus(SkinSettings,9106,0)</onclick>
           <visible>String.IsEqual(Container(9000).ListItem.Property(cat),ui_lang)</visible>
         </item>
         <item>
@@ -218,19 +218,21 @@
           <visible>String.IsEqual(Container(9000).ListItem.Property(cat),home_nav)</visible>
         </item>
         <item>
-          <label>$LOCALIZE[32088]</label>
-          <onclick>ActivateWindow(SkinSettings)</onclick>
+          <label>$LOCALIZE[32113]</label>
+          <onclick>ActivateWindowAndFocus(SkinSettings,9105,0)</onclick>
           <visible>String.IsEqual(Container(9000).ListItem.Property(cat),home_nav)</visible>
         </item>
         <item>
-          <label>$LOCALIZE[32089]</label>
+          <label>$LOCALIZE[32072]</label>
+          <property name="Bobbi.Value">$LOCALIZE[32400]</property>
           <onclick>Addon.OpenSettings(plugin.video.bobbi)</onclick>
           <visible>String.IsEqual(Container(9000).ListItem.Property(cat),home_nav)</visible>
         </item>
 
         <!-- Category 3: Playback & Subtitles -->
         <item>
-          <label>$LOCALIZE[32090]</label>
+          <label>$LOCALIZE[32074]</label>
+          <property name="Bobbi.Value">$LOCALIZE[32400]</property>
           <onclick>Addon.OpenSettings(plugin.video.bobbi)</onclick>
           <visible>String.IsEqual(Container(9000).ListItem.Property(cat),playback_sub)</visible>
         </item>
@@ -240,8 +242,8 @@
           <visible>String.IsEqual(Container(9000).ListItem.Property(cat),playback_sub)</visible>
         </item>
         <item>
-          <label>$LOCALIZE[32092]</label>
-          <onclick>ActivateWindow(SkinSettings)</onclick>
+          <label>$LOCALIZE[32117]</label>
+          <onclick>ActivateWindowAndFocus(SkinSettings,9102,0)</onclick>
           <visible>String.IsEqual(Container(9000).ListItem.Property(cat),playback_sub)</visible>
         </item>
         <item>
@@ -252,7 +254,8 @@
 
         <!-- Category 4: Content & Source Preferences -->
         <item>
-          <label>$LOCALIZE[32094]</label>
+          <label>$LOCALIZE[32076]</label>
+          <property name="Bobbi.Value">$LOCALIZE[32400]</property>
           <onclick>Addon.OpenSettings(plugin.video.bobbi)</onclick>
           <visible>String.IsEqual(Container(9000).ListItem.Property(cat),content_pref)</visible>
         </item>
@@ -308,7 +311,8 @@
           <visible>String.IsEqual(Container(9000).ListItem.Property(cat),system_maint)</visible>
         </item>
         <item>
-          <label>$LOCALIZE[32102]</label>
+          <label>$LOCALIZE[32080]</label>
+          <property name="Bobbi.Value">$LOCALIZE[32400]</property>
           <onclick>Addon.OpenSettings(plugin.video.bobbi)</onclick>
           <visible>String.IsEqual(Container(9000).ListItem.Property(cat),system_maint)</visible>
         </item>

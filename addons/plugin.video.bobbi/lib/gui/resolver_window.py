@@ -332,36 +332,23 @@ class ResolverWindow(BaseWindow):
             return
         self.resolved = False
         self.setProperty("resolving", "false")
-        self.error_message = "该片源暂时无法播放，请选择其他片源或重试。"
+        from bobbi_core.startup_failure import startup_message
+        from bobbi_platform.i18n import is_english
         category = getattr(self.player, '_startup_failure_category', None)
-        if category == 'prepared_ready':
-            self.error_message = ''
-            self.setProperty('loading_stage', '同片源 115 已就绪，正在接续')
-        elif category in {'target_unresolved', 'invalid_binding', 'selected_file_missing', 'no_candidate'}:
-            self.error_message = "无法确认所选集数，请换一个片源。"
-        elif category == 'metadata_timeout':
-            self.error_message = "读取种子文件列表超时，请重试或换源。"
-        elif category == 'buffer_timeout':
-            self.error_message = "视频开头缓冲超时，请重试或换源。"
-        elif category == 'torrent_download_timeout':
-            self.error_message = "下载种子超时，请重试或换源。"
-        elif category == 'torrent_download_failed':
-            self.error_message = "未取得有效种子，请刷新片源后重试。"
-        elif category in {'torrserver_error', 'preload_error', 'startup_timeout'}:
-            self.error_message = "该片源暂时无法取得数据，请选择其他片源或稍后重试。"
-        elif category == 'source_identity_mismatch':
-            self.error_message = "种子与所选片源不符，已停止播放准备。请刷新片源。"
-        elif category in {'cancelled', 'aborted'}:
-            self.error_message = "播放准备已中止，请重新选源。"
         try:
-            terminal = json.loads(get_property("bobbi_cinema_terminal") or "{}")
-            if terminal.get("session") == self.item_information.get("request_id"):
-                if terminal.get("category") in {"target_unresolved", "invalid_binding", "selected_file_missing", "no_candidate"}:
-                    self.error_message = "无法确认所选集数，请换一个片源。"
-                elif terminal.get('category') == 'fullscreen_denied':
-                    self.error_message = '视频未能进入全屏，已停止本次播放，请重试。'
+            terminal = json.loads(get_property('bobbi_cinema_terminal') or '{}')
+            if (terminal.get('session') == self.item_information.get('request_id') and
+                    terminal.get('category') in ('target_unresolved', 'invalid_binding', 'selected_file_missing',
+                                                  'no_candidate', 'fullscreen_denied')):
+                category = terminal['category']
         except (ValueError, TypeError, AttributeError):
             pass
+        english = is_english()
+        self.error_message = startup_message(category, english=english,
+            episode=bool(self.item_information.get('tv_data') or self.item_information.get('mode') in ('tv','series')))
+        if category == 'prepared_ready':
+            self.error_message = ''
+            self.setProperty('loading_stage', 'Continuing with the same 115 source' if english else '同片源 115 已就绪，正在接续')
         failure = read_failure(getattr(self, 'source', None), self.item_information, receipt,
                                getattr(self, '_share_reader', None))
         # The diagnostic IPC may overlap a new selection/account intent. Read
@@ -374,7 +361,7 @@ class ResolverWindow(BaseWindow):
             self.close()
             return
         if failure is not None:
-            self.error_message = message(failure['code'])
+            self.error_message = message(failure['code'], english=english)
             self.share_failure = failure
             if failure['code'] in PERMANENT:
                 self.source.verifiedShareFile = False
@@ -450,7 +437,9 @@ class ResolverWindow(BaseWindow):
             else:
                 self.error_message = ''
                 if not self.cancel_event.is_set() and not getattr(self, 'user_cancelled', False) and self._owns_selection():
-                    self.error_message = "片源解析失败，请重试或选择其他片源。"
+                    from lib.clients.bobbi_library import PreparedSourceUnavailable
+                    self.error_message = ("115 文件暂不可用，请换源或刷新片源。" if isinstance(e, PreparedSourceUnavailable)
+                                          else "片源解析失败，请重试或选择其他片源。")
                     if isinstance(e, ShareError):
                         self.share_failure = failure_value(e)
                         self.error_message = message(e.code)

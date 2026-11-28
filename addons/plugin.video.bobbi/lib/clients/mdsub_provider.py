@@ -1,7 +1,7 @@
 """Optional MDsub bridge for the shared manual/automatic Cinema candidate pool."""
 
 
-def find_sources(ids, mode, season, episode, *, prepared_session=None):
+def find_sources(ids, mode, season, episode):
     try:
         import xbmcaddon
         addon = xbmcaddon.Addon('script.module.bobbi.mdsub')
@@ -15,22 +15,6 @@ def find_sources(ids, mode, season, episode, *, prepared_session=None):
         for source in sources:
             source.catalogIdentity = dict(tmdb_id=str(ids['tmdb_id']), mode=mode,
                                           season=season, episode=episode)
-        # Keep the stable origin locator and one card; the actual player freshly
-        # verifies personal-cloud identity before switching transport to 115.
-        try:
-            from bobbi_core.direct_cloud_client import entry
-            view = prepared_session.direct_snapshot() if prepared_session else {}
-        except ImportError:
-            view = {}
-        for source in sources:
-            lookup = dict(selection_policy='exact', request_id='0' * 32, ids=ids, mode=mode,
-                tv_data=dict(season=season, episode=episode),
-                direct_source=dict(provider='mdsub', guid=source.guid, locator=source.url, title=source.title, size=source.size))
-            ready = entry(lookup, view) if view else None
-            if ready and ready['state'] == 'ready':
-                source.directCloudKey = ready['key']
-                source.indexer = '115 · CD2 · 漫迪'
-                source.subindexer = '个人 115 · 文件与读取已核验'
         # Exact ID/episode membership is already validated by the separate
         # catalogue. Do not re-filter its remapped filenames as torrent packs.
         PreProcessBuilder(sources).extract_codec_hdr().filter_by_quality()

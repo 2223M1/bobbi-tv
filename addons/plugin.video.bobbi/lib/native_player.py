@@ -90,7 +90,8 @@ class JacktookPLayer(xbmc.Player):
         self.playing_filename = ""
         self.media_marked = False
         self.cancel_all_playback = False
-        self.kodi_monitor = xbmc.Monitor()
+        from lib.utils.player.kodi_end_drain import VideoEndMonitor
+        self.kodi_monitor = VideoEndMonitor()
         self.next_dialog = get_setting("playnext_dialog_enabled")
         self.playing_next_time = int(get_setting("playnext_time", 50))
         self.PLAYLIST = PLAYLIST
@@ -279,24 +280,14 @@ class JacktookPLayer(xbmc.Player):
                 from lib.utils.player.direct_continuity import resolve_direct
                 self.url = data['url'] = resolve_direct(data, lambda: self._cinema_cancel.is_set()
                     or not self._owns_playback_session())
-            if (data.get('selection_policy') == 'exact'
-                    and (data.get('direct_source') or {}).get('provider') == 'mdsub'):
-                session = getattr(self, 'prepared_session', None)
-                try:
-                    known = session.direct_entry(data) if session else None
-                except (OSError, RuntimeError, ValueError):
-                    known = None  # Optional mirror lookup cannot block the original public URL.
-                if not known or known['state'] != 'ready':
-                    self.start_direct_preparation()
-                if known and known['state'] == 'ready':
-                    cloud = session.direct_resolve(data, lambda: self._cinema_cancel.is_set() or not self._owns_playback_session())
-                    if not cloud:
-                        raise RuntimeError('115 文件无法读取或已变化，请重新选源')
-                    self.url = data['url'] = cloud['path']
-                    data.update(direct_cloud_key=cloud['key'], size=cloud['bytes'], indexer='115 · CD2 · 漫迪')
-                    self._cinema_phase('DIRECT_CLOUD_VERIFIED')
-                elif data.get('_catalog_next') or data.get('direct_cloud_required'):
-                    raise RuntimeError('同版本正在存入 115，请稍后重试')
+            if data.get('direct_cloud_required') or data.get('direct_cloud_key'):
+                # Existing history may explicitly select a particular personal
+                # file. Verify it under the original account; never substitute it.
+                from lib.services.standard_playback import resolve_selected_cloud
+                resolve_selected_cloud(data, lambda: self._cinema_cancel.is_set() or not self._owns_playback_session(),
+                                       getattr(self, 'prepared_session', None))
+                self.url = data['url']
+                self._cinema_phase('DIRECT_CLOUD_VERIFIED')
             if data.get('prepared_resource_id'):
                 self._cinema_phase('PREPARED_VERIFY_BEGIN')
                 from lib.clients.bobbi_library import load_prepared_index
@@ -371,6 +362,21 @@ class JacktookPLayer(xbmc.Player):
                 f"queue_remaining={len(JacktookPLayer._nextep_queue)}"
             )
 
+            if 'kodi_end_wait' in entry:
+                wait_end, reserved_at = entry['kodi_end_wait']
+                outcome = wait_end(reserved_at, self._cinema_cancel.is_set)
+                self._cinema_phase('KODI_EOF_DRAIN_' + outcome.upper())
+                if (outcome == 'cancelled' or self._cinema_cancel.is_set()
+                        or self.kodi_monitor.abortRequested() or self.isPlaying()):
+                    # Release only this still-unopened reservation. A new user selection may
+                    # already own the service; its boot, epoch and request ID will not match.
+                    try:
+                        self.playback_client.call(dict(data['_selection_context'], operation='cancel'))
+                    except (KeyError, ValueError, OSError, RuntimeError):
+                        pass
+                    return True
+                # Hosts missing the optional application announcement retain their one
+                # authorized open after the bounded timeout, provided no player took over.
             if results is None:
                 # This is an internal handoff after the previous plugin action
                 # has already finished resolving. setResolvedUrl() no longer has
@@ -817,8 +823,24 @@ class JacktookPLayer(xbmc.Player):
             # UI handoff must precede optional stream/resume work, and must not
             # depend on already being fullscreen or on a known stream duration.
             started = self.handle_playback_start()
-            if self.data.get('selection_policy') == 'exact' and started is False:
-                return
+            if self.data.get('selection_policy') == 'exact':
+                # History, preparation and subtitle setup can block for seconds.
+                # Give a pending handoff its existing bounded attempts before doing
+                # that work; each attempt still checks the owner and native instance.
+                for _ in range(4):
+                    if started is False or self._cinema_cancel.is_set():
+                        return
+                    deadline = getattr(self, '_presentation_deadline', None)
+                    if (deadline is None or getattr(self, '_presentation_finished', False)
+                            or not self.isPlayingVideo()):
+                        break
+                    now = monotonic()
+                    delay = min(deadline, getattr(self, '_presentation_next_at', now)) - now
+                    if delay > 0:
+                        sleep(int(delay * 1000) + 1)
+                    started = self.handle_playback_start()
+                if started is False:
+                    return
             if getattr(self, '_transport_recovery_child', False):
                 self.update_playback_progress()
                 self._handle_trakt_scrobble(self.list_item)
@@ -1203,14 +1225,19 @@ class JacktookPLayer(xbmc.Player):
         auto_audio_enabled = get_setting("auto_audio")
         auto_audio_language = str(get_setting("auto_audio_language"))
         if auto_audio_enabled and auto_audio_language and auto_audio_language.lower() != "none":
-            sleep(500)
-            audio_streams = self.getAvailableAudioStreams()
-            if audio_streams or len(audio_streams) > 0:
-                lang_code = get_language_code(auto_audio_language)
-                for stream_lang in audio_streams:
-                    if stream_lang == lang_code:
-                        self.setAudioStream(audio_streams.index(stream_lang))
-                        break
+            from bobbi_platform.kodi import rpc
+            from lib.services.native_streams import snapshot
+            try:
+                before = snapshot(rpc, 'audio', 'legacy_auto')
+                wanted = get_language_code(auto_audio_language)
+                choices = [row['index'] for row in before['rows'] if wanted and row.get('language') == wanted]
+                if len(choices) != 1 or choices[0] == before['current']:
+                    return  # Multiple dubs/commentaries in the same language are not a unique choice.
+                sleep(500)
+                if snapshot(rpc, 'audio', 'legacy_auto')['proof'] == before['proof']:
+                    rpc('Player.SetAudioStream', dict(playerid=before['player'], stream=choices[0]))
+            except (OSError, RuntimeError, ValueError, KeyError, TypeError, AttributeError):
+                return  # Missing or changed file/track evidence leaves the current selection alone.
 
     def handle_playback_failure(self):
         if self.data.get("selection_policy") == "exact":
@@ -1350,6 +1377,11 @@ class JacktookPLayer(xbmc.Player):
                 # A lost request ACK is UNKNOWN. Observe the original admitted
                 # request; never submit it again as a new fullscreen command.
                 stage = 'FULLSCREEN_ADMISSION'
+                if self.data.get('_retry_after_failed_source') and not getattr(self, '_retired_play_failure', False):
+                    # Only after this retry has its own native AV receipt. Kodi can
+                    # leave the failed source's stock OK modal above a working video.
+                    from lib.gui.playback_failure import retire_stock_error
+                    self._retired_play_failure = retire_stock_error()
                 if not (state.get('desired') or {}).get('fullscreen_requested'):
                     # The compatibility label is only a presentation attempt;
                     # publish it after this fresh same-request owner read.
@@ -2382,11 +2414,8 @@ class JacktookPLayer(xbmc.Player):
             self._cinema_phase('START_HISTORY_END')
 
     def start_cinema_preparation(self, pre_start=False):
-        if (not pre_start and self.data.get('selection_policy') == 'exact'
-                and not self.data.get('prepared_resource_id')
-                and (self.data.get('direct_source') or {}).get('provider') == 'mdsub'):
-            self.start_direct_preparation()
-            return
+        if self.data.get('direct_source') and not self.data.get('is_torrent'):
+            return  # Catalogued direct files do not create personal-cloud jobs.
         attempts = getattr(self, '_cinema_prepare_attempts', 0)
         if (getattr(self, '_cinema_prepare_sent', False) or getattr(self, '_cinema_prepare_blocked', False)
                 or getattr(self, '_cinema_prepare_inflight', None) is not None or attempts >= 6
@@ -2490,59 +2519,6 @@ class JacktookPLayer(xbmc.Player):
             self._cinema_prepare_diagnostic = code
             kodilog('[CINEMA-PREPARE] ' + code + ' request=' + self.playback_session_id, level=xbmc.LOGWARNING)
 
-    def start_direct_preparation(self):
-        """Local idempotent intake only; slow transfer/probes belong to service."""
-        attempts = getattr(self, '_direct_prepare_attempts', 0)
-        if (getattr(self, '_direct_prepare_sent', False)
-                or self._cinema_cancel.is_set() or attempts >= 6
-                or monotonic() < getattr(self, '_direct_prepare_due', 0)
-                or not self._owns_playback_session()):
-            return
-        self._direct_prepare_due = monotonic() + 15
-        prepared_session = getattr(self, 'prepared_session', None)
-        if prepared_session is None:
-            return
-        applicable = False
-        try:
-            from bobbi_core.direct_cloud_client import intent
-            from bobbi_core.direct_cloud import source_key, ACTIVE
-            body = intent(self.data)
-            if body is None:
-                return
-            applicable = True
-            self._direct_prepare_attempts = attempts + 1
-            account = prepared_session.capture_account(self.data, allow_capture=not attempts)
-            expected = source_key(body)
-            result = prepared_session.call('catalog_status', {'key': expected}, expected_account=account) if attempts else None
-            allow_submit = not attempts or (isinstance(result, dict) and result.get('key') == expected
-                                            and result.get('state') == 'absent')
-            if not self._owns_playback_session() or self._cinema_cancel.is_set():
-                return
-            if allow_submit:
-                result = prepared_session.call('catalog_prepare', body, expected_account=account)
-            if (not isinstance(result, dict) or result.get('key') != expected
-                    or result.get('state') not in set(ACTIVE) | {'ready', 'failed', 'rejected', 'retryable'}):
-                self._preparation_diagnostic('DIRECT_PREPARATION_RECEIPT_UNAVAILABLE')
-                return
-            if self._owns_playback_session() and not self._cinema_cancel.is_set():
-                self._direct_prepare_sent = True
-                if result.get('state') == 'retryable':
-                    notification('无法读取 115 存片状态，请重新选择此片源重试', heading='波比TV', time=5000)
-                elif result.get('state') in ('failed', 'rejected'):
-                    notification('尚未存入 115，不影响当前播放', heading='波比TV', time=5000)
-                elif result.get('state') == 'uncertain':
-                    notification('尚未确认 115 存片结果，不会重复提交', heading='波比TV', time=5000)
-                elif result.get('state') != 'ready':
-                    notification('正在存入你的 115，暂未就绪', heading='波比TV', time=5000)
-        except (OSError, ValueError, RuntimeError):
-            self._preparation_diagnostic('DIRECT_PREPARATION_UNAVAILABLE')
-        finally:
-            if (applicable and attempts == 5 and self._owns_playback_session() and not self._cinema_cancel.is_set()
-                    and not getattr(self, '_direct_prepare_sent', False)):
-                self._preparation_diagnostic('DIRECT_PREPARATION_RETRY_EXHAUSTED')
-                notification('未确认 115 存片状态，不影响当前播放。可重新选择此片源检查。',
-                             heading='波比TV', time=5000)
-
     def check_cinema_continuity(self):
         if not self.data.get('cinema_continuity') or not self._owns_playback_session():
             return
@@ -2609,18 +2585,6 @@ class JacktookPLayer(xbmc.Player):
                             from lib.utils.player.continuity import next_cloud_data
                             index = load_index(session=prepared_session)
                             prepared = next_cloud_data(data, index)
-                        if (prepared and (prepared.get('direct_source') or {}).get('provider') == 'mdsub'
-                                and not prepared.get('prepared_resource_id') and current_session()):
-                            ready = prepared_session.direct_entry(prepared) if prepared_session else None
-                            if not ready or ready['state'] != 'ready':
-                                pending_direct, prepared = prepared, None
-                                reason = 'DIRECT_CLOUD_PREPARING'
-                                if prepared_session is None:
-                                    raise RuntimeError('PREPARATION_ACCOUNT_SCOPE_UNAVAILABLE')
-                                status = prepared_session.direct_prepare(pending_direct)
-                                reason = ('DIRECT_CLOUD_FAILED' if status.get('state') in ('failed', 'rejected')
-                                          else 'DIRECT_CLOUD_PREPARING')
-                                # A resolved external URL is not a ready cloud episode.
                 except Exception as error:
                     kodilog('[CINEMA-NEXT] prepare failed: ' + type(error).__name__)
                 finally:
@@ -2632,13 +2596,6 @@ class JacktookPLayer(xbmc.Player):
                             if state != getattr(self, '_cinema_next_status', None):
                                 self._cinema_next_status = state
                                 kodilog('[CINEMA-NEXT] ' + state, level=xbmc.LOGINFO)
-                                if state in ('DIRECT_CLOUD_PREPARING', 'DIRECT_CLOUD_FAILED'):
-                                    message = ('下一集正在存入你的 115，尚未就绪' if state == 'DIRECT_CLOUD_PREPARING'
-                                               else '下一集尚未存入 115，请稍后重试或重新选源')
-                                    set_property('AM6B.NextPreparationState', message)
-                                    notification(message, heading='波比TV', time=5000)
-                                elif prepared and (prepared.get('direct_source') or {}).get('provider') == 'mdsub':
-                                    set_property('AM6B.NextPreparationState', '同版本下一集已在 115 就绪')
                     gate.finish(token, bool(prepared), monotonic(), publish,
                                 provisional=bool(prepared and prepared.get('_next_transport') == 'bt'))
             try:
@@ -2791,7 +2748,13 @@ class JacktookPLayer(xbmc.Player):
             except (AttributeError, OSError, ValueError, RuntimeError) as error:
                 kodilog('[CINEMA-NEXT] NATURAL_RESERVATION_REJECTED ' + type(error).__name__, level=xbmc.LOGWARNING)
                 return
-        JacktookPLayer._nextep_queue.append({'data': prepared})
+        entry = {'data': prepared}
+        wait_end = getattr(getattr(self, 'kodi_monitor', None), 'wait_for_reserved_next', None)
+        if self.data.get('selection_policy') == 'exact' and callable(wait_end):
+            # Queue-only state: neither an addon URL nor a media payload can supply this barrier.
+            # Retain this parent's monitor even when an outer player drains a chain of children.
+            entry['kodi_end_wait'] = (wait_end, monotonic())
+        JacktookPLayer._nextep_queue.append(entry)
         self._cinema_natural_queued = True
         self._cinema_next_data = None
         kodilog('[CINEMA-NEXT] NATURAL_EOF_SAME_VERSION_HANDOFF', level=xbmc.LOGINFO)

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon id="script.bobbi.opensubtitles" name="bobbi TV · 找中文字幕" version="0.1.4" provider-name="bobbi TV contributors">
+<addon id="script.bobbi.opensubtitles" name="bobbi TV · 找中文字幕" version="0.1.5" provider-name="bobbi TV contributors">
   <requires>
     <import addon="xbmc.python" version="3.0.1" />
-    <import addon="script.module.bobbi.core" version="0.1.72" />
+    <import addon="script.module.bobbi.core" version="0.1.90" />
     <import addon="script.module.bobbi.platform" version="0.1.79" />
   </requires>
   <extension point="xbmc.python.script" library="script.py"><provides>executable</provides></extension>

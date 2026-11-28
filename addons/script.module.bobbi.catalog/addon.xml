@@ -1,7 +1,7 @@
-<addon id="script.module.bobbi.catalog" name="AM6B 115资源目录" version="0.1.8" provider-name="AM6B">
+<addon id="script.module.bobbi.catalog" name="AM6B 115资源目录" version="0.1.9" provider-name="AM6B">
   <requires>
     <import addon="xbmc.python" version="3.0.0" />
-    <import addon="script.module.bobbi.core" version="0.1.65" />
+    <import addon="script.module.bobbi.core" version="0.1.93" />
     <import addon="script.module.bobbi.platform" version="0.1.75" />
   </requires>
   <extension point="xbmc.python.module" library="lib" />

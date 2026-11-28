@@ -1,4 +1,5 @@
 """Emby as an online Kodi directory. No scanner, history writer or player owner."""
+from hashlib import sha256
 from urllib.parse import quote, urlencode
 import time
 
@@ -38,6 +39,64 @@ def clean(value, limit, fallback=''):
     return ''.join(c if ord(c) >= 32 else ' ' for c in value[:limit]).strip().replace('[', '［').replace(']', '］') or fallback
 
 
+def version_labels(versions):
+    """Distinguish only otherwise identical labels, using this item response."""
+    names, facts = [], []
+    for media in versions:
+        name = clean(media.get('Name'), 160) or clean(media.get('Container'), 50) or _t('原片', 'Original')
+        names.append(name)
+        tracks = media.get('MediaStreams')
+        tracks = [t for t in tracks[:256] if isinstance(t, dict)] if isinstance(tracks, list) else []
+        video = next((t for t in tracks if t.get('Type') == 'Video'), {})
+        width, height = video.get('Width'), video.get('Height')
+        resolution = (f'{width}×{height}' if all(type(v) is int and 0 < v <= 32768 for v in (width, height)) else '')
+        ticks = media.get('RunTimeTicks')
+        duration = _fmt_clock(ticks / TICKS_PER_SECOND) if type(ticks) is int and 0 < ticks < TICKS_PER_SECOND * 864000 else ''
+        langs = ', '.join(dict.fromkeys(clean(t.get('Language'), 16) for t in tracks
+                            if t.get('Type') == 'Audio' and clean(t.get('Language'), 16)))
+        facts.append((resolution, duration, langs, clean(video.get('Codec'), 16).upper(),
+                      clean(media.get('Container'), 16).upper()))
+    labels = list(names)
+    for i, name in enumerate(names):
+        peers = [j for j, n in enumerate(names) if j != i and n.casefold() == name.casefold()]
+        parts = []
+        for col, v in enumerate(facts[i]):
+            if not peers:
+                break
+            if v and any(facts[j][col] != v for j in peers):
+                if v.casefold() != name.casefold():
+                    parts.append(v)
+                peers = [j for j in peers if facts[j][col] == v]
+        labels[i] = ' · '.join([name] + parts)
+    return ['%d · %s' % (i + 1, label) for i, label in enumerate(labels)]
+
+
+def menu_account(store, source):
+    """An alias is display only. Scope the existing write to the card's source."""
+    import re
+    from bobbi_core.library_labels import visible_name
+    if not callable(getattr(store, 'sources', None)):
+        return ''
+    server = source.metadata.get('server_id')
+    accounts = sorted((s for s in store.sources() if server and s.kind == 'media_server'
+        and s.metadata.get('provider') == 'emby' and s.metadata.get('server_id') == server
+        and s.metadata.get('user_id') and s.password), key=lambda s:s.id)
+    if len({s.metadata['user_id'] for s in accounts}) < 2:
+        return ''
+    def alias(s):
+        name = visible_name(s.name)
+        sensitive = [s.id, server, s.metadata.get('user_id')]
+        if (not name or any(str(v).casefold() in name.casefold() for v in sensitive if v and len(str(v)) >= 6)
+                or name in sensitive or re.search(r'(?:[\w-]+\.)+[a-zA-Z]{2,}|\d+\.\d+\.\d+\.\d+|[a-fA-F0-9]{16,}|:', name)):
+            return ''
+        return name[:60]
+    name = alias(source)
+    if name and sum(alias(s).casefold() == name.casefold() for s in accounts) == 1:
+        return name
+    n = next((i for i, s in enumerate(accounts, 1) if s.id == source.id), None)
+    return _t(f'账号 {n}', f'Account {n}') if n else ''
+
+
 def _fmt_clock(seconds: float) -> str:
     total = max(0, int(round(seconds)))
     hours, rem = divmod(total, 3600)
@@ -54,8 +113,10 @@ def _user_state(row: dict) -> tuple[float, bool, bool, int]:
     played = bool(data.get('Played') is True)
     favorite = bool(data.get('IsFavorite') is True)
     ticks = data.get('PlaybackPositionTicks')
-    raw_ticks = ticks if type(ticks) is int and ticks > 0 else 0
-    resume_sec = ticks_to_seconds(raw_ticks) if (raw_ticks > 0 and not played) else 0.0
+    raw_ticks = ticks if type(ticks) is int and 0 < ticks < 2**63 else 0
+    duration = row.get('RunTimeTicks')
+    within_file = not (type(duration) is int and duration > 0 and raw_ticks >= duration)
+    resume_sec = ticks_to_seconds(raw_ticks) if (raw_ticks and not played and within_file) else 0.0
     return resume_sec, played, favorite, raw_ticks
 
 
@@ -96,6 +157,45 @@ def projection(row):
     return ident, title, folder, info, tags.get('Primary') if type(tags) is dict else None
 
 
+def _profile_tag(root):
+    # A display-route fence, not a credential; the actual registered account is still revalidated.
+    return sha256(str(root).encode('utf-8')).hexdigest()
+
+
+def _card_playback(record, projected, source, revision, profile_tag, *, resume_on_open=False):
+    """Read-only actions for this Emby item. Routes recheck profile, source and version on use."""
+    ident, _, folder, info, _ = projected
+    seconds, played, favorite, _ = _user_state(record)
+    versions = record.get('MediaSources')
+    single = False
+    if isinstance(versions, list) and len(versions) == 1 and isinstance(versions[0], dict):
+        try:
+            single = bool(identifier(versions[0].get('Id')))
+        except ValueError:
+            pass
+    can_resume = not folder and seconds > 0 and single
+    fields = dict(source=source.id, revision=revision, profile=profile_tag)
+    target = (link(action='emby_page', parent='folder:' + ident, **fields) if folder else
+              link(action='emby_play', id=ident, **fields,
+                   **({'resume_mode': 'resume'} if resume_on_open and can_resume else {})))
+    props = {'Bobbi.Emby.Authority': 'emby_server', 'Bobbi.Emby.SourceId': source.id,
+             'Bobbi.Emby.SourceName': source.name}
+    if favorite:
+        props['Bobbi.Emby.Favorite'] = 'true'
+    label = ''
+    if not folder and seconds > 0:
+        label = (_t('继续 ', 'Resume ') if can_resume else _t('服务器条目进度 · ', 'Server item progress · ')) + _fmt_clock(seconds)
+        if can_resume:
+            duration = info.get('duration', 0)
+            props.update(ResumeTime=str(int(seconds)), PercentPlayed=str(max(1, min(99, round(100*seconds/duration))) if duration else 1))
+            props['Bobbi.Emby.ResumeSeconds'] = props['ResumeTime']
+            if duration:
+                props['TotalTime'] = str(duration)
+    elif not folder and played:
+        label = _t('已看', 'Watched')
+    return target, label, props, can_resume, played, favorite
+
+
 def _content_type(media_types: list[str]) -> str:
     unique = set(media_types)
     if len(unique) == 1:
@@ -131,6 +231,11 @@ def execute(handle, params, store, item):
 
     try:
         root = binding.root()
+        profile_tag = _profile_tag(root)
+        if 'profile' in params:
+            params = dict(params)
+            if params.pop('profile') != profile_tag:
+                raise PanError('PAN_ACCOUNT_CHANGED')
         try:
             if action == 'browse':
                 if set(params) != {'action', 'source'}:
@@ -187,7 +292,7 @@ def execute(handle, params, store, item):
                 raise PanError('PAN_ACCOUNT_CHANGED')
 
         def route(act, **fields):
-            return link(action=act, source=source.id, revision=rev, **fields)
+            return link(action=act, source=source.id, revision=rev, profile=profile_tag, **fields)
 
         current()
 
@@ -282,7 +387,7 @@ def execute(handle, params, store, item):
                 versions = detail.get('MediaSources')
                 if not isinstance(versions, list) or not 1 <= len(versions) <= 256:
                     raise PanError('PAN_MEDIA_UNSUPPORTED')
-                ids, labels = [], []
+                ids = []
                 for media in versions:
                     if type(media) is not dict:
                         raise PanError('PAN_REPLY_INVALID')
@@ -290,8 +395,7 @@ def execute(handle, params, store, item):
                     if mid in ids:
                         raise PanError('PAN_REPLY_INVALID')
                     ids.append(mid)
-                    labels.append(clean(media.get('Name'), 160) or clean(media.get('Container'), 50) or _t('原片', 'Original'))
-                labels = ['%d · %s' % (i + 1, label) for i, label in enumerate(labels)]
+                labels = version_labels(versions)
                 current()
                 reservation.require_current()
                 index = 0 if len(ids) == 1 else dialog.select(_t('选择 Emby 文件版本', 'Select Emby Media Version'), labels)
@@ -304,7 +408,7 @@ def execute(handle, params, store, item):
                 start_over = True
                 chosen_resume = 0.0
                 if resume_sec > 0:
-                    if resume_mode == 'resume':
+                    if resume_mode == 'resume' and len(ids) == 1:
                         chosen_resume = resume_sec
                         start_over = False
                     elif resume_mode == 'start_over':
@@ -312,7 +416,7 @@ def execute(handle, params, store, item):
                         start_over = True
                     else:
                         pick_resume = dialog.select(
-                            _t('选择播放起点', 'Choose Playback Start'),
+                            (_t('所选版本：', 'Selected version: ') + labels[index] if len(ids) > 1 else _t('选择播放起点', 'Choose Playback Start')),
                             [
                                 _t(f'继续观看 ({_fmt_clock(resume_sec)})', f'Resume from {_fmt_clock(resume_sec)}'),
                                 _t('从头播放', 'Play from Start'),
@@ -461,29 +565,15 @@ def execute(handle, params, store, item):
         from .emby_artwork import poster_factory
         poster = poster_factory(root, source.id, rev, store)
         media_types = []
+        account_label = menu_account(store, source)
         for record in page_rows:
             data = projection(record)
             if data is None:
                 continue
             ident, title, folder, info, tag = data
             media_types.append(info.get('mediatype', 'video'))
-            resume_sec, played_flag, fav_flag, _ = _user_state(record)
-            label2_parts = []
-            if fav_flag:
-                label2_parts.append(_t('已收藏', 'Favorite'))
-            if resume_sec > 0:
-                label2_parts.append(_t('继续 ', 'Resume ') + _fmt_clock(resume_sec))
-            elif played_flag and not folder:
-                label2_parts.append(_t('已看', 'Watched'))
-            target = route('emby_page', parent='folder:' + ident) if folder else route('emby_play', id=ident)
-            props = {}
-            if resume_sec > 0:
-                props['ResumeTime'] = str(int(resume_sec))
-                if info.get('duration'):
-                    props['TotalTime'] = str(int(info['duration']))
-                props['Bobbi.Emby.ResumeSeconds'] = str(int(resume_sec))
-            if fav_flag:
-                props['Bobbi.Emby.Favorite'] = 'true'
+            target, status, props, can_resume, played_flag, fav_flag = _card_playback(record, data, source, rev, profile_tag)
+            label2_parts = ([_t('已收藏', 'Favorite')] if fav_flag else []) + ([status] if status else [])
             row = item(title, target, folder, label2=' · '.join(label2_parts), properties=props or None)
             row[1].setInfo('video', info)
             art = poster(ident, tag) if tag else ''
@@ -491,15 +581,19 @@ def execute(handle, params, store, item):
                 row[1].setArt({'poster': art, 'thumb': art})
             if hasattr(row[1], 'addContextMenuItems'):
                 ctx = []
-                if not folder and resume_sec > 0:
+                if can_resume:
                     ctx.append((_t('从头播放', 'Play from Start'), f'PlayMedia({route("emby_play", id=ident, resume_mode="start_over")})'))
                 if not folder or record.get('Type') in ('Series', 'Season'):
                     ctx.append((
-                        _t('标记为未看', 'Mark as Unwatched') if played_flag else _t('标记为已看', 'Mark as Watched'),
+                        (_t(f'标记 {account_label} 未看', f'Mark Unwatched for {account_label}') if played_flag else
+                         _t(f'标记 {account_label} 已看', f'Mark Watched for {account_label}')) if account_label else
+                        (_t('标记为未看', 'Mark as Unwatched') if played_flag else _t('标记为已看', 'Mark as Watched')),
                         f'RunPlugin({route("emby_mark", id=ident, op="unplayed" if played_flag else "played")})',
                     ))
                     ctx.append((
-                        _t('取消 Emby 收藏', 'Remove Emby Favorite') if fav_flag else _t('加入 Emby 收藏', 'Add to Emby Favorites'),
+                        (_t(f'从 {account_label} 的收藏中移除', f'Remove from Favorites for {account_label}') if fav_flag else
+                         _t(f'加入 {account_label} 的收藏', f'Add to Favorites for {account_label}')) if account_label else
+                        (_t('取消 Emby 收藏', 'Remove Emby Favorite') if fav_flag else _t('加入 Emby 收藏', 'Add to Emby Favorites')),
                         f'RunPlugin({route("emby_mark", id=ident, op="unfavorite" if fav_flag else "favorite")})',
                     ))
                 if ctx:
@@ -597,6 +691,7 @@ def execute_home_rail(handle: int, params: dict, *, registry_factory=None) -> No
     store = None
     rows = []
     media_types = []
+    published_sources = []
     had_emby_source = False
     binding = ProfileBinding()
 
@@ -612,6 +707,7 @@ def execute_home_rail(handle: int, params: dict, *, registry_factory=None) -> No
         except (OSError, ValueError, RuntimeError):
             return
 
+        profile_tag = _profile_tag(root)
         reg_path = root / 'libraries.sqlite3'
         if not reg_path.is_file() and registry_factory is None:
             succeeded = True
@@ -685,45 +781,12 @@ def execute_home_rail(handle: int, params: dict, *, registry_factory=None) -> No
                     continue
                 ident, title, folder, info, tag = data
                 media_types.append(info.get('mediatype', 'video'))
-                resume_sec, played_flag, fav_flag, _ = _user_state(record)
-                duration = int(info.get('duration') or 0)
-                pct = 0
-                if resume_sec > 0:
-                    pct = max(1, min(99, int(round(resume_sec * 100.0 / duration)))) if duration > 0 else 1
-
-                target = (
-                    link(action='emby_page', source=source.id, revision=rev, parent='folder:' + ident)
-                    if folder
-                    else link(
-                        action='emby_play',
-                        source=source.id,
-                        revision=rev,
-                        id=ident,
-                        **({'resume_mode': 'resume'} if section == 'resume' and resume_sec > 0 else {}),
-                    )
-                )
+                target, status, props, _, _, _ = _card_playback(record, data, source, rev, profile_tag,
+                    resume_on_open=section == 'resume')
                 li = xbmcgui.ListItem(label=title)
-                sub_parts = []
-                if multi_source:
-                    sub_parts.append(source.name)
-                if resume_sec > 0:
-                    sub_parts.append(_t('继续 ', 'Resume ') + _fmt_clock(resume_sec))
-                elif played_flag and not folder:
-                    sub_parts.append(_t('已看', 'Watched'))
+                sub_parts = ([source.name] if multi_source else []) + ([status] if status else [])
                 if sub_parts:
                     li.setLabel2(' · '.join(sub_parts))
-                props = {
-                    'Bobbi.Emby.Authority': 'emby_server',
-                    'Bobbi.Emby.SourceId': source.id,
-                    'Bobbi.Emby.SourceName': source.name,
-                }
-                if pct > 0:
-                    props['PercentPlayed'] = str(pct)
-                    props['ResumeTime'] = str(int(resume_sec))
-                    if duration > 0:
-                        props['TotalTime'] = str(duration)
-                if fav_flag:
-                    props['Bobbi.Emby.Favorite'] = 'true'
                 for k, v in props.items():
                     li.setProperty(k, v)
                 if not folder:
@@ -742,6 +805,22 @@ def execute_home_rail(handle: int, params: dict, *, registry_factory=None) -> No
                     li.setArt({'icon': 'DefaultFolder.png' if folder else 'DefaultVideo.png'})
                 rows.append((target, li, folder))
                 added_for_source += 1
+            if added_for_source:
+                published_sources.append((source, rev, len(rows) - added_for_source, len(rows)))
+        # A later slow source may span a profile switch or invalidate an earlier account.
+        if not binding.is_current() or _aborted():
+            outcome = 'changed'
+        else:
+            live_rows, live_types = [], []
+            for source, rev, lo, hi in published_sources:
+                try:
+                    if store.source_snapshot(source.id) == (source, rev):
+                        live_rows.extend(rows[lo:hi]); live_types.extend(media_types[lo:hi])
+                except LibraryError:
+                    continue
+            rows, media_types = live_rows, live_types
+            if not binding.is_current() or _aborted():
+                outcome = 'changed'
         if outcome != 'changed':
             succeeded = True
     finally:

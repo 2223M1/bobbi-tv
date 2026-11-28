@@ -5212,8 +5212,8 @@ msgid "Release Group"
 msgstr "压制组"
 
 msgctxt "#91175"
-msgid "Indexer"
-msgstr "来源站点"
+msgid "Source library or indexer"
+msgstr "源库或来源站点"
 
 msgctxt "#91176"
 msgid "Language"
@@ -6938,3 +6938,11 @@ msgstr "移除自定义 Stremio 插件源"
 msgctxt "#91656"
 msgid "Default sources restored"
 msgstr "已恢复全部默认源"
+
+msgctxt "#91657"
+msgid "Forced subtitles"
+msgstr "强制字幕"
+
+msgctxt "#91658"
+msgid "Hearing impaired (SDH)"
+msgstr "听障字幕 (SDH)"

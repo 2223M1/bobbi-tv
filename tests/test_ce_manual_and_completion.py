@@ -21,15 +21,16 @@ from test_bobbi_torrent_adapter import (Clock, FakeOwner, Session, Response,
 
 def test_unknown_file_choice_is_rechecked_and_not_published_for_preparation():
     file = dict(id=4, path='video.mkv', length=1000000)
-    info = status(file)
+    other = dict(file, id=5, path='main.mkv')
+    info = dict(status(file), file_stats=[other, file])
     clock, prompts = Clock(), []
     owner = FakeOwner(clock)
-    owner.choose_file = lambda files: prompts.append(files) or files[0]
+    owner.choose_file = lambda files: prompts.append(files) or files[1]
     session = Session([Response(b'MatriX.144.1'), Response({'hash': HASH}), Response(info),
                        Response(info), Response(b''), Response(info)])
     result = Resolver(Backend(config(), session, clock), owner, Session([]), clock).resolve(request())
     assert result['file_evidence'] == 'USER_CONFIRMED_FILE'
-    assert result['file'] == file and prompts == [[file]]
+    assert result['file'] == file and prompts == [[other, file]]
     assert owner.targets == []  # No early preparation target for a manual choice.
     assert sum(c[2].get('json', {}).get('action') == 'add' for c in session.calls) == 1
 
@@ -71,11 +72,12 @@ def test_manual_cannot_bypass_validated_wrong_work_binding():
     assert manual_candidates(status(), request(episode_binding=json.dumps(proof)), HASH, {}, protocol) == []
 
 
-def test_manual_binding_has_no_continuation_and_cannot_be_upgraded_by_rebinding():
+@pytest.mark.parametrize('evidence', ['USER_CONFIRMED_FILE', 'SOLE_ELIGIBLE_FILE'])
+def test_play_once_binding_has_no_continuation_and_cannot_be_upgraded_by_rebinding(evidence):
     owner = PlaybackOwner('boot')
     owner.select('boot', 0, RID, 'bt:' + HASH)
     args = ('boot', 1, RID)
-    assert owner.bind_file(*args, 'bt:' + HASH, 'file', 'USER_CONFIRMED_FILE')
+    assert owner.bind_file(*args, 'bt:' + HASH, 'file', evidence)
     assert not owner.bind_file(*args, 'bt:' + HASH, 'file', 'AUTO_VERIFIED_FILE')
     assert owner.claim_start(*args, 'resolved_url')
     assert owner.observe_started(*args, 'native', 'file')
@@ -126,6 +128,7 @@ def test_actual_stop_method_cannot_report_error_as_watched(reason, completed, mo
 @pytest.mark.parametrize('evidence,request_id,cancelled,allowed', [
     ('AUTO_VERIFIED_FILE', RID, False, True),
     ('USER_CONFIRMED_FILE', RID, False, False),
+    ('SOLE_ELIGIBLE_FILE', RID, False, False),
     ('AUTO_VERIFIED_FILE', 'e' * 32, False, False),
     ('AUTO_VERIFIED_FILE', RID, True, False),
 ])

@@ -17,6 +17,7 @@ from types import SimpleNamespace
 from urllib.parse import parse_qs, unquote, urlsplit
 
 from bobbi_core import sharelib_api
+from bobbi_core.library_labels import directory, memberships
 from bobbi_core.catalog_release import release_envelope
 from bobbi_core.movie_years import accepted_years
 from bobbi_core.release_identity import WEAK
@@ -738,6 +739,7 @@ def _finish(cache, candidates, spec, reader=None):
                                 and math.isfinite(old['_checked_at'])
                                 and old['_checked_at'] > time.time()-DAY)
     _known_failures(cache, rows, spec, scope, reader)
+    lookup = directory(cache) if rows else None
     from bobbi_core.share_failure import tuple_hash
     for row in rows:
         old = cache.select(row['key'], spec['media_key'])
@@ -749,6 +751,7 @@ def _finish(cache, candidates, spec, reader=None):
         row['_share_failure'] = row['_share_state'].get('code', '')
         if row['_share_failure']:
             row['_verified'] = False
+        row['_libraries'] = memberships(row['origins'], lookup)
     _guard(cache.deadline, cache.cancelled)
     return rows
 
@@ -858,6 +861,9 @@ def search(spec, deadline, cancelled, state=STATE, client=None, diagnostic=None,
 def fields(row):
     result = dict(type='Direct', title=row['name'], size=row['size'], indexer=SITE,
                 guid='sharelib:' + row['key'], url='am6bsharelib://' + row['key'])
+    if row.get('_libraries'):
+        result['sourceLibraries'] = dict(row['_libraries'])
+        result['subindexer'] = '、'.join(row['_libraries'].values())
     if row.get('_share_failure'):
         result['shareFailure'] = row['_share_failure']
     if row.get('_share_state'):
@@ -961,6 +967,7 @@ def next_file(current, identity, cancelled, deadline, state=STATE, client=None, 
             if len(matches) != 1:
                 return None, 'NEXT_MISSING_OR_AMBIGUOUS'
             cache.remember(matches, spec)
+            matches[0]['_libraries'] = memberships(matches[0]['origins'], directory(cache))
             _guard(deadline, cancelled)
             return fields(matches[0]), 'INDEXED_DIRECT_SAME_RELEASE'
     except (ValueError, OSError, sharelib_api.ShareLibError, sqlite3.Error, KeyError, TypeError):

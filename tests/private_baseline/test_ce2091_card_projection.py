@@ -9,7 +9,7 @@ from test_source_incremental_ui import window, source
 FIELDS = frozenset(('type_plain', 'title', 'chinese_subtitles', 'badges_plain',
     'release_group', 'size', 'seeders', 'languages_plain', 'source_site',
     'recommendation_status', 'quality_plain', 'source_key', 'peers',
-    'status_plain', 'recommendation_reason'))
+    'status_plain', 'recommendation_reason', 'version_hint'))
 
 
 def test_cinema_projection_publishes_only_consumed_fields(window):

@@ -95,7 +95,7 @@ def test_next_range_cannot_cancel_valid_current_or_become_next(tail):
 
 
 @pytest.mark.parametrize('token', RANGES[:5])
-def test_real_resolver_requires_manual_choice_and_owner_cannot_upgrade_it(token):
+def test_single_combined_file_is_play_once_and_owner_cannot_upgrade_it(token):
     selected, clock, choices = file(token), Clock(), []
     info = dict(status(selected), name='Audit Show S01')
     owner = FakeOwner(clock)
@@ -104,8 +104,8 @@ def test_real_resolver_requires_manual_choice_and_owner_cannot_upgrade_it(token)
         Response(info), Response(info), Response(b''), Response(info)])
     result = Resolver(Backend(config(), session, clock), owner, Session([]), clock).resolve(
         request(title='Audit Show', release_title='Audit Show S01', episode_binding=binding()))
-    assert choices == [[selected]]
-    assert result['file_evidence'] == 'USER_CONFIRMED_FILE'
+    assert not choices
+    assert result['file_evidence'] == 'SOLE_ELIGIBLE_FILE'
     assert not owner.targets  # No automatic preparation notification.
     actor = PlaybackOwner('boot')
     actor.select('boot', 0, RID, 'bt:' + HASH)

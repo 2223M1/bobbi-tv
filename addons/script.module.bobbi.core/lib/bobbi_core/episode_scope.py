@@ -134,6 +134,11 @@ def _release_scope(title, aliases, season, year=None, allow_pack=True, filename=
     spans = [(m.start(), m.end()) for m in parsed.markers]
     spans += [(start, end) for start, end, number in release_season_markers(text) if number == season]
     for start, end in sorted(set(spans), reverse=True):
+        # The anime number matcher consumes "[01" but not "]". Strip the
+        # matching closer too, otherwise the following technical blocks look
+        # malformed even though the episode and work both match.
+        if text[start:start+1] == '[' and text[end:end+1] == ']':
+            end += 1
         text = text[:start] + ' ' * (end - start) + text[end:]
     if allow_pack:
         text = _PACK.sub(' ', text)

@@ -297,3 +297,19 @@ def test_old_snapshot_of_requalified_resource_is_rejected_before_cloud_io(prepar
     q.ledger._save(item)
     with pytest.raises(ValueError, match='qualification changed'):
         PreparedResolver(q, 'account', Provider()).plan(request)
+
+
+@pytest.mark.parametrize('account,mounted,expected', [
+    ('other', False, []), ('other', True, ['legacy']), ('box', False, ['qualified']),
+    ('box', True, ['legacy','qualified'])])
+def test_search_index_needs_its_actual_transport(monkeypatch, tmp_path, account, mounted, expected):
+    from types import SimpleNamespace
+    from lib.clients import bobbi_library as library
+    if mounted:
+        (tmp_path/'115open').mkdir()
+    rows = dict(mount_root=str(tmp_path), titles=[dict(sources=[dict(state='legacy'), dict(state='qualified')])])
+    monkeypatch.setattr(library, 'load_index', lambda **kwargs:rows)
+    session = SimpleNamespace(account='box', call=lambda *_:dict(state='RUNNING', account=account, dependency={'ready':True}))
+    result = library.searchable_index(session)
+    assert [src['state'] for title in result['titles'] for src in title['sources']] == expected
+    assert len(rows['titles'][0]['sources']) == 2  # outage never erases a persistent index

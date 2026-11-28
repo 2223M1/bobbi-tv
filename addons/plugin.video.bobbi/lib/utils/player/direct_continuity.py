@@ -161,8 +161,6 @@ def next_direct_data(current, cancelled=lambda: False):
                   type='Direct', indexer=fields['indexer'], _catalog_next=True, _next_recheck=True,
                   direct_source=dict(provider=provider, guid=fields['guid'], locator=fields['url'],
                                      title=fields['title'], size=fields['size']))
-    # Only the source-keyed preparation service can prove a personal copy of
-    # this catalogue file. A torrent qualification proves a different object.
     return result, reason
 
 

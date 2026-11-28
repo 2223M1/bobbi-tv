@@ -69,6 +69,9 @@ class Item:
     def setProperty(self, key, value):
         self.properties[key] = value
 
+    def setMimeType(self, mime): self.mime = mime
+    def setContentLookup(self, value): self.lookup = value
+
     def getVideoInfoTag(self):
         return SimpleNamespace(setTitle=lambda value: None, setPlot=lambda value: None)
 
@@ -138,6 +141,7 @@ def test_real_torrent_entry_captures_once_and_opens_without_prepared_session(sur
     assert len(owners) == 1 and isinstance(owners[0], Owner)
     assert [(handle, success) for handle, success, _ in surface.answers] == [(7, True)]
     item = surface.answers[0][2]
+    assert item.mime == 'video/x-matroska' and item.lookup is False
     assert item.properties['bobitv.request_id'] == RID
     assert item.properties['bobitv.file_identity'] == client.torrent_file_identity(
         HASH, FILE['id'], FILE['path'], FILE['length'])

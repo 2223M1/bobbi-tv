@@ -2,7 +2,10 @@
 <window>
   <defaultcontrol always="true">600</defaultcontrol>
   <onload>Control.SetFocus(600,2)</onload>
-  <onload>RunScript(plugin.video.bobbi,bobbi_osd=refresh)</onload>
+  <onload>ClearProperty(Bobbi.OSD.TapScope,Home)</onload>
+  <onload condition="String.IsEqual(Window(Home).Property(Bobbi.OSD.Resident),true)">NotifyAll(bobbi.osd,BobbiRefresh)</onload>
+  <onload condition="!String.IsEqual(Window(Home).Property(Bobbi.OSD.Resident),true)">RunScript(plugin.video.bobbi,bobbi_osd=refresh)</onload>
+  <onunload>ClearProperty(Bobbi.OSD.TapScope,Home)</onunload>
   <include>PanelOpen</include>
   <depth>DepthOSD</depth>
   <controls>
@@ -156,35 +159,41 @@
           <item>
             <label>$LOCALIZE[32215]</label><icon>bobbi/glass/icons/prev.png</icon>
             <property name="hint">$LOCALIZE[32216]</property>
-            <onclick>RunScript(plugin.video.bobbi,bobbi_osd=chapter_previous)</onclick>
+            <onclick condition="!String.IsEmpty(Window(Home).Property(Bobbi.OSD.TapScope))">NotifyAll(bobbi.osd,BobbiTap.chapter_previous.$INFO[Window(Home).Property(Bobbi.OSD.TapScope)])</onclick>
+            <onclick condition="String.IsEmpty(Window(Home).Property(Bobbi.OSD.TapScope))">RunScript(plugin.video.bobbi,bobbi_osd=chapter_previous)</onclick>
           </item>
           <item>
             <label>$LOCALIZE[32217]</label><icon>bobbi/glass/icons/rewind.png</icon>
             <property name="hint">$VAR[BobbiSeekBackHint]</property>
             <property name="unavailable">$VAR[BobbiSeekUnavailable]</property>
-            <onclick condition="Player.SeekEnabled">RunScript(plugin.video.bobbi,bobbi_osd=seek_back)</onclick>
+            <onclick condition="[Player.SeekEnabled] + !String.IsEmpty(Window(Home).Property(Bobbi.OSD.TapScope))">NotifyAll(bobbi.osd,BobbiTap.seek_back.$INFO[Window(Home).Property(Bobbi.OSD.TapScope)])</onclick>
+            <onclick condition="[Player.SeekEnabled] + String.IsEmpty(Window(Home).Property(Bobbi.OSD.TapScope))">RunScript(plugin.video.bobbi,bobbi_osd=seek_back)</onclick>
           </item>
           <item>
             <label>$LOCALIZE[32051]</label><icon>$VAR[PlayPauseIcon]</icon>
             <property name="hint">$VAR[BobbiPauseHint]</property>
             <property name="unavailable">$VAR[BobbiPauseUnavailable]</property>
-            <onclick condition="Player.PauseEnabled | Player.Forwarding | Player.Rewinding">RunScript(plugin.video.bobbi,bobbi_osd=toggle_pause)</onclick>
+            <onclick condition="[Player.PauseEnabled | Player.Forwarding | Player.Rewinding] + !String.IsEmpty(Window(Home).Property(Bobbi.OSD.TapScope))">NotifyAll(bobbi.osd,BobbiTap.toggle_pause.$INFO[Window(Home).Property(Bobbi.OSD.TapScope)])</onclick>
+            <onclick condition="[Player.PauseEnabled | Player.Forwarding | Player.Rewinding] + String.IsEmpty(Window(Home).Property(Bobbi.OSD.TapScope))">RunScript(plugin.video.bobbi,bobbi_osd=toggle_pause)</onclick>
           </item>
           <item>
             <label>$LOCALIZE[32218]</label><icon>bobbi/glass/icons/fastforward.png</icon>
             <property name="hint">$VAR[BobbiSeekForwardHint]</property>
             <property name="unavailable">$VAR[BobbiSeekUnavailable]</property>
-            <onclick condition="Player.SeekEnabled">RunScript(plugin.video.bobbi,bobbi_osd=seek_forward)</onclick>
+            <onclick condition="[Player.SeekEnabled] + !String.IsEmpty(Window(Home).Property(Bobbi.OSD.TapScope))">NotifyAll(bobbi.osd,BobbiTap.seek_forward.$INFO[Window(Home).Property(Bobbi.OSD.TapScope)])</onclick>
+            <onclick condition="[Player.SeekEnabled] + String.IsEmpty(Window(Home).Property(Bobbi.OSD.TapScope))">RunScript(plugin.video.bobbi,bobbi_osd=seek_forward)</onclick>
           </item>
           <item>
             <label>$LOCALIZE[32219]</label><icon>bobbi/glass/icons/next.png</icon>
             <property name="hint">$LOCALIZE[32220]</property>
-            <onclick>RunScript(plugin.video.bobbi,bobbi_osd=chapter_next)</onclick>
+            <onclick condition="!String.IsEmpty(Window(Home).Property(Bobbi.OSD.TapScope))">NotifyAll(bobbi.osd,BobbiTap.chapter_next.$INFO[Window(Home).Property(Bobbi.OSD.TapScope)])</onclick>
+            <onclick condition="String.IsEmpty(Window(Home).Property(Bobbi.OSD.TapScope))">RunScript(plugin.video.bobbi,bobbi_osd=chapter_next)</onclick>
           </item>
           <item>
             <label>$LOCALIZE[32221]</label><icon>bobbi/glass/icons/stop.png</icon>
             <property name="hint">$LOCALIZE[32222]</property>
-            <onclick>RunScript(plugin.video.bobbi,bobbi_osd=stop)</onclick>
+            <onclick condition="!String.IsEmpty(Window(Home).Property(Bobbi.OSD.TapScope))">NotifyAll(bobbi.osd,BobbiTap.stop.$INFO[Window(Home).Property(Bobbi.OSD.TapScope)])</onclick>
+            <onclick condition="String.IsEmpty(Window(Home).Property(Bobbi.OSD.TapScope))">RunScript(plugin.video.bobbi,bobbi_osd=stop)</onclick>
           </item>
         </content>
       </control>

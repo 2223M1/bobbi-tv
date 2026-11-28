@@ -42,13 +42,20 @@ def test_stable_uses_approved_opt_in_skin_and_plugin_dialogs():
     # Both freeze checks still cover the entire original archive, including
     # frame offsets, pixels and padding. Only the two new lookup keys differ.
     rows['media/Textures.xbt'] = approved_digest((skin/'media/Textures.xbt').read_bytes())
-    # CE2195: Non-blocking DialogNotification.xml KaiToast plain-label binding (R1) and inlined Timers.xml VS10 start guard (V3).
-    assert fingerprint(visual_rows(skin, rows, data)) == 'a356e214219cc59f7b4f82631788b2a2e55c6f67bf97212f73cafbe10580d3c6'
-    assert fingerprint(rows) == 'b207684ab17e92accdcf002cee2c512cc6cee835b3a3692e25a59e7e0fc87d90'
+    # Reviewed settings destinations, right-pane focus, source-row generator output and dependency floor.
+    # Both complete freezes still cover all other windows and textures. See test_top3_ui.py.
+    assert fingerprint(visual_rows(skin, rows, data)) == '9a4c7bdc047d8bf1d99a6d9ea32d3602ce6c146614811b66cd4db7fe8166d4b8'
+    assert fingerprint(rows) == 'd7c99a0e687ea64e8a4787561d0e8a4ed635923f87f2879743a85df5ed0a12c4'
     mirror = ROOT/'addons/plugin.video.bobbi/resources/skins/Default'
     mirrored = files(mirror)
-    assert fingerprint(visual_rows(mirror, mirrored)) == '4a20833ad30cf0f1b304389a0bc34d0b907c213491211200602a4cfe4332149d'
-    assert fingerprint(mirrored) == 'a80106d547c45b179c546408f70e53a1892d5351e769ca0a9d835254304aa576'
+    visual = visual_rows(mirror, mirrored)
+    # CE2201: reviewed both picker windows with recommendation/edition labels
+    # and separate diagnostics. Pin the exact shipped XML, including those labels;
+    # the complete mirror still covers every other pixel, control and texture.
+    assert mirrored['1080i/source_select.xml'] == 'f54142d3544f92b1c22a01a0633785d0d7500edc364c6b7f8f8c6e0c445baf8e'
+    assert mirrored['1080i/source_select_direct.xml'] == 'aa6fdb8ca77c4e9d7f2bc1d1c2bedafac7ab4ac087f8e0a39a61fc4260ad97f3'
+    assert fingerprint(visual) == 'f5dc3c648e02aadc8ebd5b3bb9eaad18c26be45ba6934df4710ad586e6a1670a'
+    assert fingerprint(mirrored) == '522f304bfe46540a9030dfb9a1171a3185289137f0c5212b70c05363e238afb2'
 
 
 def test_new_texture_keys_cannot_hide_a_pixel_change_or_a_mixed_case_key():

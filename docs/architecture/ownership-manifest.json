@@ -469,7 +469,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/catalog_ui.py",
-        "line": 687,
+        "line": 689,
         "anchor": "def manage_scope(expected, dialog=None, context=None, *, phone_launcher=None):"
       },
       "note": "Shared scope menu invokes only the explicit phone launcher; missing capability cannot create a grant. Existing phone launcher and PhoneManagement remain authorization owners."
@@ -493,7 +493,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/catalog_ui.py",
-        "line": 518,
+        "line": 520,
         "anchor": "def _open_catalog(expected, **query):"
       },
       "note": "Independent platform entry preserves synchronous ActivateWindow and the sole plugin directory renderer without importing that renderer. Saved legacy management URL compatibility remains."
@@ -541,7 +541,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.core/lib/bobbi_core/media_library_index.py",
-        "line": 869,
+        "line": 877,
         "anchor": "def batch(self, task, refs, checkpoint, scanned, descriptions=None):"
       },
       "note": "Optional sidecar uses the same scan page transaction and checkpoint, existing candidates storage, no additional writer or schema table. Selected/FileRef stay unchanged."
@@ -613,7 +613,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/host.py",
-        "line": 866,
+        "line": 867,
         "anchor": "def close(self):"
       },
       "note": "Reviewed responsibility declaration: Profile-bound Host startup, service admission, draining and close. Not a runtime test result."
@@ -637,7 +637,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.core/lib/bobbi_core/playback_authority.py",
-        "line": 71,
+        "line": 72,
         "anchor": "class PlaybackAuthority:"
       },
       "note": "Reviewed responsibility declaration: Playback instance/selection, command ledger, native observation reconciliation. Not a runtime test result."
@@ -649,7 +649,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/plugin.video.bobbi/lib/services/phone_management.py",
-        "line": 419,
+        "line": 420,
         "anchor": "class PhoneManagement:"
       },
       "note": "Reviewed responsibility declaration: TV-approved bounded phone grant; command correlation only, not playback truth. Not a runtime test result."
@@ -661,7 +661,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/plugin.video.bobbi/lib/services/standard_playback.py",
-        "line": 11,
+        "line": 12,
         "anchor": "class HistoryWriter:"
       },
       "note": "One existing Queue and worker retain at most 32 queued plus one in-flight job. Only saturation coalesces a strictly newer complete report for the same captured root/FileRef/generation/session/request; different identities still refuse admission. Revision and retirement share admission locking; close verifies admitted reports were attempted, not durably saved. The shared FileHistory key also serves the existing native lane; no new queue or history authority. Static responsibility, not device proof."
@@ -721,7 +721,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/plugin.video.bobbi/lib/services/phone_management.py",
-        "line": 702,
+        "line": 703,
         "anchor": "def handle(self, path, headers, raw):"
       },
       "note": "Reviewed responsibility declaration: Browser action allowlist -> PhoneManagement -> bound Host transport. Not a runtime test result."
@@ -733,7 +733,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.core/lib/bobbi_core/playback_authority.py",
-        "line": 521,
+        "line": 522,
         "anchor": "def _read_playback(self, include_owner=False, recover_command=None, include_start_facts=False):"
       },
       "note": "Read-only projection never refreshes or reconciles windows. Default presentation adds no video IO; explicit startup observation brackets the optional currentvideostream read with typed native identity/intent receipts and reuses profile/account fences. Failure preserves the prior audio/subtitle observation and the existing wire budget. The API's video index may be cached for one second; metadata is not actual output/HDR/transcode proof, and caller timeout does not interrupt native IO. Static responsibility, not device evidence."
@@ -745,7 +745,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.core/lib/bobbi_core/media_library_index.py",
-        "line": 1312,
+        "line": 1320,
         "anchor": "def apply(self, expected, request_id, commands):"
       },
       "note": "Reviewed responsibility declaration: Preview -> transactional revalidation -> idempotent receipt -> undo. Not a runtime test result."
@@ -901,7 +901,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/host.py",
-        "line": 857,
+        "line": 858,
         "anchor": "session_factory = partial(Session, lock_factory=InstanceLock,"
       },
       "note": "Platform composition injects lock, pairing, font decoder and actual resident Host owner_call into Session. Dispatch and lease checks bracket owner reads; core cannot discover a later runtime. Resource/lock ordering stays with PreparationHost/Session. Post-55b4f9b documentation supplement, absent from that frozen manifest/graph; not execution evidence."
@@ -961,7 +961,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/host.py",
-        "line": 34,
+        "line": 35,
         "anchor": "self.source_libraries = (Store(self.plugin_root, active=self.check_profile)"
       },
       "note": "Resident Host injects its captured plugin root and sticky profile predicate; source consent is not process-global. Reviewed static responsibility, not device execution evidence."
@@ -985,7 +985,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/host.py",
-        "line": 192,
+        "line": 193,
         "anchor": "file_facts=getattr(self.file_history, 'media_facts', None), profile_current=self.check_profile)"
       },
       "note": "The same captured Host profile fence is injected into the common CatalogService for every source port. Reviewed static responsibility, not device execution evidence."
@@ -1069,7 +1069,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/server_http.py",
-        "line": 51,
+        "line": 55,
         "anchor": "class Session:"
       },
       "note": "Credentials stay in origin-bound headers with size/deadline limits and redirect rejection. Optional explicit methods/statuses/empty replies preserve the original GET/POST JSON defaults; a lost response is never retried. These transport options enable no progress writer or automatic synchronization and export no credential-bearing playback locator. Static responsibility, not device evidence."
@@ -1117,7 +1117,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/host.py",
-        "line": 38,
+        "line": 39,
         "anchor": "self.file_history = file_history  # Profile-bound adapter supplied by plugin composition."
       },
       "note": "Plugin composition owns FileHistory construction. Host injects its optional media_facts callable into CatalogService/MediaIndex; platform never imports plugin lib.db. Reviewed static responsibility, not device execution evidence."
@@ -1129,7 +1129,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/plugin.video.bobbi/lib/services/standard_playback.py",
-        "line": 264,
+        "line": 270,
         "anchor": "self.prepared_session = from_host(self.host, body.get('account'))"
       },
       "note": "Standard playback captures PreparedSession at request admission and keeps that same session for continuation; a missing session is not replaced by an ambient lookup. Reviewed static responsibility, not device execution evidence."
@@ -1345,7 +1345,7 @@
       "status": "candidate",
       "evidence": {
         "path": "tests/private_baseline/test_osd_playback_contract.py",
-        "line": 520,
+        "line": 532,
         "anchor": "def test_owned_script_passes_original_capture_to_real_client("
       },
       "note": "Static test mapping for owned script/router-to-client paths, shared phone projection, original tokens, stale scope and reply-loss handling. Not an execution result or installed-device control proof."
@@ -1369,7 +1369,7 @@
       "status": "candidate",
       "evidence": {
         "path": "tests/private_baseline/test_osd_playback_contract.py",
-        "line": 731,
+        "line": 743,
         "anchor": "def test_owned_script_declares_runtime_dependencies_and_vendor_is_not_bobbi_owner():"
       },
       "note": "Static mapping for owned script extension/dependencies and absence of Bobbi OSD ownership in vendor modules. Signed-package fixture execution and deployed-device acceptance are separately recorded, not implied by this mapping."
@@ -1381,7 +1381,7 @@
       "status": "candidate",
       "evidence": {
         "path": "tests/private_baseline/test_osd_playback_contract.py",
-        "line": 603,
+        "line": 615,
         "anchor": "def test_real_release_zip_contains_owned_osd_and_matches_reviewed_inventory(packaged_osd):"
       },
       "note": "Static mapping for the real release archiver over the complete plugin: exact reviewed inventory, ZIP contents/hashes, owned script extension and core/platform dependencies. Fixture execution must be cited separately; this is not a deployed package receipt."
@@ -1393,7 +1393,7 @@
       "status": "candidate",
       "evidence": {
         "path": "tests/private_baseline/test_osd_playback_contract.py",
-        "line": 619,
+        "line": 631,
         "anchor": "def test_signed_install_preserves_upstream_and_installed_owned_osd_still_runs("
       },
       "note": "Static mapping for the real ZIP/signature/Installer/dependency path with original or newer script.skinvariables preserved byte-for-byte. The fixture loads installed owned OSD/router/boot-gate code, renders captured tokens and submits once; Kodi/native are simulated, so neither this mapping nor a passing run certifies a device."
@@ -1609,7 +1609,7 @@
       "status": "candidate",
       "evidence": {
         "path": "tests/test_playback_client_torrent_tool.py",
-        "line": 123,
+        "line": 126,
         "anchor": "def test_real_torrent_entry_captures_once_and_opens_without_prepared_session(surface, monkeypatch):"
       },
       "note": "Static mapping for actual torrent/tool constructors, original request validation and shared view/select/bind/cancel client. Post-55b4f9b documentation assertion, absent from that frozen manifest/graph; not execution or device evidence."
@@ -1633,7 +1633,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/plugin.video.bobbi/lib/services/osd_playback.py",
-        "line": 296,
+        "line": 312,
         "anchor": "def transport(owner, view, action):"
       },
       "note": "Pause/resume/stop capture the original expectation before confirmation and use the same playback command authority. Unsupported managed binaries fail closed. External/standard, music and LiveTV retain explicitly non-atomic native interaction; arbitrary speed/tempo is not covered. Static routing declaration, not device proof."

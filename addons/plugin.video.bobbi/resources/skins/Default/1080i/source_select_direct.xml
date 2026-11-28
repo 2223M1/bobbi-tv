@@ -6,7 +6,7 @@
     - FIELDS in test_ce2091_card_projection.py, hints in test_guidance.py
 -->
 <window type="dialog">
-  <defaultcontrol always="true">1000</defaultcontrol>
+  <defaultcontrol always="false">1400</defaultcontrol>
   <coordinates><left>0</left><top>0</top></coordinates>
   <animation effect="fade" start="0" end="100" time="180" tween="cubic" easing="out" condition="!Skin.HasSetting(BobbiReduceMotion)">WindowOpen</animation>
   <animation effect="fade" start="100" end="0" time="120" tween="cubic" easing="in" condition="!Skin.HasSetting(BobbiReduceMotion)">WindowClose</animation>
@@ -107,11 +107,25 @@
         </control>
       </control>
       <control type="label">
-        <left>0</left><top>690</top><width>560</width><height>28</height>
+        <left>0</left><top>690</top><width>560</width><height>32</height>
         <label>$INFO[Window().Property(playback_error)]</label>
-        <font>CardSub22</font><textcolor>FFFF6961</textcolor>
+        <font>CardSub22</font><textcolor>FFFF6961</textcolor><scroll>true</scroll>
         <align>center</align><aligny>center</aligny>
         <visible>!String.IsEmpty(Window().Property(playback_error))</visible>
+      </control>
+      <control type="label">
+        <left>0</left><top>690</top><width>560</width><height>32</height>
+        <label>$INFO[Window().Property(source_error)]</label>
+        <font>CardSub22</font><textcolor>FFFF6961</textcolor><scroll>true</scroll>
+        <align>center</align><aligny>center</aligny>
+        <visible>String.IsEmpty(Window().Property(playback_error)) + !String.IsEmpty(Window().Property(source_error))</visible>
+      </control>
+      <control type="label">
+        <left>0</left><top>690</top><width>560</width><height>32</height>
+        <label>$INFO[Window().Property(source_diagnostics)]</label>
+        <font>CardSub22</font><textcolor>FFB6B6C0</textcolor><scroll>true</scroll>
+        <align>center</align><aligny>center</aligny>
+        <visible>String.IsEmpty(Window().Property(playback_error)) + String.IsEmpty(Window().Property(source_error)) + !String.IsEmpty(Window().Property(source_diagnostics))</visible>
       </control>
     </control>
 
@@ -197,13 +211,13 @@
         </control>
         <control type="label">
           <left>72</left><top>0</top><width>92</width><height>54</height>
-          <label>筛选</label>
+          <label>$INFO[Window().Property(filter_button_label)]</label>
           <font>Card24</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
           <visible>!Control.HasFocus(1400)</visible>
         </control>
         <control type="label">
           <left>72</left><top>0</top><width>92</width><height>54</height>
-          <label>筛选</label>
+          <label>$INFO[Window().Property(filter_button_label)]</label>
           <font>Card24</font><textcolor>FF1D1D1F</textcolor><aligny>center</aligny>
           <visible>Control.HasFocus(1400)</visible>
         </control>
@@ -220,12 +234,12 @@
         <visible>!String.IsEqual(Window().Property(source_loading),true) + Integer.IsEqual(Container(1000).NumItems,0)</visible>
         <control type="label">
           <left>0</left><top>0</top><width>900</width><height>40</height>
-          <label>没有符合条件的片源</label>
+          <label>$INFO[Window().Property(source_empty_title)]</label>
           <font>Head34</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
         </control>
         <control type="label">
           <left>0</left><top>48</top><width>900</width><height>32</height>
-          <label>按上键选择“全部”清晰度，或放宽筛选条件</label>
+          <label>$INFO[Window().Property(source_empty_hint)]</label>
           <font>Card24</font><textcolor>FF8E8E93</textcolor><aligny>center</aligny>
         </control>
       </control>
@@ -237,11 +251,14 @@
         <onup>1300</onup><ondown>1000</ondown>
         <scrolltime tween="cubic" easing="out">180</scrolltime>
         <preloaditems>2</preloaditems>
+        <!-- Generated from source_select.xml by tools/generate_source_rows.py; edit only the window outside the markers. -->
+        <!-- BEGIN source rows -->
         <itemlayout width="900" height="96">
           <control type="image">
             <left>0</left><top>6</top><width>900</width><height>84</height>
             <texture colordiffuse="1CFFFFFF" border="42,0,42,0">bobbi/glass/capsule-84.png</texture>
           </control>
+          <!-- Concentric circular play disc on left -->
           <control type="image">
             <left>20</left><top>26</top><width>44</width><height>44</height>
             <texture colordiffuse="1FFFFFFF">bobbi/glass/circle-128.png</texture>
@@ -250,23 +267,26 @@
             <left>33</left><top>38</top><width>20</width><height>20</height>
             <texture colordiffuse="F2F5F5F7">bobbi/glass/icons/play.png</texture>
           </control>
+          <!-- Title + optional [4K]/[1080P] outlined badge (never shows [未知]) -->
           <control type="label">
             <left>80</left><top>15</top><width>656</width><height>34</height>
             <label>$INFO[ListItem.Property(title)]</label>
             <font>Label28</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+            <scroll>false</scroll>
           </control>
           <control type="label">
             <left>80</left><top>50</top><width>656</width><height>26</height>
-            <label>$VAR[BobbiQualityBadge]$INFO[ListItem.Property(badges_plain),   ·   ]$INFO[ListItem.Property(size),   ·   ]$INFO[ListItem.Property(source_site),   ·   ]$INFO[ListItem.Property(languages_plain),   ·   ]</label>
+            <label>$INFO[ListItem.Property(recommendation_reason),,   ·   ]$INFO[ListItem.Property(version_hint),,   ·   ]$INFO[ListItem.Property(type_plain)]$INFO[ListItem.Property(source_site),   ·   ]$VAR[BobbiQualityBadge,   ·   ]$INFO[ListItem.Property(size),   ·   ]$INFO[ListItem.Property(chinese_subtitles),   ·   ]$INFO[ListItem.Property(seeders),   ·   做种 ]$INFO[ListItem.Property(badges_plain),   ·   ]$INFO[ListItem.Property(languages_plain),   ·   ]</label>
             <font>CardSub22</font><textcolor>FF989DA8</textcolor><aligny>center</aligny>
             <visible>!String.IsEmpty(ListItem.Property(quality_plain)) + !String.IsEqual(ListItem.Property(quality_plain),未知) + !String.IsEqual(ListItem.Property(quality_plain),n/a) + !String.IsEqual(ListItem.Property(quality_plain),N/A)</visible>
           </control>
           <control type="label">
             <left>80</left><top>50</top><width>656</width><height>26</height>
-            <label>$INFO[ListItem.Property(size)]$INFO[ListItem.Property(badges_plain),   ·   ]$INFO[ListItem.Property(source_site),   ·   ]$INFO[ListItem.Property(languages_plain),   ·   ]</label>
+            <label>$INFO[ListItem.Property(recommendation_reason),,   ·   ]$INFO[ListItem.Property(version_hint),,   ·   ]$INFO[ListItem.Property(type_plain)]$INFO[ListItem.Property(source_site),   ·   ]$INFO[ListItem.Property(size),   ·   ]$INFO[ListItem.Property(chinese_subtitles),   ·   ]$INFO[ListItem.Property(seeders),   ·   做种 ]$INFO[ListItem.Property(badges_plain),   ·   ]$INFO[ListItem.Property(languages_plain),   ·   ]</label>
             <font>CardSub22</font><textcolor>FF989DA8</textcolor><aligny>center</aligny>
             <visible>String.IsEmpty(ListItem.Property(quality_plain)) | String.IsEqual(ListItem.Property(quality_plain),未知) | String.IsEqual(ListItem.Property(quality_plain),n/a) | String.IsEqual(ListItem.Property(quality_plain),N/A)</visible>
           </control>
+          <!-- Right native glass accessory: quiet status + chevron -->
           <control type="label">
             <left>736</left><top>6</top><width>114</width><height>84</height>
             <label>$INFO[ListItem.Property(recommendation_status)]</label>
@@ -327,29 +347,26 @@
             <font>Label28</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
             <visible>!Control.HasFocus(1000)</visible>
           </control>
+          <!-- Focused metadata line (expands full technical details cleanly) -->
           <control type="label">
             <left>80</left><top>50</top><width>656</width><height>26</height>
-            <label>$VAR[BobbiQualityBadge]$INFO[ListItem.Property(badges_plain),   ·   ]$INFO[ListItem.Property(release_group),   ·   ]$INFO[ListItem.Property(size),   ·   ]$INFO[ListItem.Property(source_site),   ·   ]$INFO[ListItem.Property(languages_plain),   ·   ]$INFO[ListItem.Property(seeders),   ·   做种 ]</label>
+            <label>$INFO[ListItem.Property(recommendation_reason),,   ·   ]$INFO[ListItem.Property(version_hint),,   ·   ]$INFO[ListItem.Property(type_plain)]$INFO[ListItem.Property(source_site),   ·   ]$VAR[BobbiQualityBadge,   ·   ]$INFO[ListItem.Property(size),   ·   ]$INFO[ListItem.Property(chinese_subtitles),   ·   ]$INFO[ListItem.Property(seeders),   ·   做种 ]$INFO[ListItem.Property(release_group),   ·   ]$INFO[ListItem.Property(badges_plain),   ·   ]$INFO[ListItem.Property(languages_plain),   ·   ]</label>
             <font>CardSub22</font><textcolor>FF6E6E73</textcolor><aligny>center</aligny>
             <scroll>true</scroll><scrollspeed>38</scrollspeed>
             <visible>Control.HasFocus(1000) + !String.IsEmpty(ListItem.Property(quality_plain)) + !String.IsEqual(ListItem.Property(quality_plain),未知) + !String.IsEqual(ListItem.Property(quality_plain),n/a) + !String.IsEqual(ListItem.Property(quality_plain),N/A)</visible>
           </control>
           <control type="label">
             <left>80</left><top>50</top><width>656</width><height>26</height>
-            <label>$INFO[ListItem.Property(size)]$INFO[ListItem.Property(badges_plain),   ·   ]$INFO[ListItem.Property(release_group),   ·   ]$INFO[ListItem.Property(source_site),   ·   ]$INFO[ListItem.Property(languages_plain),   ·   ]$INFO[ListItem.Property(seeders),   ·   做种 ]</label>
+            <label>$INFO[ListItem.Property(recommendation_reason),,   ·   ]$INFO[ListItem.Property(version_hint),,   ·   ]$INFO[ListItem.Property(type_plain)]$INFO[ListItem.Property(source_site),   ·   ]$INFO[ListItem.Property(size),   ·   ]$INFO[ListItem.Property(chinese_subtitles),   ·   ]$INFO[ListItem.Property(seeders),   ·   做种 ]$INFO[ListItem.Property(release_group),   ·   ]$INFO[ListItem.Property(badges_plain),   ·   ]$INFO[ListItem.Property(languages_plain),   ·   ]</label>
             <font>CardSub22</font><textcolor>FF6E6E73</textcolor><aligny>center</aligny>
             <scroll>true</scroll><scrollspeed>38</scrollspeed>
             <visible>Control.HasFocus(1000) + [String.IsEmpty(ListItem.Property(quality_plain)) | String.IsEqual(ListItem.Property(quality_plain),未知) | String.IsEqual(ListItem.Property(quality_plain),n/a) | String.IsEqual(ListItem.Property(quality_plain),N/A)]</visible>
           </control>
           <control type="label">
             <left>80</left><top>50</top><width>656</width><height>26</height>
-            <label>$INFO[ListItem.Property(size)]$INFO[ListItem.Property(badges_plain),   ·   ]$INFO[ListItem.Property(source_site),   ·   ]$INFO[ListItem.Property(languages_plain),   ·   ]</label>
+            <label>$INFO[ListItem.Property(recommendation_reason),,   ·   ]$INFO[ListItem.Property(version_hint),,   ·   ]$INFO[ListItem.Property(type_plain)]$INFO[ListItem.Property(source_site),   ·   ]$INFO[ListItem.Property(size),   ·   ]$INFO[ListItem.Property(chinese_subtitles),   ·   ]$INFO[ListItem.Property(seeders),   ·   做种 ]$INFO[ListItem.Property(badges_plain),   ·   ]$INFO[ListItem.Property(languages_plain),   ·   ]</label>
             <font>CardSub22</font><textcolor>FF989DA8</textcolor><aligny>center</aligny>
             <visible>!Control.HasFocus(1000)</visible>
-          </control>
-          <control type="label">
-            <left>-2000</left><top>0</top><width>10</width><height>1</height>
-            <label>$INFO[ListItem.Property(type_plain)]$INFO[ListItem.Property(chinese_subtitles)]$INFO[ListItem.Property(source_key)]$INFO[ListItem.Property(peers)]$INFO[ListItem.Property(status_plain)]$INFO[ListItem.Property(recommendation_reason)]</label>
           </control>
           <control type="label">
             <left>736</left><top>6</top><width>114</width><height>84</height>
@@ -376,6 +393,7 @@
             <visible>!Control.HasFocus(1000)</visible>
           </control>
         </focusedlayout>
+        <!-- END source rows -->
       </control>
 
       <control type="scrollbar" id="1111">

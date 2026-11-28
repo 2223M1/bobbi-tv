@@ -226,3 +226,42 @@ def test_recovery_cannot_substitute_wrong_target_or_missing_native_open(monkeypa
 def test_malformed_native_message_is_explicit_acquisition_failure(monkeypatch, tmp_path):
     result, _ = acquisition_trial(monkeypatch, tmp_path, 'malformed_event')
     assert result['passed'] is False and 'NATIVE_EVENT_MESSAGE_INVALID' in result['acquisition_errors']
+
+def test_reserved_next_waits_for_public_video_end_not_an_old_or_manual_stop(monkeypatch):
+    import importlib.util
+    import sys
+    from pathlib import Path
+    from types import SimpleNamespace
+
+    clock = [20.0]
+    sends = [(20.15, 'other', '{"end":true}'), (20.4, 'xbmc', '{"end":false}'),
+             (20.6, 'xbmc', '{"end":true,"player":{"playerid":0},"item":{"type":"song"}}'),
+             (24.8, 'xbmc', '{"end":true,"item":{"type":"episode"}}')]
+
+    class Monitor:
+        def abortRequested(self):
+            return False
+
+        def waitForAbort(self, seconds):
+            clock[0] += seconds
+            while sends and sends[0][0] <= clock[0]:
+                _, sender, body = sends.pop(0)
+                self.onNotification(sender, 'Player.OnStop', body)
+            return False
+
+    monkeypatch.setitem(sys.modules, 'xbmc', SimpleNamespace(Monitor=Monitor))
+    path = Path(__file__).resolve().parents[1] / 'addons/plugin.video.bobbi/lib/utils/player/kodi_end_drain.py'
+    spec = importlib.util.spec_from_file_location('end_notice_for_test', path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    monkeypatch.setattr(module, 'monotonic', lambda: clock[0])
+    watch = module.VideoEndMonitor()
+    watch.onNotification('xbmc', 'Player.OnStop', '{"end":true}')
+    clock[0] = 23.2  # Old notice predates this terminal window.
+    assert watch.wait_for_reserved_next(23.2, lambda: False) == 'ready'
+    assert 25.9 <= clock[0] < 26.4
+    assert watch.wait_for_reserved_next(clock[0], lambda: True) == 'cancelled'
+    clock[0] += 5
+    start = clock[0]
+    assert watch.wait_for_reserved_next(start, lambda: False) == 'timeout'
+    assert abs((clock[0] - start) - 12) < 0.001

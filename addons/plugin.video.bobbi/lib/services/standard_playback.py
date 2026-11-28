@@ -6,6 +6,7 @@ from threading import Event, Thread, Lock
 import time
 
 from bobbi_platform.standard_session import StandardSession
+from bobbi_core.file_evidence import PLAY_ONCE_EVIDENCE
 
 
 class HistoryWriter:
@@ -141,17 +142,22 @@ def discover(data, host, deadline, cancelled):
         root=host.subtitle_root)
 
 
-def resolve_selected(data, cancelled, *, session=None):
-    """Reuse verified resolvers without depending on native player receipts."""
-    if data.get('_catalog_next'):
-        from lib.utils.player.direct_continuity import resolve_direct
-        data['url'] = resolve_direct(data, cancelled)
+def resolve_selected_cloud(data, cancelled, session):
+    '''Read-only compatibility for an explicitly selected old personal copy.'''
     if data.get('direct_cloud_required') or data.get('direct_cloud_key'):
         resolved = session.direct_resolve(data, cancelled) if session else None
         if not resolved:
             raise ValueError('SELECTED_CLOUD_FILE_UNAVAILABLE')
         data.update(url=resolved['path'], direct_cloud_key=resolved['key'], size=resolved['bytes'])
         data.pop('direct_cloud_required', None)
+
+
+def resolve_selected(data, cancelled, *, session=None):
+    """Reuse verified resolvers without depending on native player receipts."""
+    if data.get('_catalog_next'):
+        from lib.utils.player.direct_continuity import resolve_direct
+        data['url'] = resolve_direct(data, cancelled)
+    resolve_selected_cloud(data, cancelled, session)
     if data.get('prepared_resource_id'):
         from lib.clients.bobbi_library import load_prepared_index, local_path
         from bobbi_core.prepared_transport import playback_path
@@ -171,7 +177,7 @@ def resolve_selected(data, cancelled, *, session=None):
 
 
 def next_data(current, cancelled, *, session=None):
-    if current.get('file_evidence') == 'USER_CONFIRMED_FILE' or cancelled():
+    if current.get('file_evidence') in PLAY_ONCE_EVIDENCE or cancelled():
         return None
     if isinstance(current.get('_owned_next'), dict):
         from bobbi_platform.owned_playback import resolve_owned_next

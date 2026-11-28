@@ -13,6 +13,11 @@ def bounded_seconds(value, default, maximum):
     return min(parsed, maximum) if parsed > 0 else default
 
 
+def continued_buffer_seconds(seconds):
+    # A user who chose to wait can finish a sparse piece without reopening it.
+    return min(300, 3 * seconds)
+
+
 def budgets(metadata=30, buffering=90):
     metadata = bounded_seconds(metadata, 30, 120)
     buffering = bounded_seconds(buffering, 90, 300)
@@ -21,5 +26,5 @@ def budgets(metadata=30, buffering=90):
     return dict(metadata=metadata, buffering=buffering,
                 # The first buffer deadline is unchanged. One additional round
                 # is available ONLY after an explicit, 30-second user prompt.
-                total=DOWNLOAD_SECONDS + CONTROL_SECONDS + 2 * metadata + 2 * buffering
+                total=DOWNLOAD_SECONDS + CONTROL_SECONDS + 2 * metadata + buffering + continued_buffer_seconds(buffering)
                       + 30 + FILE_CHOICE_SECONDS + HANDOFF_SECONDS)

@@ -4,7 +4,7 @@ import ast
 from pathlib import Path
 import sys
 from types import SimpleNamespace
-from urllib.parse import urlencode
+from urllib.parse import parse_qs, urlsplit, urlencode
 import xml.etree.ElementTree as ET
 
 import pytest
@@ -53,6 +53,7 @@ class Response:
     def __init__(self, value, status=200):
         self.status_code, self.raw = status, value if isinstance(value, bytes) else json.dumps(value).encode()
         self.closed = False
+        self.metadata = value if isinstance(value, dict) else {}
 
     def __enter__(self):
         return self
@@ -73,12 +74,24 @@ class Session:
         value = self.replies.pop(0)
         if isinstance(value, Exception):
             raise value
+        if value.metadata.get('file_stats'):
+            self.files = {f['id']:f['length'] for f in value.metadata['file_stats']}
         return value
 
     def close(self):
         self.closed = True
 
     def get(self, url, **kwargs):
+        # A healthy in-memory selected file for workflow tests. Explicit HTTP
+        # responses below still exercise invalid ranges and incomplete bodies.
+        if '/stream/' in url and hasattr(self,'files') and not (
+                self.replies and hasattr(self.replies[0], 'headers')):
+            self.calls.append(('GET',url,kwargs))
+            length = self.files[int(parse_qs(urlsplit(url).query)['index'][0])]
+            start,end = map(int,kwargs['headers']['Range'][6:].split('-'))
+            response = Response(bytes(end-start+1),206)
+            response.headers = {'Content-Range':f'bytes {start}-{end}/{length}'}
+            return response
         return self.request('GET', url, **kwargs)
 
 
@@ -137,6 +150,9 @@ class Item:
 
     def getProperty(self, key):
         return self.properties.get(key, '')
+
+    def setMimeType(self, mime): self.mime = mime
+    def setContentLookup(self, lookup): self.lookup = lookup
 
     def getVideoInfoTag(self):
         return SimpleNamespace(setTitle=lambda value: None, setPlot=lambda value: None)
@@ -635,7 +651,7 @@ def test_parent_budget_is_read_from_same_new_backend(monkeypatch):
     monkeypatch.setattr('bobbi_torrent.backend.load_config', lambda: config(metadata_seconds=15, buffering_seconds=45))
     player = SimpleNamespace(data=dict(selection_policy='exact', is_torrent=True),
         url='plugin://plugin.video.bobbi.torrent/play_magnet')
-    assert namespace['_startup_timeout_seconds'](player) == 30 + 30 + 30 + 45 + 30 + 60 + 45 + 45
+    assert namespace['_startup_timeout_seconds'](player) == 30 + 30 + 30 + 45 + 30 + 60 + 45 + 135
 
 
 def test_shared_subtitle_connection_uses_only_new_config(monkeypatch):
@@ -763,7 +779,7 @@ def test_failure_log_has_closed_schema_and_never_exception_or_provider_text():
         binding_present=True, path='private-video-name', endpoint='http://secret:password@host'))
     text = failure_log(error, RID)
     detail = json.loads(text.split(' detail=', 1)[1])
-    assert detail == dict(request_id=RID, stage='selector', file_count=13,
+    assert detail == dict(request_id=RID, failure_domain='file_selection', stage='selector', file_count=13,
         candidate_count=13, metadata_polls=1, binding_present=True)
     assert 'private-video' not in text and 'password' not in text and 'secret' not in text
     invalid = BackendError('url-and-secret', diagnostic=dict(stage='http://secret',
@@ -824,3 +840,228 @@ def test_disc_indexes_playlists_and_scripts_are_not_single_file_video(extension)
     with pytest.raises(BackendError) as result:
         select_file(status(dict(FILE, path='Series.S01E01' + extension)), request(), HASH, {}, p)
     assert result.value.category == 'no_candidate'
+
+
+@pytest.mark.parametrize('code,span,size,works', [
+    (206, 'bytes 0-999999/1000000', 1000000, True),
+    (200, 'bytes 0-999999/1000000', 1000000, False),
+    (206, 'bytes 0-999999/1000001', 1000000, False),
+    (206, 'bytes 0-999999/1000000', 40000, False),
+])
+def test_partial_torrent_checks_the_selected_file_bytes(code, span, size, works):
+    response = Response(b'x'*size, code)
+    response.headers = {'Content-Range': span}
+    session = Session([response])
+    backend = Backend(config(auth={'username': 'box', 'password': 'test'}), session, Clock())
+    assert backend.opening_readable(HASH, FILE, 10, lambda: None) is works
+    method, url, options = session.calls[0]
+    assert method == 'GET' and url == backend.stream_url(HASH, FILE)
+    assert options['headers']['Range'] == 'bytes=0-999999' and 'auth' not in options
+    assert not options['allow_redirects'] and response.closed
+
+
+def test_large_selected_file_uses_one_reader_per_span_and_rechecks_identity():
+    import time
+    from bobbi_torrent.opening import ranges
+    clock, row = Clock(), dict(FILE, length=600_000_000)
+    owner = FakeOwner(clock)
+    owner.wait = lambda seconds: time.sleep(.005)
+    owner.cache_chunk_size = lambda: 4*1024**2
+    partial = dict(status(row), preloaded_bytes=1, preload_size=32_212_254)
+    control = Session([Response(b'MatriX.144.1'),Response({'hash':HASH})]+[Response(partial)]*10)
+    media = Session([])
+    media.files = {row['id']:row['length']}
+    backend = Backend(config(),control,clock,media_session_factory=lambda:media)
+    result = Resolver(backend,owner,Session([]),clock).resolve(request())
+    assert result['file'] == row and result['file_evidence'] == 'AUTO_VERIFIED_FILE'
+    assert [call[2]['headers']['Range'] for call in media.calls] == [
+        'bytes=%d-%d' % span for span in ranges(row['length'],4*1024**2)]
+    assert len(media.calls)==2 and len({c[1] for c in media.calls})==1
+    assert all(c[1]==result['url'] and not c[2]['allow_redirects'] and 'auth' not in c[2] for c in media.calls)
+    assert media.closed and not backend.preload_attempted and control.calls[-1][2]['json']['action']=='get'
+
+def test_kodi_seek_span_covers_configured_chunk_and_reads_short_files_once():
+    from bobbi_torrent.opening import MIB, PREFIX, ranges
+    length = 655703121
+    assert ranges(length,4*MIB)[0] == (length-4*MIB,length-1)
+    assert ranges(length,524288)[0][0] <= length-524288
+    assert ranges(1024,524288) == ((0,1023),)
+    assert ranges(length,False)[1] == (0,PREFIX-1)
+
+
+@pytest.mark.parametrize('finish', ['back','invalid-range','file-changed'])
+def test_complete_swarm_counter_cannot_release_unreadable_or_replaced_file(finish):
+    """Real HTTP headers held back while global preload reports 100 percent."""
+    import time
+    from threading import Event, Thread
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+    from bobbi_torrent.opening import MIB
+    requested, allow, closed = Event(), Event(), Event()
+    calls = []
+    length = 655703121
+    row = dict(FILE,length=length)
+    class Handler(BaseHTTPRequestHandler):
+        def log_message(self,*_): pass
+        def do_GET(self):
+            a,b = map(int,self.headers['Range'][6:].split('-'))
+            calls.append((a,b,self.headers.get('Authorization')))
+            requested.set()
+            try:
+                allow.wait(3)
+                if finish=='back':return
+                self.send_response(206)
+                self.send_header('Content-Range',f'bytes {a}-{b}/{length+(finish=="invalid-range")}')
+                self.send_header('Content-Length',str(b-a+1));self.end_headers()
+                block = bytes(65536)
+                for pos in range(a,b+1,len(block)):
+                    self.wfile.write(block[:min(len(block),b+1-pos)])
+            except OSError: pass
+            finally:closed.set()
+    with ThreadingHTTPServer(('127.0.0.1',0), Handler) as server:
+        service=Thread(target=server.serve_forever,kwargs={'poll_interval':.05});service.start()
+        try:
+            cfg=config(endpoint='http://127.0.0.1:'+str(server.server_port),auth={'username':'control','password':'private'})
+            backend=Backend(cfg)
+            owner=FakeOwner(Clock())
+            owner.cache_chunk_size=lambda:2*MIB
+            owner.wait=lambda seconds: time.sleep(.005)
+            def active():
+                if requested.is_set() and finish=='back':
+                    raise BackendError('TORRENT_CANCELLED','cancelled')
+            owner.active=active
+            owner.progress=lambda *args: (requested.wait(.2),allow.set()) if finish!='back' else None
+            def state(*_):
+                return status(dict(row,length=length+1)) if finish=='file-changed' and len(calls)==2 else status(row)
+            backend.status=state
+            resolver=Resolver(backend,owner,Session([]))
+            with pytest.raises(BackendError) as ex:
+                resolver._seekable_opening(HASH,row,time.monotonic()+2,lambda *_:None)
+            assert ex.value.code == {'back':'TORRENT_CANCELLED','invalid-range':'TORRENT_OPENING_RANGE_INVALID',
+                                     'file-changed':'TORRENT_SELECTED_FILE_CHANGED'}[finish]
+            assert requested.is_set() and len(calls)==(2 if finish=='file-changed' else 1)
+            assert all(auth is None for _,_,auth in calls)
+            assert not any(t.name=='bobbi-selected-file-opening' for t in __import__('threading').enumerate())
+        finally:
+            allow.set();server.shutdown();service.join()
+
+def _mkv_duration_header(seconds):
+    import struct
+    def elt(tag, data):
+        return bytes.fromhex(tag) + bytes([128+len(data)]) + data
+    info = elt('1549a966',elt('2ad7b1',bytes.fromhex('0f4240')) +
+               elt('4489',struct.pack('>d',seconds*1000)))
+    return elt('1a45dfa3',elt('4282',b'matroska')) + bytes.fromhex('18538067ff') + info
+
+
+def test_optional_duration_cannot_require_new_network_reads_or_guess_missing_metadata():
+    from bobbi_torrent.opening import duration_hint, extra_prefix, MIB
+    h = _mkv_duration_header(1602.7)
+    assert duration_hint(h) == pytest.approx(1602.7)
+    for invalid in (b'',h[:-1],b'x'+h,_mkv_duration_header(float('nan')),_mkv_duration_header(0)):
+        assert duration_hint(invalid) is None
+    for duration, rate, remaining in ((None,100000,200),(1500,900000,100),(1500,100,200),(1500,100000,12)):
+        assert extra_prefix(1255184472,duration,rate,remaining,1254135896)==0
+
+
+@pytest.mark.parametrize('consented,fast,expect_extra',[(False,False,True),(True,True,False),(True,False,True)])
+def test_only_a_measured_slow_file_reads_an_adjacent_runway(consented,fast,expect_extra):
+    from bobbi_torrent.opening import SelectedOpening, MIB, PREFIX
+    import time
+    length = 1255184472
+    clock = Clock()
+    calls = []
+    class Media(Session):
+        def get(self,url,**options):
+            start,end = map(int,options['headers']['Range'][6:].split('-'))
+            calls.append((start,end))
+            class Chunk(Response):
+                def iter_content(self,chunk_size):
+                    header = _mkv_duration_header(1602.7) if start==0 else b''
+                    for pos in range(start,end+1,chunk_size):
+                        size = min(chunk_size,end+1-pos)
+                        yield (header+bytes(size-len(header))) if pos==start else bytes(size)
+                        clock.now += size/(4*MIB if fast else .22*MIB)
+            v=Chunk(b'',206);v.headers={'Content-Range':f'bytes {start}-{end}/{length}'}
+            return v
+    media=Media([])
+    opening=SelectedOpening('http://127.0.0.1:8090/stream/selected.mkv',length,524288,390,lambda:media,clock)
+    if consented:opening.continued(360)
+    with opening:
+        assert opening.done.wait(2)
+        completed,verified,target,base_ready=opening.snapshot()
+    assert completed and base_ready and verified==target and media.closed
+    assert len(calls)==(3 if expect_extra else 2)
+    if expect_extra:
+        assert calls[2][0]==PREFIX and calls[1][1]+1==calls[2][0]
+        assert calls[2][1]<calls[0][0] and 12*MIB<verified<=65*MIB
+
+def test_skin_parity_does_not_count_a_different_copy_or_a_stalled_clock(tmp_path):
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('parity',ROOT/'tools/check_bt_playback_parity.py')
+    gate = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(gate)
+    def save(name,data):
+        (tmp_path/name).write_text(json.dumps(data),encoding='utf8')
+    samples = [dict(at=t,s=t,w=1920,h=1080,actual=True,exact_file=True,speed=1,window=12005) for t in range(61)]
+    # Stall in the middle; two snippets from the same file cannot be added together.
+    stalled = [dict(r,s=min(r['s'],10) if r['at']<50 else r['s']-40) for r in samples]
+    assert gate.contiguous(stalled)==10 and gate.contiguous(samples)==60
+    cold='cold.json'; product='product.json'
+    save(cold,{'exact_torrent_absent':True})
+    save(product,dict(case='one',windows=[[0,12005]],file_fingerprint='a'*64,av=samples,target=dict(id=4,bytes=655703121),file_dialogs=0,slow_waits=0))
+    views=[]
+    for skin in ('skin.bobbi.cinema','skin.arctic.fuse.3'):
+        name=skin+'.json';views.append(dict(skin=skin,receipt=name))
+        save(name,dict(case='one',skin=skin,file_fingerprint=('a' if skin=='skin.bobbi.cinema' else 'b')*64,file_id=4,
+                       bytes=655703121,trigger='remote Select',cache='warm',observations=samples))
+    m=tmp_path/'cases.json'
+    save(m.name,{'cases':[dict(name='one',product=product,cold_before=cold,file_dialogs=0,views=views)]})
+    with pytest.raises(ValueError,match='same file'):
+        gate.evaluate(m)
+
+    # Correct the identity; stalls on the household skin expose a reference-only success.
+    for skin, playback in (('skin.bobbi.cinema',stalled),('skin.arctic.fuse.3',samples)):
+        receipt = json.loads((tmp_path/(skin+'.json')).read_text(encoding='utf8'))
+        receipt.update(file_fingerprint='a'*64,observations=playback)
+        save(skin+'.json',receipt)
+    grade = gate.evaluate(m)['one']
+    assert grade['reference_opens_household_does_not'] and not grade['same_path_parity_passed']
+    assert grade['cold_start_passed'] and grade['cold_endurance_passed']
+    valid_case = json.loads(m.read_text(encoding='utf8'))['cases'][0]
+    save(m.name,{'cases':[dict(valid_case,name='lost',product='absent.json'),valid_case]})
+    result = gate.evaluate(m,report_incomplete=True)
+    assert result['lost']=={'incomplete':'Missing receipt: absent.json'} and result['one']==grade
+    save(m.name,{'cases':[dict(valid_case,views=[views[1]])]})
+    with pytest.raises(ValueError,match='household skin'):
+        gate.evaluate(m)
+
+
+    # No AV from the public flow is an actionable failure if selection and the reference really match.
+    save(m.name,{'cases':[dict(valid_case,selected='selected.json')]})
+    save('selected.json',dict(id=4,bytes=655703121,file_fingerprint='a'*64,matched_active_request=True))
+    save(product,dict(case='one',target={},av=[],windows=[[0,13001]],file_dialogs=0,slow_waits=1))
+    cold_failure = gate.evaluate(m)['one']
+    assert cold_failure['cold_first_confirmed_fullscreen_wall_s'] is None
+    assert cold_failure['reference_opens_product_does_not'] and not cold_failure['cold_start_passed']
+
+
+def test_first_buffer_deadline_still_requires_the_user_even_when_extra_prefix_is_loading():
+    clock=Clock();owner=FakeOwner(clock)
+    prompts=[]
+    owner.wait_for_buffer=lambda detail:prompts.append(detail) or False
+    class Opening:
+        closed=False
+        def __enter__(self):return self
+        def __exit__(self,*_):self.closed=True
+        def snapshot(self):
+            # Core head and tail were verified; only the adjacent extra span is in flight.
+            return False,13*1024**2,40*1024**2,True
+        def continued(self,*_):pytest.fail('A timed-out or declined prompt must never extend buffering')
+    opened=Opening()
+    row=dict(FILE,length=600000000)
+    backend=SimpleNamespace(config=config(buffering_seconds=2),selected_opening=lambda *_:opened,
+                            status=lambda *_:status(row))
+    resolver=Resolver(backend,owner,Session([]),clock)
+    with pytest.raises(BackendError,match='TORRENT_BUFFER_TIMEOUT'):
+        resolver._seekable_opening(HASH,row,2,lambda *_:None)
+    assert len(prompts)==1 and opened.closed and clock.now==2 and not owner.bindings

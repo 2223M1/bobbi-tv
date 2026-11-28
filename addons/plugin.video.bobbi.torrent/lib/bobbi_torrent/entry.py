@@ -1,5 +1,6 @@
 """Strict plugin entry; one pending Kodi handle, one successful handoff at most."""
 import json
+from pathlib import Path
 import re
 import sys
 from urllib.parse import parse_qsl, urlsplit
@@ -14,7 +15,10 @@ def failure_log(error, request_id=''):
     reason = error.code if isinstance(error, BackendError) else ''
     if not isinstance(reason, str) or not re.fullmatch(r'TORRENT_[A-Z_]{1,80}', reason):
         reason = 'TORRENT_RESOLVER_FAILED'
-    detail = {}
+    from bobbi_core.startup_failure import failure_domain
+    domain = (failure_domain(error.category) if isinstance(error, BackendError) and
+              error.category != 'torrserver_error' and reason != 'TORRENT_RESOLVER_FAILED' else None)
+    detail = {'failure_domain': domain} if domain else {}
     if isinstance(request_id, str) and re.fullmatch('[0-9a-f]{32}', request_id):
         detail['request_id'] = request_id
     diagnostic = error.diagnostic if isinstance(error, BackendError) else {}
@@ -26,7 +30,7 @@ def failure_log(error, request_id=''):
             detail['stage'] = stage
         for key, allowed in (('operation', ('echo', 'add', 'upload', 'status', 'preload', 'other')),
                              ('method', ('GET', 'POST')),
-                             ('substage', ('manual_recheck', 'manual_wait', 'add_reconcile'))):
+                             ('substage', ('manual_recheck', 'sole_recheck', 'manual_wait', 'add_reconcile'))):
             value = diagnostic.get(key)
             if isinstance(value, str) and value in allowed:
                 detail[key] = value
@@ -41,7 +45,7 @@ def failure_log(error, request_id=''):
         if type(diagnostic.get('binding_present')) is bool:
             detail['binding_present'] = diagnostic['binding_present']
         for key in ('elapsed_ms', 'torrent_preloaded', 'torrent_preload_target',
-                    'selected_file_bytes', 'peers', 'download_bps'):
+                    'selected_file_bytes', 'selected_opening_bytes', 'selected_opening_target', 'peers', 'download_bps'):
             value = diagnostic.get(key)
             if type(value) is int and 0 <= value <= 512*1024**3:
                 detail[key] = value
@@ -103,6 +107,12 @@ def execute(request, owner, backend, download_session, list_item, resolve_url,
         result = resolver_factory(backend, owner, download_session).resolve(request)
         owner.active()
         item = list_item(label=request.get('title') or result['file']['path'], path=result['url'])
+        mime = {'.mkv':'video/x-matroska', '.mk3d':'video/x-matroska',
+                '.webm':'video/webm', '.mp4':'video/mp4', '.m4v':'video/mp4',
+                '.mov':'video/quicktime'}.get(Path(result['file']['path']).suffix.lower())
+        if mime:
+            item.setMimeType(mime)
+            item.setContentLookup(False)
         item.setProperty('IsPlayable', 'true')
         item.setProperty('no-ext-subs-scan', 'true')
         tag = item.getVideoInfoTag()

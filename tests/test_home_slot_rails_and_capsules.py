@@ -346,6 +346,7 @@ def test_emby_home_rail_zero_network_when_unconfigured_and_multi_account_isolate
             return ([{
                 'Id': '9001',
                 'Name': 'Severance S01E01',
+                'MediaSources': [{'Id': 'main-cut'}],
                 'Type': 'Episode',
                 'SeriesName': 'Severance',
                 'ParentIndexNumber': 1,
@@ -368,6 +369,19 @@ def test_emby_home_rail_zero_network_when_unconfigured_and_multi_account_isolate
     assert item_b.props['PercentPlayed'] == '50'
     assert item_a.props['Bobbi.Emby.Authority'] == 'emby_server'
     assert '客厅 Emby' in item_a.label2 and '书房 Emby' in item_b.label2
+
+    # A may be removed while the later source B is still being read. A's already
+    # rendered card must not appear (or write history) in the published directory.
+    previous_page = MockClient.page_rows
+    def delayed_page(self, *args, **kwargs):
+        if self.saved['server_id'] == 'srvB02':
+            writable = Registry(tmp_path / 'libraries.sqlite3')
+            try: writable.remove(id_a)
+            finally: writable.close()
+        return previous_page(self,*args,**kwargs)
+    monkeypatch.setattr(MockClient,'page_rows',delayed_page)
+    emby_dynamic.execute_home_rail(14, {'section':'resume'})
+    assert added[-1][2] == 1 and added[-1][1][0][1].props['Bobbi.Emby.SourceId'] == id_b
 
 
 def test_osd_next_episode_capsule_and_emby_summary_projection():

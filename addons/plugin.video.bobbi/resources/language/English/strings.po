@@ -5216,7 +5216,7 @@ msgid "Release Group"
 msgstr ""
 
 msgctxt "#91175"
-msgid "Indexer"
+msgid "Source library or indexer"
 msgstr ""
 
 msgctxt "#91176"
@@ -6942,3 +6942,11 @@ msgstr ""
 msgctxt "#91656"
 msgid "Default sources restored"
 msgstr ""
+
+msgctxt "#91657"
+msgid "Forced subtitles"
+msgstr "Forced subtitles"
+
+msgctxt "#91658"
+msgid "Hearing impaired (SDH)"
+msgstr "Hearing impaired (SDH)"

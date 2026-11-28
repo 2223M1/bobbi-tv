@@ -160,7 +160,16 @@ def proofs(value):
     return result
 
 
-def message(code):
+def message(code, *, english=False):
+    if english:
+        return {'login_required': '115 sign-in expired. Sign in again in Cloud accounts & CD2.',
+                'share_unavailable': 'This share is temporarily unavailable. Retry or choose another source.',
+                'share_revoked': 'This share was revoked. Choose another source.',
+                'identity_changed': 'The shared file changed. Refresh and select the source again.',
+                'refresh_required': 'Refresh the sources and select the 115 share again.',
+                'network': '115 is unreachable. Retry or choose another source.',
+                'network_timeout': 'The 115 share timed out. Retry or choose another source.',
+                'deadline': 'The 115 share timed out. Retry or choose another source.'}.get(code, 'This 115 share is unavailable. Retry or choose another source.')
     return {
         'login_required': '115 登录已失效，请到“网盘账号与 CD2”重新登录。',
         'share_unavailable': '这个分享暂时无法访问，请选择其他来源或稍后重试。',

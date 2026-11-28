@@ -117,3 +117,7 @@ msgstr "浏览字幕"
 msgctxt "#32026"
 msgid "Another subtitle search window is active; finish or cancel it first."
 msgstr "已有字幕搜索窗口，请先完成或取消上次操作。"
+
+msgctxt "#32027"
+msgid "Find Chinese Subtitles"
+msgstr "找中文字幕"

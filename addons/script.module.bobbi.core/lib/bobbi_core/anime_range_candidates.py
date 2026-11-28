@@ -14,19 +14,19 @@ _OPEN = {'[': ']', '【': '】', '(': ')'}
 _SPECIAL = re.compile(
     r'(?i)(?<![a-z0-9])(?:ova|oav|oad|ona|sp|specials?|movie|film|ncop|nced|pv|cm)'
     r'(?:[ ._-]*[0-9]+)?(?![a-z0-9])|劇場版|剧场版|总集篇|總集篇|総集編|番外|特别篇|特別篇')
-_GROUP = re.compile(r'(?i)字幕[组組社]|工作室|fansubs?|subbers?|raws?|studio|team|group|encode(?:rs?)?')
+_GROUP = re.compile(r'(?i)(?:字幕|片源|压制|壓制)[组組社]|番[小]?队|工作室|fansubs?|subbers?|raws?|studio|team|group|encode(?:rs?)?')
 _RANGE = re.compile(
-    r'^(?:全\s*)?([0-9]{1,3})\s*[-–~至]\s*([0-9]{1,3})\s*'
-    r'(?:集|话|話)?\s*(?:合集|全集|全)?\s*(?:\+\s*(?:特典|映像特典))?$')
+    r'(?i)^(?:全\s*)?([0-9]{1,3})\s*[-–~至]\s*([0-9]{1,3})\s*'
+    r'(?:TV\s*)?(?:集|话|話)?\s*(?:合集|全集|全[话話]?|完)?\s*(?:\+\s*(?:特典|映像特典|[0-9]{0,2}SP))?$')
 # Planar YUV sampling/bit-depth labels are technical metadata, either alone or
 # attached to a codec. Keep the grammar closed; an arbitrary codec suffix must
 # not consume an episode marker, another work title, year or bonus label.
 _PIXEL_FORMAT = r'yuv(?:420|422|444)p(?:(?:9|10|12|14|16)(?:le|be)?)?'
 _TECH = re.compile(
     r'(?i)(?:(?:2160|1080|720|576|480)[pi]|[48]k|\d{3,4}x\d{3,4}|'
-    r'web(?:-?dl|rip)?|blu-?ray|bd(?:rip|remux)?|remux|h\.?26[45]|x26[45]|'
+    r'web(?:-?dl|rip)?|blu-?ray|bd(?:rip|remux)?|remux|h\.?26[45]|x26[45](?:-(?:8|10|12)bit)?|'
     r'(?:hevc|avc)(?:-(?:(?:8|10|12)bits?|' + _PIXEL_FORMAT + r'))?|'
-    + _PIXEL_FORMAT + r'|av1|aac|flac|opus|ac3|eac3|'
+    + _PIXEL_FORMAT + r'|av1|aac|flac(?:x[1-8])?|opus|ac3|eac3|'
     r'dts|truehd|mp3|pcm|[1-8]\.[01]|(?:8|10|12)-?bits?|ma10p|hi10p|'
     r'hdr(?:10\+?)?|dv|dovi|chs|cht|sc|tc|gb|gbk|big5|zh(?:-cn|-tw|-hk)?|'
     r'jpn|jp|eng|en|chinese|japanese|english|dual-audio|multi-audio|'
@@ -39,7 +39,7 @@ _SUBTITLE = re.compile(
 
 
 def context(details, tmdb_id, catalog_season, release_season, episode, mappings=None):
-    """Construct only from exact-ID details and an existing regular S1 map."""
+    """Construct from exact-ID details and a regular S1 map or an ended single season."""
     if (type(catalog_season) is not int or catalog_season != 1
             or type(release_season) is not int or release_season != 1
             or type(episode) is not int or not 1 <= episode <= 999
@@ -52,8 +52,11 @@ def context(details, tmdb_id, catalog_season, release_season, episode, mappings=
         return None
     mappings = load_mappings() if mappings is None else mappings
     targets = mappings.get('tmdb_show:{}:s1'.format(catalog['tmdb_id']), {}) if isinstance(mappings, dict) else {}
-    if (not isinstance(targets, dict) or len(targets) != 1
-            or mapped_episode(mappings, catalog['tmdb_id'], 1, episode) != episode):
+    mapped = (isinstance(targets, dict) and len(targets) == 1
+              and mapped_episode(mappings, catalog['tmdb_id'], 1, episode) == episode)
+    if not mapped and (not isinstance(mappings, dict)
+            or 'tmdb_show:{}:s1'.format(catalog['tmdb_id']) in mappings
+            or episode > catalog.get('ended_anime_s1_count', 0)):
         return None
     return dict(catalog=catalog, catalog_season=1, release_season=1, episode=episode, genre_id=16)
 
@@ -108,7 +111,7 @@ def _bound_title(value, aliases, year):
     trusted = {normalized(alias).replace(' ', '') for alias in aliases}
     trusted.discard('')
     def complete(text):
-        if not re.fullmatch(r"[\w\s./|:_’'()\-]+", text):
+        if not re.fullmatch(r"[\w\s./|:_’'()!！\-]+", text):
             return False
         text = normalized(text).replace(' ', '')
         if not text:
@@ -121,6 +124,14 @@ def _bound_title(value, aliases, year):
         return False
     if complete(value):
         return True
+    # Some multilingual releases add one short Chinese alternate title. It
+    # is only packaging: never add it to the trusted aliases used on the file.
+    parts = [part.strip() for part in value.split('/')]
+    unknown = [part for part in parts if not complete(part)]
+    if (2 <= len(parts) <= 4 and len(unknown) == 1 and
+            re.fullmatch(r'[\u3400-\u9fff]{2,16}', unknown[0]) and
+            not re.search(r'季|部|篇|特典|续|續|外传|外傳|剧场|劇場|合集', unknown[0])):
+        return True
     dated = re.fullmatch(r'(.+?)[ ._]+\(?((?:19|20)[0-9]{2})\)?', value)
     return bool(dated and int(dated[2]) == year and complete(dated[1]))
 
@@ -129,6 +140,8 @@ def _technical(value, year, allow_bonus=False):
     if not value or _SPECIAL.search(value):
         return False
     if allow_bonus and value in ('特典', '映像特典', '+特典', '+映像特典', '全', '合集', '全集'):
+        return True
+    if re.fullmatch(r'(?:外挂|外掛)(?:DMZJ)?(?:简繁|簡繁)(?:[+]英日文字幕)?', value):
         return True
     if value in ('★高清收藏版', '高清收藏版'):
         return True
@@ -159,7 +172,7 @@ def eligible(title, value, season, episode):
     tokens = _tokens(unicodedata.normalize('NFKC', title).strip())
     if not tokens:
         return False
-    ranges = [(index, _RANGE.fullmatch(token[1])) for index, token in enumerate(tokens) if token[0] == 'block']
+    ranges = [(index, _RANGE.fullmatch(token[1])) for index, token in enumerate(tokens) if token[0] in ('block', 'text')]
     ranges = [(index, match) for index, match in ranges if match]
     if len(ranges) != 1:
         return False
@@ -184,9 +197,12 @@ def eligible(title, value, season, episode):
                 return False
         elif _bound_title(text, aliases, year):
             title_count += 1
+        elif title_count and _technical(text, year):
+            continue
         else:
             return False
-    return bool(1 <= title_count <= 4 and all(_technical(token[1], year, allow_bonus=True) for token in tokens[index + 1:]))
+    return bool(1 <= title_count <= 4 and all(_technical(text, year, allow_bonus=True)
+        or (opening == '(' and _bound_title(text, aliases, year)) for _, text, opening in tokens[index + 1:]))
 
 
 def check_file_tail(path, year):

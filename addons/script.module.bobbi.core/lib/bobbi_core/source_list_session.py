@@ -34,6 +34,7 @@ class SourceListSession:
         self.focus_key = None
         self.focus_position = 0
         self.confirmed = None
+        self._collect_siblings = False
         self.metadata = {}
         self.share_scope = None
         self.share_scope_polled = 0
@@ -82,8 +83,12 @@ class SourceListSession:
                 raise ValueError('Explicit provider completion receipt required')
         copies = [(self.key(source), deepcopy(source)) for source in sources]
         with self.lock:
-            if epoch != self.epoch or self.cancelled or self.confirmed:
+            if epoch != self.epoch or self.cancelled or (self.confirmed and not self._collect_siblings):
                 return False
+            if self.confirmed:
+                # Keep the captured row immutable. Other results will be visible
+                # if this resolver fails and the same picker reopens.
+                copies = [pair for pair in copies if pair[0] != self.confirmed]
             if self.providers.get(provider, {}).get('state') in self.TERMINAL:
                 return False  # A timed-out producer cannot revive its subscription.
             if len(self.entries.keys() | {key for key, _ in copies}) > self.capacity:
@@ -92,6 +97,17 @@ class SourceListSession:
             for key, source in copies:
                 changed |= key not in self.entries
                 retained = self.entries.setdefault(key, source)
+                if retained is not source and getattr(source, 'sourceStations', None):
+                    from bobbi_core.library_labels import merge_stations
+                    changed |= merge_stations(retained, source)
+                libraries = getattr(source, 'sourceLibraries', None)
+                if (libraries and retained is not source and source.type == 'Direct'
+                        and source.indexer == retained.indexer and source.guid == retained.guid
+                        and source.guid.startswith('sharelib:') and source.url == retained.url
+                        and libraries != getattr(retained, 'sourceLibraries', {})):
+                    # The final search batch includes all claims in this captured catalogue.
+                    retained.sourceLibraries, retained.subindexer = libraries, source.subindexer
+                    changed = True
                 share_state = getattr(source, 'shareState', {})
                 if valid_card_state(share_state):
                     changed |= self._merge_share_state(retained, source, share_state)
@@ -169,7 +185,7 @@ class SourceListSession:
             if key in self.entries and not self.cancelled and not self.confirmed:
                 self.focus_key, self.focus_position = key, max(0, int(position))
 
-    def capture(self, epoch, key):
+    def capture(self, epoch, key, *, collect_siblings=False):
         with self.lock:
             if epoch != self.epoch or self.cancelled or self.confirmed or key not in self.entries:
                 return None
@@ -178,6 +194,7 @@ class SourceListSession:
             if key not in {identity for identity, _ in self._ranked()}:
                 return None
             self.confirmed = key
+            self._collect_siblings = collect_siblings
             self.revision += 1
             return deepcopy(self.entries[key])
 
@@ -194,6 +211,7 @@ class SourceListSession:
         with self.lock:
             if not self.cancelled:
                 self.confirmed = None
+                self._collect_siblings = False
                 self.revision += 1
 
     def retry_providers(self, providers):
@@ -268,7 +286,7 @@ class SourceListSession:
             from bobbi_core.search_trace import observe_providers
             observe_providers(self.epoch, self.providers)
 
-    def snapshot(self, full=False, after_content_revision=None):
+    def snapshot(self, full=False, after_content_revision=None, *, pin_focus=True):
         from bobbi_core.search_trace import observe
         with self.lock:
             # Rank the complete bounded set before the display cap.
@@ -280,7 +298,7 @@ class SourceListSession:
             if after_content_revision != self.content_revision:
                 visible = ranked[:cap]
                 eligible_keys = {key for key, _ in ranked}
-                if self.focus_key in eligible_keys:
+                if pin_focus and self.focus_key in eligible_keys:
                     focused = (self.focus_key, self.entries[self.focus_key])
                     visible = [pair for pair in visible if pair[0] != self.focus_key]
                     visible.insert(min(self.focus_position, len(visible)), focused)

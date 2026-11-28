@@ -2155,3 +2155,7 @@ msgstr "频道分组"
 msgctxt "#31299"
 msgid "Refreshing"
 msgstr "正在刷新"
+
+msgctxt "#32400"
+msgid "All add-on settings"
+msgstr "打开插件总设置"

@@ -241,7 +241,7 @@ def test_catalogue_envelope_cannot_cross_request_selection_or_episode(field, val
     assert result.value.category == 'invalid_binding'
 
 
-@pytest.mark.parametrize('style,evidence', [('catalog', 'AUTO_VERIFIED_FILE'), ('legacy', 'USER_CONFIRMED_FILE')])
+@pytest.mark.parametrize('style,evidence', [('catalog', 'AUTO_VERIFIED_FILE'), ('legacy', 'SOLE_ELIGIBLE_FILE')])
 def test_real_resolver_only_automatic_catalogue_scope_can_seed_preparation(style, evidence):
     from bobbi_torrent.resolver import Resolver
     from bobbi_torrent.backend import Backend
@@ -268,10 +268,10 @@ def test_real_resolver_only_automatic_catalogue_scope_can_seed_preparation(style
     result = Resolver(Backend(config(), session, clock), owner, Session([]), clock).resolve(query)
     assert result['file'] == file and result['file_evidence'] == evidence
     assert bool(owner.targets) == (style == 'catalog')
-    assert bool(choices) == (style == 'legacy')
+    assert not choices
 
 
-@pytest.mark.parametrize('catalog,evidence', [(CATALOG, 'AUTO_VERIFIED_FILE'), (None, 'USER_CONFIRMED_FILE')])
+@pytest.mark.parametrize('catalog,evidence', [(CATALOG, 'AUTO_VERIFIED_FILE'), (None, 'SOLE_ELIGIBLE_FILE')])
 def test_portable_boundary_uses_the_same_cached_catalogue_scope(monkeypatch, catalog, evidence):
     source_path = ROOT / 'addons/plugin.video.bobbi/lib/portable.py'
     tree = ast.parse(source_path.read_text(encoding='utf-8'))
@@ -298,4 +298,4 @@ def test_portable_boundary_uses_the_same_cached_catalogue_scope(monkeypatch, cat
     source = SimpleNamespace(infoHash=HASH, title='Shingeki no Kyojin - 01 [1080p]', url='', guid='')
     _, result = namespace['resolve_torrent'](source, lambda: True, info)
     assert result['file_evidence'] == evidence
-    assert bool(choices) == (catalog is None)
+    assert not choices

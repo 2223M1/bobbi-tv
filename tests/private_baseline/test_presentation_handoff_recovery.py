@@ -571,13 +571,31 @@ def test_close_attempt_is_not_mistaken_for_successful_own_submission(scene):
     assert not scene.native.commands
 
 
-def test_recovered_handoff_keeps_monitor_progress_and_natural_eof_lifecycle(scene):
+@pytest.mark.parametrize('delayed_history', [False, True])
+def test_recovered_handoff_keeps_monitor_progress_and_natural_eof_lifecycle(scene, delayed_history):
     player, events = scene.player, []
-    scene.faults['close_window'] = dict(remaining=1, lost_ack=True)
+    if delayed_history:
+        # AM6B: the loading lease was retired, then the first owner snapshot
+        # timed out. A slow history/preparation call must not eat the UI deadline.
+        old_call = player.playback_client.call
+        def call(message, **kw):
+            if message['operation'] == 'snapshot' and getattr(player, '_presentation_loading_retired', False) and 'miss' not in events:
+                events.append('miss')
+                scene.clock[0] += .3
+                raise OSError('transient owner read')
+            return old_call(message, **kw)
+        player.playback_client.call = call
+    else:
+        scene.faults['close_window'] = dict(remaining=1, lost_ack=True)
     player._wait_for_video_start = lambda: True
     player.skip_intro_enabled = False
     player._cinema_phase = lambda phase: events.append(phase)
-    player._record_started_history = lambda: events.append('started_history')
+    def record_history():
+        events.append('started_history')
+        if delayed_history:
+            events.append('fullscreen_at_history' if scene.confirmed else 'video_behind_directory')
+            scene.clock[0] += 3
+    player._record_started_history = record_history
     player.update_playback_progress = lambda: events.append('progress')
     player.check_cinema_stall = player._consume_next_dialog_action = lambda: False
     player.queue_cinema_transport_end = lambda budget: False
@@ -602,5 +620,7 @@ def test_recovered_handoff_keeps_monitor_progress_and_natural_eof_lifecycle(scen
     player.queue_cinema_natural_end = next_episode
     player.monitor()
     assert events.count('started_history') == 1 and events.count('progress') == 2
+    if delayed_history:
+        assert 'miss' in events and 'fullscreen_at_history' in events
     assert player._handoff_confirmed and 'authorized_next' in events and 'handle_playback_stop' in events
     assert 'kill_dialog' not in events and not scene.native.commands

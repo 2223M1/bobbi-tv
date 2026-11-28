@@ -62,6 +62,32 @@ def prepared_generation(*, session=_CAPTURE):
         return None
 
 
+class PreparedSourceUnavailable(RuntimeError):
+    """The owned cloud object could not be verified for playback."""
+
+
+def searchable_index(session):
+    """The ready shelf is historical. A source picker needs a live transport."""
+    data = load_index(session=session)
+    if not data.get('titles'):
+        return data
+    try:
+        health = session.call('ping', {})
+        ready = (health.get('state') == 'RUNNING' and health.get('account') == session.account
+                 and (health.get('dependency') or {}).get('ready') is True)
+    except (AttributeError, OSError, RuntimeError, ValueError, TypeError):
+        ready = False
+    # Legacy entries play from the mount; qualified entries require an owned
+    # CD2 verification even when a similarly named local file exists.
+    mounted = os.path.isdir(os.path.join(data['mount_root'], '115open'))
+    titles = []
+    for title in data['titles']:
+        sources = [s for s in title['sources'] if (ready if s.get('state') == 'qualified' else mounted)]
+        if sources:
+            titles.append(dict(title, sources=sources))
+    return dict(data, titles=titles)
+
+
 def load_index(path=None, *, session=_CAPTURE):
     session = _session(session) if path is None else session
     if path is None and (session is None or not session.account_current(session.account)):

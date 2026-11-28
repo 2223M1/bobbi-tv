@@ -139,7 +139,7 @@ def unique_bt_releases(sources):
     by display title, or collapse different per-file choices in a batch.
     This does not claim that metadata or media bytes have been verified.
     """
-    result, seen = [], set()
+    result, seen = [], {}
     for source in sources:
         metadata = getattr(source, 'stremioMetadata', {})
         key = None
@@ -165,8 +165,10 @@ def unique_bt_releases(sources):
                     pass
         if key is not None:
             if key in seen:
+                from bobbi_core.library_labels import merge_stations
+                merge_stations(seen[key], source)
                 continue
-            seen.add(key)
+            seen[key] = source
         result.append(source)
     return result
 

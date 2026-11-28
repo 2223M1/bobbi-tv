@@ -288,3 +288,11 @@ test('job polling failures back off and total deadline prevents endless retries'
   await ui.tick(300000);assert.equal(calls(ui,'catalog_jobs').length,end);
   assert.equal(calls(ui,'catalog_cancel').length,0);
 });
+
+
+test('preview explains the exact revision, version and season without presenting raw protocol JSON',async()=>{
+  const ui=await boot({rows:[row(0)],handlers:{catalog_preview:()=>response({items:[{status:'ready',revision:7,action:'confirm',before_state:'ambiguous',after_state:'confirmed',before:null,after:{title:'New edition',kind:'tv',tmdb_id:42,season:0,episode:2,version:'cut B'}}]})}});
+  await ui.add(0);await ui.click('preview');const shown=ui.text('batchPreview');
+  for(const v of ['记录修订 7','保存描述','身份不明确','人工确认','New edition','S00E02','TMDb 42','cut B'])assert.ok(shown.includes(v),v);
+  assert.doesNotMatch(shown, /"tmdb_id"|"kind"/);assert.equal(calls(ui,'catalog_apply').length,0);
+});

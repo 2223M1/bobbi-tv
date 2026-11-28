@@ -225,16 +225,23 @@ def test_pending_probe_does_not_extend_original_bt_buffer_deadline():
     assert clock.now < 2.8  # No new 90-second budget or 30-second wait added by a probe.
 
 
-def test_user_confirmed_file_never_enters_auto_ready_lane():
+@pytest.mark.parametrize('multiple', [True, False])
+def test_unverified_file_never_enters_auto_ready_lane(multiple):
     file = dict(id=4, path='video.mkv', length=1000000)
     info, clock = status(file), Clock()
+    if multiple:
+        info['file_stats'].append(dict(file, id=2, path='main.mkv'))
     owner = FakeOwner(clock)
-    owner.choose_file = lambda files: files[0]
+    def choose(files):
+        assert multiple and len(files) == 2
+        return files[0]
+    owner.choose_file = choose
     owner.prepared_source_ready = lambda *args: pytest.fail('A manual file is not automatic provenance')
     session = Session([Response(b'MatriX.144.1'), Response({'hash': HASH}), Response(info),
                        Response(info), Response(b''), Response(info)])
     result = Resolver(Backend(config(), session, clock), owner, Session([]), clock).resolve(request())
-    assert result['file_evidence'] == 'USER_CONFIRMED_FILE' and not owner.targets
+    assert result['file_evidence'] == ('USER_CONFIRMED_FILE' if multiple else 'SOLE_ELIGIBLE_FILE')
+    assert not owner.targets
 
 
 @pytest.mark.parametrize('failure', ['pending', 'unavailable', 'exception'])

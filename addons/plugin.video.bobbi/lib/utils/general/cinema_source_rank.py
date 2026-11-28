@@ -7,6 +7,7 @@ Size is deliberately not a quality score (packs and multi-audio inflate it).
 import re
 
 from lib.utils.general.source_resolution import source_resolution, source_resolution_label
+from lib.utils.general.release_quality import anime_context, cinema_quality_order, quality_text, release_quality
 from lib.utils.parsers.title_parser import detect_chinese_subtitle_kind
 
 
@@ -71,10 +72,7 @@ def catalog_identity_matches(source, context):
 
 
 def uses_anime_groups(context, source):
-    anime = context.get("mode") == "anime" or context.get("media_kind") in {
-        "anime_movie", "anime_series"
-    } or 16 in (context.get("genre_ids") or [])
-    return bool(anime and getattr(source, "type", "") == "Torrent"
+    return bool(anime_context(context) and getattr(source, "type", "") == "Torrent"
                 and not getattr(source, "addedToDebrid", False)
                 and not getattr(source, "debridType", ""))
 
@@ -118,23 +116,24 @@ def source_preference(source, context=None):
     """Return an order key and short *claimed* reasons, never a URL or token."""
     context = context or {}
     title = str(getattr(source, "title", "") or "")
-    text = re.sub(r"[._\[\]()\-]+", " ", title).casefold()
+    film = cinema_quality_order(context)
+    release = quality_text(title, context) if film else title
+    video = release_quality(release) if film else None
+    text = re.sub(r"[._\[\]()\-]+", " ", release).casefold()
 
     def has(pattern):
         return bool(re.search(r"(?<!\w)(?:" + pattern + r")(?!\w)", text))
 
     resolution_facts = source_resolution(source)
     resolution = resolution_facts.resolution
-    remux = has(r"remux|bdremux")
-    bluray = has(r"blu\s?ray|bdrip|bdremux|bd")
-    origin = 4 if remux else 3 if bluray else 2 if has(r"web\s?dl|webmux") else 1 if has(r"webrip|web") else 0
     hevc = has(r"hevc|[hx]\s?265|ma10p")
     avc = has(r"avc|[hx]\s?264|hi10p")
     tenbit = has(r"10\s?bits?|hi10p|ma10p|main\s?10")
     risks = []
     if resolution_facts.caution:
         risks.append(resolution_facts.caution)
-    if has(r"trailer|teaser|sample|preview|cam|camrip|hdcam|telesync|screener") or "预告" in text:
+    if (has(r"trailer|teaser|sample|preview|cam|camrip|hdcam|telesync|screener")
+            or "预告" in text or (video and video.low)):
         risks.append("预告/样片/低质标记")
     if has(r"ai\s?upscale(?:d)?|upscale(?:d)?|interpolat(?:ed|ion)|svp|60fps|120fps") or "补帧" in text:
         risks.append("放大/高帧率版本需复核")
@@ -163,12 +162,6 @@ def source_preference(source, context=None):
             if re.search(r"\[[^\]]*(?<![\w-])" + escaped + r"(?![\w-])[^\]]*\]|-" + escaped + r"(?:\.(?:mkv|mp4))?$", title, re.I):
                 group, group_score = name, priority
                 break
-    dv = has(r"dv|dovi|dolby\s?vision")
-    hdr = has(r"hdr(?:10\+?)?|pq")
-    # LG reports no HDR10+ support. It receives the same HDR score as HDR10.
-    # DV is only a tie-break between comparable sources, never a codec/profile
-    # compatibility claim. Hybrid labels do not establish a better master.
-    dynamic_range = 2 if dv and not has("hybrid") else 1 if hdr or dv else 0
     chinese = int(has(r"chs|cht|sc|tc|chinese|简繁|简体|繁体") or "中字" in text)
     # Codec efficiency is not picture quality: an 8-bit HEVC re-encode must not
     # outrank an equally labelled AVC WEB-DL solely because it says HEVC.
@@ -180,28 +173,38 @@ def source_preference(source, context=None):
     elif getattr(source, 'catalogIdentity', None):
         risks.append('目录身份/季集不匹配')
     subtitle_score, subtitle_reason = chinese_subtitle_preference(source)
-    # Preserve the explicit anime encode-group policy. Within that tier,
-    # resolution wins, then Chinese evidence across ALL source transports.
-    # No catalogue/platform identifier participates in quality tie-breaking.
-    # Unknown titles, unavailable torrents and codec risks remain demoted.
-    key = (int(not risks), min(identity, 2), availability, group_score, resolution,
-           subtitle_score, origin, dynamic_range, int(tenbit), chinese, min(seeders, 1000))
+    prefix = (int(not risks), min(identity, 2), availability, group_score, resolution)
+    if video is not None:
+        # Ordinary films/episodes: release and HDR evidence before language.
+        # A bare codec, container or inflated filesize is not better video.
+        key = prefix + (video.origin, video.dynamic, subtitle_score, chinese, min(seeders, 1000))
+    else:
+        remux = has(r"remux|bdremux")
+        bluray = has(r"blu\s?ray|bdrip|bdremux|bd")
+        origin = 4 if remux else 3 if bluray else 2 if has(r"web\s?dl|webmux") else 1 if has(r"webrip|web") else 0
+        dv = has(r"dv|dovi|dolby\s?vision")
+        hdr = has(r"hdr(?:10\+?)?|pq")
+        dynamic_range = 2 if dv and not has("hybrid") else 1 if hdr or dv else 0
+        key = prefix + (subtitle_score, origin, dynamic_range, int(tenbit), chinese, min(seeders, 1000))
     if getattr(source, 'shareFailure', '') in ('share_revoked', 'identity_changed'):
         risks.append('分享已失效 · 可手动重试' if source.shareFailure == 'share_revoked' else '文件已变化 · 可手动重试')
         key = (-1,) + key[1:]  # Failed shares cannot outrank ordinary candidates.
     parts = []
     if group:
         parts.append(group + " 优先")
-    if subtitle_reason:
+    if subtitle_reason and video is None:
         parts.append(subtitle_reason)
     if resolution:
         parts.append(source_resolution_label(source, resolution_facts))
-    if origin:
-        parts.append({4: "REMUX", 3: "蓝光", 2: "WEB-DL", 1: "WEB"}[origin])
-    if dv:
-        parts.append("DV标记·待验")
-    elif hdr:
-        parts.append("HDR标记")
+    if video is not None:
+        parts.extend(label for label in (video.origin_label, video.dynamic_label, subtitle_reason) if label)
+    else:
+        if origin:
+            parts.append({4: "REMUX", 3: "蓝光", 2: "WEB-DL", 1: "WEB"}[origin])
+        if dv:
+            parts.append("DV标记·待验")
+        elif hdr:
+            parts.append("HDR标记")
     if risks:
         parts = risks
     elif not availability:

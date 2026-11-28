@@ -273,12 +273,15 @@ def search(spec, deadline, cancelled, catalogue=CATALOG, cache_path=CACHE, clien
                             continue
                         group_matched = True
                         # Mirrors of an identical filename/size are redundant.
-                        unique = (row['name'].casefold(), row['size'])
+                        unique = (route['group'], row['name'].casefold(), row['size'])
                         if unique in seen:
                             continue
                         seen.add(unique)
                         item = dict(row, cell=share['cell'], origin=route['origin'])
                         entry = fields(item)
+                        if catalogue == CATALOG:
+                            from .collection_labels import membership
+                            entry['sourceLibraries'] = membership(route['group'])
                         selections.append((entry['guid'], spec['media_key'], item))
                         result.append(entry)
                     if group_matched or len(result) >= 16:

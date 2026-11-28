@@ -184,6 +184,18 @@ def catalog_identity(details, tmdb_id):
     date = details.get('first_air_date')
     year = int(date[:4]) if isinstance(date, str) and re.fullmatch(r'[12][0-9]{3}-[0-9]{2}-[0-9]{2}', date) else None
     identity = dict(tmdb_id=_number(tmdb_id), aliases=aliases, year=year)
+    # An ended, single regular season can admit a candidate without asserting
+    # an AniDB/absolute numbering map. The real file must still name SxxExx.
+    seasons = details.get('seasons')
+    regular = [row for row in seasons if isinstance(row, dict) and row.get('season_number') != 0] if isinstance(seasons, list) else []
+    total = details.get('number_of_episodes')
+    if (details.get('status') == 'Ended' and type(details.get('number_of_seasons')) is int
+            and details['number_of_seasons'] == 1 and type(total) is int and 1 <= total <= 999
+            and len(regular) == 1 and type(regular[0].get('season_number')) is int
+            and regular[0]['season_number'] == 1 and type(regular[0].get('episode_count')) is int
+            and regular[0]['episode_count'] == total and isinstance(details.get('genres'), list)
+            and any(isinstance(g, dict) and g.get('id') == 16 for g in details['genres'])):
+        identity['ended_anime_s1_count'] = total
     from .catalog_identity import tv_season_years
     years = tv_season_years(details, _number(tmdb_id))
     if years:
@@ -251,7 +263,21 @@ def bind_catalog_range_episode(ids, tv_data, request_id, selection_identity, loc
     proof = _transport_proof(ids, tv_data, request_id, selection_identity, mapping, catalog,
                              candidate_scope='unscoped-range-v1')
     if proof is None:
-        raise ValueError('Catalogue, year and regular episode mapping required for this range')
+        # No offset is invented. A positively identified, ended single-season
+        # series may pass through the existing catalogue selector, which must
+        # verify an explicit season AND episode in the actual filename.
+        count = catalog.get('ended_anime_s1_count') if isinstance(catalog, dict) else None
+        if (type(count) is not int or not 1 <= count <= 999 or not isinstance(tv_data, dict)
+                or not isinstance(ids, dict) or _number(tv_data.get('season')) != 1
+                or not 1 <= (_number(tv_data.get('episode')) or 0) <= count
+                or 'tmdb_show:{}:s1'.format(catalog.get('tmdb_id')) in mapping
+                or type(catalog.get('year')) is not int):
+            raise ValueError('Catalogue, year and regular episode evidence required for this range')
+        proof = bind_catalog_episode(ids, tv_data, request_id, selection_identity, info_hash, catalog)
+        if not proof:
+            raise ValueError('Catalogue range identity unavailable')
+        proof.update(candidate_scope='catalog-s1-explicit-v1', regular_episode_count=count)
+
     if selection_identity.startswith('bt:'):
         if (not isinstance(info_hash, str) or not re.fullmatch('[0-9a-fA-F]{40}', info_hash)
                 or selection_identity != 'bt:' + info_hash.lower()):
@@ -300,6 +326,12 @@ def resolve_episode_binding(raw, request_id, selection_identity, info_hash, seas
         expected = bind_catalog_episode({'tmdb_id': catalog['tmdb_id']},
             dict(season=season, episode=episode), request_id, selection_identity, info_hash,
             catalog, value.get('numbering'))
+        if expected is not None and value.get('candidate_scope') == 'catalog-s1-explicit-v1':
+            count = value.get('regular_episode_count')
+            if (type(count) is not int or not 1 <= value['episode'] <= count <= 999 or value['season'] != 1
+                    or value.get('numbering') is not None or type(value.get('catalog_year')) is not int):
+                raise ValueError('Invalid explicit-season range handoff')
+            expected.update(candidate_scope='catalog-s1-explicit-v1', regular_episode_count=count)
         if expected is None or value != expected:
             raise ValueError('Catalogue episode handoff changed or belongs to another request')
         return json.dumps(value['numbering'], separators=(',', ':')) if value['numbering'] else ''
@@ -351,10 +383,32 @@ def check_transport_episode_file(raw, path, releases=(), require_work=True):
         # Preserve the existing unasserted-year path if this season is absent
         # from the checked cache; do not manufacture dates from release text.
         year = tuple(y for y in (year, season_year) if y is not None) if season_year is not None else None
+    if value.get('candidate_scope') in ('unscoped-range-v1', 'catalog-s1-explicit-v1'):
+        from .anime_range_candidates import eligible
+        if value['candidate_scope'] == 'catalog-s1-explicit-v1' and require_work:
+            name = re.split(r'[/\\]', path)[-1]
+            markers = re.findall(r'(?i)(?<![a-z0-9])(?:s(\d+)[ ._-]*e(\d+)|(\d+)[ ._-]*x[ ._-]*(\d+))(?![a-z0-9])', name)
+            if not markers or any((int(a or c), int(b or d)) != (1, value['episode']) for a,b,c,d in markers):
+                raise ValueError('Unmapped range requires an explicit season and episode in the selected filename')
+        series = dict(tmdb_id=int(value['media_id'].split(':')[1]), aliases=value['catalog_aliases'], year=value['catalog_year'])
+        scope = dict(catalog=series, catalog_season=1, release_season=1, episode=value['episode'], genre_id=16)
+        def regular_pack(title):
+            return eligible(title, scope, value['season'], value['episode'])
+        # Some groups repeat their exact pack-prefix tag just before the
+        # filename CRC. It is packaging only for this already recognized pack.
+        # A different/bonus suffix remains subject to the normal file check.
+        from .episode_scope import _BONUS
+        groups = {m[1] for title in releases if regular_pack(title)
+                  for m in [re.match(r'^\[([A-Za-z]{1,12}-[A-Za-z]{1,12})\]', title)] if m and not _BONUS.search(m[1])}
+        parts = re.split(r'[/\\]', path)
+        for group in groups:
+            parts[-1] = re.sub(r'\['+re.escape(group)+r'\](?=\[[0-9a-fA-F]{8}\]\.(?:mkv|mp4)$)', '', parts[-1])
+        releases = [title for title in releases if not regular_pack(title)]
+        path = '/'.join([part for part in parts[:-1] if not regular_pack(part)] + parts[-1:])
     check_episode_scope(path, releases, value['catalog_aliases'], value['season'],
                         year, require_work=require_work)
     if 'candidate_scope' in value:
-        if value['candidate_scope'] != 'unscoped-range-v1':
+        if value['candidate_scope'] not in ('unscoped-range-v1', 'catalog-s1-explicit-v1'):
             raise ValueError('Unknown episode candidate scope')
         from .anime_range_candidates import check_file_tail
         check_file_tail(path, value['catalog_year'])

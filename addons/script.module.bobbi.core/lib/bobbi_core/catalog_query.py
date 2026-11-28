@@ -227,8 +227,8 @@ class CatalogQuery:
                 if saved is None or saved[0] != binding or self.clock() >= saved[2]:
                     raise ValueError('CATALOG_CURSOR_STALE')
                 after = saved[1]
-            sql, args = self._sql(expected, query, after)
-            rows = db.execute(sql, args + [limit + 1]).fetchall()
+            sql, args = self._sql(expected, query, after, limit + 1)
+            rows = db.execute(sql, args).fetchall()
             result = dict(schema=1, items=[], next_cursor=None,
                           projection_revision=revision, truncated=False)
             continuation = uuid4().hex
@@ -363,11 +363,16 @@ class CatalogQuery:
             metadata_key=row['metadata_key'], year=row['year'], art={})
 
     @staticmethod
-    def _sql(expected, query, after):
+    def _sql(expected, query, after, fetch_limit):
         view = query['view']
         key = {'works': 'work_id', 'seasons': 'season_id', 'episodes': 'episode_id', 'files': 'id', 'supplements': 'id'}[view]
-        conditions = ['p.provider=?', 'p.account=?', 'p.' + key + ' IS NOT NULL']
-        args = list(scope_key(expected)[:2])
+        args = {}
+        def bind(value):
+            name = 'v' + str(len(args))
+            args[name] = value
+            return ':' + name
+        provider, account = scope_key(expected)[:2]
+        conditions = ['p.provider=' + bind(provider), 'p.account=' + bind(account), 'p.' + key + ' IS NOT NULL']
         if view != 'supplements':
             # The flat review workbench still reaches every original file.
             # Filtering a work/season/episode's versions must not turn extras
@@ -375,29 +380,25 @@ class CatalogQuery:
             if not (view == 'files' and query.get('review_state') and not query.get('parent_entity_id')):
                 conditions.append('NOT EXISTS(SELECT 1 FROM file_supplements s WHERE s.file=p.id)')
         if expected.get('reference_kind') in PATH_KINDS:
-            conditions.append('p.namespace=?')
-            args.append(expected['namespace'])
+            conditions.append('p.namespace=' + bind(expected['namespace']))
         for field, column in (('review_state', 'review_state'), ('media_kind', 'media_kind')):
             if query[field] is not None:
-                conditions.append('p.' + column + '=?')
-                args.append(query[field])
+                conditions.append('p.' + column + '=' + bind(query[field]))
         if query['source_id']:
-            conditions.append('EXISTS(SELECT 1 FROM memberships f WHERE f.file=p.id AND f.source=?)')
-            args.append(query['source_id'])
+            conditions.append('EXISTS(SELECT 1 FROM memberships f WHERE f.file=p.id AND f.source=' + bind(query['source_id']) + ')')
         if query['text']:
-            conditions.append("p.search_text LIKE ? ESCAPE '\\'")
-            args.append('%' + query['text'].replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_') + '%')
+            pattern = '%' + query['text'].replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_') + '%'
+            conditions.append("p.search_text LIKE " + bind(pattern) + " ESCAPE '\\'")
         parent = query['parent_entity_id']
         if parent:
+            parent_arg = bind(parent)
             if view == 'supplements':
-                conditions.append('EXISTS(SELECT 1 FROM file_supplements s WHERE s.file=p.id AND '
-                    '(s.work_id=? OR s.parent_file=? OR (s.parent_file IS NULL AND s.work_id IN '
-                    '(SELECT work_id FROM catalog_rows WHERE id=?))))')
-                args.extend([parent] * 3)
+                conditions.append(f'EXISTS(SELECT 1 FROM file_supplements s WHERE s.file=p.id AND '
+                    f'(s.work_id={parent_arg} OR s.parent_file={parent_arg} OR (s.parent_file IS NULL AND s.work_id IN '
+                    f'(SELECT work_id FROM catalog_rows WHERE id={parent_arg}))))')
             else:
                 columns = ('work_id',) if view == 'seasons' else ('season_id',) if view == 'episodes' else ('work_id', 'season_id', 'episode_id')
-                conditions.append('(' + ' OR '.join('p.' + column + '=?' for column in columns) + ')')
-                args.extend([parent] * len(columns))
+                conditions.append('(' + ' OR '.join('p.' + column + '=' + parent_arg for column in columns) + ')')
         availability = ("CASE WHEN EXISTS(SELECT 1 FROM memberships m JOIN catalog_sources s ON s.source=m.source "
             "WHERE m.file=p.id AND s.active=1 AND m.available=1) THEN 'observed_present' "
             "WHEN EXISTS(SELECT 1 FROM memberships m JOIN catalog_sources s ON s.source=m.source "
@@ -409,26 +410,31 @@ class CatalogQuery:
             if generation:
                 # Only hex digests produced by the mounted port reach this
                 # internal read model; use parameters even for those digests.
-                availability = ("CASE WHEN p.authority_generation!=? AND EXISTS(SELECT 1 FROM memberships m "
+                availability = (f"CASE WHEN p.authority_generation!={bind(generation)} AND EXISTS(SELECT 1 FROM memberships m "
                     "JOIN catalog_sources s ON s.source=m.source WHERE m.file=p.id AND s.active=1) "
                     "THEN 'unverified' ELSE " + availability + ' END')
-                args.insert(0, generation)
             else:
                 availability = "'source_unavailable'"
-        sql = 'WITH selected AS (SELECT p.*, ' + availability + ' AS availability FROM catalog_rows p WHERE ' + ' AND '.join(conditions) + ')'
         if query['availability']:
-            sql += ', filtered AS (SELECT * FROM selected WHERE availability=?)'
-            args.append(query['availability'])
+            conditions.append('(' + availability + ')=' + bind(query['availability']))
+        where = ' AND '.join(conditions)
+        leaf = view in ('files', 'supplements')  # id is unique; no GROUP BY is needed to find its page.
+        if leaf:
+            sort = {'name':'p.filename_sort', 'recent_added':'-COALESCE(p.first_seen,0)', 'recent_edited':'-p.updated'}[query['sort']]
         else:
-            sql += ', filtered AS (SELECT * FROM selected)'
-        # Unknown migration dates sort after real observations; never invent an
-        # added date from a migration or metadata change.
-        sort = {'name': 'MIN(p.title_sort)', 'recent_added': '-COALESCE(MAX(p.first_seen),0)',
-                'recent_edited': '-MAX(p.updated)'}[query['sort']]
-        if query['sort'] == 'name' and view in ('files', 'supplements'):
-            sort = 'MIN(p.filename_sort)'
-        if query['sort'] == 'name' and view in ('seasons', 'episodes'):
-            sort = "printf('%06d:%06d',MIN(p.season),COALESCE(MIN(p.episode),0))"
+            sort = {'name':'MIN(p.title_sort)', 'recent_added':'-COALESCE(MAX(p.first_seen),0)', 'recent_edited':'-MAX(p.updated)'}[query['sort']]
+            if query['sort'] == 'name' and view in ('seasons','episodes'):
+                sort = "printf('%06d:%06d',MIN(p.season),COALESCE(MIN(p.episode),0))"
+        page = f'SELECT p.{key} AS entity_id,{sort} AS sort_key FROM catalog_rows p WHERE {where}'
+        if not leaf:
+            page += ' GROUP BY p.' + key
+        if after is not None:
+            page += (' AND ' if leaf else ' HAVING ') + f'({sort},p.{key})>({bind(after[0])},{bind(after[1])})'
+        # Limit entity keys before hydrating files or counting memberships. Reapply exactly
+        # the same filters so a different scope, extra or non-matching variant cannot leak in.
+        page += ' ORDER BY sort_key,entity_id LIMIT ' + bind(fetch_limit)
+        sql = (f'WITH page AS ({page}), filtered AS (SELECT p.*,k.sort_key page_sort,{availability} AS availability '
+               f'FROM page k CROSS JOIN catalog_rows p ON p.{key}=k.entity_id WHERE {where})')
         # Count source memberships separately. Joining them into file aggregation
         # repeats the correlated presence checks once per historical membership.
         sql += (', source_counts AS (SELECT p.' + key + ' AS entity_id,'
@@ -443,10 +449,7 @@ class CatalogQuery:
             "CASE WHEN MAX(p.availability='observed_present') THEN 'observed_present' "
             "WHEN MAX(p.availability='observed_absent') THEN 'observed_absent' "
             "WHEN MAX(p.availability='source_unavailable') THEN 'source_unavailable' ELSE 'unverified' END AS availability,"
-            + sort + ' AS sort_key FROM filtered p GROUP BY p.' + key + ') '
+            + 'MIN(p.page_sort) AS sort_key FROM filtered p GROUP BY p.' + key + ') '
             'SELECT g.*,COALESCE(sc.source_count,0) AS source_count FROM grouped g '
             'LEFT JOIN source_counts sc ON sc.entity_id=g.entity_id')
-        if after is not None:
-            sql += ' WHERE (g.sort_key>? OR (g.sort_key=? AND g.entity_id>?))'
-            args.extend([after[0], after[0], after[1]])
-        return sql + ' ORDER BY g.sort_key,g.entity_id LIMIT ?', args
+        return sql + ' ORDER BY g.sort_key,g.entity_id', args

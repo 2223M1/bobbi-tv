@@ -10,7 +10,7 @@ from bobbi_core.server_ref import identifier, file_id, parts
 from bobbi_core.server_description import observed
 from .pan_accounts import PanError
 from .pan_tokens import number, text, page_number
-from .server_http import Session, address, at_origin, token
+from .server_http import ReplyTooLarge, Session, address, at_origin, token
 
 
 def authenticate(location, username, password, device_id):
@@ -182,8 +182,21 @@ class Client:
                 )
         if display and not root:
             query.update(Fields='Overview,Genres,ProductionYear,RunTimeTicks,UserData', EnableImageTypes='Primary', ImageTypeLimit=1)
-        value = self.session.request('/Users/' + self.saved['user_id'] + route,
-                                     query=None if root else query)
+        path = '/Users/' + self.saved['user_id'] + route
+        with_versions = display and not root and self.provider == 'emby'
+        # Emby can return just the primary cut even with MediaSources requested.
+        # Asking for both fields keeps the per-page request bounded, without item lookups.
+        try:
+            value = self.session.request(path, query=(dict(query, Fields=query['Fields'] + ',MediaSources,AlternateMediaSources')
+                if with_versions else None if root else query))
+        except ReplyTooLarge:
+            if not with_versions:
+                raise
+            # Extensive track metadata must not make the original lightweight page disappear.
+            # Keep the same deadline and account; the detail request still verifies on click.
+            value = self.session.request(path, query=query)
+            for row in _rows(value, 'Items'):
+                row.pop('MediaSources', None)
         rows, total = _rows(value, 'Items'), number(value.get('TotalRecordCount'))
         # Views may ignore StartIndex/Limit; locally slice its bounded list.
         if root:

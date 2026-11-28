@@ -12,6 +12,7 @@ from uuid import uuid4
 
 from .account_manager import AccountManager, AccountError
 from .runtime import Runtime
+from bobbi_core.file_evidence import PLAY_ONCE_EVIDENCE
 
 
 class _Call:
@@ -619,7 +620,7 @@ class Host:
                         or desired.get('cancelled')
                         or (snapshot.get('adapter') == 'standard'
                             and desired.get('file_evidence') != 'AUTO_VERIFIED_FILE')
-                        or desired.get('file_evidence') == 'USER_CONFIRMED_FILE'):
+                        or desired.get('file_evidence') in PLAY_ONCE_EVIDENCE):
                     raise ValueError('PREPARATION_CURRENT_VERIFIED_SELECTION_REQUIRED')
             return self.preparation.request(body['method'], body['body'], scope)
         if action == 'status' and not body:

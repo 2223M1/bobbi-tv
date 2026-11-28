@@ -207,7 +207,7 @@ class Jackett(BaseClient):
                 return SearchResults([], batch.completion)
             parser = cls(host=base_url, apikey=apikey, port="", notification=lambda *a, **k: None, session=sess)
             merged = []
-            seen_streams = set()
+            seen_streams = {}
             parse_failures = 0
             for response in batch:
                 parsed = parser.parse_response(response)
@@ -220,11 +220,15 @@ class Jackett(BaseClient):
                         str(getattr(row, "infoHash", "") or "").strip().lower()
                         or str(getattr(row, "guid", "") or "").strip()
                         or str(getattr(row, "url", "") or "").strip()
-                        or f"{getattr(row, 'title', '')}:{getattr(row, 'size', 0)}"
+                        or None
                     )
-                    if dedup_key not in seen_streams:
-                        seen_streams.add(dedup_key)
+                    if not dedup_key or dedup_key not in seen_streams:
+                        if dedup_key:
+                            seen_streams[dedup_key] = row
                         merged.append(row)
+                    else:
+                        from bobbi_core.library_labels import merge_stations
+                        merge_stations(seen_streams[dedup_key], row)
             completion = batch.completion.with_parse_failures(parse_failures) if parse_failures else batch.completion
             return SearchResults(merged, completion)
         except requests.Timeout:
@@ -332,6 +336,14 @@ class Jackett(BaseClient):
             if cached is None:
                 missing.append(url)
             else:
+                # Older snapshots predate the station field. The cache key is
+                # still the adapter's own per-indexer URL, not a release URL.
+                from bobbi_core.library_labels import bt_station
+                path = urlsplit(url).path.split('/')
+                if len(path) >= 5 and path[-5] == 'indexers':
+                    for row in cached:
+                        if not getattr(row, 'sourceStations', None) and getattr(row, 'type', '') == 'Torrent':
+                            row.sourceStations = bt_station(path[-4], path[-4], getattr(row, 'provider', ''))
                 cached_rows.extend(cached)
                 cached_count += 1
                 cached_age = max(cached_age, getattr(getattr(cached, 'completion', None), 'snapshot_age', 0))
@@ -872,6 +884,8 @@ class Jackett(BaseClient):
         indexer = item.get("jackettindexer")
         indexer = indexer if isinstance(indexer, dict) else {}
         provider = indexer.get("#text", "")
+        from bobbi_core.library_labels import bt_station
+        stations = bt_station(indexer_id, indexer.get('@id') or '', provider)
         release_type = ''
         if indexer_id and indexer.get('@id') == indexer_id:
             mapping = self._indexer_anime_caps.get(indexer_id, {}).get('release_types', {})
@@ -915,7 +929,7 @@ class Jackett(BaseClient):
                 seeders=int(attributes.get("seeders", 0) or 0),
                 peers=int(attributes.get("peers", 0) or 0),
                 infoHash=info_hash,
-                jackettReleaseType=release_type,
+                jackettReleaseType=release_type, sourceStations=stations,
                 languages=[],
                 fullLanguages="",
             )

@@ -1,7 +1,7 @@
 """Pinned, paired local TorrServer client; no Kodi/native playback authority.
 
 Only the user's exact selected BTIH may be added, once, without persistence.
-Metadata and an explicit user file selection are required before a media URL
+Metadata and a file choice from the selected source are required before a media URL
 is returned. No URL torrent fetch, cloud task, first-video guess or retry-add.
 
 Official TorrServer permits existing-torrent media streaming without Basic
@@ -296,7 +296,7 @@ class TorrServerClient:
         return self._ready(self._clock() + 6.0, cancelled)
 
     def select_source(self, expected_hash, magnet=None, choose_file=None,
-                      cancelled=lambda: False, budget=METADATA_BUDGET):
+                      cancelled=lambda: False, budget=METADATA_BUDGET, recheck_files=None):
         expected_hash, magnet = selected_magnet(expected_hash, magnet)
         if not callable(choose_file):
             raise Cancelled('EXPLICIT_VIDEO_FILE_CHOICE_REQUIRED')
@@ -339,8 +339,16 @@ class TorrServerClient:
             raise Cancelled('USER_CANCELLED_FILE_CHOICE')
         if not isinstance(selected, VideoFile) or selected not in candidates:
             raise TorrServerError('FILE_CHOICE_NOT_FROM_SELECTED_TORRENT')
+        if recheck_files is not None and recheck_files():
+            # No file dialog attested this choice. Require the same metadata
+            # including its cardinality immediately before returning the URL.
+            status, raw = self._request('POST', '/torrents', self._clock() + REQUEST_TIMEOUT, cancelled,
+                                        {'action': 'get', 'hash': expected_hash})
+            if status != 200 or set(checked_files(_json(raw), expected_hash) or ()) != set(files):
+                raise TorrServerError('SELECTED_FILE_CHANGED')
+            self._cancelled(cancelled)
         # MatriX.147 uses file_stats.id verbatim, not zero-based metainfo order.
         url = ENDPOINT + '/stream?' + urlencode({'link': expected_hash, 'index': selected.id}) + '&play'
         return {'url': url, 'info_hash': expected_hash, 'selection_identity': 'bt:' + expected_hash,
                 'file_id': selected.id, 'file_path': selected.path, 'size': selected.size,
-                'evidence': 'selected-torrent-metadata-and-user-file-choice-only'}
+                'evidence': 'selected-torrent-metadata-and-file-choice-only'}
