@@ -1,9 +1,10 @@
 """Domestic discovery and same-generation fallback never require user secrets."""
+import base64
 import hashlib
 import json
 from pathlib import Path
 import ssl
-from urllib.error import URLError
+from urllib.error import HTTPError, URLError
 from urllib.request import Request
 
 import pytest
@@ -71,6 +72,47 @@ def test_discovery_falls_back_once_only_on_transport_failure(monkeypatch):
     monkeypatch.setattr(online, '_open', open_response)
     assert online.latest() == tracked_offer(b'blob')
     assert calls == [online.feed_url('stable', mirror) for mirror in ('gitcode', 'github')]
+
+
+@pytest.mark.parametrize('track', ['stable', 'preview'])
+@pytest.mark.parametrize('case', ['gitcode-only', 'api-down', 'api-login', 'wrong-file', 'bad-size', 'bad-content', 'wrong-track'])
+def test_gitcode_raw_denied_uses_same_public_file_without_following_metadata_urls(monkeypatch, track, case):
+    urls = [online.feed_url(track, 'gitcode'), online.GITCODE_CONTENTS + 'repository/' + track
+            + '/current.json?ref=main', online.feed_url(track, 'github')]
+    value = tracked_offer(b'blob', track=track)
+    mirror = dict(value, url=online.release_url(value['tag'], 'gitcode'))
+    raw = json.dumps(dict(mirror, track='wrong') if case == 'wrong-track' else mirror).encode()
+    calls = []
+    def read(url):
+        calls.append(url)
+        if url == urls[0] or url == urls[1] and case == 'api-down':
+            raise HTTPError(url, 403, 'Forbidden', {}, None)
+        if url == urls[1] and case == 'api-login':
+            raise HTTPError(url, 401, 'Unauthorized', {}, None)
+        if url == urls[2]:
+            if case == 'gitcode-only':
+                raise TimeoutError()
+            return Response(json.dumps(value).encode())
+        assert url == urls[1]
+        row = dict(type='file', path='wrong' if case == 'wrong-file' else f'repository/{track}/current.json',
+                   size=len(raw) + (case == 'bad-size'), encoding='base64', download_url='https://invalid.example/',
+                   content='!' if case == 'bad-content' else base64.b64encode(raw).decode())
+        return Response(json.dumps(row).encode())
+    monkeypatch.setattr(online, '_open', read)
+    if case != 'wrong-track':
+        assert online.latest(track=track) == (mirror if case == 'gitcode-only' else value)
+        assert calls == urls
+    else:
+        with pytest.raises(UpdateError):
+            online.latest(track=track)
+        assert calls == urls[:2]
+
+
+def test_contents_response_must_not_redirect_to_a_release_asset():
+    url = online.GITCODE_CONTENTS + 'repository/stable/current.json?ref=main'
+    with pytest.raises(UpdateError, match='ONLINE_REDIRECT_REJECTED'):
+        online._Redirects().redirect_request(Request(url), None, 302, '', {},
+            'https://release-assets.githubusercontent.com/github-production-release-asset/1/file')
 
 
 @pytest.mark.parametrize('failure', ['cancel', 'json', 'length', 'redirect'])

@@ -1,4 +1,6 @@
 """Fetch a complete release; installation stays with the existing CE transaction."""
+import base64
+import binascii
 import json
 from contextvars import ContextVar
 from http.client import HTTPException, IncompleteRead
@@ -21,6 +23,7 @@ MIRROR_ROOT = 'https://gitcode.com/BobbiZerri/bobbi-tv-updates'
 MIRROR_FEED = 'https://raw.gitcode.com/BobbiZerri/bobbi-tv-updates/raw/main/repository/'
 OFFER_URL = MIRROR_FEED + 'current.json'
 FALLBACK_OFFER_URL = 'https://raw.githubusercontent.com/2223M1/bobbi-tv/main/repository/current.json'
+GITCODE_CONTENTS = 'https://api.gitcode.com/api/v5/repos/BobbiZerri/bobbi-tv-updates/contents/'
 TRANSFER_SECONDS = 600
 DISCOVERY_SECONDS = 20
 TRACKS = ('stable', 'preview')
@@ -107,7 +110,8 @@ class _Redirects(HTTPRedirectHandler):
 
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         self.count += 1
-        if self.count > MAX_REDIRECTS or not _allowed_redirect(newurl):
+        if (req.full_url.startswith(GITCODE_CONTENTS) or self.count > MAX_REDIRECTS
+                or not _allowed_redirect(newurl)):
             raise UpdateError('ONLINE_REDIRECT_REJECTED')
         if urlsplit(newurl).netloc == 'file-cdn.gitcode.com':
             parent = urlsplit(req.full_url)
@@ -247,6 +251,30 @@ def check_offer_manifest(offer, manifest):
         raise UpdateError('ONLINE_TRACK_MISMATCH')
 
 
+def _gitcode_contents(track, cancelled, until):
+    # Same public file and branch. The provider's wrapper is data, never a
+    # source of new URLs; decode only the small inline file we asked for.
+    path = 'repository/' + track + '/current.json'
+    chunks = []
+    _transfer(GITCODE_CONTENTS + path + '?ref=main', 65536, chunks.append,
+              cancelled, lambda _: None, deadline=until)
+    try:
+        row = _json(b''.join(chunks))
+    except UpdateError:
+        raise UpdateError('ONLINE_CONTENTS_UNAVAILABLE') from None
+    if (not isinstance(row, dict) or row.get('type') != 'file' or row.get('path') != path
+            or row.get('encoding') != 'base64' or type(row.get('size')) is not int
+            or not 0 < row['size'] <= 32768 or not isinstance(row.get('content'), str)):
+        raise UpdateError('ONLINE_CONTENTS_UNAVAILABLE')
+    try:
+        raw = base64.b64decode(row['content'].replace('\n', '').replace('\r', ''), validate=True)
+    except (ValueError, binascii.Error):
+        raise UpdateError('ONLINE_CONTENTS_UNAVAILABLE') from None
+    if len(raw) != row['size']:
+        raise UpdateError('ONLINE_CONTENTS_UNAVAILABLE')
+    return raw
+
+
 def latest(cancelled=lambda: False, *, track='stable', report=None):
     deadline = time.monotonic() + min(TRANSFER_SECONDS, DISCOVERY_SECONDS)
     urls = tuple(feed_url(track, source) for source in ('gitcode', 'github'))
@@ -261,12 +289,20 @@ def latest(cancelled=lambda: False, *, track='stable', report=None):
             try:
                 _transfer(url, 32768, chunks.append, cancelled, lambda _: None, deadline=until)
             except HTTPError as error:
-                if error.code != 404 or track != 'stable':
-                    raise
                 chunks.clear()
-                legacy = True
-                _transfer((OFFER_URL, FALLBACK_OFFER_URL)[index], 32768, chunks.append,
-                          cancelled, lambda _: None, deadline=until)
+                if index == 0 and error.code == 403:
+                    try:
+                        chunks.append(_gitcode_contents(track, cancelled, until))
+                    except HTTPError as api_error:
+                        if api_error.code != 401:
+                            raise
+                        raise error from None  # Anonymous contents denied too; continue to GitHub.
+                elif error.code == 404 and track == 'stable':
+                    legacy = True
+                    _transfer((OFFER_URL, FALLBACK_OFFER_URL)[index], 32768, chunks.append,
+                              cancelled, lambda _: None, deadline=until)
+                else:
+                    raise
             try:
                 candidates.append(parse_offer(b''.join(chunks), track))
             except UpdateError:
@@ -277,7 +313,7 @@ def latest(cancelled=lambda: False, *, track='stable', report=None):
                 raise UpdateError('ONLINE_LEGACY_UNVERIFIED') from None
         except (URLError, TimeoutError, ConnectionError, UpdateError) as error:
             if isinstance(error, Cancelled) or not (_network_failure(error) or
-                    str(error) in ('ONLINE_TIMEOUT', 'ONLINE_LEGACY_UNVERIFIED')):
+                    str(error) in ('ONLINE_TIMEOUT', 'ONLINE_LEGACY_UNVERIFIED', 'ONLINE_CONTENTS_UNAVAILABLE')):
                 raise
             unavailable.append(index)
             last_error = error

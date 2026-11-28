@@ -20,7 +20,9 @@ from urllib.error import HTTPError
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'addons/script.module.bobbi.platform/lib'))
 from bobbi_platform.offline_updates import SignedBundle, load_trust
-from bobbi_platform.online_updates import _transfer, parse_offer, release_url, feed_url, check_offer_manifest
+from bobbi_platform.online_updates import (
+    FALLBACK_OFFER_URL, _transfer, parse_offer, release_url, feed_url, check_offer_manifest,
+)
 from bobbi_platform.updates import _safe_path, _json
 
 
@@ -306,6 +308,20 @@ def readback(receipt, channel, report, transfer=_transfer, *, staged=False, read
                 or ('assets' in metadata and {a.get('name') for a in metadata['assets'] if isinstance(a, dict)} != set(receipt['assets']))):
             raise ValueError('Remote GitHub release identity differs')
         result['github_release_identity'] = 'matched'
+        if not staged and receipt['schema'] == 3 and receipt['track'] == 'stable':
+            # Older clients fetch this root URL, outside both track directories.
+            # Verify parsed fields (whitespace/order do not affect those clients).
+            alias = dict(transport='https', matched=False)
+            result['github_legacy_pointer'] = alias
+            chunks = []
+            transfer(FALLBACK_OFFER_URL, 32768, chunks.append, lambda: False, lambda _: None,
+                     deadline=time.monotonic() + 20)
+            old_client_offer = parse_offer(b''.join(chunks))
+            wanted = receipt['offers']['github']
+            expected = {key: wanted[key] for key in ('tag', 'sequence', 'size', 'sha256', 'url')}
+            if old_client_offer != dict(expected, schema=1):
+                raise ValueError('Legacy stable pointer differs from published release')
+            alias.update(matched=True, sequence=old_client_offer['sequence'])
         targets = []
         for mirror in mirrors:
             base = release_url(receipt['tag'], mirror).rsplit('/', 1)[0] + '/'

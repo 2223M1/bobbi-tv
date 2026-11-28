@@ -167,11 +167,12 @@ def test_preview_promotion_cannot_overwrite_legacy_or_stable_pointer(publication
     assert not (target.parent / 'stable').exists()
 
 
-def scoped(publication, policy):
+def scoped(publication, policy, track='preview'):
     receipt, target, report, _, _ = publication
     mirrors = gate.MIRRORS[policy]
-    receipt.update(schema=3, mirror_policy=policy, offers={}, sequence=2067)
-    base = dict(schema=2, track='preview', prerelease=True, manifest_channel='private-candidate',
+    receipt.update(schema=3, mirror_policy=policy, offers={}, sequence=2067, track=track)
+    base = dict(schema=2, track=track, prerelease=track == 'preview',
+                manifest_channel='private-candidate' if track == 'preview' else 'private-stable',
                 versions={'script.bobbi.start': '1.0'}, size=123, sha256='1' * 64)
     remote = {}
     old = {}
@@ -182,7 +183,7 @@ def scoped(publication, policy):
         path.write_text(json.dumps(new))
         receipt['offers'][mirror] = new
         receipt['feeds'][mirror] = dict(receipt['feeds'][mirror], **{'current.json': gate.identity(path)})
-        url = gate.feed_url('preview', mirror)
+        url = gate.feed_url(track, mirror)
         remote[url] = json.dumps(old[mirror]).encode()
         for name, row in receipt['assets'].items():
             remote[gate.release_url(new['tag'], mirror).rsplit('/', 1)[0]+'/'+name] = Path(row['path']).read_bytes()
@@ -192,10 +193,38 @@ def scoped(publication, policy):
     def transfer(url, limit, consume, *args, **kwargs):
         calls.append(url)
         if url.startswith('https://api.github.com/'):
-            raw = json.dumps(dict(tag_name=receipt['tag'], draft=False, prerelease=True, target_commitish=receipt['commit'])).encode()
+            raw = json.dumps(dict(tag_name=receipt['tag'], draft=False, prerelease=track == 'preview', target_commitish=receipt['commit'])).encode()
         else: raw = remote[url]
         consume(raw)
     return receipt, target, report, remote, calls, transfer
+
+
+@pytest.mark.parametrize('fault', [None, 'stale', 'digest', 'url', 'schema', 'offline'])
+def test_stable_verification_uses_actual_legacy_client_endpoint(publication, fault):
+    r, _, report, remote, calls, transfer = scoped(publication, 'github-only', 'stable')
+    offer = r['offers']['github']
+    base = gate.feed_url('stable', 'github').rsplit('/', 1)[0] + '/'
+    for name, row in r['feeds']['github'].items():
+        remote[base + name] = Path(row['path']).read_bytes()
+    alias = dict(schema=1, **{k: offer[k] for k in ('tag', 'sequence', 'size', 'sha256', 'url')})
+    if fault == 'stale': alias.update(sequence=2066, tag='ce2066', url=gate.release_url('ce2066', 'github'))
+    if fault == 'digest': alias['sha256'] = '2' * 64
+    if fault == 'url': alias['url'] = gate.release_url(offer['tag'], 'gitcode')
+    if fault == 'schema': alias = offer
+    url = 'https://raw.githubusercontent.com/2223M1/bobbi-tv/main/repository/current.json'
+    remote[url] = json.dumps(alias).encode()
+    def read(*args, **kw):
+        if fault == 'offline' and args[0] == url:
+            raise TimeoutError()
+        transfer(*args, **kw)
+    if fault:
+        with pytest.raises((ValueError, TimeoutError)):
+            gate.readback(r, 'github', report, read)
+        result = json.loads(report.read_bytes())
+        assert not result['passed'] and not result['github_legacy_pointer']['matched']
+    else:
+        result = gate.readback(r, 'github', report, read)
+        assert result['passed'] and result['github_legacy_pointer']['matched'] and calls.count(url) == 1
 
 
 @pytest.mark.parametrize('policy', ['github-only', 'dual'])
